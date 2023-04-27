@@ -1,0 +1,251 @@
+version: "3.4"
+
+x-superset-common:
+  &superset
+    image: apache/superset
+    environment:
+      - SUPERSET_SECRET_KEY=uFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E
+    volumes:
+      - ./staging/superset/config.py:/app/superset/config.py
+
+x-airflow-common:
+  &airflow
+  image: apache/airflow:2.5.2
+  user: "0:0"
+  environment:
+    - AIRFLOW__CORE__FERNET_KEY=UKMzEm3yIuFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E=
+    - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+    - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
+    - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    - AIRFLOW_UID=0
+    - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-pg/airflow
+    - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=False
+    - _AIRFLOW_DB_UPGRADE=True
+    - _AIRFLOW_WWW_USER_CREATE=True
+    - _AIRFLOW_WWW_USER_USERNAME=airflow
+    - _AIRFLOW_WWW_USER_PASSWORD=airflow
+  volumes:
+    - ./staging/airflow/dags:/opt/airflow/dags
+    - ./staging/airflow/logs:/opt/airflow/logs
+    - ./staging/airflow/plugins:/opt/airflow/plugins
+    # - ./airflow/webserver_config.py:/opt/airflow/webserver_config.py
+    # - ./airflow/user_auth.py:/opt/airflow/user_auth.py
+    - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  superset_data: {}
+  metadata_data: {}
+  middle_var: {}
+  historical_var: {}
+  broker_var: {}
+  coordinator_var: {}
+  router_var: {}
+  druid_shared: {}
+
+services:
+  # =======
+  #  Druid
+  # =======
+  db:
+    image: postgres:14
+    container_name: db
+    volumes:
+      - metadata_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=druid
+      - POSTGRES_USER=druid
+      - POSTGRES_DB=druid
+
+  # Need 3.5 or later for container nodes
+  zookeeper:
+    container_name: zookeeper
+    image: zookeeper:3.5
+    ports:
+      - "2181:2181"
+    environment:
+      - ZOO_MY_ID=1
+
+  coordinator:
+    image: apache/druid:25.0.0
+    container_name: coordinator
+    volumes:
+      - druid_shared:/opt/shared
+      - coordinator_var:/opt/druid/var
+    depends_on: 
+      - zookeeper
+      - db
+    ports:
+      - "8884:8081"
+    command:
+      - coordinator
+    env_file:
+      - environment
+
+  broker:
+    image: apache/druid:25.0.0
+    container_name: broker
+    volumes:
+      - broker_var:/opt/druid/var
+    depends_on: 
+      - zookeeper
+      - db
+      - coordinator
+    ports:
+      - "8082:8082"
+    command:
+      - broker
+    env_file:
+      - environment
+
+  historical:
+    image: apache/druid:25.0.0
+    container_name: historical
+    volumes:
+      - druid_shared:/opt/shared
+      - historical_var:/opt/druid/var
+    depends_on: 
+      - zookeeper
+      - db
+      - coordinator
+    ports:
+      - "8083:8083"
+    command:
+      - historical
+    env_file:
+      - environment
+
+  middlemanager:
+    image: apache/druid:25.0.0
+    container_name: middlemanager
+    volumes:
+      - druid_shared:/opt/shared
+      - middle_var:/opt/druid/var
+    depends_on: 
+      - zookeeper
+      - db
+      - coordinator
+    ports:
+      - "8091:8091"
+      - "8100-8105:8100-8105"
+    command:
+      - middleManager
+    env_file:
+      - environment
+
+  router:
+    image: apache/druid:25.0.0
+    container_name: router
+    volumes:
+      - router_var:/opt/druid/var
+    depends_on:
+      - zookeeper
+      - db
+      - coordinator
+    ports:
+      - "8888:8888"
+    command:
+      - router
+    env_file:
+      - environment
+  
+  # =======
+  # Superset
+  # =======
+  superset_cache:
+    container_name: superset_cache
+    image: redis:5
+    restart: always
+
+  superset_db:
+    container_name: superset_db
+    image: postgres:14
+    volumes:
+      - superset_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=superset
+      - POSTGRES_USER=superset
+      - POSTGRES_DB=superset
+
+  superset:
+    <<: *superset
+    container_name: superset
+    ports:
+      - 8883:8088
+    depends_on:
+      - superset_db
+      - superset_cache
+
+  superset-init:
+    <<: *superset
+    container_name: superset-init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        superset fab create-admin --username admin --firstname Superset --lastname Admin --email admin@superset.com --password admin
+        superset db upgrade
+
+  # =====
+  #  Hop
+  # =====
+  hop:
+    build: ./staging/hop
+    container_name: apache-hop
+    ports:
+      - "8882:8080"
+    volumes:
+      - ./staging/hop/pipelines:/files
+    #environment:
+      #- HOP_PROJECT_DIRECTORY=/files
+      #- HOP_PROJECT_NAME=default
+      #- HOP_WEB_THEME=dark
+      #- HOP_ENVIRONMENT_NAME=prod
+      #- HOP_ENVIRONMENT_CONFIG_FILE_NAME_PATHS=/files/prod-config.json
+  
+  # =======
+  # Airflow
+  # =======
+  airflow-pg:
+    image: postgres:latest
+    container_name: airflow-pg
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "airflow" ]
+      interval: 5s
+      retries: 5
+
+  airflow-scheduler:
+    <<: *airflow
+    depends_on:
+      - airflow-pg
+    container_name: airflow-scheduler
+    command: scheduler
+    restart: on-failure
+    ports:
+      - "8793:8793"
+
+  airflow-webserver:
+    <<: *airflow
+    depends_on:
+      - airflow-pg
+    container_name: airflow-webserver
+    restart: always
+    command: webserver
+    ports:
+      - "8881:8080"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "--fail",
+          "http://localhost:8080/health"
+        ]
+      interval: 30s
+      timeout: 30s
+      retries: 5
