@@ -6,7 +6,7 @@ x-common:
     environment:
       - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
     volumes:
-      - ./staging/superset/config/config.py:/app/superset/config.py
+      - ./staging/superset/config.py:/app/superset/config.py
 
 x-airflow-common:
   &common
@@ -42,6 +42,18 @@ services:
       volumes:
         - ./staging/nginx/nginx.conf:/etc/nginx/nginx.conf
         - ./staging/nginx/html:/etc/nginx/html
+
+  frontend:
+    container_name: next-js-frontend
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: always
+    volumes:
+      - ./frontend:/frontend
+    command: npm run dev
 
   # Superset
   superset_cache:
