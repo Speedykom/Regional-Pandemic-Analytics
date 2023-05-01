@@ -55,6 +55,20 @@ services:
       - ./frontend:/frontend
     command: npm run dev
 
+  backend:
+    container_name: django-backend
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/backend
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    command: python manage.py runserver 0.0.0.0:8000
+
   # Superset
   superset_cache:
     container_name: superset_cache
