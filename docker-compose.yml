@@ -136,6 +136,7 @@ services:
     image: apache/druid:25.0.0
     container_name: router
     volumes:
+      - druid_shared:/opt/shared
       - router_var:/opt/druid/var
     depends_on:
       - zookeeper
@@ -195,6 +196,7 @@ services:
       - "8882:8080"
     volumes:
       - ./staging/hop/pipelines:/files
+      - druid_shared:/home
     #environment:
       #- HOP_PROJECT_DIRECTORY=/files
       #- HOP_PROJECT_NAME=default
