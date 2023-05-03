@@ -9,7 +9,7 @@ x-common:
       - ./staging/superset/config.py:/app/superset/config.py
 
 x-airflow-common:
-  &common
+  &x-airflow-common
   image: apache/airflow:2.3.0
   user: "${AIRFLOW_UID}:0"
   env_file:
@@ -20,8 +20,8 @@ x-airflow-common:
     - ./staging/airflow/plugins:/opt/airflow/plugins
     - /var/run/docker.sock:/var/run/docker.sock
 
-x-depends-on:
-  &depends-on
+x-airflow-depends-on:
+  &x-airflow-depends-on
   depends_on:
     postgres:
       condition: service_healthy
@@ -54,6 +54,7 @@ services:
     volumes:
       - ./frontend:/frontend
     command: npm run dev
+
 
   # Superset
   superset_cache:
@@ -90,6 +91,23 @@ services:
         superset fab create-admin --username admin --firstname Superset --lastname Admin --email admin@superset.com --password admin
         superset db upgrade
         superset init
+        
+
+  # Django Backend
+  backend:
+    container_name: django-backend
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/backend
+    env_file: .env.backend
+    depends_on:
+      - superset_db
+    command: >
+      sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
 
   # Airflow
   postgres:
@@ -104,8 +122,7 @@ services:
     env_file:
       - .env.staging
   scheduler:
-    <<: *common
-    <<: *depends-on
+    <<: [*x-airflow-common, *x-airflow-depends-on]
     container_name: airflow-scheduler
     command: scheduler
     restart: on-failure
@@ -113,8 +130,8 @@ services:
       - "8793:8793"
 
   webserver:
-    <<: *common
-    <<: *depends-on
+    <<: *x-airflow-common
+    <<: *x-airflow-depends-on
     container_name: airflow-webserver
     restart: always
     command: webserver
@@ -127,7 +144,7 @@ services:
       retries: 5
 
   airflow-init:
-    <<: *common
+    <<: *x-airflow-common
     container_name: airflow-init
     entrypoint: /bin/bash
     command:
