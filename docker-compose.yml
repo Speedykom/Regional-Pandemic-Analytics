@@ -17,6 +17,7 @@ x-airflow-common:
     - AIRFLOW__CORE__EXECUTOR=LocalExecutor
     - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
     - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    - SQLALCHEMY_SILENCE_UBER_WARNING=1
     - AIRFLOW_UID=0
     - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-pg/airflow
     - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=False
@@ -28,13 +29,14 @@ x-airflow-common:
     - ./staging/airflow/dags:/opt/airflow/dags
     - ./staging/airflow/logs:/opt/airflow/logs
     - ./staging/airflow/plugins:/opt/airflow/plugins
-    # - ./airflow/webserver_config.py:/opt/airflow/webserver_config.py
-    # - ./airflow/user_auth.py:/opt/airflow/user_auth.py
+    - ./staging/airflow/webserver_config.py:/opt/airflow/webserver_config.py
+    - ./staging/airflow/user_auth.py:/opt/airflow/user_auth.py
     - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   superset_data: {}
   metadata_data: {}
+  keyclock_data: {}
   middle_var: {}
   historical_var: {}
   broker_var: {}
@@ -75,7 +77,7 @@ services:
       - zookeeper
       - db
     ports:
-      - "8884:8081"
+      - "8081:8081"
     command:
       - coordinator
     env_file:
@@ -143,7 +145,7 @@ services:
       - db
       - coordinator
     ports:
-      - "8888:8888"
+      - "8884:8888"
     command:
       - router
     env_file:
@@ -185,13 +187,14 @@ services:
       - |
         superset fab create-admin --username admin --firstname Superset --lastname Admin --email admin@superset.com --password admin
         superset db upgrade
+        superset superset init
 
   # =====
   #  Hop
   # =====
   hop:
     build: ./staging/hop
-    container_name: apache-hop
+    container_name: hop
     ports:
       - "8882:8080"
     volumes:
@@ -251,3 +254,51 @@ services:
       interval: 30s
       timeout: 30s
       retries: 5
+
+  # =======
+  # keycloak
+  # =======
+  keycloak-pg:
+    container_name: keycloak-pg
+    image: postgres:14
+    command: postgres -c 'max_connections=200'
+    volumes:
+      - keyclock_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: admin
+      POSTGRES_DB: keycloak
+    healthcheck:
+      test: "exit 0"
+    ports:
+      - "5434:5432"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:20.0.0
+    container_name: "keycloak"
+    command: 
+      - start-dev 
+      - --import-realm
+    ports:
+      - "8885:8080"
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_URL_HOST: keycloak-pg
+      KC_DB_USERNAME: admin
+      KC_DB_PASSWORD: admin
+      KC_DB_SCHEMA: public
+      # KC_PROXY: edge
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      # local env
+      # KC_HOSTNAME_ADMIN_URL: http://localhost:8885
+      # KC_HOSTNAME_URL: http://localhost:8885
+      # dev server env
+      KC_HOSTNAME_ADMIN_URL: http://auth2.igad-health.eu
+      KC_HOSTNAME_URL: http://auth2.igad-health.eu
+    restart: unless-stopped
+    volumes:
+      - ./staging/keycloak/realm/realm.json:/opt/keycloak/data/import/realm.json
+    depends_on:
+      - keycloak-pg
