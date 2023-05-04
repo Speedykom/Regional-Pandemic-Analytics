@@ -16,7 +16,7 @@ CLIENT_AUTH: tuple[str, str] | Any | None = None
 log = logging.getLogger(__name__)
 
 CLIENT_ID = 'airflow'
-OIDC_ISSUER = 'https://keycloak.speedykom.com/realms/stack'
+OIDC_ISSUER = 'http://auth2.igad-health.eu/realms/stack'
 
 req = requests.get(OIDC_ISSUER)
 key_der_base64 = req.json()["public_key"]
