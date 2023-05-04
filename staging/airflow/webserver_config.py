@@ -42,7 +42,7 @@ AUTH_ROLES_MAPPING = {
 OAUTH_PROVIDERS = [
   {
    'name': PROVIDER_NAME,
-   'icon': 'fa-circle-o',
+   'icon': 'fa-key',
    'token_key': 'access_token', 
    'remote_app': {
      'client_id': CLIENT_ID,
