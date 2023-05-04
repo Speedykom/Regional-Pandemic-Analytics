@@ -17,6 +17,7 @@ x-airflow-common:
     - AIRFLOW__CORE__EXECUTOR=LocalExecutor
     - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
     - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    - SQLALCHEMY_SILENCE_UBER_WARNING=1
     - AIRFLOW_UID=0
     - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-pg/airflow
     - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=False
