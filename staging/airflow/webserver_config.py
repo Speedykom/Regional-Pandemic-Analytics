@@ -19,12 +19,12 @@ log = logging.getLogger(__name__)
 
 PROVIDER_NAME = 'keycloak'
 CLIENT_ID = 'airflow'
-CLIENT_SECRET = 'CJZUXnQclzASQ98PzAVlsUNp2yZ3J3tf'
+CLIENT_SECRET = 'K4bbL44d7FIEg7cMpBw2KwBzNohQZVKl'
 
-OIDC_ISSUER = 'https://keycloak.speedykom.com/realms/stack'
-KEYCLOAK_BASE_URL = 'https://keycloak.speedykom.com/realms/stack/protocol/openid-connect'
-KEYCLOAK_TOKEN_URL = 'https://keycloak.speedykom.com/realms/stack/protocol/openid-connect/token'
-KEYCLOAK_AUTH_URL = 'https://keycloak.speedykom.com/realms/stack/protocol/openid-connect/auth'
+OIDC_ISSUER = 'http://auth2.igad-health.eu/realms/regional-pandemic-analytics'
+KEYCLOAK_BASE_URL = 'http://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect'
+KEYCLOAK_TOKEN_URL = 'http://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect/token'
+KEYCLOAK_AUTH_URL = 'http://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect/auth'
 
 AUTH_TYPE = AUTH_OAUTH
 AUTH_USER_REGISTRATION = True
