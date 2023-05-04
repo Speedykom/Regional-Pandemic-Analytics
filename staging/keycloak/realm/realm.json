@@ -1,6 +1,6 @@
 {
   "id": "e042dc95-0739-4185-81d4-a92bc4dddb6c",
-  "realm": " Regional Pandemic Analytics",
+  "realm": "regional-pandemic-analytics",
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
@@ -47,7 +47,7 @@
     "realm": [
       {
         "id": "55b31ac9-254c-4204-b452-5c451a6671d4",
-        "name": "default-roles- regional pandemic analytics",
+        "name": "default-roles-regional-pandemic-analytics",
         "description": "${role_default-roles}",
         "composite": true,
         "composites": {
@@ -514,7 +514,7 @@
   ],
   "defaultRole": {
     "id": "55b31ac9-254c-4204-b452-5c451a6671d4",
-    "name": "default-roles- regional pandemic analytics",
+    "name": "default-roles-regional-pandemic-analytics",
     "description": "${role_default-roles}",
     "composite": true,
     "clientRole": false,
@@ -570,7 +570,7 @@
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
-        "default-roles- regional pandemic analytics"
+        "default-roles-regional-pandemic-analytics"
       ],
       "notBefore": 0,
       "groups": []
@@ -601,13 +601,13 @@
       "clientId": "account",
       "name": "${client_account}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/ Regional Pandemic Analytics/account/",
+      "baseUrl": "/realms/regional-pandemic-analytics/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/realms/ Regional Pandemic Analytics/account/*"
+        "/realms/regional-pandemic-analytics/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -645,13 +645,13 @@
       "clientId": "account-console",
       "name": "${client_account-console}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/ Regional Pandemic Analytics/account/",
+      "baseUrl": "/realms/regional-pandemic-analytics/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/realms/ Regional Pandemic Analytics/account/*"
+        "/realms/regional-pandemic-analytics/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -736,7 +736,7 @@
     {
       "id": "8c26939c-d5bd-40ef-a457-484ad295cfc7",
       "clientId": "airflow",
-      "name": " Regional Pandemic Analytics",
+      "name": "Regional Pandemic Analytics",
       "description": "",
       "rootUrl": "",
       "adminUrl": "",
@@ -937,13 +937,13 @@
       "clientId": "security-admin-console",
       "name": "${client_security-admin-console}",
       "rootUrl": "${authAdminUrl}",
-      "baseUrl": "/admin/ Regional Pandemic Analytics/console/",
+      "baseUrl": "/admin/regional-pandemic-analytics/console/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/admin/ Regional Pandemic Analytics/console/*"
+        "/admin/regional-pandemic-analytics/console/*"
       ],
       "webOrigins": [
         "+"
