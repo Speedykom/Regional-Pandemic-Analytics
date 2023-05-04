@@ -275,7 +275,9 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:20.0.0
     container_name: "keycloak"
-    command: start-dev
+    command: 
+      - start-dev 
+      - --import-realm
     ports:
       - "8885:8080"
     environment:
@@ -293,6 +295,6 @@ services:
       KC_HOSTNAME_URL: http://localhost:8885
     restart: unless-stopped
     volumes:
-      - ./staging/keycloak/realm.json:/tmp/realm.json
+      - ./staging/keycloak/realm/realm.json:/opt/keycloak/data/import/realm.json
     depends_on:
       - keycloak-pg
