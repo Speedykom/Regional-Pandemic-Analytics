@@ -21,10 +21,10 @@ PROVIDER_NAME = 'keycloak'
 CLIENT_ID = 'airflow'
 CLIENT_SECRET = 'K4bbL44d7FIEg7cMpBw2KwBzNohQZVKl'
 
-OIDC_ISSUER = 'http://auth2.igad-health.eu/realms/%20Regional%20Pandemic%20Analytics'
-KEYCLOAK_BASE_URL = 'http://auth2.igad-health.eu/realms/%20Regional%20Pandemic%20Analytics/protocol/openid-connect'
-KEYCLOAK_TOKEN_URL = 'http://auth2.igad-health.eu/realms/%20Regional%20Pandemic%20Analytics/protocol/openid-connect/token'
-KEYCLOAK_AUTH_URL = 'http://auth2.igad-health.eu/realms/%20Regional%20Pandemic%20Analytics/protocol/openid-connect/auth'
+OIDC_ISSUER = 'http://auth2.igad-health.eu/realms/regional-pandemic-analytics'
+KEYCLOAK_BASE_URL = 'http://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect'
+KEYCLOAK_TOKEN_URL = 'http://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect/token'
+KEYCLOAK_AUTH_URL = 'http://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect/auth'
 
 AUTH_TYPE = AUTH_OAUTH
 AUTH_USER_REGISTRATION = True
