@@ -28,8 +28,8 @@ x-airflow-common:
     - ./staging/airflow/dags:/opt/airflow/dags
     - ./staging/airflow/logs:/opt/airflow/logs
     - ./staging/airflow/plugins:/opt/airflow/plugins
-    # - ./airflow/webserver_config.py:/opt/airflow/webserver_config.py
-    # - ./airflow/user_auth.py:/opt/airflow/user_auth.py
+    - ./staging/airflow/webserver_config.py:/opt/airflow/webserver_config.py
+    - ./staging/airflow/user_auth.py:/opt/airflow/user_auth.py
     - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
