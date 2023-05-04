@@ -257,7 +257,7 @@ services:
   # =======
   # keycloak
   # =======
-  keycloak-db:
+  keycloak-pg:
     container_name: keycloak-pg
     image: postgres:14
     command: postgres -c 'max_connections=200'
@@ -275,21 +275,24 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:20.0.0
     container_name: "keycloak"
-    command: start
+    command: start-dev
     ports:
       - "8885:8080"
     environment:
-      KC_DB: keycloak-db
+      KC_DB: postgres
       KC_DB_URL_DATABASE: keycloak
-      KC_DB_URL_HOST: pg
+      KEYCLOAK_IMPORT: /tmp/realm.json
+      KC_DB_URL_HOST: keycloak-pg
       KC_DB_USERNAME: admin
       KC_DB_PASSWORD: admin
       KC_DB_SCHEMA: public
-      KC_PROXY: edge
+      # KC_PROXY: edge
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_HOSTNAME_ADMIN_URL: http://auth2.igad-health.eu
-      KC_HOSTNAME_URL: http://auth2.igad-health.eu
+      KC_HOSTNAME_ADMIN_URL: http://localhost:8885
+      KC_HOSTNAME_URL: http://localhost:8885
     restart: unless-stopped
+    volumes:
+      - ./staging/keycloak/realm.json:/tmp/realm.json
     depends_on:
-      - keycloak-db
+      - keycloak-pg
