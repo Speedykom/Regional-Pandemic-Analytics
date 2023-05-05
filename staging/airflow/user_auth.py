@@ -16,7 +16,7 @@ CLIENT_AUTH: tuple[str, str] | Any | None = None
 log = logging.getLogger(__name__)
 
 CLIENT_ID = 'airflow'
-OIDC_ISSUER = 'http://auth2.igad-health.eu/realms/regional-pandemic-analytics'
+OIDC_ISSUER = 'https://auth2.igad-health.eu/realms/regional-pandemic-analytics'
 
 req = requests.get(OIDC_ISSUER)
 key_der_base64 = req.json()["public_key"]
