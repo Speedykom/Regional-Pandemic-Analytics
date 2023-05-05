@@ -320,15 +320,15 @@ services:
       KC_DB_USERNAME: admin
       KC_DB_PASSWORD: admin
       KC_DB_SCHEMA: public
-      # KC_PROXY: edge
+      KC_PROXY: edge
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       # local env
       # KC_HOSTNAME_ADMIN_URL: http://localhost:8885
       # KC_HOSTNAME_URL: http://localhost:8885
       # dev server env
-      KC_HOSTNAME_ADMIN_URL: http://auth2.igad-health.eu
-      KC_HOSTNAME_URL: http://auth2.igad-health.eu
+      KC_HOSTNAME_ADMIN_URL: https://auth2.igad-health.eu
+      KC_HOSTNAME_URL: https://auth2.igad-health.eu
     restart: unless-stopped
     volumes:
       - ./staging/keycloak/realm/realm.json:/opt/keycloak/data/import/realm.json
