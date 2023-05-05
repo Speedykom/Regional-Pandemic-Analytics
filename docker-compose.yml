@@ -37,6 +37,7 @@ volumes:
   superset_data: {}
   metadata_data: {}
   keyclock_data: {}
+  minio_data: {}
   middle_var: {}
   historical_var: {}
   broker_var: {}
@@ -45,6 +46,21 @@ volumes:
   druid_shared: {}
 
 services:
+  # ========
+  # Minio
+  # ========
+  storage:
+    image: quay.io/minio/minio:RELEASE.2023-03-24T21-41-23Z
+    container_name: storage
+    command: minio server /data --console-address ":9090"
+    environment:
+        - MINIO_ROOT_USER=minio
+        - MINIO_ROOT_PASSWORD=minio@repan
+    ports:
+        - "9001:9000"
+        - "8887:9090"
+    volumes:
+        - minio_data:/data
   
   # ========
   # Frontend
