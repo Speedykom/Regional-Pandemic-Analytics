@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 
 PROVIDER_NAME = 'keycloak'
 CLIENT_ID = 'airflow'
-CLIENT_SECRET = 'K4bbL44d7FIEg7cMpBw2KwBzNohQZVKl'
+CLIENT_SECRET = 'CJZUXnQclzASQ98PzAVlsUNp2yZ3J3tf'
 
 OIDC_ISSUER = 'https://auth2.igad-health.eu/realms/regional-pandemic-analytics'
 KEYCLOAK_BASE_URL = 'https://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect'
