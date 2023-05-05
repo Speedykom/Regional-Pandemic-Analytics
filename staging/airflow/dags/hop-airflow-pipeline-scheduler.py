@@ -6,7 +6,9 @@ from airflow.operators.dummy_operator import DummyOperator
 from docker.types import Mount
 
 # change pwd to your project location
-pwd = "/Volumes/Disk/Work/speedykom/IGAD/staging/"
+# dev server = /home/igad/Regional-Pandemic-Analytics
+# /Volumes/Disk/Work/speedykom/IGAD
+pwd = "/home/igad/Regional-Pandemic-Analytics/staging/"
 
 source = "{}/hop/pipelines".format(pwd)
 
