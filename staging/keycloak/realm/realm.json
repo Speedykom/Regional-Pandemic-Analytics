@@ -624,7 +624,7 @@
       "frontchannelLogout": false,
       "protocol": "openid-connect",
       "attributes": {
-        "post.logout.redirect.uris": "+"
+        "post.logout.redirect.uris": ""
       },
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": false,
@@ -668,7 +668,7 @@
       "frontchannelLogout": false,
       "protocol": "openid-connect",
       "attributes": {
-        "post.logout.redirect.uris": "+",
+        "post.logout.redirect.uris": "",
         "pkce.code.challenge.method": "S256"
       },
       "authenticationFlowBindingOverrides": {},
@@ -963,7 +963,7 @@
       "frontchannelLogout": false,
       "protocol": "openid-connect",
       "attributes": {
-        "post.logout.redirect.uris": "+",
+        "post.logout.redirect.uris": "",
         "pkce.code.challenge.method": "S256"
       },
       "authenticationFlowBindingOverrides": {},
