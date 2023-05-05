@@ -1,3 +1,5 @@
 .idea
 .DS_Store
 /data
+/staging/hop/pipelines/watchDirLog.txt
+/staging/hop/pipelines/watchRuns.txt
