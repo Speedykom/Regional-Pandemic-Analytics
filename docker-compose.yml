@@ -37,6 +37,7 @@ volumes:
   superset_data: {}
   metadata_data: {}
   keyclock_data: {}
+  minio_data: {}
   middle_var: {}
   historical_var: {}
   broker_var: {}
@@ -45,6 +46,37 @@ volumes:
   druid_shared: {}
 
 services:
+  # ========
+  # Minio
+  # ========
+  storage:
+    image: quay.io/minio/minio:RELEASE.2023-03-24T21-41-23Z
+    container_name: storage
+    command: minio server /data --console-address ":9090"
+    environment:
+        - MINIO_ROOT_USER=minio
+        - MINIO_ROOT_PASSWORD=minio@repan
+    ports:
+        - "9001:9000"
+        - "8887:9090"
+    volumes:
+        - minio_data:/data
+  
+  # # ========
+  # # Frontend
+  # # ========
+  # frontend:
+  #   container_name: next-js-frontend
+  #   build:
+  #     context: frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #   restart: always
+  #   volumes:
+  #     - ./frontend:/frontend
+  #   command: npm run dev
+
   # =======
   #  Druid
   # =======
@@ -212,14 +244,14 @@ services:
   # Airflow
   # =======
   airflow-pg:
-    image: postgres:latest
+    image: postgres:14
     container_name: airflow-pg
     environment:
       POSTGRES_USER: airflow
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
     ports:
-      - "5433:5432"
+      - "6434:6432"
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "airflow" ]
       interval: 5s
@@ -289,15 +321,15 @@ services:
       KC_DB_USERNAME: admin
       KC_DB_PASSWORD: admin
       KC_DB_SCHEMA: public
-      # KC_PROXY: edge
+      KC_PROXY: edge
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
       # local env
       # KC_HOSTNAME_ADMIN_URL: http://localhost:8885
       # KC_HOSTNAME_URL: http://localhost:8885
       # dev server env
-      KC_HOSTNAME_ADMIN_URL: http://auth2.igad-health.eu
-      KC_HOSTNAME_URL: http://auth2.igad-health.eu
+      KC_HOSTNAME_ADMIN_URL: https://auth2.igad-health.eu
+      KC_HOSTNAME_URL: https://auth2.igad-health.eu
     restart: unless-stopped
     volumes:
       - ./staging/keycloak/realm/realm.json:/opt/keycloak/data/import/realm.json
