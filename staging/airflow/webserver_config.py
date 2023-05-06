@@ -19,12 +19,12 @@ log = logging.getLogger(__name__)
 
 PROVIDER_NAME = 'keycloak'
 CLIENT_ID = 'airflow'
-CLIENT_SECRET = 'K4bbL44d7FIEg7cMpBw2KwBzNohQZVKl'
+CLIENT_SECRET = 'JQhOECE95K8xlKYBtTkAUnzP554BLano'
 
-OIDC_ISSUER = 'http://auth2.igad-health.eu/realms/regional-pandemic-analytics'
-KEYCLOAK_BASE_URL = 'http://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect'
-KEYCLOAK_TOKEN_URL = 'http://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect/token'
-KEYCLOAK_AUTH_URL = 'http://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect/auth'
+OIDC_ISSUER = 'https://auth2.igad-health.eu/realms/regional-pandemic-analytics'
+KEYCLOAK_BASE_URL = 'https://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect'
+KEYCLOAK_TOKEN_URL = 'https://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect/token'
+KEYCLOAK_AUTH_URL = 'https://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect/auth'
 
 AUTH_TYPE = AUTH_OAUTH
 AUTH_USER_REGISTRATION = True
@@ -42,7 +42,7 @@ AUTH_ROLES_MAPPING = {
 OAUTH_PROVIDERS = [
   {
    'name': PROVIDER_NAME,
-   'icon': 'fa-circle-o',
+   'icon': 'fa-key',
    'token_key': 'access_token', 
    'remote_app': {
      'client_id': CLIENT_ID,
