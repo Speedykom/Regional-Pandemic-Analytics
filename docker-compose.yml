@@ -195,6 +195,7 @@ services:
   hop:
     build: ./staging/hop
     container_name: hop
+    user: "0:1000"
     ports:
       - "8882:8080"
     volumes:
