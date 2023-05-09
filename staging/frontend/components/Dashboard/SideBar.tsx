@@ -3,11 +3,7 @@ import Link from "next/link";
 import { HomeIcon, ChevronDoubleRightIcon, ChartBarSquareIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/router";
 
-interface Props {
-  showNav: any
-}
-
-const SideBar = forwardRef(({ showNav }: Props, {ref}: any) => {
+const SideBar = forwardRef(({ showNav }, ref) => {
   const router = useRouter();
 
   return (

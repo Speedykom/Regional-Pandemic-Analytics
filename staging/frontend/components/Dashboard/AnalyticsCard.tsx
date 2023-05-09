@@ -8,15 +8,6 @@ import {
     Grid,
   } from "@tremor/react";
   
-  interface AnalyticsCardType
-    {
-      title: string,
-      metric: string,
-      metricPrev: string,
-      delta: string,
-      deltaType: any,
-    }
-  
   const data = [
     {
       Month: "Jan 2023",
@@ -39,7 +30,7 @@ import {
     },
   ];
   
-  const categories: Array<AnalyticsCardType>  = [
+  const categories = [
     {
       title: "Covid19 - New Confirmed Cases",
       metric: "12,699",
