@@ -1,22 +1,11 @@
-FROM node:18-alpine as dependencies
-WORKDIR /frontend
-COPY package.json ./
-RUN yarn install --frozen-lockfile
+FROM node:18-alpine
 
-FROM node:18-alpine as builder
 WORKDIR /frontend
+
 COPY . .
-COPY --from=dependencies /frontend/node_modules ./node_modules
-RUN yarn build
 
-FROM node:18-alpine as runner
-WORKDIR /frontend
-ENV NODE_ENV production
-COPY --from=builder /frontend/next.config.js ./
-COPY --from=builder /frontend/public ./public
-COPY --from=builder /frontend/.next ./.next
-COPY --from=builder /frontend/node_modules ./node_modules
-COPY --from=builder /frontend/package.json ./package.json
+RUN npm install
 
 EXPOSE 3000
-CMD ["yarn", "start"]
+
+CMD ["npm", "run", "start"]
