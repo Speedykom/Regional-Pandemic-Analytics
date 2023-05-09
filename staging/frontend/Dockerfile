@@ -1,6 +1,6 @@
 FROM node:16-alpine as dependencies
 WORKDIR /frontend
-COPY package.json package-lock.json ./
+COPY package.json ./
 RUN yarn install --frozen-lockfile
 
 FROM node:16-alpine as builder
