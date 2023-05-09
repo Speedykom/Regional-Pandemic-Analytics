@@ -7,7 +7,7 @@ interface Props {
   showNav: any
 }
 
-const SideBar = forwardRef(({ showNav }: Props, ref) => {
+const SideBar = forwardRef(({ showNav }: Props, {ref}: any) => {
   const router = useRouter();
 
   return (
