@@ -4,7 +4,6 @@ interface IProp {
   title: string;
   count: string;
 }
-
 export default function MetricsCards(props: IProp) {
   return (
     <Card

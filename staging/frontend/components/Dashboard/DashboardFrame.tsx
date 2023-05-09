@@ -1,15 +1,9 @@
 import Layout from "@/components/Dashboard/Layout";
 import {useSession} from "next-auth/react";
 import {useRouter} from "next/router";
-import { ReactNode } from "react";
-
-interface Props {
-    children: ReactNode;
-    title: string;
-}
 
 
-export default function DashboardFrame(props: Props){
+export default function DashboardFrame(props){
     const sessionData = useSession()
     const router = useRouter()
     if(sessionData?.status == 'unauthenticated'){
