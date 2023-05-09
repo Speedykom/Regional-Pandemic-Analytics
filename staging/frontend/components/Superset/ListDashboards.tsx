@@ -62,7 +62,11 @@ const transactions = [
     },
 ];
 
-export default function ListDashboards(props) {
+interface Props {
+    
+}
+
+export default function ListDashboards({}: Props) {
     return (
         <Card>
             <Flex justifyContent="start" className="space-x-2">
