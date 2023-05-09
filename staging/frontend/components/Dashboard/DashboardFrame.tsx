@@ -3,6 +3,7 @@ import {useSession} from "next-auth/react";
 import {useRouter} from "next/router";
 
 interface Props {
+    children: 
     title: string
 }
 
