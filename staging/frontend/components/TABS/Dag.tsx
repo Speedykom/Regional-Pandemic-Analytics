@@ -1,0 +1,82 @@
+import { Card, Flex, SelectBox, SelectBoxItem } from '@tremor/react';
+import { Switch } from '@headlessui/react';
+import { useState, useEffect } from 'react';
+import useSWR from 'swr';
+import { axiosFetcher } from '@/libs/fetcher';
+import DagList from '@/components/Dag/DagList';
+
+export default function Dag() {
+  const url = `${process.env.NEXT_PUBLIC_AIRFLOW_URL}/api/v1/dags`;
+  const username: string = process.env.NEXT_PUBLIC_AIRFLOW_USERNAME!;
+  const password: string = process.env.NEXT_PUBLIC_AIRFLOW_PASSWORD!;
+  const [data, setData] = useState<any[]>([
+    {
+      id: 1,
+      is_active: true,
+      dag_id: 1,
+      description: "Sample covid dag"
+    },
+    {
+      id: 3,
+      is_active: true,
+      dag_id: 3,
+      description: "Sample ebola dag"
+    },
+    {
+      id: 4,
+      is_active: false,
+      dag_id: 4,
+      description: "Sample anthrax dag"
+    },
+    {
+      id: 2,
+      is_active: true,
+      dag_id: 2,
+      description: "Sample malaria dag"
+    },
+    {
+      id: 5,
+      is_active: false,
+      dag_id: 5,
+      description: "Sample typhoid dag"
+    },
+
+  ])
+  // const { data, error } = useSWR(
+  //   [url, username, password],
+  //   ([url, username, password]) => axiosFetcher(url, username, password)
+  // );
+
+  return (
+    <>
+      <Card className="mt-6">
+        <h1 className="text-xl mb-3">SpeedyKom Process Chain(s)</h1>
+        <Flex flexDirection='col'  >
+          {data ? (
+            data?.map((dag: object | any) => <DagList key={dag?.id} dag={dag} />)
+          ) : (
+            <div className="mt-3 flex justify-center items-center">
+              <h4 className="text-xl text-center">No Dag(s) to display.</h4>
+            </div>
+          )}
+        </Flex>
+      </Card>
+      <div className="mt-3 flex justify-center items-center">
+        <div>
+          <SelectBox defaultValue="1">
+            <SelectBoxItem value="1">1</SelectBoxItem>
+            <SelectBoxItem value="2">2</SelectBoxItem>
+            <SelectBoxItem value="3">3</SelectBoxItem>
+            <SelectBoxItem value="4">4</SelectBoxItem>
+            <SelectBoxItem value="5">5</SelectBoxItem>
+          </SelectBox>
+        </div>
+        <div className="pl-2">
+          <button className="px-3 py-1 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white">
+            Load More
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
