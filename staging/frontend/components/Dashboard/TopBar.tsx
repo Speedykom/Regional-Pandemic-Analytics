@@ -11,12 +11,12 @@ import { Menu, Transition, Popover } from "@headlessui/react";
 import Link from "next/link";
 import {signOut, useSession} from "next-auth/react";
 
-interface props {
+interface Props {
   showNav: any;
   setShowNav: any;
 }
 
-export default function TopBar({ showNav, setShowNav }) {
+export default function TopBar({ showNav, setShowNav }: Props) {
   const sessionData = useSession()
   return (
     <div
