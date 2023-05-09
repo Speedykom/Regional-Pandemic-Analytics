@@ -34,7 +34,7 @@ export default function Dashboard() {
             await embedDashboard({
                 id: '5e676cb1-7330-4eed-9e1a-d432de97da5e',
                 supersetDomain: 'http://localhost:8080',
-                mountPoint: document.getElementById('igad-covid-dashboard'),
+                mountPoint: document.getElementById('igad-covid-dashboard') || null,
                 fetchGuestToken: () => getGuestToken(),
                 dashboardUiConfig: {
                     hideTitle: true,
