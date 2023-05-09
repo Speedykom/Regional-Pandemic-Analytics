@@ -1,13 +1,13 @@
 FROM node:18-alpine as dependencies
 WORKDIR /frontend
 COPY package.json ./
-RUN npm install --frozen-lockfile
+RUN yarn install --frozen-lockfile
 
 FROM node:18-alpine as builder
 WORKDIR /frontend
 COPY . .
 COPY --from=dependencies /frontend/node_modules ./node_modules
-RUN npm run build
+RUN yarn build
 
 FROM node:18-alpine as runner
 WORKDIR /frontend
@@ -19,4 +19,4 @@ COPY --from=builder /frontend/node_modules ./node_modules
 COPY --from=builder /frontend/package.json ./package.json
 
 EXPOSE 3000
-CMD ["npm", "run", "start"]
+CMD ["yarn", "start"]
