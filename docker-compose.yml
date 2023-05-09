@@ -65,17 +65,15 @@ services:
   # ========
   # Frontend
   # ========
-  # frontend:
-  #   container_name: frontend
-  #   build:
-  #     context: frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3000:3000"
-  #   restart: always
-  #   volumes:
-  #     - ./frontend:/frontend
-  #   command: npm run dev
+  frontend:
+    container_name: frontend
+    build:
+      context: ./staging/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: always
+    command: npm run start
 
   # =======
   #  Druid
