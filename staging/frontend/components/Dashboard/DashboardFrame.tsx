@@ -4,8 +4,8 @@ import {useRouter} from "next/router";
 import { ReactNode } from "react";
 
 interface Props {
-    children: ReactNode,
-    title: string
+    children: ReactNode;
+    title: string;
 }
 
 
