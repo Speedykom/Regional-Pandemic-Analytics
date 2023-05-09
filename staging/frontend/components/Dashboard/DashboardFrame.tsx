@@ -2,8 +2,12 @@ import Layout from "@/components/Dashboard/Layout";
 import {useSession} from "next-auth/react";
 import {useRouter} from "next/router";
 
+interface Props {
+    title: string;
+}
 
-export default function DashboardFrame(props){
+
+export default function DashboardFrame(props: Props){
     const sessionData = useSession()
     const router = useRouter()
     if(sessionData?.status == 'unauthenticated'){
