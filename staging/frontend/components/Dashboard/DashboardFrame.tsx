@@ -1,9 +1,11 @@
 import Layout from "@/components/Dashboard/Layout";
 import {useSession} from "next-auth/react";
 import {useRouter} from "next/router";
+import { ReactNode } from "react";
 
 interface Props {
     title: string;
+    children: ReactNode
 }
 
 
