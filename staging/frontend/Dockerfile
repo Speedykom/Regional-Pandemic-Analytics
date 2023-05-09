@@ -1,7 +1,7 @@
 FROM node:16-alpine as dependencies
 WORKDIR /frontend
 COPY package.json ./
-RUN npm run install --frozen-lockfile
+RUN npm install --frozen-lockfile
 
 FROM node:16-alpine as builder
 WORKDIR /frontend
