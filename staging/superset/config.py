@@ -1571,4 +1571,4 @@ elif importlib.util.find_spec("superset_config") and not is_test():
         raise
 
 
-# End of configuration
+# End of superset configuration
