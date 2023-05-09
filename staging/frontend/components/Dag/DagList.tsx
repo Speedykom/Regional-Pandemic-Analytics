@@ -3,9 +3,14 @@ import { Switch } from '@headlessui/react';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { Flex } from '@tremor/react'
+import { Flex } from '@tremor/react';
+
 interface IDag {
   [key: string]: unknown;
+}
+
+interface Props {
+  dag: any;
 }
 
 export default function DagList({ dag }: any) {
