@@ -16,7 +16,7 @@ export default async function handler(
             resources: [
                 {
                     type: 'dashboard',
-                    id: '5e676cb1-7330-4eed-9e1a-d432de97da5e',
+                    id: '7026d58f-2b92-40f2-9160-ed3abe9fead4',
                 },
             ],
             rls: [],
