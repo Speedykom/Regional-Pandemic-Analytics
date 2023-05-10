@@ -15,7 +15,7 @@ import {
 } from "@tremor/react";
 
 interface Props {
-    
+    data: any
 }
 
 const colors: { [key: string]: Color } = {
