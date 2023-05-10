@@ -4,40 +4,41 @@ import { useState, useEffect } from 'react';
 import useSWR from 'swr';
 import { axiosFetcher } from '@/libs/fetcher';
 import DagList from '@/components/Dag/DagList';
+import { DagType } from './interface';
 
 export default function Dag() {
   const url = `${process.env.NEXT_PUBLIC_AIRFLOW_URL}/api/v1/dags`;
   const username: string = process.env.NEXT_PUBLIC_AIRFLOW_USERNAME!;
   const password: string = process.env.NEXT_PUBLIC_AIRFLOW_PASSWORD!;
-  const [data, setData] = useState<any[]>([
+  const [data, setData] = useState<DagType[]>([
     {
       id: 1,
-      is_active: true,
-      dag_id: 1,
+      isActive: true,
+      dagId: 1,
       description: "Sample covid dag"
     },
     {
       id: 3,
-      is_active: true,
-      dag_id: 3,
+      isActive: true,
+      dagId: 3,
       description: "Sample ebola dag"
     },
     {
       id: 4,
-      is_active: false,
-      dag_id: 4,
+      isActive: false,
+      dagId: 4,
       description: "Sample anthrax dag"
     },
     {
       id: 2,
-      is_active: true,
-      dag_id: 2,
+      isActive: true,
+      dagId: 2,
       description: "Sample malaria dag"
     },
     {
       id: 5,
-      is_active: false,
-      dag_id: 5,
+      isActive: false,
+      dagId: 5,
       description: "Sample typhoid dag"
     },
 

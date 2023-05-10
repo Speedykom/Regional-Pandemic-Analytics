@@ -1,9 +1,13 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, ReactNode } from "react";
 import SideBar from "./SideBar";
 import TopBar from "./TopBar";
 import { Transition } from "@headlessui/react";
 
-export default function Layout({ children }) {
+interface Props {
+  children: ReactNode;
+}
+
+export default function Layout({ children }: Props) {
   const [showNav, setShowNav] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -29,7 +33,7 @@ export default function Layout({ children }) {
 
   return (
     <>
-      <TopBar showNav={showNav} setShowNav={setShowNav} />
+      <TopBar state={showNav} onChange={(state) => setShowNav(state)} />
       <Transition
         as={Fragment}
         show={showNav}

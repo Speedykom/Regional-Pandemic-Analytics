@@ -11,18 +11,23 @@ import { Menu, Transition, Popover } from "@headlessui/react";
 import Link from "next/link";
 import {signOut, useSession} from "next-auth/react";
 
-export default function TopBar({ showNav, setShowNav }) {
+interface Props {
+  state: boolean;
+  onChange: (state: boolean) => void
+}
+
+export default function TopBar({ state, onChange }: Props) {
   const sessionData = useSession()
   return (
     <div
       className={`fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] ${
-        showNav ? "pl-56" : ""
+        state ? "pl-56" : ""
       }`}
     >
       <div className="pl-4 md:pl-16">
         <Bars3CenterLeftIcon
           className="h-8 w-8 text-gray-700 cursor-pointer"
-          onClick={() => setShowNav(!showNav)}
+          onClick={() => onChange(!state)}
         />
       </div>
       <div className="flex items-center pr-4 md:pr-16">
