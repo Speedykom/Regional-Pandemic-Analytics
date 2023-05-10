@@ -1,7 +1,5 @@
 import Head from 'next/head';
 import { Inter } from 'next/font/google';
-import { useState, useEffect } from 'react';
-import Layout from "@/components/Dashboard/Layout";
 import AnalyticsCard from "@/components/Dashboard/AnalyticsCard";
 import TimeSeries from "@/components/Dashboard/TimeSeries";
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
