@@ -6,14 +6,14 @@ import {authorizedRequest, post} from '@/libs/api/base'
 
 interface JWTData {
     token: JWT
-    user?: User
-    account?: Account
+    user?: User | null
+    account?: Account | null
 }
 
 interface SessionData {
     session: Session
     token: JWT
-    user?: User
+    user?: User | null
 }
 
 interface LogoutMessage {
