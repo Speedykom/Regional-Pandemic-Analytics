@@ -30,7 +30,7 @@ with DAG(dag_id, default_args=default_args, schedule_interval=scheduleinterval, 
         container_name=dag_id,
         api_version='auto',
         auto_remove=True,
-        host_tmp_dir='/home/covid',
+        host_tmp_dir='/files',
         mount_tmp_dir=False,
         user = '0:0',
         privileged = True,
@@ -46,13 +46,7 @@ with DAG(dag_id, default_args=default_args, schedule_interval=scheduleinterval, 
         docker_url='unix://var/run/docker.sock',
         network_mode='host',
         mounts = [ Mount(source=source, target='/files', type='bind') ],
-        force_pull = False,
-        command=[
-            "/bin/bash",
-            "-c",
-            "mkdir -p chmod 777 /home/covid"
-            "chown -R '0:0' /home/covid"
-        ]
+        force_pull = False
     )
     end_task = DummyOperator(
         task_id='end_task'
