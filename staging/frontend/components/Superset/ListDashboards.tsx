@@ -14,6 +14,10 @@ import {
     Color,
 } from "@tremor/react";
 
+interface Props {
+    
+}
+
 const colors: { [key: string]: Color } = {
     Draft: "gray",
     Published: "emerald",
@@ -62,7 +66,7 @@ const transactions = [
     },
 ];
 
-export default function ListDashboards(props) {
+export default function ListDashboards(props: Props) {
     return (
         <Card>
             <Flex justifyContent="start" className="space-x-2">

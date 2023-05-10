@@ -3,11 +3,15 @@ import Link from "next/link";
 import { HomeIcon, ChevronDoubleRightIcon, ChartBarSquareIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/router";
 
-const SideBar = forwardRef(({ showNav }, ref) => {
+interface Props {
+  showNav: boolean;
+}
+
+const SideBar = forwardRef(({}: Props) => {
   const router = useRouter();
 
   return (
-    <div ref={ref} className="fixed w-56 h-full bg-white shadow-lg">
+    <div className="fixed w-56 h-full bg-white shadow-lg">
       <div className="flex justify-center mt-6 mb-14">
         <picture>
           <img
