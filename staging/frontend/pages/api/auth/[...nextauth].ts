@@ -24,8 +24,8 @@ interface LogoutMessage {
 export default NextAuth({
     providers: [
         KeycloakProvider({
-            clientId: process.env.KEYCLOACK_CLIENT_ID,
-            clientSecret: process.env.KEYCLOACK_CLIENT_SECRET,
+            clientId: process.env.KEYCLOACK_CLIENT_ID || "",
+            clientSecret: process.env.KEYCLOACK_CLIENT_SECRET || "",
             authorization: process.env.KEYCLOACK_AUTHORIZATION,
             issuer: process.env.KEYCLOACK_ISSUER
         }),
