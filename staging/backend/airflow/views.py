@@ -25,7 +25,7 @@ class DagView(APIView):
         result = Dag.objects.all()  
         serializers = DagSerializer(result, many=True)  
         return Response({'status': 'success', "dags":serializers.data}, status=200)    
-        
+
     # create dag and dynamic schedule a dag for airflow
     def post(self, request):
         serializer = DagSerializer(data=request.data)
