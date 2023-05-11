@@ -12,4 +12,4 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ["gunicorn","--bind", ":5000", "core.wsgi:application"]
+CMD ["gunicorn","--bind", ":8000", "core.wsgi:application"]
