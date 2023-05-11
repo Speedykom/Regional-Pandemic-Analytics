@@ -36,6 +36,7 @@ x-airflow-common:
 volumes:
   superset_data: {}
   metadata_data: {}
+  backend_data: {}
   keyclock_data: {}
   minio_data: {}
   middle_var: {}
@@ -62,20 +63,46 @@ services:
     volumes:
         - minio_data:/data
   
-  # # ========
-  # # Frontend
-  # # ========
-  # frontend:
-  #   container_name: next-js-frontend
-  #   build:
-  #     context: frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3000:3000"
-  #   restart: always
-  #   volumes:
-  #     - ./frontend:/frontend
-  #   command: npm run dev
+  # ========
+  # Frontend
+  # ========
+  frontend:
+    container_name: frontend
+    build:
+      context: ./staging/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: always
+    command: npm run start
+
+  # ========
+  # Backend
+  # ========
+  pg:
+    image: postgres:14
+    container_name: pg
+    volumes:
+      - backend_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=igad
+      - POSTGRES_USER=igad
+      - POSTGRES_DB=igad
+
+  backend:
+    container_name: backend
+    build:
+      context: ./staging/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_NAME=igad
+      - DB_USER=igad
+      - DB_PASSWORD=igad@2020
+      - DB_HOST=pg
+      - DB_PORT=5432
+    restart: always
 
   # =======
   #  Druid

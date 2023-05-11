@@ -55,7 +55,6 @@ services:
       - ./frontend:/frontend
     command: npm run dev
 
-
   # Superset
   superset_cache:
     container_name: superset_cache
