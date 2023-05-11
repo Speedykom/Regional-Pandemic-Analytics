@@ -75,6 +75,18 @@ services:
     restart: always
     command: npm run start
 
+  # ========
+  # Frontend
+  # ========
+  backend:
+    container_name: backend
+    build:
+      context: ./staging/backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    restart: always
+
   # =======
   #  Druid
   # =======
