@@ -27,8 +27,6 @@ INSTALLED_APPS = [
     'api',
     'accounts',
     'health',
-    'gdags',
-    'airflow',
     'rest_framework.authtoken',
     'rest_framework',
     'corsheaders',
