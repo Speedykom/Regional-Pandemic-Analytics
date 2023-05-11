@@ -26,7 +26,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'accounts',
-    'health',
     'rest_framework.authtoken',
     'rest_framework',
     'corsheaders',
