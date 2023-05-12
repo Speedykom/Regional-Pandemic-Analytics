@@ -9,15 +9,15 @@ import {
 import { BellIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { Menu, Transition, Popover } from "@headlessui/react";
 import Link from "next/link";
-import {signOut, useSession} from "next-auth/react";
+import { useAuth } from "@/context/auth";
 
 interface Props {
   state: boolean;
-  onChange: (state: boolean) => void
+  onChange: (state: boolean) => void;
 }
 
 export default function TopBar({ state, onChange }: Props) {
-  const ref = useRef();
+  const { client } = useAuth();
 
   return (
     <div
@@ -63,7 +63,7 @@ export default function TopBar({ state, onChange }: Props) {
                         RePAN Notification
                       </p>
                       <p className="text-sm text-gray-500 truncate">
-                        Test Notification text 
+                        Test Notification text
                       </p>
                     </div>
                   </div>
@@ -160,9 +160,11 @@ export default function TopBar({ state, onChange }: Props) {
                   <Link
                     href="#"
                     className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
-                    onClick={() =>
-                        signOut({ redirect: true, callbackUrl: '/' })
-                    }
+                    onClick={() => {
+                      client.logout().then((success: any) => {
+                        console.log("--> log: logout success ", success);
+                      });
+                    }}
                   >
                     <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-2" />
                     Log Out
