@@ -2,11 +2,23 @@ version: "3.4"
 
 x-superset-common:
   &superset
-    image: apache/superset
-    environment:
-      - SUPERSET_SECRET_KEY=uFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E
-    volumes:
-      - ./staging/superset/config.py:/app/superset/config.py
+  image: apache/superset
+  environment:
+    - SUPERSET_SECRET_KEY=uFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E
+  volumes:
+    - ./staging/superset/config.py:/app/superset/config.py
+
+x-backend-common:
+  &backend
+  build:
+    context: ./staging/backend
+    dockerfile: Dockerfile
+  environment:
+    - DB_NAME=igad
+    - DB_USER=igad
+    - DB_PASSWORD=igad@2020
+    - DB_HOST=pg
+    - DB_PORT=5432
 
 x-airflow-common:
   &airflow
@@ -55,14 +67,14 @@ services:
     container_name: storage
     command: minio server /data --console-address ":9090"
     environment:
-        - MINIO_ROOT_USER=minio
-        - MINIO_ROOT_PASSWORD=minio@repan
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=minio@repan
     ports:
-        - "9001:9000"
-        - "8887:9090"
+      - "9001:9000"
+      - "8887:9090"
     volumes:
-        - minio_data:/data
-  
+      - minio_data:/data
+
   # ========
   # Frontend
   # ========
@@ -90,19 +102,19 @@ services:
       - POSTGRES_DB=igad
 
   backend:
+    <<: *backend
     container_name: backend
-    build:
-      context: ./staging/backend
-      dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    environment:
-      - DB_NAME=igad
-      - DB_USER=igad
-      - DB_PASSWORD=igad@2020
-      - DB_HOST=pg
-      - DB_PORT=5432
     restart: always
+  
+  backend-init:
+    <<: *backend
+    container_name: backend-init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
 
   # =======
   #  Druid
@@ -260,16 +272,16 @@ services:
     volumes:
       - ./staging/hop/pipelines:/files
       - druid_shared:/home
-    #environment:
+      #environment:
       #- HOP_PROJECT_DIRECTORY=/files
       #- HOP_PROJECT_NAME=default
       #- HOP_WEB_THEME=dark
       #- HOP_ENVIRONMENT_NAME=prod
       #- HOP_ENVIRONMENT_CONFIG_FILE_NAME_PATHS=/files/prod-config.json
 
-  # =======
-  # Airflow
-  # =======
+      # =======
+      # Airflow
+      # =======
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg

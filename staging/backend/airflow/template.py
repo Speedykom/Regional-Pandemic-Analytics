@@ -20,6 +20,86 @@ default_args = {
     'retry_delay': timedelta(minutes=5)
 }
 
+injection = {
+  "type": "index_parallel",
+  "spec": {
+    "ioConfig": {
+      "type": "index_parallel",
+      "inputSource": {
+        "type": "local",
+        "uris": [
+          packet_path
+        ]
+      },
+      "inputFormat": {
+        "type": "json"
+      }
+    },
+    "tuningConfig": {
+      "type": "index_parallel",
+      "partitionsSpec": {
+        "type": "dynamic"
+      }
+    },
+    "dataSchema": {
+      "dataSource": data_source_name,
+      "timestampSpec": {
+        "column": "referenceDate",
+        "format": "auto"
+      },
+      "dimensionsSpec": {
+        "dimensions": [
+          "regionId",
+          "label",
+          "lastUpdatedDate",
+          {
+            "type": "long",
+            "name": "totalDeaths"
+          },
+          {
+            "type": "long",
+            "name": "totalConfirmedCases"
+          },
+          "totalRecoveredCases",
+          {
+            "type": "long",
+            "name": "totalTestedCases"
+          },
+          {
+            "type": "long",
+            "name": "numPositiveTests"
+          },
+          {
+            "type": "long",
+            "name": "numDeaths"
+          },
+          {
+            "type": "long",
+            "name": "numRecoveredCases"
+          },
+          {
+            "type": "long",
+            "name": "diffNumPositiveTests"
+          },
+          {
+            "type": "long",
+            "name": "diffNumDeaths"
+          },
+          "avgWeeklyDeaths",
+          "avgWeeklyConfirmedCases",
+          "avgWeeklyRecoveredCases",
+          "dataSource"
+        ]
+      },
+      "granularitySpec": {
+        "queryGranularity": "none",
+        "rollup": false,
+        "segmentGranularity": "day"
+      }
+    }
+  }
+}
+
 with DAG(dag_id, default_args=default_args, schedule_interval=scheduleinterval, catchup=False, is_paused_upon_creation=False) as dag:
     start_task = DummyOperator(
         task_id='start_task'
