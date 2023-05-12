@@ -1,35 +1,17 @@
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
-import Login from '@/components/Login';
-import Head from 'next/head';
-const Homepage = () => {
-  const data = useSession();
-  const router = useRouter();
+import { useKeycloak } from "@react-keycloak/ssr";
+import Head from "next/head";
 
-  const head = (
+const Homepage = () => {
+  const { keycloak } = useKeycloak()
+
+  console.log(keycloak);
+  
+  return (
+    <>
     <Head>
       <title>Welcome | IGAD Health Application</title>
       <meta name="description" content="IGAD - Health Platform" />
     </Head>
-  );
-
-  let ret = <></>;
-
-  switch (data.status) {
-    case 'authenticated':
-      router.push('/dashboard');
-      return <></>;
-    case 'unauthenticated':
-      ret = <Login />;
-      break;
-    default:
-      ret = <></>;
-      break;
-  }
-  return (
-    <>
-      {head}
-      {ret}
     </>
   );
 };
