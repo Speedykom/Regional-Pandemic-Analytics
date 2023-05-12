@@ -12,4 +12,8 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD ["gunicorn","--bind", ":8000", "core.wsgi:application"]
+RUN python manage.py migrate --noinput
+
+RUN python manage.py initadmin
+
+CMD python manage.py runserver
