@@ -43,11 +43,9 @@ export default function Layout({ children }: Props) {
         leave="transform duration-[400ms] transition ease-in-out"
         leaveFrom="translate-x-0"
         leaveTo="-translate-x-full"
-      >
-        {(ref) => (<SideBar showNav={showNav} ref={ref} />
-      )}
-        
-      </Transition> */}
+      > */}
+        <SideBar showNav={showNav} />
+      {/* </Transition> */}
       <main
         className={`pt-16 transition-all duration-[400ms] ${
           showNav && !isMobile ? "pl-56" : ""
