@@ -34,7 +34,7 @@ export default function Layout({ children }: Props) {
   return (
     <>
       <TopBar state={showNav} onChange={(state) => setShowNav(state)} />
-      <Transition
+      {/* <Transition
         as={Fragment}
         show={showNav}
         enter="transform transition duration-[400ms]"
@@ -44,8 +44,10 @@ export default function Layout({ children }: Props) {
         leaveFrom="translate-x-0"
         leaveTo="-translate-x-full"
       >
-        <SideBar showNav={showNav} />
-      </Transition>
+        {(ref) => (<SideBar showNav={showNav} ref={ref} />
+      )}
+        
+      </Transition> */}
       <main
         className={`pt-16 transition-all duration-[400ms] ${
           showNav && !isMobile ? "pl-56" : ""
