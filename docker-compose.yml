@@ -89,15 +89,13 @@ services:
       - POSTGRES_USER=igad
       - POSTGRES_DB=igad
     ports:
-      - "5435:5435"
+      - "5432:5432"
 
   backend:
     container_name: backend
     build:
       context: ./staging/backend
       dockerfile: Dockerfile
-    depends_on:
-      - pg
     ports:
       - "8000:8000"
     restart: always
