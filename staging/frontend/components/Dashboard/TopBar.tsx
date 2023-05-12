@@ -18,6 +18,12 @@ interface Props {
 }
 
 export default function TopBar({ state, onChange }: Props) {
+  const client = Keycloak({
+    clientId: "frontend",
+    realm: "regional-pandemic-analytics",
+    url: "https://auth2.igad-health.eu/",
+  });
+
   return (
     <div
       className={`fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] ${
@@ -160,13 +166,7 @@ export default function TopBar({ state, onChange }: Props) {
                     href="#"
                     className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
                     onClick={() => {
-                      const client = Keycloak({
-                        clientId: "frontend",
-                        realm: "regional-pandemic-analytics",
-                        url: "https://auth2.igad-health.eu/",
-                      });
-
-                      client.logout().then((success: any) => {
+                      client.logout({ redirectUri : "https://home2.igad-health.eu/" }).then((success: any) => {
                         console.log("--> log: logout success ", success);
                       });
                     }}
