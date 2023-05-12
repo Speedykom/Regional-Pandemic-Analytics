@@ -9,6 +9,7 @@ import {
 import { BellIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { Menu, Transition, Popover } from "@headlessui/react";
 import Link from "next/link";
+import {signOut, useSession} from "next-auth/react";
 
 interface Props {
   state: boolean;
@@ -159,9 +160,9 @@ export default function TopBar({ state, onChange }: Props) {
                   <Link
                     href="#"
                     className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
-                    // onClick={() =>
-                    //     signOut({ redirect: true, callbackUrl: '/' })
-                    // }
+                    onClick={() =>
+                        signOut({ redirect: true, callbackUrl: '/' })
+                    }
                   >
                     <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-2" />
                     Log Out
