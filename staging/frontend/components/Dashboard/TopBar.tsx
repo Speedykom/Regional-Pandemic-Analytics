@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useRef } from "react";
 import {
   Bars3CenterLeftIcon,
   UserIcon,
@@ -17,7 +17,8 @@ interface Props {
 }
 
 export default function TopBar({ state, onChange }: Props) {
-  const sessionData = useSession()
+  const ref = useRef();
+
   return (
     <div
       className={`fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] ${
@@ -121,7 +122,7 @@ export default function TopBar({ state, onChange }: Props) {
                 />
               </picture>
               <span className="hidden md:block font-medium text-gray-700">
-                Welcome, {sessionData?.data?.user?.name}
+                {/* Welcome, {sessionData?.data?.user?.name} */}
               </span>
               <ChevronDownIcon className="ml-2 h-4 w-4 text-gray-700" />
             </Menu.Button>
