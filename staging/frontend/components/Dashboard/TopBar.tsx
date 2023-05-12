@@ -10,6 +10,7 @@ import { BellIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { Menu, Transition, Popover } from "@headlessui/react";
 import Link from "next/link";
 import { useAuth } from "@/context/auth";
+const Keycloak = typeof window !== "undefined" ? require("keycloak-js") : null;
 
 interface Props {
   state: boolean;
@@ -17,8 +18,6 @@ interface Props {
 }
 
 export default function TopBar({ state, onChange }: Props) {
-  const { client } = useAuth();
-
   return (
     <div
       className={`fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] ${
@@ -161,6 +160,12 @@ export default function TopBar({ state, onChange }: Props) {
                     href="#"
                     className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
                     onClick={() => {
+                      const client = Keycloak({
+                        clientId: "frontend",
+                        realm: "regional-pandemic-analytics",
+                        url: "https://auth2.igad-health.eu/",
+                      });
+
                       client.logout().then((success: any) => {
                         console.log("--> log: logout success ", success);
                       });
