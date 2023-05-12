@@ -1,10 +1,7 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
-import {useEffect} from "react";
-import {embedDashboard} from "@superset-ui/embedded-sdk";
 import ListDashboards from "@/components/Superset/ListDashboards";
 import useSWR from "swr";
 import {axiosFetcher} from "@/libs/fetcher";
-import {Console} from "inspector";
 
 
 export default function SupersetDashboard(){
