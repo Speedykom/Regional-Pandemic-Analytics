@@ -19,16 +19,16 @@ export const AuthProvider = ({ children }: Props) => {
   const [isLogin, setLogin] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
+  const client = Keycloak({
+    clientId: "frontend",
+    realm: "regional-pandemic-analytics",
+    url: "https://auth2.igad-health.eu/",
+  });
+
   useEffect(() => {
     if (isRun.current) return;
 
     isRun.current = true;
-
-    const client = Keycloak({
-      clientId: "frontend",
-      realm: "regional-pandemic-analytics",
-      url: "https://auth2.igad-health.eu/",
-    });
 
     client
       .init({ onLoad: "login-required" })
@@ -43,6 +43,7 @@ export const AuthProvider = ({ children }: Props) => {
       value={{
         isLogin,
         isLoading,
+        client,
       }}
     >
       {children}
