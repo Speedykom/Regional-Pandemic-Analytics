@@ -88,8 +88,6 @@ services:
       - POSTGRES_PASSWORD=igad
       - POSTGRES_USER=igad
       - POSTGRES_DB=igad
-    ports:
-      - "7432:5432"
 
   backend:
     container_name: backend
