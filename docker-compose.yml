@@ -88,6 +88,8 @@ services:
       - POSTGRES_PASSWORD=igad
       - POSTGRES_USER=igad
       - POSTGRES_DB=igad
+    ports:
+      - "5435:5435"
 
   backend:
     container_name: backend
@@ -96,12 +98,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    environment:
-      - DB_NAME=igad
-      - DB_USER=igad
-      - DB_PASSWORD=igad@2020
-      - DB_HOST=pg
-      - DB_PORT=5432
     restart: always
 
   # =======
