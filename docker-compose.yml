@@ -96,6 +96,8 @@ services:
     build:
       context: ./staging/backend
       dockerfile: Dockerfile
+    depends_on:
+      - pg
     ports:
       - "8000:8000"
     restart: always
