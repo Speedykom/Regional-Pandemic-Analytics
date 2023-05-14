@@ -19,8 +19,6 @@ export const AuthProvider = ({ children }: Props) => {
   const [isLogin, setLogin] = useState(false);
   const [isLoading, setLoading] = useState(true);
 
-  const [keycloak, setClient] = useState<any>();
-
   useEffect(() => {
     if (isRun.current) return;
 
