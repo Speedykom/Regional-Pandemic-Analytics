@@ -63,20 +63,20 @@ services:
     volumes:
         - minio_data:/data
   
-  # ========
-  # Frontend
-  # ========
-  frontend:
-    container_name: frontend
-    build:
-      context: ./staging/frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    restart: always
-    command: npm run start
+  # # ========
+  # # Frontend
+  # # ========
+  # frontend:
+  #   container_name: frontend
+  #   build:
+  #     context: ./staging/frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #   restart: always
+  #   command: npm run start
 
-  # ========
+  # # ========
   # Backend
   # ========
   pg:

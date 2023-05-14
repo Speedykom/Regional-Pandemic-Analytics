@@ -3,7 +3,9 @@ from airflow import DAG
 from airflow.operators.docker_operator import DockerOperator
 from airflow.operators.bash import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.python_operator import PythonOperator
 from docker.types import Mount
+import requests
 
 dev = "/Volumes/Disk/Work/speedykom/stack-101"
 
@@ -20,85 +22,84 @@ default_args = {
     'retry_delay': timedelta(minutes=5)
 }
 
-injection = {
-  "type": "index_parallel",
-  "spec": {
-    "ioConfig": {
+
+def ingest():
+    url = 'http://89.58.44.88:8081/druid/indexer/v1/task'
+    payload = {
       "type": "index_parallel",
-      "inputSource": {
-        "type": "local",
-        "uris": [
-          packet_path
-        ]
-      },
-      "inputFormat": {
-        "type": "json"
-      }
-    },
-    "tuningConfig": {
-      "type": "index_parallel",
-      "partitionsSpec": {
-        "type": "dynamic"
-      }
-    },
-    "dataSchema": {
-      "dataSource": data_source_name,
-      "timestampSpec": {
-        "column": "referenceDate",
-        "format": "auto"
-      },
-      "dimensionsSpec": {
-        "dimensions": [
-          "regionId",
-          "label",
-          "lastUpdatedDate",
-          {
-            "type": "long",
-            "name": "totalDeaths"
+      "spec": {
+        "ioConfig": {
+          "type": "index_parallel",
+          "inputSource": {
+            "type": "local",
+            "baseDir": parquet_path,
+            "filter": "*.parquet"
           },
-          {
-            "type": "long",
-            "name": "totalConfirmedCases"
+          "inputFormat": {
+            "type": "parquet"
+          }
+        },
+        "tuningConfig": {
+          "type": "index_parallel",
+          "partitionsSpec": {
+            "type": "dynamic"
+          }
+        },
+        "dataSchema": {
+          "dataSource": data_source_name,
+          "timestampSpec": {
+            "column": "Date",
+            "format": "millis"
           },
-          "totalRecoveredCases",
-          {
-            "type": "long",
-            "name": "totalTestedCases"
+          "dimensionsSpec": {
+            "dimensions": [
+              "FullyVaccinated",
+              {
+                "type": "long",
+                "name": "NewDeaths"
+              },
+              "STATE",
+              "Latitude",
+              {
+                "type": "long",
+                "name": "NewRecoveries"
+              },
+              {
+                "type": "long",
+                "name": "TotalCases"
+              },
+              "Code",
+              "Longitude",
+              "TotalDoses",
+              {
+                "type": "long",
+                "name": "TotalRecoveries"
+              },
+              "Population",
+              {
+                "type": "long",
+                "name": "NewCases"
+              },
+              {
+                "type": "long",
+                "name": "TotalDeaths"
+              },
+              {
+                "type": "long",
+                "name": "DailyTests"
+              }
+            ]
           },
-          {
-            "type": "long",
-            "name": "numPositiveTests"
-          },
-          {
-            "type": "long",
-            "name": "numDeaths"
-          },
-          {
-            "type": "long",
-            "name": "numRecoveredCases"
-          },
-          {
-            "type": "long",
-            "name": "diffNumPositiveTests"
-          },
-          {
-            "type": "long",
-            "name": "diffNumDeaths"
-          },
-          "avgWeeklyDeaths",
-          "avgWeeklyConfirmedCases",
-          "avgWeeklyRecoveredCases",
-          "dataSource"
-        ]
-      },
-      "granularitySpec": {
-        "queryGranularity": "none",
-        "rollup": false,
-        "segmentGranularity": "day"
+          "granularitySpec": {
+            "queryGranularity": "none",
+            "rollup": False,
+            "segmentGranularity": "day"
+          }
+        }
       }
     }
-  }
-}
+    client = requests.post(url, json = payload)
+    print(client.text, "Done!")
 
 with DAG(dag_id, default_args=default_args, schedule_interval=scheduleinterval, catchup=False, is_paused_upon_creation=False) as dag:
     start_task = DummyOperator(
@@ -128,7 +129,11 @@ with DAG(dag_id, default_args=default_args, schedule_interval=scheduleinterval, 
         mounts = [ Mount(source=source, target='/files', type='bind') ],
         force_pull = False
     )
+    druid_dag = PythonOperator(
+        task_id='druid_dag',
+        python_callable=ingest
+    )
     end_task = DummyOperator(
         task_id='end_task'
     )
-    start_task >> hop >> end_task
+    start_task >> hop >> druid_dag >> end_task
