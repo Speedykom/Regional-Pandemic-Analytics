@@ -1,12 +1,11 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
 import {useEffect, useState} from "react";
-import {embedDashboard} from "@superset-ui/embedded-sdk";
-import ListDashboards from "@/components/Superset/ListDashboards";
 import {getData} from "@/utils";
-import axios from 'axios'
+import axios from "axios";
+import ListCharts from "@/components/Superset/ListCharts";
 
-export default function SupersetDashboard(){
 
+export default function Charts() {
     const [data, setData] = useState({})
 
     const [token, setToken] = useState("")
@@ -21,11 +20,11 @@ export default function SupersetDashboard(){
         }
     };
 
-    const fetchDashboards = async () => {
+    const fetchCharts = async () => {
         try {
-            const url = `${process.env.NEXT_PUBLIC_SUPERSET_URL}/api/v1/dashboard/`;
+            const url = `${process.env.NEXT_PUBLIC_SUPERSET_URL}/api/v1/chart/`;
             const response = await axios.get(url, {headers:{
-                'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`
                 }});
             setData(response?.data);
         } catch (error) {
@@ -38,14 +37,11 @@ export default function SupersetDashboard(){
     }, [])
 
     useEffect(() => {
-        fetchDashboards();
+        fetchCharts();
     }, [token])
-
     return(
-        <DashboardFrame title="List(s) of Dashboards">
-            <div className="mb-4">
-                <ListDashboards data={data}/>
-            </div>
+        <DashboardFrame title="List of Chart(s)">
+            <ListCharts data={data}/>
         </DashboardFrame>
     )
 }

@@ -24,7 +24,7 @@ const colors: { [key: string]: Color } = {
 };
 
 
-export default function ListDashboards({data}) {
+export default function ListCharts({data}) {
     const router = useRouter()
 
     const [token, setToken] = useState("")
@@ -42,21 +42,11 @@ export default function ListDashboards({data}) {
     useEffect(() => {
         fetchToken()
     }, [])
-    const btnViewClick = async (e: React.MouseEvent<HTMLButtonElement>, id:string, dashboardTitle:string) => {
-        e.preventDefault()
-        try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_SUPERSET_URL}/api/v1/dashboard/${id}/embedded`, {headers:{'Authorization': `Bearer ${token}`}});
-            const dashboardUUID = response?.data?.result?.uuid;
-            router.push({pathname:`/dashboard/superset-dashboards/${dashboardUUID}/`,query:{dashboardTitle}});
-        } catch (error) {
-            console.error('Error fetching item:', error);
-        }
-    };
 
     return (
         <Card>
             <Flex justifyContent="start" className="space-x-2">
-                <Title>Total Dashboard(s)</Title>
+                <Title>Total Charts(s)</Title>
                 <Badge color="gray">{data?.count}</Badge>
             </Flex>
             <Text className="mt-2">Created on Apache Superset</Text>
@@ -64,31 +54,28 @@ export default function ListDashboards({data}) {
             <Table className="mt-6">
                 <TableHead>
                     <TableRow>
-                        <TableHeaderCell>Title</TableHeaderCell>
+                        <TableHeaderCell>Chart</TableHeaderCell>
+                        <TableHeaderCell>Visualization Type</TableHeaderCell>
+                        <TableHeaderCell>Dataset</TableHeaderCell>
                         <TableHeaderCell>Modified By</TableHeaderCell>
-                        <TableHeaderCell>Status</TableHeaderCell>
-                        <TableHeaderCell>Modified</TableHeaderCell>
+                        <TableHeaderCell>Last Modified</TableHeaderCell>
                         <TableHeaderCell>Created By</TableHeaderCell>
-                        <TableHeaderCell>Link</TableHeaderCell>
                     </TableRow>
                 </TableHead>
 
                 <TableBody>
                     {data?.result?.map((item, index) => (
                         <TableRow key={index}>
-                            <TableCell>{item?.dashboard_title}</TableCell>
+                            <TableCell>{item?.slice_name}</TableCell>
+                            <TableCell>{item?.viz_type}</TableCell>
+                            <TableCell>{item?.datasource_name_text}</TableCell>
                             <TableCell>{item?.changed_by_name}</TableCell>
-                            <TableCell>
-                                <Badge color={colors[item.status]} size="xs">
-                                    {item?.status}
-                                </Badge>
-                            </TableCell>
                             <TableCell>{item?.changed_on_delta_humanized}</TableCell>
-                            <TableCell>{item?.created_by?.first_name} {item?.created_by?.last_name}</TableCell>
+                            <TableCell>{item?.created_by_name}</TableCell>
                             <TableCell>
-                                {item.status == "published" && (<Button size="xs" variant="secondary" color="gray" onClick={(e) => btnViewClick(e, `${item?.id}`, `${item?.dashboard_title}`)}>
+                                <Button size="xs" variant="secondary" color="gray">
                                     View
-                                </Button>)}
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}
