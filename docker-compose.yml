@@ -98,7 +98,7 @@ services:
     depends_on:
       - backend_db
     env_file:
-      - ./staging/backend/environment
+      - staging/backend/environment
     ports:
       - "8000:8000"
     volumes:
