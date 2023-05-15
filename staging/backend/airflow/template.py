@@ -7,8 +7,6 @@ from airflow.operators.python_operator import PythonOperator
 from docker.types import Mount
 import requests
 
-#/Volumes/Disk/Work/speedykom/Regional-Pandemic-Analytics
-#/home/igad/Regional-Pandemic-Analytics/staging
 dev = "/home/igad/Regional-Pandemic-Analytics/staging"
 
 source = "{}/hop/pipelines".format(dev)
@@ -101,7 +99,7 @@ def ingest():
       }
     }
     client = requests.post(url, json = payload)
-    print(client.text, "Done!")
+    print("Done!")
 
 with DAG(dag_id, default_args=default_args, schedule_interval=scheduleinterval, catchup=False, is_paused_upon_creation=False) as dag:
     start_task = DummyOperator(
