@@ -1,0 +1,6 @@
+SQL_ENGINE=django.db.backends.postgresql
+SQL_DATABASE=igad
+SQL_USER=igad
+SQL_PASSWORD=igad
+SQL_HOST=backend_db
+SQL_PORT=5432
