@@ -40,7 +40,7 @@ export default function Charts() {
     }, [token])
     return(
         <DashboardFrame title="List of Chart(s)">
-            <ListCharts data={data}/>
+            {data && <ListCharts data={data} />}
         </DashboardFrame>
     )
 }
