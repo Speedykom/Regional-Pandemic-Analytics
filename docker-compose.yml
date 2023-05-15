@@ -101,6 +101,8 @@ services:
       - ./staging/backend/environment
     ports:
       - "8000:8000"
+    volumes:
+      - ./staging/airflow/dags:/airflow/dags
 
   # =======
   #  Druid
