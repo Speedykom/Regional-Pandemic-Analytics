@@ -10,10 +10,12 @@ COPY requirements.txt .
 
 RUN pip install -r requirements.txt
 
+# copy entrypoint.sh
+COPY ./entrypoint.sh .
+RUN sed -i 's/\r$//g' /backend/entrypoint.sh
+RUN chmod +x /backend/entrypoint.sh
+
 COPY . .
 
-RUN python manage.py migrate --noinput
-
-RUN python manage.py initadmin
-
-CMD python manage.py runserver
+# run entrypoint.sh
+ENTRYPOINT ["/backend/entrypoint.sh"]
