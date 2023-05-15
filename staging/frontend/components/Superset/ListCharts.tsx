@@ -1,86 +1,88 @@
 import {
-    Card,
-    Title,
-    Text,
-    Flex,
-    Table,
-    TableRow,
-    TableCell,
-    TableHead,
-    TableHeaderCell,
-    TableBody,
-    Badge,
-    Button,
-    Color,
+  Card,
+  Title,
+  Text,
+  Flex,
+  Table,
+  TableRow,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableBody,
+  Badge,
+  Button,
+  Color,
 } from "@tremor/react";
-import React, {useEffect, useState} from "react";
-import axios from 'axios'
-import {useRouter} from "next/router";
-import {getData} from "@/utils";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { getData } from "@/utils";
 
 const colors: { [key: string]: Color } = {
-    draft: "gray",
-    published: "emerald",
+  draft: "gray",
+  published: "emerald",
 };
 
+interface Props {
+  data: any;
+}
 
-export default function ListCharts({data}) {
-    const router = useRouter()
+export default function ListCharts({ data }: Props) {
+  const router = useRouter();
 
-    const [token, setToken] = useState("")
+  const [token, setToken] = useState("");
 
-    const fetchToken = async () => {
-        try {
-            const url = '/api/get-access-token/';
-            const response = await getData(url);
-            setToken(response?.accessToken);
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    };
+  const fetchToken = async () => {
+    try {
+      const url = "/api/get-access-token/";
+      const response = await getData(url);
+      setToken(response?.accessToken);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
-    useEffect(() => {
-        fetchToken()
-    }, [])
+  useEffect(() => {
+    fetchToken();
+  }, []);
 
-    return (
-        <Card>
-            <Flex justifyContent="start" className="space-x-2">
-                <Title>Total Charts(s)</Title>
-                <Badge color="gray">{data?.count}</Badge>
-            </Flex>
-            <Text className="mt-2">Created on Apache Superset</Text>
+  return (
+    <Card>
+      <Flex justifyContent="start" className="space-x-2">
+        <Title>Total Charts(s)</Title>
+        <Badge color="gray">{data?.count}</Badge>
+      </Flex>
+      <Text className="mt-2">Created on Apache Superset</Text>
 
-            <Table className="mt-6">
-                <TableHead>
-                    <TableRow>
-                        <TableHeaderCell>Chart</TableHeaderCell>
-                        <TableHeaderCell>Visualization Type</TableHeaderCell>
-                        <TableHeaderCell>Dataset</TableHeaderCell>
-                        <TableHeaderCell>Modified By</TableHeaderCell>
-                        <TableHeaderCell>Last Modified</TableHeaderCell>
-                        <TableHeaderCell>Created By</TableHeaderCell>
-                    </TableRow>
-                </TableHead>
+      <Table className="mt-6">
+        <TableHead>
+          <TableRow>
+            <TableHeaderCell>Chart</TableHeaderCell>
+            <TableHeaderCell>Visualization Type</TableHeaderCell>
+            <TableHeaderCell>Dataset</TableHeaderCell>
+            <TableHeaderCell>Modified By</TableHeaderCell>
+            <TableHeaderCell>Last Modified</TableHeaderCell>
+            <TableHeaderCell>Created By</TableHeaderCell>
+          </TableRow>
+        </TableHead>
 
-                <TableBody>
-                    {data?.result?.map((item, index) => (
-                        <TableRow key={index}>
-                            <TableCell>{item?.slice_name}</TableCell>
-                            <TableCell>{item?.viz_type}</TableCell>
-                            <TableCell>{item?.datasource_name_text}</TableCell>
-                            <TableCell>{item?.changed_by_name}</TableCell>
-                            <TableCell>{item?.changed_on_delta_humanized}</TableCell>
-                            <TableCell>{item?.created_by_name}</TableCell>
-                            <TableCell>
-                                <Button size="xs" variant="secondary" color="gray">
-                                    View
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </Card>
-    );
+        <TableBody>
+          {data?.result?.map((item: any, index: number) => (
+            <TableRow key={index}>
+              <TableCell>{item?.slice_name}</TableCell>
+              <TableCell>{item?.viz_type}</TableCell>
+              <TableCell>{item?.datasource_name_text}</TableCell>
+              <TableCell>{item?.changed_by_name}</TableCell>
+              <TableCell>{item?.changed_on_delta_humanized}</TableCell>
+              <TableCell>{item?.created_by_name}</TableCell>
+              <TableCell>
+                <Button size="xs" variant="secondary" color="gray">
+                  View
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </Card>
+  );
 }
