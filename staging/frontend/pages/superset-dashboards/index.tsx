@@ -24,23 +24,22 @@ export default function SupersetDashboard(){
         }
     };
 
-    const fetchDashboards = async () => {
-        try {
-            const url = `${process.env.NEXT_PUBLIC_SUPERSET_URL}/api/v1/dashboard/`;
-            const response = await axios.get(url, {headers:{
-                'Authorization': `Bearer ${token}`
-                }});
-            setData(response?.data);
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
-
     useEffect(() => {
         fetchToken();
     }, [])
 
     useEffect(() => {
+        const fetchDashboards = async () => {
+            try {
+                const url = `${process.env.NEXT_PUBLIC_SUPERSET_URL}/api/v1/dashboard/`;
+                const response = await axios.get(url, {headers:{
+                        'Authorization': `Bearer ${token}`
+                    }});
+                setData(response?.data);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
         fetchDashboards();
     }, [token])
 

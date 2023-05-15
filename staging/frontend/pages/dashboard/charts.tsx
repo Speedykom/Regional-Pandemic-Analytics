@@ -19,23 +19,22 @@ export default function Charts() {
         }
     };
 
-    const fetchCharts = async () => {
-        try {
-            const url = `${process.env.NEXT_PUBLIC_SUPERSET_URL}/api/v1/chart/`;
-            const response = await axios.get(url, {headers:{
-                    'Authorization': `Bearer ${token}`
-                }});
-            setData(response?.data);
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    }
-
     useEffect(() => {
         fetchToken();
     }, [])
 
     useEffect(() => {
+        const fetchCharts = async () => {
+            try {
+                const url = `${process.env.NEXT_PUBLIC_SUPERSET_URL}/api/v1/chart/`;
+                const response = await axios.get(url, {headers:{
+                        'Authorization': `Bearer ${token}`
+                    }});
+                setData(response?.data);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
         fetchCharts();
     }, [token])
     return(
