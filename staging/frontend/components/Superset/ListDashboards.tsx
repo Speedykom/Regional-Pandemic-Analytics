@@ -30,7 +30,7 @@ interface IDashboardItem {
     };
 }
 
-interface IListDashboardsProps {
+export interface IListDashboardsProps {
     data: {
         count: number;
         result: IDashboardItem[];
