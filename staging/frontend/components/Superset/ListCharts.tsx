@@ -17,12 +17,12 @@ import React, {useEffect, useState} from "react";
 import {useRouter} from "next/router";
 import {getData} from "@/utils";
 
-type TChartData = {
-    count: string;
+export type TChartData = {
+    count: number;
     result: TItem[]; // Updated type to TItem[]
 };
 
-type TItem = {
+export type TItem = {
     [key: string]: string;
     slice_name: string;
     viz_type: string;
