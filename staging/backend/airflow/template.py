@@ -7,7 +7,9 @@ from airflow.operators.python_operator import PythonOperator
 from docker.types import Mount
 import requests
 
-dev = "/Volumes/Disk/Work/speedykom/stack-101"
+#/Volumes/Disk/Work/speedykom/Regional-Pandemic-Analytics
+#/home/igad/Regional-Pandemic-Analytics
+dev = "/home/igad/Regional-Pandemic-Analytics"
 
 source = "{}/hop/pipeline".format(dev)
 
