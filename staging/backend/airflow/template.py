@@ -7,9 +7,9 @@ from airflow.operators.python_operator import PythonOperator
 from docker.types import Mount
 import requests
 
-dev = "/Volumes/Disk/Work/speedykom/stack-101"
+dev = "/home/igad/Regional-Pandemic-Analytics/staging"
 
-source = "{}/hop/pipeline".format(dev)
+source = "{}/hop/pipelines".format(dev)
 
 default_args = {
     'owner': 'airflow',
@@ -99,7 +99,7 @@ def ingest():
       }
     }
     client = requests.post(url, json = payload)
-    print(client.text, "Done!")
+    print("Done!")
 
 with DAG(dag_id, default_args=default_args, schedule_interval=scheduleinterval, catchup=False, is_paused_upon_creation=False) as dag:
     start_task = DummyOperator(
@@ -120,8 +120,8 @@ with DAG(dag_id, default_args=default_args, schedule_interval=scheduleinterval, 
             'HOP_FILE_PATH': pipeline_path,
             'HOP_PROJECT_FOLDER': '/files',
             'HOP_PROJECT_NAME': 'stack',
-            'HOP_ENVIRONMENT_NAME': 'pro-config.json',
-            'HOP_ENVIRONMENT_CONFIG_FILE_NAME_PATHS': '/files/pro-config.json',
+            'HOP_ENVIRONMENT_NAME': 'prod-config.json',
+            'HOP_ENVIRONMENT_CONFIG_FILE_NAME_PATHS': '/files/prod-config.json',
             'HOP_RUN_CONFIG': 'local',
         },
         docker_url='unix://var/run/docker.sock',
