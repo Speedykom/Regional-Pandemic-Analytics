@@ -8,8 +8,8 @@ from docker.types import Mount
 import requests
 
 #/Volumes/Disk/Work/speedykom/Regional-Pandemic-Analytics
-#/home/igad/Regional-Pandemic-Analytics
-dev = "/home/igad/Regional-Pandemic-Analytics"
+#/home/igad/Regional-Pandemic-Analytics/staging
+dev = "/home/igad/Regional-Pandemic-Analytics/staging"
 
 source = "{}/hop/pipeline".format(dev)
 
