@@ -79,9 +79,9 @@ services:
   # # ========
   # Backend
   # ========
-  pg:
+  backend_db:
     image: postgres:14
-    container_name: pg
+    container_name: backend_db
     volumes:
       - backend_data:/var/lib/postgresql/data
     environment:
@@ -91,14 +91,16 @@ services:
 
   backend:
     container_name: backend
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
     build:
       context: ./staging/backend
       dockerfile: Dockerfile
     depends_on:
-      - pg
+      - backend_db
+    env_file:
+      - ./staging/backend/environment
     ports:
       - "8000:8000"
-    restart: always
 
   # =======
   #  Druid
