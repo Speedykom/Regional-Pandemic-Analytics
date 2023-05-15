@@ -14,9 +14,23 @@ import {
     Color,
 } from "@tremor/react";
 import React, {useEffect, useState} from "react";
-import axios from 'axios'
 import {useRouter} from "next/router";
 import {getData} from "@/utils";
+
+type TChartData = {
+    count: string;
+    result: TItem[]; // Updated type to TItem[]
+};
+
+type TItem = {
+    [key: string]: string;
+    slice_name: string;
+    viz_type: string;
+    datasource_name_text: string;
+    changed_by_name: string;
+    changed_on_delta_humanized: string;
+    created_by_name: string;
+};
 
 const colors: { [key: string]: Color } = {
     draft: "gray",
@@ -24,7 +38,7 @@ const colors: { [key: string]: Color } = {
 };
 
 
-export default function ListCharts({data}) {
+export default function ListCharts({data}:{data:TChartData}) {
     const router = useRouter()
 
     const [token, setToken] = useState("")
@@ -64,7 +78,7 @@ export default function ListCharts({data}) {
                 </TableHead>
 
                 <TableBody>
-                    {data?.result?.map((item, index) => (
+                    {data?.result?.map((item:TItem, index:number) => (
                         <TableRow key={index}>
                             <TableCell>{item?.slice_name}</TableCell>
                             <TableCell>{item?.viz_type}</TableCell>
