@@ -1,13 +1,16 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
 import {useEffect, useState} from "react";
 import {embedDashboard} from "@superset-ui/embedded-sdk";
-import ListDashboards from "@/components/Superset/ListDashboards";
+import ListDashboards, {IListDashboardsProps} from "@/components/Superset/ListDashboards";
 import {getData} from "@/utils";
 import axios from 'axios'
 
 export default function SupersetDashboard(){
 
-    const [data, setData] = useState({})
+    const [data, setData] = useState<IListDashboardsProps["data"]>({
+        count: 0,
+        result: [],
+    });
 
     const [token, setToken] = useState("")
 
