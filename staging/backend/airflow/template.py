@@ -11,7 +11,7 @@ import requests
 #/home/igad/Regional-Pandemic-Analytics/staging
 dev = "/home/igad/Regional-Pandemic-Analytics/staging"
 
-source = "{}/hop/pipeline".format(dev)
+source = "{}/hop/pipelines".format(dev)
 
 default_args = {
     'owner': 'airflow',
