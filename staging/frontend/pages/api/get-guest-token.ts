@@ -11,12 +11,14 @@ export default async function handler(
 
     const accessToken = await response.json();
 
+    const dashboardUUID = req.query?.dashboardUUID
+
     try {
         const body = {
             resources: [
                 {
                     type: 'dashboard',
-                    id: '7026d58f-2b92-40f2-9160-ed3abe9fead4',
+                    id: `${dashboardUUID}`,
                 },
             ],
             rls: [],

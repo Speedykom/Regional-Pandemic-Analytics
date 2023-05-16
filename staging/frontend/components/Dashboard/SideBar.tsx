@@ -1,17 +1,17 @@
-import { forwardRef } from "react";
+import { Ref, forwardRef } from "react";
 import Link from "next/link";
 import { HomeIcon, ChevronDoubleRightIcon, ChartBarSquareIcon } from "@heroicons/react/24/solid";
 import { useRouter } from "next/router";
 
-interface Props {
-  showNav: boolean;
+interface props {
+  showNav?: boolean;
 }
 
-const SideBar = forwardRef(({}: Props) => {
+const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
   const router = useRouter();
 
   return (
-    <div className="fixed w-56 h-full bg-white shadow-lg">
+    <div ref={ref} className="fixed w-56 h-full bg-white shadow-lg">
       <div className="flex justify-center mt-6 mb-14">
         <picture>
           <img
@@ -55,13 +55,29 @@ const SideBar = forwardRef(({}: Props) => {
             </div>
           </div>
         </Link>
-        <Link href="/dashboard/process-chains">
+        <Link href="/dashboard/charts">
           <div
             className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
               router.pathname == "/process-chains"
                 ? "bg-green-100 text-green-500"
                 : "text-gray-400 hover:bg-green-100 hover:text-green-500"
             }`}
+          >
+            <div className="mr-2">
+              <ChevronDoubleRightIcon className="h-5 w-5" />
+            </div>
+            <div>
+              <p>Chart(s)</p>
+            </div>
+          </div>
+        </Link>
+        <Link href="/dashboard/process-chains">
+          <div
+              className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+                  router.pathname == "/process-chains"
+                      ? "bg-green-100 text-green-500"
+                      : "text-gray-400 hover:bg-green-100 hover:text-green-500"
+              }`}
           >
             <div className="mr-2">
               <ChevronDoubleRightIcon className="h-5 w-5" />
