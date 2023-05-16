@@ -44,7 +44,6 @@ volumes:
   broker_var: {}
   coordinator_var: {}
   router_var: {}
-  druid_shared: {}
 
 services:
   # ========
@@ -130,7 +129,7 @@ services:
     image: apache/druid:25.0.0
     container_name: coordinator
     volumes:
-      - druid_shared:/opt/shared
+      - ./staging/storage:/opt/shared
       - coordinator_var:/opt/druid/var
     depends_on:
       - zookeeper
@@ -162,7 +161,7 @@ services:
     image: apache/druid:25.0.0
     container_name: historical
     volumes:
-      - druid_shared:/opt/shared
+      - ./staging/storage:/opt/shared
       - historical_var:/opt/druid/var
     depends_on:
       - zookeeper
@@ -179,7 +178,7 @@ services:
     image: apache/druid:25.0.0
     container_name: middlemanager
     volumes:
-      - druid_shared:/opt/shared
+      - ./staging/storage:/opt/shared
       - middle_var:/opt/druid/var
     depends_on:
       - zookeeper
@@ -197,7 +196,7 @@ services:
     image: apache/druid:25.0.0
     container_name: router
     volumes:
-      - druid_shared:/opt/shared
+      - ./staging/storage:/opt/shared
       - router_var:/opt/druid/var
     depends_on:
       - zookeeper
@@ -259,14 +258,7 @@ services:
       - "8882:8080"
     volumes:
       - ./staging/hop/pipelines:/files
-      - ./staging/hop/storage:/home
-      - druid_shared:/home
-    #environment:
-      #- HOP_PROJECT_DIRECTORY=/files
-      #- HOP_PROJECT_NAME=default
-      #- HOP_WEB_THEME=dark
-      #- HOP_ENVIRONMENT_NAME=prod
-      #- HOP_ENVIRONMENT_CONFIG_FILE_NAME_PATHS=/files/prod-config.json
+      - ./staging/storage:/home
 
   # =======
   # Airflow
