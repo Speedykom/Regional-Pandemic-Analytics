@@ -3,3 +3,5 @@
 /data
 /staging/hop/pipelines/watchDirLog.txt
 /staging/hop/pipelines/watchRuns.txt
+/frontend
+/backend
