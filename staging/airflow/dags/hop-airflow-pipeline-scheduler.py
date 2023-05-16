@@ -3,16 +3,18 @@ from airflow import DAG
 from airflow.operators.docker_operator import DockerOperator
 from airflow.operators.bash import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
+from airflow.operators.python_operator import PythonOperator
 from docker.types import Mount
+import requests
 
 # change pwd to your project location
 # dev server = /home/igad/Regional-Pandemic-Analytics
-pwd = "/Volumes/Disk/Work/speedykom/Regional-Pandemic-Analytics/staging/hop"
+pwd = "/Volumes/Disk/Work/speedykom/Regional-Pandemic-Analytics/staging"
 
-pipelines = "{}/pipelines".format(pwd)
+pipelines = "{}/hop/pipelines".format(pwd)
 storage = "{}/storage".format(pwd)
-config = "{}/hop-config.json".format(pwd)
-plugins = "{}/plugins/transforms/googlesheets".format(pwd)
+config = "{}/hop/hop-config.json".format(pwd)
+plugins = "{}/hop/plugins/transforms/googlesheets".format(pwd)
 
 default_args = {
     'owner': 'airflow',
@@ -24,6 +26,85 @@ default_args = {
     'retries': 1,
     'retry_delay': timedelta(minutes=5)
 }
+
+# Ingest to druid
+def ingest():
+    url = 'http://89.58.44.88:8081/druid/indexer/v1/task'
+    payload = {
+      "type": "index_parallel",
+      "spec": {
+        "ioConfig": {
+          "type": "index_parallel",
+          "inputSource": {
+            "type": "local",
+            "baseDir": '/opt/shared/covid/covid.parquet',
+            "filter": "*.parquet"
+          },
+          "inputFormat": {
+            "type": "parquet"
+          }
+        },
+        "tuningConfig": {
+          "type": "index_parallel",
+          "partitionsSpec": {
+            "type": "dynamic"
+          }
+        },
+        "dataSchema": {
+          "dataSource": 'covid-pipeline-scheduler',
+          "timestampSpec": {
+            "column": "Date",
+            "format": "millis"
+          },
+          "dimensionsSpec": {
+            "dimensions": [
+              "FullyVaccinated",
+              {
+                "type": "long",
+                "name": "NewDeaths"
+              },
+              "STATE",
+              "Latitude",
+              {
+                "type": "long",
+                "name": "NewRecoveries"
+              },
+              {
+                "type": "long",
+                "name": "TotalCases"
+              },
+              "Code",
+              "Longitude",
+              "TotalDoses",
+              {
+                "type": "long",
+                "name": "TotalRecoveries"
+              },
+              "Population",
+              {
+                "type": "long",
+                "name": "NewCases"
+              },
+              {
+                "type": "long",
+                "name": "TotalDeaths"
+              },
+              {
+                "type": "long",
+                "name": "DailyTests"
+              }
+            ]
+          },
+          "granularitySpec": {
+            "queryGranularity": "none",
+            "rollup": False,
+            "segmentGranularity": "day"
+          }
+        }
+      }
+    }
+    client = requests.post(url, json = payload)
+    print(client.text, "Done!")
 
 with DAG('covid-pipeline-scheduler', default_args=default_args, schedule_interval='@daily', catchup=False, is_paused_upon_creation=False) as dag:
     start_dag = DummyOperator(
@@ -53,12 +134,16 @@ with DAG('covid-pipeline-scheduler', default_args=default_args, schedule_interva
         },
         docker_url='unix://var/run/docker.sock',
         network_mode='host',
-        mounts = [ 
+        mounts = [
             Mount(source=storage, target='/home', type='bind'),
             Mount(source=pipelines, target='/files', type='bind'),
             Mount(source=plugins, target='/opt/hop/hop/plugins/transforms/googlesheets', type='bind'), 
-            Mount(source=config, target='/opt/hop/hop/config/hop-config.json', type='bind') 
+            Mount(source=config, target='/opt/hop/hop/config/hop-config.json', type='bind')
         ],
         force_pull = False
     )
-    start_dag >> hop >> end_dag
+    druid_dag = PythonOperator(
+        task_id='druid_dag',
+        python_callable=ingest
+    )
+    start_dag >> hop >> druid_dag >> end_dag
