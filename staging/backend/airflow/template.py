@@ -27,7 +27,7 @@ default_args = {
 
 # Ingest to druid
 def ingest():
-    url = 'http://89.58.44.88:8081/druid/indexer/v1/task'
+    url = 'https://coordinator2.igad-health.eu/druid/indexer/v1/task'
     payload = {
       "type": "index_parallel",
       "spec": {
