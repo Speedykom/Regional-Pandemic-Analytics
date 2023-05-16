@@ -18,13 +18,32 @@ import axios from 'axios'
 import {useRouter} from "next/router";
 import {getData} from "@/utils";
 
+interface IDashboardItem {
+    id: string;
+    dashboard_title: string;
+    changed_by_name: string;
+    status: string;
+    changed_on_delta_humanized: string;
+    created_by: {
+        first_name: string;
+        last_name: string;
+    };
+}
+
+export interface IListDashboardsProps {
+    data: {
+        count: number;
+        result: IDashboardItem[];
+    };
+}
+
 const colors: { [key: string]: Color } = {
     draft: "gray",
     published: "emerald",
 };
 
 
-export default function ListDashboards({data}) {
+export default function ListDashboards({data}: IListDashboardsProps) {
     const router = useRouter()
 
     const [token, setToken] = useState("")
@@ -74,7 +93,7 @@ export default function ListDashboards({data}) {
                 </TableHead>
 
                 <TableBody>
-                    {data?.result?.map((item, index) => (
+                    {data?.result?.map((item, index:number) => (
                         <TableRow key={index}>
                             <TableCell>{item?.dashboard_title}</TableCell>
                             <TableCell>{item?.changed_by_name}</TableCell>
