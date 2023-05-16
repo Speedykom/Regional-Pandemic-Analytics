@@ -3,3 +3,6 @@
 /data
 /staging/hop/pipelines/watchDirLog.txt
 /staging/hop/pipelines/watchRuns.txt
+/staging/frontend/.next
+/staging/frontend/next-env.d.ts
+/staging/frontend/.env
