@@ -24,9 +24,9 @@ export const AuthProvider = ({ children }: Props) => {
 
     isRun.current = true;
     const client = Keycloak({
-      clientId: "frontend",
-      realm: "regional-pandemic-analytics",
-      url: "https://auth2.igad-health.eu/",
+      clientId: process.env.NEXT_PUBLIC_KEYCLOACK_CLIENT_ID,
+      realm: process.env.NEXT_PUBLIC_KEYCLOACK_REALM,
+      url: process.env.NEXT_PUBLIC_KEYCLOACK_URL,
     });
 
     client
