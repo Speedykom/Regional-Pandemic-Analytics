@@ -259,6 +259,7 @@ services:
       - "8882:8080"
     volumes:
       - ./staging/hop/pipelines:/files
+      - ./staging/hop/storage:/home
       - druid_shared:/home
     #environment:
       #- HOP_PROJECT_DIRECTORY=/files

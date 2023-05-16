@@ -37,7 +37,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <filename>${PROJECT_HOME}/covid/files/vaccinations.csv</filename>
+    <filename>${PROJECT_HOME}/covid-test/files/vaccinations.csv</filename>
     <filename_field/>
     <rownum_field/>
     <include_filename>N</include_filename>
