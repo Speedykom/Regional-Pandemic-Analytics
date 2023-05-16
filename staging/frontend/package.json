@@ -2,6 +2,11 @@
   "name": "IGAD-Frontend",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=16.13.1",
+    "npm": ">=8.1.2",
+    "yarn": "please-use-npm"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
