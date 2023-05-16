@@ -6,3 +6,5 @@
 /staging/frontend/.next
 /staging/frontend/next-env.d.ts
 /staging/frontend/.env
+/frontend
+/backend

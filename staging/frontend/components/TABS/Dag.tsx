@@ -1,15 +1,9 @@
 import { Card, Flex, SelectBox, SelectBoxItem } from '@tremor/react';
-import { Switch } from '@headlessui/react';
 import { useState, useEffect } from 'react';
-import useSWR from 'swr';
-import { axiosFetcher } from '@/libs/fetcher';
 import DagList from '@/components/Dag/DagList';
 import { DagType } from './interface';
 
 export default function Dag() {
-  const url = `${process.env.NEXT_PUBLIC_AIRFLOW_URL}/api/v1/dags`;
-  const username: string = process.env.NEXT_PUBLIC_AIRFLOW_USERNAME!;
-  const password: string = process.env.NEXT_PUBLIC_AIRFLOW_PASSWORD!;
   const [data, setData] = useState<DagType[]>([
     {
       id: 1,
