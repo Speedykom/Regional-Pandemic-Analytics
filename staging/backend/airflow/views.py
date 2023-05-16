@@ -36,7 +36,7 @@ class DagView(APIView):
             # init dynamic dag class
             dynamic_dag = DynamicDag(output=self.output, template=self.template)
             # create dag
-            dynamic_dag.new_dag(request.data['dag_name'], request.data['dag_id'], request.data['schedule_interval'], request.data['path'])
+            dynamic_dag.new_dag(request.data['dag_name'], request.data['dag_id'], request.data['parquet_path'], request.data['data_source_name'], request.data['schedule_interval'], request.data['path'])
 
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)  
         else:  
@@ -59,7 +59,7 @@ class DagView(APIView):
             # init dynamic dag class
             dynamic_dag = DynamicDag(output=self.output, template=self.template)
             # create dag
-            dynamic_dag.new_dag(request.data['dag_name'], request.data['dag_id'], request.data['schedule_interval'], request.data['path'])
+            dynamic_dag.new_dag(request.data['dag_name'], request.data['dag_id'], request.data['parquet_path'], request.data['data_source_name'], request.data['schedule_interval'], request.data['path'])
 
             return Response({"status": "success", "data": serializer.data})  
         else:  

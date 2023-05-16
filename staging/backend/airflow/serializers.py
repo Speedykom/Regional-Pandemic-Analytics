@@ -6,6 +6,8 @@ class DagSerializer(serializers.ModelSerializer):
     dag_name = serializers.CharField(required=True)  
     path = serializers.CharField(required=True)  
     dag_id = serializers.CharField(required=True)
+    parquet_path = serializers.CharField(required=True)
+    data_source_name = serializers.CharField(required=True)
     schedule_interval = serializers.CharField(required=True)  
   
     class Meta:  

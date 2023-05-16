@@ -1,37 +1,29 @@
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/router';
-import Login from '@/components/Login';
 import Head from 'next/head';
-const Homepage = () => {
-  const data = useSession();
-  const router = useRouter();
+import { Inter } from 'next/font/google';
+import { useState, useEffect } from 'react';
+import Layout from "@/components/Dashboard/Layout";
+import AnalyticsCard from "@/components/Dashboard/AnalyticsCard";
+import TimeSeries from "@/components/Dashboard/TimeSeries";
+import DashboardFrame from "@/components/Dashboard/DashboardFrame";
 
-  const head = (
-    <Head>
-      <title>Welcome | IGAD Health Application</title>
-      <meta name="description" content="IGAD - Health Platform" />
-    </Head>
-  );
+const inter = Inter({ subsets: ['latin'] });
 
-  let ret = <></>;
-
-  switch (data.status) {
-    case 'authenticated':
-      router.push('/dashboard');
-      return <></>;
-    case 'unauthenticated':
-      ret = <Login />;
-      break;
-    default:
-      ret = <></>;
-      break;
-  }
-  return (
-    <>
-      {head}
-      {ret}
-    </>
-  );
-};
-
-export default Homepage;
+export default function Home() {
+    return (
+        <>
+            <Head>
+                <title>Dashboard | RePAN</title>
+                <meta name="description" content="SpeedyKom" />
+                <meta name="viewport" content="width=device-width, initial-scale=1" />
+            </Head>
+            <DashboardFrame title="Dashboard">
+                <div className="">
+                    <AnalyticsCard/>
+                </div>
+                <div className="mt-3 mb-3">
+                    <TimeSeries/>
+                </div>
+            </DashboardFrame>
+        </>
+    );
+}

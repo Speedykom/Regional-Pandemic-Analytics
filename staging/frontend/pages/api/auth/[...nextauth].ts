@@ -1,67 +1,74 @@
-import NextAuth from 'next-auth'
-import KeycloakProvider from 'next-auth/providers/keycloak'
+import NextAuth, { NextAuthOptions } from 'next-auth'
+import KeycloakProvider, { KeycloakProfile } from 'next-auth/providers/keycloak'
 import type { JWT } from 'next-auth/jwt'
-import type { User, Account, Session, Awaitable } from 'next-auth/core/types'
-import {authorizedRequest, post} from '@/libs/api/base'
+// import type { User, Account, Session, Awaitable } from 'next-auth/core/types'
+import { post } from '@/libs/api/base';
+import { OAuthConfig } from 'next-auth/providers/oauth';
+import type {Session, User} from 'next-auth/core/types'
 
-interface JWTData {
-    token: JWT
-    user?: User | null
-    account?: Account | null
+
+declare module 'next-auth/jwt' {
+    interface JWT {
+        id_token?: string;
+        provider?: string;
+    }
 }
 
-interface SessionData {
-    session: Session
-    token: JWT
-    user?: User | null
+declare module 'next-auth/core/types' {
+    interface Session {
+        accessToken?: string
+    }
 }
 
-interface LogoutMessage {
-    session: Session,
-    token: JWT,
-}
-
-export default NextAuth({
+export const authOptions: NextAuthOptions = {
     providers: [
         KeycloakProvider({
-            clientId: process.env.KEYCLOACK_CLIENT_ID || "",
-            clientSecret: process.env.KEYCLOACK_CLIENT_SECRET || "",
+            clientId: process.env.KEYCLOACK_CLIENT_ID || '',
+            clientSecret: process.env.KEYCLOACK_CLIENT_SECRET || '',
             authorization: process.env.KEYCLOACK_AUTHORIZATION,
             issuer: process.env.KEYCLOACK_ISSUER
-        }),
+        })
     ],
+    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
-        jwt: (data: JWTData): Awaitable<JWT> => {
-            if(data.user) {
-                const url = '/auth/user/login'
-                authorizedRequest(data.account?.access_token, {url}, post)
-            } else {
-                console.log("No user data present. Behavior will be undefined.")
+        async jwt({ token, account, user }) {
+            if (account) {
+                token.id_token = account?.id_token;
+                token.accessToken = account?.accessToken;
+                token.provider = account.provider;
             }
-            return data.token
+            return token;
         },
-        session: (data: SessionData): Awaitable<Session> => {
-            return data.session
-        },
+        async session({ session, token, user }: { session: Session, token: JWT, user: User }) {
+            session.accessToken = String(token.accessToken);
+            return session;
+        }
     },
     events: {
-        signOut: (message: LogoutMessage): Awaitable<void> => {
-            const url = '/auth/user/logout'
-            if (message.session?.user?.name) {
-                post({
-                    url: url,
-                    body: {name: message.session.user?.name},
-                })
-                    .then(_ => console.log("Logout success"), r => console.log("Logout fail: ", r))
-            } else if(message.token.name) {
-                post({
-                    url: url,
-                    body: {name: message.token.name},
-                })
-                    .then(_ => console.log("Logout success"), r => console.log("Logout fail: ", r))
+        async signOut({ token, session }: { token: JWT, session: Session }) {
+            if (token.provider === "keycloak") {
+                const issuerUrl = (authOptions.providers.find(p => p.id === "keycloak") as OAuthConfig<KeycloakProfile>).options!.issuer!
+                const logOutUrl = new URL(`${issuerUrl}/protocol/openid-connect/logout`)
+                logOutUrl.searchParams.set("id_token_hint", token.id_token!)
+                await fetch(logOutUrl);
+
+                const url = '/auth/user/logout'
+                if (session?.user?.name) {
+                    post({
+                        url: url,
+                        body: { name: session.user?.name },
+                    })
+                        .then(_ => console.log("Logout success"), r => console.log("Logout fail: ", r))
+                } else if (token.name) {
+                    post({
+                        url: url,
+                        body: { name: token.name },
+                    })
+                        .then(_ => console.log("Logout success"), r => console.log("Logout fail: ", r))
+                }
             }
         },
     },
-    secret: process.env.NEXTAUTH_SECRET,
-    // debug: true
-})
+}
+
+export default NextAuth(authOptions)
