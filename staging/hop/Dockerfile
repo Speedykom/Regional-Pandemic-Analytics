@@ -14,6 +14,5 @@ COPY watchFiles.sh /usr/local/tomcat/watchFiles.sh
 RUN chmod +x /usr/local/tomcat/watchFiles.sh
 
 #ADD hop-cpython-1.5.tar.gz /usr/local/tomcat/plugins/transforms
-
 COPY plugins/transforms/googlesheets /usr/local/tomcat/plugins/transforms/googlesheets
 COPY hop-config.json /usr/local/tomcat/webapps/ROOT/config/hop-config.json

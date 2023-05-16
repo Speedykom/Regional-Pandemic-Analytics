@@ -44,7 +44,6 @@ volumes:
   broker_var: {}
   coordinator_var: {}
   router_var: {}
-  druid_shared: {}
 
 services:
   # ========
@@ -76,12 +75,12 @@ services:
     restart: always
     command: npm run start
 
-  # ========
+  # # ========
   # Backend
   # ========
-  pg:
+  backend_db:
     image: postgres:14
-    container_name: pg
+    container_name: backend_db
     volumes:
       - backend_data:/var/lib/postgresql/data
     environment:
@@ -91,18 +90,22 @@ services:
 
   backend:
     container_name: backend
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
     build:
       context: ./staging/backend
       dockerfile: Dockerfile
+    depends_on:
+      - backend_db
     ports:
       - "8000:8000"
+    volumes:
+      - ./staging/airflow/dags:/airflow/dags
     environment:
       - DB_NAME=igad
       - DB_USER=igad
-      - DB_PASSWORD=igad@2020
-      - DB_HOST=pg
+      - DB_PASSWORD=igad
+      - DB_HOST=backend_db
       - DB_PORT=5432
-    restart: always
 
   # =======
   #  Druid
@@ -130,7 +133,7 @@ services:
     image: apache/druid:25.0.0
     container_name: coordinator
     volumes:
-      - druid_shared:/opt/shared
+      - ./staging/storage:/opt/shared
       - coordinator_var:/opt/druid/var
     depends_on:
       - zookeeper
@@ -162,7 +165,7 @@ services:
     image: apache/druid:25.0.0
     container_name: historical
     volumes:
-      - druid_shared:/opt/shared
+      - ./staging/storage:/opt/shared
       - historical_var:/opt/druid/var
     depends_on:
       - zookeeper
@@ -179,7 +182,7 @@ services:
     image: apache/druid:25.0.0
     container_name: middlemanager
     volumes:
-      - druid_shared:/opt/shared
+      - ./staging/storage:/opt/shared
       - middle_var:/opt/druid/var
     depends_on:
       - zookeeper
@@ -197,7 +200,7 @@ services:
     image: apache/druid:25.0.0
     container_name: router
     volumes:
-      - druid_shared:/opt/shared
+      - ./staging/storage:/opt/shared
       - router_var:/opt/druid/var
     depends_on:
       - zookeeper
@@ -259,13 +262,7 @@ services:
       - "8882:8080"
     volumes:
       - ./staging/hop/pipelines:/files
-      - druid_shared:/home
-    #environment:
-      #- HOP_PROJECT_DIRECTORY=/files
-      #- HOP_PROJECT_NAME=default
-      #- HOP_WEB_THEME=dark
-      #- HOP_ENVIRONMENT_NAME=prod
-      #- HOP_ENVIRONMENT_CONFIG_FILE_NAME_PATHS=/files/prod-config.json
+      - ./staging/storage:/home
 
   # =======
   # Airflow

@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useRef } from "react";
 import {
   Bars3CenterLeftIcon,
   UserIcon,
@@ -9,15 +9,13 @@ import {
 import { BellIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { Menu, Transition, Popover } from "@headlessui/react";
 import Link from "next/link";
-import {signOut, useSession} from "next-auth/react";
 
 interface Props {
   state: boolean;
-  onChange: (state: boolean) => void
+  onChange: (state: boolean) => void;
 }
 
 export default function TopBar({ state, onChange }: Props) {
-  const sessionData = useSession()
   return (
     <div
       className={`fixed w-full h-16 flex justify-between items-center transition-all duration-[400ms] ${
@@ -62,7 +60,7 @@ export default function TopBar({ state, onChange }: Props) {
                         RePAN Notification
                       </p>
                       <p className="text-sm text-gray-500 truncate">
-                        Test Notification text 
+                        Test Notification text
                       </p>
                     </div>
                   </div>
@@ -121,7 +119,7 @@ export default function TopBar({ state, onChange }: Props) {
                 />
               </picture>
               <span className="hidden md:block font-medium text-gray-700">
-                Welcome, {sessionData?.data?.user?.name}
+                {/* Welcome, {sessionData?.data?.user?.name} */}
               </span>
               <ChevronDownIcon className="ml-2 h-4 w-4 text-gray-700" />
             </Menu.Button>
@@ -159,9 +157,7 @@ export default function TopBar({ state, onChange }: Props) {
                   <Link
                     href="#"
                     className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
-                    onClick={() =>
-                        signOut({ redirect: true, callbackUrl: '/' })
-                    }
+                    
                   >
                     <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-2" />
                     Log Out
