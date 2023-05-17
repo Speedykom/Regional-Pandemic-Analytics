@@ -8,3 +8,7 @@
 /staging/frontend/.env
 /frontend
 /backend
+
+.env
+
+node_modules
