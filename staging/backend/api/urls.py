@@ -5,7 +5,7 @@ from drf_yasg import openapi
 from django.urls import re_path, path
 from airflow.views.gdag import DagView
 from airflow.views.dags import DagApiView
-from airflow.views import DagView
+from airflow.views.gdag import DagView
 from accounts.views import LoginAPI, KeyCloakLoginAPI
 
 
