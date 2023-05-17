@@ -3,10 +3,18 @@ import sys
 import dj_database_url
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
+<<<<<<< Updated upstream
 from .env import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
+=======
+
+env = environ.Env()
+# environ.Env.read_env()
+>>>>>>> Stashed changes
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
@@ -33,11 +41,11 @@ INSTALLED_APPS = [
     'drf_yasg',
 ]
 
-
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'django-keycloak-auth.middleware.KeycloakMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -94,7 +102,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -108,7 +115,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
@@ -118,16 +124,16 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication'
     ),
-    'DEFAULT_PERMISSION_CLASSES':(
+    'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-        'DEFAULT_THROTTLE_CLASSES': [
+    'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle'
     ],
@@ -139,3 +145,11 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+KEYCLOAK_EXEMPT_URIS = []
+KEYCLOAK_CONFIG = {
+    'KEYCLOAK_SERVER_URL': os.getenv("KEYCLOAK_SERVER_URL"),
+    'KEYCLOAK_REALM': os.getenv("KEYCLOAK_REALM"),
+    'KEYCLOAK_CLIENT_ID': os.getenv("CLIENT_ID"),
+    'KEYCLOAK_CLIENT_SECRET_KEY': os.getenv("CLIENT_SECRET")
+}
