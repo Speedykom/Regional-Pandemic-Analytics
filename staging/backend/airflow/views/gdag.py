@@ -3,14 +3,14 @@ from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView  
 from rest_framework.response import Response  
 from rest_framework import status  
-from .models import Dag  
-from .serializers import DagSerializer
-from .dynamic import DynamicDag
+from ..models import Dag  
+from ..serializers import DagSerializer
+from ..gdags.dynamic import DynamicDag
 
 class DagView(APIView):  
 
     # dynamic dag template
-    template = "airflow/template.py"
+    template = "airflow/gdags/template.py"
     
     # dynamic dag output
     output = "../airflow/dags/"
