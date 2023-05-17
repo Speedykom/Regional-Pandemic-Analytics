@@ -3,13 +3,11 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import re_path, path
-<<<<<<< Updated upstream
 from airflow.views.gdag import DagView
 from airflow.views.dags import DagApiView
-=======
 from airflow.views import DagView
 from accounts.views import LoginAPI, KeyCloakLoginAPI
->>>>>>> Stashed changes
+
 
 app_name = 'api'
 
@@ -38,11 +36,8 @@ urlpatterns = [
     path('accounts/auth/', KeyCloakLoginAPI.as_view()),
 
     path('airflow/', DagView.as_view()),
-<<<<<<< Updated upstream
     path('airflow/dags/', DagApiView.as_view()),
-    path('airflow/<str:id>/', DagView.as_view()),  
-=======
     path('airflow/<str:id>/', DagView.as_view()),
->>>>>>> Stashed changes
+    path('airflow/<str:id>/', DagView.as_view()),
     path('airflow/<str:id>/update/', DagView.as_view())
 ]
