@@ -1,15 +1,13 @@
 import os
 import sys
+import environ
 import dj_database_url
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
-<<<<<<< Updated upstream
-from .env import DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER
-=======
+
 
 env = environ.Env()
 # environ.Env.read_env()
->>>>>>> Stashed changes
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -79,11 +77,11 @@ DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "True") == "True"
 DATABASES = {
     "default": {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'PASSWORD': DB_PASSWORD,
-        'HOST': DB_HOST,
-        'PORT': DB_PORT,
+        'NAME': os.getenv("DB_NAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'HOST': os.getenv("DB_HOST"),
+        'PORT': os.getenv("DB_PORT"),
     }
 }
 
