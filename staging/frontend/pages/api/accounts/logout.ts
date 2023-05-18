@@ -18,5 +18,15 @@ export default async function handler(
         expires: new Date(0),
         path: '/',
     });
+    setCookie('refresh', '', {
+        req,
+        res,
+        maxAge: 0,
+        sameSite: 'strict',
+        httpOnly: true,
+        secure: process.env.NODE_ENV !== 'development',
+        expires: new Date(0),
+        path: '/',
+    });
     return res.status(200).json({ status: 'logout successful' });
 }
