@@ -6,6 +6,8 @@ import * as z from 'zod'
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useRouter} from "next/router";
 import axios from "axios";
+import secureLocalStorage from "react-secure-storage";
+import jwt_decode from "jwt-decode";
 
 const schema = z.object({
     username: z
@@ -48,7 +50,17 @@ export default function LoginForm(){
                 },
             })
             .then((response) => {
-               console.log(response.data)
+                if(response.status == 200){
+
+                    let payload = jwt_decode(response?.data?.result?.access_token)
+
+                    // @ts-ignore
+                    secureLocalStorage.setItem("username", payload?.given_name)
+                    secureLocalStorage.setItem("sua", "authenticated")
+
+                    router.push("/dashboard/")
+                }
+
             })
             .catch((error: unknown) => {
                 if (error instanceof Error)

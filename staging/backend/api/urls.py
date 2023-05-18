@@ -6,7 +6,7 @@ from django.urls import re_path, path
 from airflow.views.gdag import DagView
 from airflow.views.dags import DagApiView
 from airflow.views.gdag import DagView
-from accounts.views import LoginAPI, KeyCloakLoginAPI
+from accounts.views import LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI
 
 
 app_name = 'api'
@@ -34,6 +34,8 @@ urlpatterns = [
 
     # Keycloak login
     path('accounts/auth/', KeyCloakLoginAPI.as_view()),
+    # Keycloak refresh token
+    path('accounts/refresh/', KeycloakRefreshTokenAPI.as_view()),
 
     path('airflow/', DagView.as_view()),
     path('airflow/dags/', DagApiView.as_view()),

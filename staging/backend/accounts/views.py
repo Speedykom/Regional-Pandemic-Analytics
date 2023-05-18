@@ -37,7 +37,8 @@ class KeyCloakLoginAPI(APIView):
     """
     API for authenticating with Keycloak
     """
-    permission_classes = [AllowAny,]
+    permission_classes = [AllowAny, ]
+
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
@@ -64,4 +65,29 @@ class KeyCloakLoginAPI(APIView):
         return Response({"result": "Login Failed"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class KeycloakRefreshTokenAPI(APIView):
+    """API for getting new access token using refresh token"""
 
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'refresh_token': openapi.Schema(type=openapi.TYPE_STRING),
+        }
+    ))
+    def post(self, request, *args, **kwargs):
+        refresh_token = request.data.get("refresh_token", None)
+        form_data = {
+            "client_id": os.getenv("CLIENT_ID"),
+            "client_secret": os.getenv("CLIENT_SECRET"),
+            "grant_type": "refresh_token",
+            "refresh_token": refresh_token
+        }
+
+        res = requests.post(f"{BASE_URL}/realms/regional-pandemic-analytics/protocol/openid-connect/token",
+                            data=form_data)
+
+        if res.status_code == 200:
+            data = res.json()
+            return Response(data, status=status.HTTP_200_OK)
+
+        return Response({"result": "Failed to get access token."}, status=status.HTTP_400_BAD_REQUEST)

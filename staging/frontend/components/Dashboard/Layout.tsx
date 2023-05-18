@@ -3,11 +3,11 @@ import SideBar from "./SideBar";
 import TopBar from "./TopBar";
 import { Transition } from "@headlessui/react";
 
-interface Props {
-  children: ReactNode;
+interface props {
+  children: ReactNode
 }
 
-export default function Layout({ children }: Props) {
+export default function Layout({ children }: props) {
   const [showNav, setShowNav] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -32,27 +32,27 @@ export default function Layout({ children }: Props) {
   }, []);
 
   return (
-    <>
-      <TopBar state={showNav} onChange={(state) => setShowNav(state)} />
-      {/* <Transition
-        as={Fragment}
-        show={showNav}
-        enter="transform transition duration-[400ms]"
-        enterFrom="-translate-x-full"
-        enterTo="translate-x-0"
-        leave="transform duration-[400ms] transition ease-in-out"
-        leaveFrom="translate-x-0"
-        leaveTo="-translate-x-full"
-      > */}
-        <SideBar showNav={showNav} />
-      {/* </Transition> */}
-      <main
-        className={`pt-16 transition-all duration-[400ms] ${
-          showNav && !isMobile ? "pl-56" : ""
-        }`}
-      >
-        <div className="px-4 md:px-16">{children}</div>
-      </main>
-    </>
+      <>
+        <TopBar showNav={showNav} setShowNav={setShowNav} />
+        <Transition
+            as={Fragment}
+            show={showNav}
+            enter="transform transition duration-[400ms]"
+            enterFrom="-translate-x-full"
+            enterTo="translate-x-0"
+            leave="transform duration-[400ms] transition ease-in-out"
+            leaveFrom="translate-x-0"
+            leaveTo="-translate-x-full"
+        >
+          <SideBar showNav={showNav} />
+        </Transition>
+        <main
+            className={`pt-16 transition-all duration-[400ms] ${
+                showNav && !isMobile ? "pl-56" : ""
+            }`}
+        >
+          <div className="px-4 md:px-16">{children}</div>
+        </main>
+      </>
   );
 }
