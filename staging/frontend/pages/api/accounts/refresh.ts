@@ -1,7 +1,6 @@
-import axios from 'axios';
-import { setCookie } from 'cookies-next';
-import type { NextApiRequest, NextApiResponse } from 'next';
-import {server} from "next-auth/client/__tests__/helpers/mocks";
+import {NextApiRequest, NextApiResponse} from "next";
+import axios from "axios";
+import {setCookie, getCookie} from "cookies-next";
 
 export default async function handler(
     req: NextApiRequest,
@@ -13,21 +12,20 @@ export default async function handler(
         return res.status(405).send(`Method ${req.method} not allowed`);
     }
 
-    const { username, password } = req.body;
+    const refresh_token = getCookie('refresh_token', {req, res});
 
 
     const body = JSON.stringify({
-        username,
-        password,
+       refresh_token
     });
 
     try {
-        const response = await axios.post(`${server_url}/api/accounts/auth/`, body, {
+        const response = await axios.post(`${server_url}/api/accounts/refresh/`, body, {
             headers: { 'Content-Type': 'application/json' },
         });
 
         if (response.status !== 200)
-            return res.status(response.status).json({ result: 'error logging in' });
+            return res.status(response.status).json({ result: 'Failed to get access token.' });
 
         setCookie('access', response?.data?.access_token, {
             req,
