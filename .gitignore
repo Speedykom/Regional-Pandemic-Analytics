@@ -10,5 +10,7 @@
 /backend
 
 .env
+venv/
+/venv/
 
 node_modules
