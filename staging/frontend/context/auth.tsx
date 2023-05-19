@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }: Props) => {
     <AuthContext.Provider
       value={{
         isLogin,
-        isLoading
+        isLoading,
       }}
     >
       {children}
