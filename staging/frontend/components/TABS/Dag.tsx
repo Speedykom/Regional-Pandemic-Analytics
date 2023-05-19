@@ -1,7 +1,7 @@
-import { Card, Flex, SelectBox, SelectBoxItem } from '@tremor/react';
-import { useState, useEffect } from 'react';
-import DagList from '@/components/Dag/DagList';
-import { DagType } from './interface';
+import { Card, Flex, SelectBox, SelectBoxItem } from "@tremor/react";
+import { useState, useEffect } from "react";
+import DagList from "@/components/Dag/DagList";
+import { DagType } from "./interface";
 
 export default function Dag() {
   const [data, setData] = useState<DagType[]>([
@@ -9,34 +9,33 @@ export default function Dag() {
       id: 1,
       isActive: true,
       dagId: 1,
-      description: "Sample covid dag"
+      description: "Sample covid dag",
     },
     {
       id: 3,
       isActive: true,
       dagId: 3,
-      description: "Sample ebola dag"
+      description: "Sample ebola dag",
     },
     {
       id: 4,
       isActive: false,
       dagId: 4,
-      description: "Sample anthrax dag"
+      description: "Sample anthrax dag",
     },
     {
       id: 2,
       isActive: true,
       dagId: 2,
-      description: "Sample malaria dag"
+      description: "Sample malaria dag",
     },
     {
       id: 5,
       isActive: false,
       dagId: 5,
-      description: "Sample typhoid dag"
+      description: "Sample typhoid dag",
     },
-
-  ])
+  ]);
   // const { data, error } = useSWR(
   //   [url, username, password],
   //   ([url, username, password]) => axiosFetcher(url, username, password)
@@ -46,9 +45,11 @@ export default function Dag() {
     <>
       <Card className="mt-6">
         <h1 className="text-xl mb-3">SpeedyKom Process Chain(s)</h1>
-        <Flex flexDirection='col'  >
+        <Flex flexDirection="col">
           {data ? (
-            data?.map((dag: object | any) => <DagList key={dag?.id} dag={dag} />)
+            data?.map((dag: object | any) => (
+              <DagList key={dag?.id} dag={dag} />
+            ))
           ) : (
             <div className="mt-3 flex justify-center items-center">
               <h4 className="text-xl text-center">No Dag(s) to display.</h4>

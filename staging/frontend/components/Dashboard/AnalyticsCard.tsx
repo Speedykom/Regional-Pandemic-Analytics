@@ -13,7 +13,13 @@ interface AnalyticsType {
   metric: string;
   metricPrev: string;
   delta: string;
-  deltaType: "moderateIncrease" | "moderateDecrease" | "increase" | "decrease" | "unchanged" | undefined;
+  deltaType:
+    | "moderateIncrease"
+    | "moderateDecrease"
+    | "increase"
+    | "decrease"
+    | "unchanged"
+    | undefined;
 }
 
 const data = [
@@ -61,8 +67,6 @@ const categories: Array<AnalyticsType> = [
     deltaType: "moderateDecrease",
   },
 ];
-
-
 
 export default function AnalyticsCard() {
   return (

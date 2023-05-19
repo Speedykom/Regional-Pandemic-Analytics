@@ -1,4 +1,4 @@
-import { Card, Metric, Text } from '@tremor/react';
+import { Card, Metric, Text } from "@tremor/react";
 
 interface IProp {
   title: string;

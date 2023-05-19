@@ -205,7 +205,7 @@ export const PageLoad = () => {
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="h-24">
-      <Loader />
+        <Loader />
       </div>
     </div>
   );

@@ -23,20 +23,18 @@ const chartdata = [
   },
 ];
 
-
-
-export default function TimeSeries () {
-    return (
-        <Card>
-            <Title>Ebola Outbreak (2023)</Title>
-            <LineChart
-            className="mt-6"
-            data={chartdata}
-            index="month"
-            categories={["Ebola Confirmed Cases"]}
-            colors={["blue"]}
-            yAxisWidth={40}
-            />
-        </Card>
-    );
+export default function TimeSeries() {
+  return (
+    <Card>
+      <Title>Ebola Outbreak (2023)</Title>
+      <LineChart
+        className="mt-6"
+        data={chartdata}
+        index="month"
+        categories={["Ebola Confirmed Cases"]}
+        colors={["blue"]}
+        yAxisWidth={40}
+      />
+    </Card>
+  );
 }
