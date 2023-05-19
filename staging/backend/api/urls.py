@@ -6,6 +6,7 @@ from django.urls import re_path, path
 from airflow.views.gdag import DagView
 from airflow.views.dags import DagApiView
 from airflow.views.gdag import DagView
+from data.views import DataUploadAPI
 from accounts.views import LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI
 
 
@@ -32,14 +33,29 @@ urlpatterns = [
     # Login Endpoint
     path('accounts/login/', LoginAPI.as_view()),
 
+
+    # ---------------------- Keycloak Endpoints ------------------------------------------
     # Keycloak login
     path('accounts/auth/', KeyCloakLoginAPI.as_view()),
     # Keycloak refresh token
     path('accounts/refresh/', KeycloakRefreshTokenAPI.as_view()),
 
+    # ---------------------- End of Keycloak Endpoints -----------------------------------
+
+    # ---------------------- Airflow  Endpoints ------------------------------------------
     path('airflow/', DagView.as_view()),
     path('airflow/dags/', DagApiView.as_view()),
     path('airflow/<str:id>/', DagView.as_view()),
     path('airflow/<str:id>/', DagView.as_view()),
-    path('airflow/<str:id>/update/', DagView.as_view())
+    path('airflow/<str:id>/update/', DagView.as_view()),
+
+    # ---------------------- End of Airflow Endpoints -------------------------------------
+
+    # ---------------------- Data upload Endpoints ------------------------------------------
+
+    # endpoint for uploading data
+    path('data/upload/', DataUploadAPI.as_view()),
+
+    # ---------------------- End of Data Upload Endpoints -----------------------------------
+
 ]
