@@ -1,6 +1,10 @@
 import { Ref, forwardRef } from "react";
 import Link from "next/link";
-import { HomeIcon, ChevronDoubleRightIcon, ChartBarSquareIcon } from "@heroicons/react/24/solid";
+import {
+  HomeIcon,
+  ChevronDoubleRightIcon,
+  ChartBarSquareIcon,
+} from "@heroicons/react/24/solid";
 import { useRouter } from "next/router";
 
 interface props {
@@ -73,11 +77,11 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
         </Link>
         <Link href="/dashboard/process-chains">
           <div
-              className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-                  router.pathname == "/process-chains"
-                      ? "bg-green-100 text-green-500"
-                      : "text-gray-400 hover:bg-green-100 hover:text-green-500"
-              }`}
+            className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+              router.pathname == "/process-chains"
+                ? "bg-green-100 text-green-500"
+                : "text-gray-400 hover:bg-green-100 hover:text-green-500"
+            }`}
           >
             <div className="mr-2">
               <ChevronDoubleRightIcon className="h-5 w-5" />
