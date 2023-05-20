@@ -33,6 +33,7 @@ from flask import Blueprint
 from flask_appbuilder.security.manager import AUTH_DB, AUTH_OID
 from pandas._libs.parsers import STR_NA_VALUES  # pylint: disable=no-name-in-module
 from sqlalchemy.orm.query import Query
+from staging.superset.security import OIDCSecurityManager
 
 from superset.advanced_data_type.plugins.internet_address import internet_address
 from superset.advanced_data_type.plugins.internet_port import internet_port
@@ -87,6 +88,7 @@ OIDC_CLIENT_SECRETS='client_secret.json'
 OIDC_ID_TOKEN_COOKIE_SECURE = False
 OIDC_REQUIRE_VERIFIED_EMAIL = False
 OIDC_CLOCK_SKEW = 560
+OIDC_OPENID_REALM = 'regional-pandemic-analytics'
 OIDC_VALID_ISSUERS = 'https://auth2.igad-health.eu/auth/realms/regional-pandemic-analytics'
 AUTH_USER_REGISTRATION = True
 AUTH_USER_REGISTRATION_ROLE = 'Gamma'
