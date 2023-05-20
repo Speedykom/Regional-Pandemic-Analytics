@@ -1,0 +1,3 @@
+import os
+
+KEYCLOAK_ADMIN_BASE_URL = os.getenv("KEYCLOAK_ADMIN_BASE_URL")
