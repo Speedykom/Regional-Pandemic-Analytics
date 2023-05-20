@@ -11,7 +11,11 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import AllowAny
 
+from staging.backend.utils.generators import get_random_secret
+
 BASE_URL = os.getenv("BASE_URL")
+
+APP_REALM = os.getenv("APP_REALM")
 
 
 def homepage(request):
@@ -91,3 +95,11 @@ class KeycloakRefreshTokenAPI(APIView):
             return Response(data, status=status.HTTP_200_OK)
 
         return Response({"result": "Failed to get access token."}, status=status.HTTP_400_BAD_REQUEST)
+    
+
+"""
+USER MANAGEMENT SERVICES
+"""    
+
+
+
