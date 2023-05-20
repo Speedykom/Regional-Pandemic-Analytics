@@ -150,7 +150,7 @@ class CreateUser(APIView):
             "username": form_data["username"],
             "email": form_data["email"],
         }
-        return Response(user, status=response.status_code)
+        return Response(user, status=status.HTTP_200_OK)
 
 
 class ListUsers(APIView):
@@ -158,8 +158,11 @@ class ListUsers(APIView):
     API view to get all users
     """
     def get(self, request): 
-         #Login to admin
+        #Login to admin
         admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
 
         headers = {
             'Authorization': f"Bearer {admin_login['data'['access_token']]}",
@@ -169,8 +172,33 @@ class ListUsers(APIView):
         response = requests.get(url=APP_USER_BASE_URL, headers=headers)
 
         if response.status_code != 200:
-            return HttpResponse(response.reason, status=response.status_code)
+            return Response(response.reason, status=response.status_code)
         
         users = response.json()
-        return HttpResponse(users, status=status.HTTP_200_OK)
+        return Response(users, status=status.HTTP_200_OK)
+    
+
+class GetUser (APIView):
+    """
+    API view to get user profile
+    """   
+    def get(self, request):
+        #Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"Bearer {admin_login['data'['access_token']]}",
+            'Content-Type': "application/json"
+        }
+
+        response = requests.get(url=f"{APP_USER_BASE_URL}/{request.query_params.get('id', None)}", headers=headers)
+
+        if response.status_code != 200:
+            return Response(response.reason, status=response.status_code)
+        
+        users = response.json()
+        return Response(users, status=status.HTTP_200_OK)
 
