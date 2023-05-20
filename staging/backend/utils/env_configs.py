@@ -1,3 +1,5 @@
 import os
 
 KEYCLOAK_ADMIN_BASE_URL = os.getenv("KEYCLOAK_ADMIN_BASE_URL")
+APP_USER_BASE_URL = os.getenv("APP_USER_BASE_URL")
+APP_REALM = os.getenv("APP_REALM")
