@@ -153,4 +153,24 @@ class CreateUser(APIView):
         return Response(user, status=response.status_code)
 
 
+class ListUsers(APIView):
+    """
+    API view to get all users
+    """
+    def get(self, request): 
+         #Login to admin
+        admin_login = keycloak_admin_login()
+
+        headers = {
+            'Authorization': f"Bearer {admin_login['data'['access_token']]}",
+            'Content-Type': "application/json"
+        }
+
+        response = requests.get(url=APP_USER_BASE_URL, headers=headers)
+
+        if response.status_code != 200:
+            return HttpResponse(response.reason, status=response.status_code)
+        
+        users = response.json()
+        return HttpResponse(users, status=status.HTTP_200_OK)
 
