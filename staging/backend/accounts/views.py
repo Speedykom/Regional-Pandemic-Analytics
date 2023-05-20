@@ -10,13 +10,12 @@ from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import AllowAny
+from staging.backend.utils.env_configs import (APP_USER_BASE_URL, KEYCLOAK_ADMIN_BASE_URL, APP_REALM)
 
 from staging.backend.utils.generators import get_random_secret
+from staging.backend.utils.keycloak_auth import keycloak_admin_login
 
 BASE_URL = os.getenv("BASE_URL")
-
-APP_REALM = os.getenv("APP_REALM")
-
 
 def homepage(request):
     print(os.getenv('CLIENT_ID'))
@@ -100,6 +99,58 @@ class KeycloakRefreshTokenAPI(APIView):
 """
 USER MANAGEMENT SERVICES
 """    
+class CreateUser(APIView):
+    """
+    API view to create Keycloak user
+    """
+    def post(self, request):
+        form_data = {
+            "firstName": request.data.get("firstName", None),
+            "lastName": request.data.get("lastName", None),
+            "username": request.data.get("username", None),
+            "email": request.data.get("email", None),
+            "enabled": True,
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": get_random_secret(),
+                    "temporary": False
+                }
+            ],
+            "requiredActions": [
+                "VERIFY_EMAIL"
+            ],
+            "groups": [],
+            "attributes": {
+                "locale":[
+                    "en"
+                ]
+            }
+        } 
+
+        #Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+        
+        headers = {
+            'Authorization': f"Bearer {admin_login['data'['access_token']]}",
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.post(url=APP_USER_BASE_URL, data=form_data, headers=headers)
+
+        if response.status_code != 200 or response.status_code != 201:
+            return Response(response.json(), status=response.status_code)
+        
+        user = {
+            "firstName": form_data["firstName"],
+            "lastName": form_data["lastName"],
+            "username": form_data["username"],
+            "email": form_data["email"],
+        }
+        return Response(user, status=response.status_code)
 
 
 
