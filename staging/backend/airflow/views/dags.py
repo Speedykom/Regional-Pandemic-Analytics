@@ -9,7 +9,7 @@ api = os.getenv("AIRFLOW_API")
 class DagApiView(APIView):
 
     def get(self, request, id=None):
-        print(api);
+        print(api)
 
         if id:
             route = "{}/dags/{}".format(api, id)

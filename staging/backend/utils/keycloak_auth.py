@@ -1,7 +1,8 @@
 import requests
 import os
 
-from staging.backend.utils.env_configs import KEYCLOAK_ADMIN_BASE_URL
+from utils.env_configs import KEYCLOAK_ADMIN_BASE_URL
+
 
 def keycloak_admin_login():
     form_data = {
@@ -20,5 +21,5 @@ def keycloak_admin_login():
         "data": response.json(),
         "status": response.status_code
     }
-    
+
     return serverResponse
