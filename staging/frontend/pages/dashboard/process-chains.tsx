@@ -39,7 +39,7 @@ export default function ProcessChains() {
       data_source_name: data?.dataSource,
     };
     axios
-      .post("https://data2.igad-health.eu/api/airflow/", dagData, {
+      .post("http://localhost:/api/airflow/", dagData, {
         auth: {
           username: "admin",
           password: "back@123",
@@ -168,7 +168,7 @@ export default function ProcessChains() {
       >
         Add Process Chain
       </button>
-      <Dag />
+      <Dag/>
     </DashboardFrame>
   );
 }
