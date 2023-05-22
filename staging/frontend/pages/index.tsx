@@ -8,6 +8,8 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import secureLocalStorage from "react-secure-storage";
 import jwt_decode from "jwt-decode";
+import { Button, Checkbox } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const schema = z.object({
   username: z
@@ -116,6 +118,14 @@ export default function LoginForm() {
                           <span className="text-xs tracking-wide text-red-600">
                             {errors?.password && errors.password.message}
                           </span>
+                        </div>
+                        <div className="w-full flex justify-between">
+                          <div className="w-1/2">
+                            <Checkbox>Remember Me</Checkbox>
+                          </div>
+                          <div className="">
+                            <Button type="link" onClick={() => router.push("/users/reset-password")}>Forgot password</Button>
+                          </div>
                         </div>
                         <button
                           className="bg-emerald-700 inline-block px-6 py-2.5 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-emerald-500 hover:shadow-lg focus:shadow-lg focus:outline-none focus:ring-0 active:shadow-lg transition duration-150 ease-in-out w-full mb-3"
