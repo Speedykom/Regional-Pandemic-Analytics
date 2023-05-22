@@ -104,7 +104,7 @@ class KeycloakRefreshTokenAPI(APIView):
         return Response({"result": "Failed to get access token."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CreateUser(APIView):
+class CreateUserAPI(APIView):
     """
     API view to create Keycloak user
     """
@@ -171,7 +171,6 @@ class ListUsersAPI(APIView):
     """
     API view to get all users
     """
-    print(APP_USER_BASE_URL)
     @swagger_auto_schema()
     def get(self, request, *args, **kwargs): 
         #Login to admin
