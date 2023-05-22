@@ -6,6 +6,8 @@ x-common:
     environment:
       - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
     volumes:
+      - ./staging/superset/client_secret.json:/app/superset/client_secret.json
+      - ./staging/superset/security.py:/app/superset/security.py
       - ./staging/superset/config.py:/app/superset/config.py
 
 x-airflow-common:
@@ -34,14 +36,14 @@ volumes:
 
 services:
   web:
-      image: nginx:latest
-      container_name: igad_nginx
-      ports:
-        - 80:${NGINX_PORT}
-        # - 443:443
-      volumes:
-        - ./staging/nginx/nginx.conf:/etc/nginx/nginx.conf
-        - ./staging/nginx/html:/etc/nginx/html
+    image: nginx:latest
+    container_name: igad_nginx
+    ports:
+      - 80:${NGINX_PORT}
+      # - 443:443
+    volumes:
+      - ./staging/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./staging/nginx/html:/etc/nginx/html
 
   frontend:
     container_name: next-js-frontend
