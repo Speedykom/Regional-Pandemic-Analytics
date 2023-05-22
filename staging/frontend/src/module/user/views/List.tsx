@@ -1,5 +1,5 @@
 import { IGADTable } from "@/components/common/table"
-import { PlusCircleOutlined, PlusOutlined } from "@ant-design/icons"
+import { PlusOutlined } from "@ant-design/icons"
 import { Button } from "antd"
 import { useUsers } from "../hooks";
 import { IUser } from "../interface";
