@@ -108,6 +108,15 @@ class CreateUser(APIView):
     """
     API view to create Keycloak user
     """
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'firstName': openapi.Schema(type=openapi.TYPE_STRING),
+            'lastName': openapi.Schema(type=openapi.TYPE_STRING),
+            'username': openapi.Schema(type=openapi.TYPE_STRING),
+            'email': openapi.Schema(type=openapi.TYPE_STRING)
+        }
+    ))
     def post(self, request):
         form_data = {
             "firstName": request.data.get("firstName", None),
