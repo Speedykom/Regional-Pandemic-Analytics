@@ -10,6 +10,10 @@ from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import AllowAny
+from utils.env_configs import (APP_USER_BASE_URL)
+
+from utils.generators import get_random_secret
+from utils.keycloak_auth import keycloak_admin_login
 
 BASE_URL = os.getenv("BASE_URL")
 
@@ -61,6 +65,13 @@ class KeyCloakLoginAPI(APIView):
         if res.status_code == 200:
             data = res.json()
             return Response(data, status=status.HTTP_200_OK)
+        
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            print(admin_login["data"])
+        
+        print(admin_login)
 
         return Response({"result": "Login Failed"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -91,3 +102,118 @@ class KeycloakRefreshTokenAPI(APIView):
             return Response(data, status=status.HTTP_200_OK)
 
         return Response({"result": "Failed to get access token."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CreateUserAPI(APIView):
+    """
+    API view to create Keycloak user
+    """
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'firstName': openapi.Schema(type=openapi.TYPE_STRING),
+            'lastName': openapi.Schema(type=openapi.TYPE_STRING),
+            'username': openapi.Schema(type=openapi.TYPE_STRING),
+            'email': openapi.Schema(type=openapi.TYPE_STRING)
+        }
+    ))
+    def post(self, request):
+        form_data = {
+            "firstName": request.data.get("firstName", None),
+            "lastName": request.data.get("lastName", None),
+            "username": request.data.get("username", None),
+            "email": request.data.get("email", None),
+            "enabled": True,
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": get_random_secret(8),
+                    "temporary": False
+                }
+            ],
+            "requiredActions": [
+                "VERIFY_EMAIL"
+            ],
+            "groups": [],
+            "attributes": {
+                "locale": [
+                    "en"
+                ]
+            }
+        }
+
+        # Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+        
+        headers = {
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
+            'Content-Type': 'application/json'
+        }
+
+        response = requests.post(url=APP_USER_BASE_URL, data=form_data, headers=headers)
+
+        if response.status_code != 200 or response.status_code != 201:
+            return Response(response.reason, status=response.status_code)
+        
+        user = {
+            "firstName": form_data["firstName"],
+            "lastName": form_data["lastName"],
+            "username": form_data["username"],
+            "email": form_data["email"],
+        }
+        return Response(user, status=status.HTTP_200_OK)
+
+
+class ListUsersAPI(APIView):
+    """
+    API view to get all users
+    """
+    @swagger_auto_schema()
+    def get(self, request, *args, **kwargs): 
+        #Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        print(admin_login)
+        headers = {
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
+            'Content-Type': "application/json"
+        }
+
+        response = requests.get(url=APP_USER_BASE_URL, headers=headers)
+
+        if response.status_code != 200:
+            return Response(response.reason, status=response.status_code)
+
+        users = response.json()
+        return Response(users, status=status.HTTP_200_OK)
+
+
+class GetUserAPI(APIView):
+    """
+    API view to get user profile
+    """   
+    def get(self, request):
+        #Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
+            'Content-Type': "application/json"
+        }
+
+        response = requests.get(url=f"{APP_USER_BASE_URL}/{request.query_params.get('id', None)}", headers=headers)
+
+        if response.status_code != 200:
+            return Response(response.reason, status=response.status_code)
+        
+        users = response.json()
+        return Response(users, status=status.HTTP_200_OK)

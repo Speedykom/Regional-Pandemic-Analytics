@@ -73,7 +73,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
+DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "True") == "True"
 
 if DEVELOPMENT_MODE is True:
     DATABASES = {
@@ -147,6 +147,10 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://data2.igad-health.eu',
+]
 
 KEYCLOAK_EXEMPT_URIS = []
 KEYCLOAK_CONFIG = {
