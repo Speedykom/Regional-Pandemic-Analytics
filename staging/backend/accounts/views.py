@@ -10,7 +10,7 @@ from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import AllowAny
-from utils.env_configs import (APP_USER_BASE_URL, KEYCLOAK_ADMIN_BASE_URL, APP_REALM)
+from utils.env_configs import (APP_USER_BASE_URL)
 
 from utils.generators import get_random_secret
 from utils.keycloak_auth import keycloak_admin_login
@@ -65,6 +65,13 @@ class KeyCloakLoginAPI(APIView):
         if res.status_code == 200:
             data = res.json()
             return Response(data, status=status.HTTP_200_OK)
+        
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            print(admin_login["data"])
+        
+        print(admin_login)
 
         return Response({"result": "Login Failed"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -97,16 +104,10 @@ class KeycloakRefreshTokenAPI(APIView):
         return Response({"result": "Failed to get access token."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-"""
-USER MANAGEMENT SERVICES
-"""
-
-
 class CreateUser(APIView):
     """
     API view to create Keycloak user
     """
-
     def post(self, request):
         form_data = {
             "firstName": request.data.get("firstName", None),
@@ -117,7 +118,7 @@ class CreateUser(APIView):
             "credentials": [
                 {
                     "type": "password",
-                    "value": get_random_secret(),
+                    "value": get_random_secret(8),
                     "temporary": False
                 }
             ],
@@ -137,17 +138,17 @@ class CreateUser(APIView):
 
         if admin_login["status"] != 200:
             return Response(admin_login["data"], status=admin_login["status"])
-
+        
         headers = {
-            'Authorization': f"Bearer {admin_login['data'['access_token']]}",
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
             'Content-Type': 'application/json'
         }
 
         response = requests.post(url=APP_USER_BASE_URL, data=form_data, headers=headers)
 
         if response.status_code != 200 or response.status_code != 201:
-            return Response(response.json(), status=response.status_code)
-
+            return Response(response.reason, status=response.status_code)
+        
         user = {
             "firstName": form_data["firstName"],
             "lastName": form_data["lastName"],
@@ -157,20 +158,22 @@ class CreateUser(APIView):
         return Response(user, status=status.HTTP_200_OK)
 
 
-class ListUsers(APIView):
+class ListUsersAPI(APIView):
     """
     API view to get all users
     """
-
-    def get(self, request):
-        # Login to admin
+    print(APP_USER_BASE_URL)
+    @swagger_auto_schema()
+    def get(self, request, *args, **kwargs): 
+        #Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
             return Response(admin_login["data"], status=admin_login["status"])
 
+        print(admin_login)
         headers = {
-            'Authorization': f"Bearer {admin_login['data'['access_token']]}",
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
             'Content-Type': "application/json"
         }
 
@@ -183,20 +186,19 @@ class ListUsers(APIView):
         return Response(users, status=status.HTTP_200_OK)
 
 
-class GetUser(APIView):
+class GetUserAPI(APIView):
     """
     API view to get user profile
-    """
-
+    """   
     def get(self, request):
-        # Login to admin
+        #Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
             return Response(admin_login["data"], status=admin_login["status"])
 
         headers = {
-            'Authorization': f"Bearer {admin_login['data'['access_token']]}",
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
             'Content-Type': "application/json"
         }
 
@@ -204,6 +206,6 @@ class GetUser(APIView):
 
         if response.status_code != 200:
             return Response(response.reason, status=response.status_code)
-
+        
         users = response.json()
         return Response(users, status=status.HTTP_200_OK)
