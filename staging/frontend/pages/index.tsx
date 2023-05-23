@@ -44,8 +44,6 @@ export default function LoginForm() {
   } = useForm<TFormValues>({ resolver: zodResolver(schema) });
 
   const handleLogin = (data: TFormValues) => {
-    console.log(JSON.stringify(data));
-    
     axios
       .post("/api/accounts/login/", JSON.stringify(data), {
         headers: {
@@ -66,7 +64,7 @@ export default function LoginForm() {
       .catch((error: unknown) => {
 
         if (error instanceof Error) {
-          toast.error('Wrong username or password!', {
+          toast.error('Wrong username or password! :' + error.toString(), {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
