@@ -3,20 +3,56 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import { useUsers } from "../hooks";
 import { IUser } from "../interface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddUser } from "./Add";
+import axios from "axios";
+import { getData } from "@/utils";
 
 export const UserList = () => {
 	const edit = () => {};
 	const del = () => {};
 	const view = () => {};
+
+	const [token, setToken] = useState<string>("");
+
+	const fetchToken = async () => {
+		try {
+			const url = "/api/get-access-token/";
+			const response = await getData(url);
+			setToken(response?.accessToken);
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
+
 	const [open, setOpen] = useState<boolean>(false);
+	const [data, setData] = useState();
+
 	const onClose = () => {
 		setOpen(false);
 	};
 
-	// openDrawer={open}
-	// 				closeDrawer={onClose}
+	useEffect(() => {
+		const fetchUsers = async () => {
+			try {
+				const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/all`;
+				const response = await axios.get(url, {
+					auth: {
+						username: "admin",
+						password: "admin",
+					},
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
+				setData(response?.data);
+			} catch (error) {
+				console.error("Error:", error);
+			}
+		};
+		fetchUsers();
+	});
+
 	const { rows, columns, loading } = useUsers({ edit, del, view });
 	return (
 		<div className="">
@@ -36,11 +72,11 @@ export const UserList = () => {
 							style={{
 								backgroundColor: "#087757",
 								border: "1px solid #e65e01",
-                            }}
-                            onClick={((e) => {
-                                e.preventDefault()
-                                setOpen(true)
-                            }) }
+							}}
+							onClick={(e) => {
+								e.preventDefault();
+								setOpen(true);
+							}}
 						>
 							New User
 						</Button>
@@ -52,14 +88,14 @@ export const UserList = () => {
 					<IGADTable
 						key={"id"}
 						loading={loading}
-						rows={rows}
+						rows={data}
 						columns={columns}
 					/>
 				</div>
-            </section>
-            <div>
-                <AddUser openDrawer={open} closeDrawer={onClose} />
-            </div>
+			</section>
+			<div>
+				<AddUser openDrawer={open} closeDrawer={onClose} />
+			</div>
 		</div>
 	);
 };
