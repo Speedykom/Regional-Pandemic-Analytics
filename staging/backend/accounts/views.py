@@ -171,6 +171,8 @@ class ListUsersAPI(APIView):
     """
     API view to get all users
     """
+    permission_classes = [AllowAny, ]
+
     def get(self, request, *args, **kwargs): 
         #Login to admin
         admin_login = keycloak_admin_login()
@@ -197,6 +199,8 @@ class ListRolesAPI(APIView):
     """
     API view to get realm roles
     """
+    permission_classes = [AllowAny, ]
+
     def get(self, request, *args, **kwargs): 
         #Login to admin
         admin_login = keycloak_admin_login()
@@ -223,6 +227,7 @@ class GetUserAPI(APIView):
     """
     API view to get user profile
     """   
+    permission_classes = [AllowAny, ]
     def get(self, request):
         #Login to admin
         admin_login = keycloak_admin_login()
