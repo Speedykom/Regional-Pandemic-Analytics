@@ -16,3 +16,9 @@ RUN chmod +x /usr/local/tomcat/watchFiles.sh
 #ADD hop-cpython-1.5.tar.gz /usr/local/tomcat/plugins/transforms
 COPY plugins/transforms/googlesheets /usr/local/tomcat/plugins/transforms/googlesheets
 COPY hop-config.json /usr/local/tomcat/webapps/ROOT/config/hop-config.json
+
+COPY keycloak/keycloak-adapter-core-18.0.0/*.jar /usr/local/tomcat/lib/
+COPY keycloak/tomcat-users.xml /usr/local/tomcat/conf
+COPY keycloak/context.xml /usr/local/tomcat/webapps/ROOT/META-INF
+COPY keycloak/web.xml /usr/local/tomcat/webapps/ROOT/WEB-INF
+COPY keycloak/keycloak.json /usr/local/tomcat/webapps/ROOT/WEB-INF

@@ -4,6 +4,7 @@ import {
   HomeIcon,
   ChevronDoubleRightIcon,
   ChartBarSquareIcon,
+  UsersIcon,
 } from "@heroicons/react/24/solid";
 import { useRouter } from "next/router";
 
@@ -88,6 +89,22 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
             </div>
             <div>
               <p>Process Chain(s)</p>
+            </div>
+          </div>
+        </Link>
+        <Link href="/users">
+          <div
+            className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+              router.pathname == "/users"
+                ? "bg-green-100 text-green-500"
+                : "text-gray-400 hover:bg-green-100 hover:text-green-500"
+            }`}
+          >
+            <div className="mr-2">
+              <UsersIcon className="h-5 w-5" />
+            </div>
+            <div>
+              <p>Accounts</p>
             </div>
           </div>
         </Link>
