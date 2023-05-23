@@ -44,6 +44,8 @@ export default function LoginForm() {
   } = useForm<TFormValues>({ resolver: zodResolver(schema) });
 
   const handleLogin = (data: TFormValues) => {
+    console.log(JSON.stringify(data));
+    
     axios
       .post("/api/accounts/login/", JSON.stringify(data), {
         headers: {

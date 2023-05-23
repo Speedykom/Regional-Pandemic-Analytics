@@ -10,7 +10,7 @@ from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import AllowAny
-from utils.env_configs import (APP_USER_BASE_URL)
+from utils.env_configs import (APP_USER_BASE_URL, APP_CLIENT_ID, APP_CLIENT_SECRET, APP_REALM, APP_USER_ROLES)
 
 from utils.generators import get_random_secret
 from utils.keycloak_auth import keycloak_admin_login
@@ -41,7 +41,7 @@ class KeyCloakLoginAPI(APIView):
     """
     API for authenticating with Keycloak
     """
-    permission_classes = [AllowAny, ]
+    permission_classes = [AllowAny]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -171,7 +171,6 @@ class ListUsersAPI(APIView):
     """
     API view to get all users
     """
-    @swagger_auto_schema()
     def get(self, request, *args, **kwargs): 
         #Login to admin
         admin_login = keycloak_admin_login()
@@ -179,19 +178,45 @@ class ListUsersAPI(APIView):
         if admin_login["status"] != 200:
             return Response(admin_login["data"], status=admin_login["status"])
 
-        print(admin_login)
         headers = {
             'Authorization': f"Bearer {admin_login['data']['access_token']}",
-            'Content-Type': "application/json"
+            'Content-Type': "application/json",
+            'cache-control': "no-cache"
         }
 
-        response = requests.get(url=APP_USER_BASE_URL, headers=headers)
+        response = requests.get(f"{APP_USER_BASE_URL}", headers=headers)
 
         if response.status_code != 200:
             return Response(response.reason, status=response.status_code)
 
         users = response.json()
         return Response(users, status=status.HTTP_200_OK)
+    
+    
+class ListRolesAPI(APIView):
+    """
+    API view to get realm roles
+    """
+    def get(self, request, *args, **kwargs): 
+        #Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
+            'Content-Type': "application/json",
+            'cache-control': "no-cache"
+        }
+
+        response = requests.get(f"{APP_USER_ROLES}/", headers=headers)
+
+        if response.status_code != 200:
+            return Response(response.reason, status=response.status_code)
+
+        roles = response.json()
+        return Response(roles, status=status.HTTP_200_OK)    
 
 
 class GetUserAPI(APIView):
@@ -217,3 +242,4 @@ class GetUserAPI(APIView):
         
         users = response.json()
         return Response(users, status=status.HTTP_200_OK)
+
