@@ -7,7 +7,6 @@ from ..models import Dag
 from ..serializers import DagSerializer
 from ..gdags.dynamic import DynamicDag
 
-
 class DagView(APIView):
     # dynamic dag template
     template = "airflow/gdags/template.py"
