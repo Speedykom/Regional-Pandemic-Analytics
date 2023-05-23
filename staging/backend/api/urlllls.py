@@ -1,16 +1,13 @@
-from django.contrib import admin
 from . import views
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from django.urls import re_path, path, include
+from django.urls import re_path, path
 from airflow.views.gdag import DagView
 from airflow.views.dags import DagApiView
 from airflow.views.gdag import DagView
 from data.views import DataUploadAPI
-from accounts.views import (
-    LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI, CreateUserAPI, ListUsersAPI, ListRolesAPI
-)
+from accounts.views import LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI, CreateUserAPI, ListUsersAPI
 
 
 app_name = 'api'
@@ -46,9 +43,10 @@ urlpatterns = [
     # ---------------------- End of Keycloak Endpoints -----------------------------------
 
     # ---------------------- Keycloak User Management Endpoints --------------------------
-    path('accounts/user', CreateUserAPI.as_view()), #Create User
-    path('accounts/user/all', ListUsersAPI.as_view()), #get users
-    path('accounts/roles', ListRolesAPI.as_view()), #get realm roles
+    #Create User
+    path('account/user/', CreateUserAPI.as_view()),
+    #get users
+    path('account/user/all', ListUsersAPI.as_view()),
     # ---------------------- End of User Management Endpoints ----------------------------
 
     # ---------------------- Airflow  Endpoints ------------------------------------------
