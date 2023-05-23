@@ -41,7 +41,7 @@ class KeyCloakLoginAPI(APIView):
     """
     API for authenticating with Keycloak
     """
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny, ]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -65,13 +65,6 @@ class KeyCloakLoginAPI(APIView):
         if res.status_code == 200:
             data = res.json()
             return Response(data, status=status.HTTP_200_OK)
-        
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            print(admin_login["data"])
-        
-        print(admin_login)
 
         return Response({"result": "Login Failed"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -108,6 +101,7 @@ class CreateUserAPI(APIView):
     """
     API view to create Keycloak user
     """
+
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
@@ -147,7 +141,7 @@ class CreateUserAPI(APIView):
 
         if admin_login["status"] != 200:
             return Response(admin_login["data"], status=admin_login["status"])
-        
+
         headers = {
             'Authorization': f"Bearer {admin_login['data']['access_token']}",
             'Content-Type': 'application/json'
@@ -157,7 +151,7 @@ class CreateUserAPI(APIView):
 
         if response.status_code != 200 or response.status_code != 201:
             return Response(response.reason, status=response.status_code)
-        
+
         user = {
             "firstName": form_data["firstName"],
             "lastName": form_data["lastName"],
@@ -171,8 +165,9 @@ class ListUsersAPI(APIView):
     """
     API view to get all users
     """
-    def get(self, request, *args, **kwargs): 
-        #Login to admin
+
+    def get(self, request, *args, **kwargs):
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -191,14 +186,15 @@ class ListUsersAPI(APIView):
 
         users = response.json()
         return Response(users, status=status.HTTP_200_OK)
-    
-    
+
+
 class ListRolesAPI(APIView):
     """
     API view to get realm roles
     """
-    def get(self, request, *args, **kwargs): 
-        #Login to admin
+
+    def get(self, request, *args, **kwargs):
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -216,15 +212,16 @@ class ListRolesAPI(APIView):
             return Response(response.reason, status=response.status_code)
 
         roles = response.json()
-        return Response(roles, status=status.HTTP_200_OK)    
+        return Response(roles, status=status.HTTP_200_OK)
 
 
 class GetUserAPI(APIView):
     """
     API view to get user profile
-    """   
+    """
+
     def get(self, request):
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -239,7 +236,6 @@ class GetUserAPI(APIView):
 
         if response.status_code != 200:
             return Response(response.reason, status=response.status_code)
-        
+
         users = response.json()
         return Response(users, status=status.HTTP_200_OK)
-
