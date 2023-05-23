@@ -7,7 +7,7 @@ from airflow.views.gdag import DagView
 from airflow.views.dags import DagApiView
 from airflow.views.gdag import DagView
 from data.views import DataUploadAPI
-from accounts.views import LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI
+from accounts.views import LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI, CreateUserAPI, ListUsersAPI
 
 
 app_name = 'api'
@@ -41,6 +41,13 @@ urlpatterns = [
     path('accounts/refresh/', KeycloakRefreshTokenAPI.as_view()),
 
     # ---------------------- End of Keycloak Endpoints -----------------------------------
+
+    # ---------------------- Keycloak User Management Endpoints --------------------------
+    #Create User
+    path('account/user/', CreateUserAPI.as_view()),
+    #get users
+    path('account/user/all', ListUsersAPI.as_view()),
+    # ---------------------- End of User Management Endpoints ----------------------------
 
     # ---------------------- Airflow  Endpoints ------------------------------------------
     path('airflow/', DagView.as_view()),
