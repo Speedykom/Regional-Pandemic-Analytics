@@ -1,0 +1,9 @@
+{
+  "realm": "regional-pandemic-analytics",
+  "auth-server-url": "https://auth2.igad-health.eu:443",
+  "ssl-required": "all",
+  "resource": "hop-client",
+  "public-client": true,
+  "confidential-port": 443,
+  "use-resource-role-mappings": false
+}
