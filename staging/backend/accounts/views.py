@@ -334,7 +334,7 @@ class ResetPasswordAPI(APIView):
         }
 
         request_body = {
-            "email": request.data.get("email", str)
+            "email": request.data.get("email", None)
         }
 
         checkUser = requests.get(f"{APP_USER_BASE_URL}?email={request_body['email']}", headers=headers)
