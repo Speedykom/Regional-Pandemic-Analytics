@@ -48,7 +48,7 @@ urlpatterns = [
     path('account/user/<str:id>/', GetUserAPI.as_view()), #get user
     path('account/user/<str:id>/delete', DeleteUserAPI.as_view()), #delete user
     path('account/user/<str:id>/assign-roles', AssignRolesAPI.as_view()), #assign user
-    path('account/user/<str:id>/rest-password', ResetPasswordAPI.as_view()), #reset user password
+    path('account/user/reset/password', ResetPasswordAPI.as_view()), #reset user password
     # ---------------------- End of User Management Endpoints ----------------------------
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
