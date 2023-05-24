@@ -6,4 +6,5 @@ export interface IUser {
     email: string;
     enabled: boolean;
     emailVerified: boolean;
+    realmRoles: []
 }

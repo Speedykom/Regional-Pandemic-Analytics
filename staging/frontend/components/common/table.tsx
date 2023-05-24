@@ -4,7 +4,7 @@ import { IGADCard } from "./card";
 import { EditableCellProps, EditableRowProps } from "./edit-table-row";
 
 interface props {
-	rows: any[];
+	rows: [];
 	columns: ColumnType<any>[];
 	loading?: boolean;
 	rowKey?: string;
