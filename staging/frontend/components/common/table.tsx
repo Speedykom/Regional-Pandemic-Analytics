@@ -3,8 +3,16 @@ import { ColumnType } from "antd/es/table";
 import { IGADCard } from "./card";
 import { EditableCellProps, EditableRowProps } from "./edit-table-row";
 
+interface Role {
+	id?: string;
+	name: string;
+	description: string;
+	composite: boolean;
+	clientRole: boolean;
+}
+
 interface props {
-	rows: [];
+	rows: Role[];
 	columns: ColumnType<any>[];
 	loading?: boolean;
 	rowKey?: string;
