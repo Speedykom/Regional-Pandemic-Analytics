@@ -333,11 +333,18 @@ class ResetPasswordAPI(APIView):
             'Content-Type': "application/json"
         }
 
-        form_data = {
-            "actions": request.data.get["actions", [str]]
+        request_body = {
+            "email": request.data.get("email", None)
         }
 
-        response = requests.put(url=f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings/realm", json=form_data, headers=headers)
+        checkUser = requests.get(f"{APP_USER_BASE_URL}?email={request_body['email']}", headers=headers)
+        if checkUser.status_code != 200:
+            return Response(response.reason, status=response.status_code)
+
+        user = checkUser.json()
+        form_data = ["UPDATE_PASSWORD"]
+
+        response = requests.put(url=f"{APP_USER_BASE_URL}/{user['id']}/execute-actions-email", json=form_data, headers=headers)
 
         if response.status_code != 200:
             return Response(response.reason, status=response.status_code)
