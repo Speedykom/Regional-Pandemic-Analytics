@@ -2,44 +2,10 @@ import { Card, Flex, SelectBox, SelectBoxItem } from "@tremor/react";
 import { useState, useEffect } from "react";
 import DagList from "@/components/Dag/DagList";
 import { DagType } from "./interface";
+import { useFindAllQuery } from "@/redux/services/process";
 
 export default function Dag() {
-  const [data, setData] = useState<DagType[]>([
-    {
-      id: 1,
-      isActive: true,
-      dagId: 1,
-      description: "Sample covid dag",
-    },
-    {
-      id: 3,
-      isActive: true,
-      dagId: 3,
-      description: "Sample ebola dag",
-    },
-    {
-      id: 4,
-      isActive: false,
-      dagId: 4,
-      description: "Sample anthrax dag",
-    },
-    {
-      id: 2,
-      isActive: true,
-      dagId: 2,
-      description: "Sample malaria dag",
-    },
-    {
-      id: 5,
-      isActive: false,
-      dagId: 5,
-      description: "Sample typhoid dag",
-    },
-  ]);
-  // const { data, error } = useSWR(
-  //   [url, username, password],
-  //   ([url, username, password]) => axiosFetcher(url, username, password)
-  // );
+  const { data, isLoading } = useFindAllQuery();
 
   return (
     <>
@@ -47,7 +13,7 @@ export default function Dag() {
         <h1 className="text-xl mb-3">SpeedyKom Process Chain(s)</h1>
         <Flex flexDirection="col">
           {data ? (
-            data?.map((dag: object | any) => (
+            data.dags?.map((dag: object | any) => (
               <DagList key={dag?.id} dag={dag} />
             ))
           ) : (
