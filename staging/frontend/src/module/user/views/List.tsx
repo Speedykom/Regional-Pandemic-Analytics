@@ -1,23 +1,74 @@
 import { IGADTable } from "@/components/common/table";
 import { PlusOutlined } from "@ant-design/icons";
-import { Button } from "antd";
+import { Button, Popconfirm, message } from "antd";
 import { useUsers } from "../hooks";
 import { IUser } from "../interface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AddUser } from "./Add";
+import axios from "axios";
+import { getData } from "@/utils";
+import { PreviewUser } from "./Preview";
+
+interface props {
+	viewPro: () => void;
+}
 
 export const UserList = () => {
 	const edit = () => {};
 	const del = () => {};
-	const view = () => {};
+
+	const [token, setToken] = useState<string>("");
+
+	const fetchToken = async () => {
+		try {
+			const url = "/api/get-access-token/";
+			const response = await getData(url);
+			setToken(response?.accessToken);
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
+
 	const [open, setOpen] = useState<boolean>(false);
+	const [data, setData] = useState([]);
+
+	const [view, setView] = useState<boolean>(false);
+	const [userId, setUserId] = useState<string>()
+	const viewPro = (id: string) => {
+		setView(true)
+		setUserId(id)
+	};
+	const onCloseView = () => {
+		setView(false);
+	};
+
 	const onClose = () => {
 		setOpen(false);
 	};
 
-	// openDrawer={open}
-	// 				closeDrawer={onClose}
-	const { rows, columns, loading } = useUsers({ edit, del, view });
+	const fetchUsers = async () => {
+		try {
+			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/users`;
+			const response = await axios.get(url, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			setData(response?.data);
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
+
+	const refetch = () => {
+		fetchUsers()
+	}
+
+	useEffect(() => {
+		fetchUsers();
+	}, []);
+
+	const { rows, columns, loading } = useUsers({ edit, del, viewPro, refetch });
 	return (
 		<div className="">
 			<nav>
@@ -36,11 +87,11 @@ export const UserList = () => {
 							style={{
 								backgroundColor: "#087757",
 								border: "1px solid #e65e01",
-                            }}
-                            onClick={((e) => {
-                                e.preventDefault()
-                                setOpen(true)
-                            }) }
+							}}
+							onClick={(e) => {
+								e.preventDefault();
+								setOpen(true);
+							}}
 						>
 							New User
 						</Button>
@@ -52,14 +103,17 @@ export const UserList = () => {
 					<IGADTable
 						key={"id"}
 						loading={loading}
-						rows={rows}
+						rows={data}
 						columns={columns}
 					/>
 				</div>
-            </section>
-            <div>
-                <AddUser openDrawer={open} closeDrawer={onClose} />
-            </div>
+			</section>
+			<div>
+				<AddUser openDrawer={open} closeDrawer={onClose} refetch={fetchUsers} />
+			</div>
+			<div>
+				{view && userId && <PreviewUser openDrawer={view} closeDrawer={onCloseView} userId={userId} />}
+			</div>
 		</div>
 	);
 };
