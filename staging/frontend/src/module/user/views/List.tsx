@@ -1,17 +1,21 @@
 import { IGADTable } from "@/components/common/table";
 import { PlusOutlined } from "@ant-design/icons";
-import { Button } from "antd";
+import { Button, Popconfirm, message } from "antd";
 import { useUsers } from "../hooks";
 import { IUser } from "../interface";
 import { useEffect, useState } from "react";
 import { AddUser } from "./Add";
 import axios from "axios";
 import { getData } from "@/utils";
+import { PreviewUser } from "./Preview";
+
+interface props {
+	viewPro: () => void;
+}
 
 export const UserList = () => {
 	const edit = () => {};
 	const del = () => {};
-	const view = () => {};
 
 	const [token, setToken] = useState<string>("");
 
@@ -26,34 +30,45 @@ export const UserList = () => {
 	};
 
 	const [open, setOpen] = useState<boolean>(false);
-	const [data, setData] = useState();
+	const [data, setData] = useState([]);
+
+	const [view, setView] = useState<boolean>(false);
+	const [userId, setUserId] = useState<string>()
+	const viewPro = (id: string) => {
+		setView(true)
+		setUserId(id)
+	};
+	const onCloseView = () => {
+		setView(false);
+	};
 
 	const onClose = () => {
 		setOpen(false);
 	};
 
-	useEffect(() => {
-		const fetchUsers = async () => {
-			try {
-				const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/all`;
-				const response = await axios.get(url, {
-					auth: {
-						username: "admin",
-						password: "admin",
-					},
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				});
-				setData(response?.data);
-			} catch (error) {
-				console.error("Error:", error);
-			}
-		};
-		fetchUsers();
-	});
+	const fetchUsers = async () => {
+		try {
+			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/users`;
+			const response = await axios.get(url, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			setData(response?.data);
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
 
-	const { rows, columns, loading } = useUsers({ edit, del, view });
+	const refetch = () => {
+		fetchUsers()
+	}
+
+	useEffect(() => {
+		fetchUsers();
+	}, []);
+
+	const { rows, columns, loading } = useUsers({ edit, del, viewPro, refetch });
 	return (
 		<div className="">
 			<nav>
@@ -94,7 +109,10 @@ export const UserList = () => {
 				</div>
 			</section>
 			<div>
-				<AddUser openDrawer={open} closeDrawer={onClose} />
+				<AddUser openDrawer={open} closeDrawer={onClose} refetch={fetchUsers} />
+			</div>
+			<div>
+				{view && userId && <PreviewUser openDrawer={view} closeDrawer={onCloseView} userId={userId} />}
 			</div>
 		</div>
 	);
