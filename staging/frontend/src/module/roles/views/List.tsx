@@ -82,6 +82,7 @@ export const RoleList = () => {
 	}, []);
 
 	const { columns, loading } = useRoles({ edit, del, refetch });
+	// @ts-ignore
 	return (
 		<div className="">
 			<nav>
@@ -113,6 +114,7 @@ export const RoleList = () => {
 					<IGADTable
 						key={"id"}
 						loading={loading}
+						// @ts-ignore
 						rows={data}
 						columns={columns}
 					/>
