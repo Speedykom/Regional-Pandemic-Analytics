@@ -8,7 +8,8 @@ export const DummyUsers: Array<IUser> = [
         username: "kodemagik",
         email: "james.kamara@speedykom.de",
         enabled: true,
-        emailVerified: true
+        emailVerified: true,
+        realmRoles: []
     },
     {
         id: "nbmnbmnb-7676-jajhs-76nbnm",
@@ -17,7 +18,8 @@ export const DummyUsers: Array<IUser> = [
         username: "ishodev",
         email: "ishmael.kargbo@speedykom.de",
         enabled: true,
-        emailVerified: true
+        emailVerified: true,
+        realmRoles: []
     },
     {
         id: "adffdsdf-7676-jajhs-76nbnm",
@@ -26,7 +28,8 @@ export const DummyUsers: Array<IUser> = [
         username: "fodeydev",
         email: "foday.conteh@speedykom.de",
         enabled: true,
-        emailVerified: false
+        emailVerified: false,
+        realmRoles: []
     },
     {
         id: "lioioil-7676-jajhs-76nbnm",
@@ -35,6 +38,7 @@ export const DummyUsers: Array<IUser> = [
         username: "shekdev",
         email: "sheku.dumbuya@speedykom.de",
         enabled: false,
-        emailVerified: false
+        emailVerified: false,
+        realmRoles: []
     }
 ]
