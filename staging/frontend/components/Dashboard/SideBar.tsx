@@ -111,7 +111,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
         <Link href="/roles">
           <div
             className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-              router.pathname == "/users"
+              router.pathname == "/roles"
                 ? "bg-green-100 text-green-500"
                 : "text-gray-400 hover:bg-green-100 hover:text-green-500"
             }`}
