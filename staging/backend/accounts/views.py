@@ -310,5 +310,40 @@ class AssignRolesAPI(APIView):
         return Response({'message': 'Roles has been assigned successfully'}, status=status.HTTP_200_OK)       
 
 
+class ResetPasswordAPI(APIView):
+    """
+    API view to reset users password
+    """   
+    permission_classes = [AllowAny, ]
+
+    roleObject = {
+        'id': str,
+        'name': str
+    }
+
+    def put(self, request, **kwargs):
+        #Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
+            'Content-Type': "application/json"
+        }
+
+        form_data = {
+            "actions": request.data.get["actions", [str]]
+        }
+
+        response = requests.put(url=f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings/realm", json=form_data, headers=headers)
+
+        if response.status_code != 200:
+            return Response(response.reason, status=response.status_code)
+        
+        return Response({'message': 'Reset password link has been sent to your email'}, status=status.HTTP_200_OK)       
+
+
 
 

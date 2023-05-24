@@ -8,7 +8,7 @@ from airflow.views.process import GetProcessChain, RunProcessChain
 from airflow.views.gdag import DagView
 from data.views import DataUploadAPI
 from accounts.views import (
-    LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI, CreateUserAPI, ListUsersAPI, ListRolesAPI, GetUserAPI, DeleteUserAPI, AssignRolesAPI
+    LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI, CreateUserAPI, ListUsersAPI, ListRolesAPI, GetUserAPI, DeleteUserAPI, AssignRolesAPI, ResetPasswordAPI
 )
 
 
@@ -48,6 +48,7 @@ urlpatterns = [
     path('account/user/<str:id>/', GetUserAPI.as_view()), #get user
     path('account/user/<str:id>/delete', DeleteUserAPI.as_view()), #delete user
     path('account/user/<str:id>/assign-roles', AssignRolesAPI.as_view()), #assign user
+    path('account/user/<str:id>/rest-password', ResetPasswordAPI.as_view()), #reset user password
     # ---------------------- End of User Management Endpoints ----------------------------
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
