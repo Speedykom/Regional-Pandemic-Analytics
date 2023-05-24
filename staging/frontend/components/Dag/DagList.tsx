@@ -1,7 +1,7 @@
 import { Dialog, Switch, Transition } from "@headlessui/react";
 
 import React, { Fragment, useEffect, useState } from "react";
-import { Text, Dropdown, DropdownItem } from "@tremor/react";
+import { Dropdown, DropdownItem } from "@tremor/react";
 import { Flex, TextInput } from "@tremor/react";
 import { DagType } from "../TABS/interface";
 import {
@@ -24,12 +24,16 @@ export default function DagList({ dag }: Props) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setEnabled(dag?.isActive);
+    setEnabled(dag?.is_active);
   }, [dag]);
 
   const handleBtnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setOpen(!open);
   };
+
+  const run = () => {
+    
+  }
 
   return (
     <Flex className="w-full space-y-5 ">
@@ -173,7 +177,7 @@ export default function DagList({ dag }: Props) {
         </button>
       </div>
       <div>
-        <h4>{dag?.dagId}</h4>
+        <h4>{dag?.dag_id}</h4>
       </div>
       <div>
         <h6>{dag?.description}</h6>
@@ -182,7 +186,7 @@ export default function DagList({ dag }: Props) {
         <button className="px-3 py-1 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white">
           Edit
         </button>
-        <button className="px-3 py-1 border border-green-500 text-green-500 rounded-md hover:bg-green-500 hover:text-white focus:outline-none focus:bg-green-500 focus:text-white">
+        <button onClick={run} className="px-3 py-1 border border-green-500 text-green-500 rounded-md hover:bg-green-500 hover:text-white focus:outline-none focus:bg-green-500 focus:text-white">
           Run
         </button>
         <button className="px-3 py-1 border border-purple-500 text-purple-500 rounded-md hover:bg-purple-500 hover:text-white focus:outline-none focus:bg-purple-500 focus:text-white">

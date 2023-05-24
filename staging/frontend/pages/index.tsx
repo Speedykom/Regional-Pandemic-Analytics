@@ -9,7 +9,7 @@ import axios from "axios";
 import secureLocalStorage from "react-secure-storage";
 import jwt_decode from "jwt-decode";
 import { Button, Checkbox } from "antd";
-import { useNavigate } from "react-router-dom";
+import {toast} from "react-toastify";
 
 const schema = z.object({
   username: z
@@ -62,7 +62,19 @@ export default function LoginForm() {
         }
       })
       .catch((error: unknown) => {
-        if (error instanceof Error) console.log(error);
+
+        if (error instanceof Error) {
+          toast.error('Wrong username or password! :' + error.toString(), {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        }
       });
   };
   return (

@@ -33,11 +33,13 @@ x-airflow-common:
     - ./staging/airflow/plugins:/opt/airflow/plugins
     - ./staging/airflow/webserver_config.py:/opt/airflow/webserver_config.py
     - ./staging/airflow/user_auth.py:/opt/airflow/user_auth.py
+    - ./staging/airflow/airflow.cfg:/opt/airflow/airflow.cfg
     - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   superset_data: {}
   metadata_data: {}
+  airflow_data: {}
   backend_data: {}
   keyclock_data: {}
   minio_data: {}
@@ -64,50 +66,50 @@ services:
     volumes:
         - minio_data:/data
   
-  # # ========
-  # # Frontend
-  # # ========
-  # frontend:
-  #   container_name: frontend
-  #   build:
-  #     context: ./staging/frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3000:3000"
-  #   restart: always
-  #   command: npm run start
+  # ========
+  # Frontend
+  # ========
+  frontend:
+    container_name: frontend
+    build:
+      context: ./staging/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    restart: always
+    command: npm run start
 
-  # # ========
-  # # Backend
-  # # ========
-  # backend_db:
-  #   image: postgres:14
-  #   container_name: backend_db
-  #   volumes:
-  #     - backend_data:/var/lib/postgresql/data
-  #   environment:
-  #     - POSTGRES_PASSWORD=igad
-  #     - POSTGRES_USER=igad
-  #     - POSTGRES_DB=igad
+  # ========
+  # Backend
+  # ========
+  backend_db:
+    image: postgres:14
+    container_name: backend_db
+    volumes:
+      - backend_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=igad
+      - POSTGRES_USER=igad
+      - POSTGRES_DB=igad
 
-  # backend:
-  #   container_name: backend
-  #   command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
-  #   build:
-  #     context: ./staging/backend
-  #     dockerfile: Dockerfile
-  #   depends_on:
-  #     - backend_db
-  #   ports:
-  #     - "8000:8000"
-  #   volumes:
-  #     - ./staging/airflow/dags:/airflow/dags
-  #   environment:
-  #     - DB_NAME=igad
-  #     - DB_USER=igad
-  #     - DB_PASSWORD=igad
-  #     - DB_HOST=backend_db
-  #     - DB_PORT=5432
+  backend:
+    container_name: backend
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
+    build:
+      context: ./staging/backend
+      dockerfile: Dockerfile
+    depends_on:
+      - backend_db
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./staging/airflow/dags:/airflow/dags
+    environment:
+      - DB_NAME=igad
+      - DB_USER=igad
+      - DB_PASSWORD=igad
+      - DB_HOST=backend_db
+      - DB_PORT=5432
 
   # =======
   #  Druid
@@ -278,6 +280,8 @@ services:
       POSTGRES_DB: airflow
     ports:
       - "6434:6432"
+    volumes:
+      - airflow_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "airflow" ]
       interval: 5s
