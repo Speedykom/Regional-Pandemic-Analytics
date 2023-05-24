@@ -1,6 +1,5 @@
 import { ColumnsType } from "antd/es/table";
-import { IUser } from "./interface";
-import { DummyUsers } from "./dommy";
+import { IRoles } from "./interface";
 import { Popconfirm, Tag } from "antd";
 import { FiEdit, FiEye, FiTrash } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
@@ -11,13 +10,12 @@ import axios from "axios";
 import { OpenNotification } from "@/utils/notify";
 
 interface props {
-	edit: () => void;
+    edit: () => void;
 	del: () => void;
-	viewPro: (id: string) => void;
 	refetch: () => void;
 }
 
-export const useUsers = ({ edit, del, viewPro, refetch }: props) => {
+export const useRoles = ({ edit, del, refetch }: props) => {
 	const action = (id: string) => {
 		const deleteUser = async () => {
 			await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${id}/delete`, {
@@ -34,17 +32,6 @@ export const useUsers = ({ edit, del, viewPro, refetch }: props) => {
 		return (
 			<Action>
 				<ul>
-					<li>
-						<button
-							onClick={(e) => {
-								e.preventDefault
-								viewPro(id)
-							}}
-							className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
-						>
-							<FiEye className="mt-1" /> <span>Preview</span>
-						</button>
-					</li>
 					<li>
 						<button
 							onClick={edit}
@@ -72,50 +59,31 @@ export const useUsers = ({ edit, del, viewPro, refetch }: props) => {
 		);
 	};
 
-	const columns: ColumnsType<IUser> = [
+	const columns: ColumnsType<IRoles> = [
 		{
 			// fixed: "left",
-			title: "Full Name",
-			key: "firstName",
-			dataIndex: "firstName",
-			render: (firstName, record) => (
-				<div className="flex items-center pr-1">
-					<div>
-						<div className="w-10 h-10 mr-3 overflow-hidden rounded-full flex items-center justify-center border border-gray-400">
-							<img src="/avater.png" className="w-full h-full" />
-						</div>
-					</div>
-					<p className="font-sans text-base">
-						{record.firstName} {record?.lastName}
-					</p>
-				</div>
-			),
+			title: "Role Name",
+			key: "name",
+			dataIndex: "name",
+			render: (name) => name,
 			className: "text-gray-700",
 			ellipsis: true,
 		},
 		{
-			title: "Email",
-			key: "email",
-			dataIndex: "email",
-			render: (email) => email,
+			title: "Description",
+			key: "description",
+			dataIndex: "description",
+			render: (description) => description,
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
 		},
 		{
-			title: "Username",
-			key: "username",
-			dataIndex: "username",
-			render: (username) => username,
-			className: "text-gray-700 font-sans",
-			ellipsis: true,
-		},
-		{
-			title: "Email Verified",
-			key: "emailVerified",
-			dataIndex: "emailVerified",
-			render: (emailVerified, record) => (
+			title: "Composite",
+			key: "composite",
+			dataIndex: "composite",
+			render: (composite) => (
 				<div>
-					{record.emailVerified ? (
+					{composite ? (
 						<Tag
 							className="flex items-center text-lg"
 							icon={<CheckCircleOutlined />}
@@ -138,12 +106,12 @@ export const useUsers = ({ edit, del, viewPro, refetch }: props) => {
 			ellipsis: true,
 		},
 		{
-			title: "Enabled",
-			key: "enabled",
-			dataIndex: "enabled",
-			render: (enabled, record) => (
+			title: "Client Role",
+			key: "clientRole",
+			dataIndex: "clientRole",
+			render: (clientRole) => (
 				<div>
-					{record.enabled ? (
+					{clientRole ? (
 						<Tag
 							className="flex items-center text-lg"
 							icon={<CheckCircleOutlined />}
@@ -173,5 +141,5 @@ export const useUsers = ({ edit, del, viewPro, refetch }: props) => {
 		},
 	];
 
-	return { rows: DummyUsers, columns, loading: false };
+	return { columns, loading: false };
 };
