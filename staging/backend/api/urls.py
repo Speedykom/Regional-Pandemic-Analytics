@@ -4,7 +4,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import re_path, path
 from airflow.views.gdag import DagView
-from airflow.views.dags import DagApiView
+from airflow.views.process import GetProcessChain, RunProcessChain
 from airflow.views.gdag import DagView
 from data.views import DataUploadAPI
 from accounts.views import (
@@ -35,7 +35,6 @@ urlpatterns = [
     # Login Endpoint
     path('accounts/login/', LoginAPI.as_view()),
 
-
     # ---------------------- Keycloak Endpoints ------------------------------------------
     path('accounts/auth/', KeyCloakLoginAPI.as_view()), # Keycloak login
     path('accounts/refresh/', KeycloakRefreshTokenAPI.as_view()), # Keycloak refresh token
@@ -51,14 +50,15 @@ urlpatterns = [
     path('account/user/<str:id>/assign-roles', AssignRolesAPI.as_view()), #assign user
     # ---------------------- End of User Management Endpoints ----------------------------
 
-    # ---------------------- Airflow  Endpoints ------------------------------------------
+    # ---------------------- Process Chain  Endpoints ------------------------------------------
     path('airflow/', DagView.as_view()),
-    path('airflow/dags/', DagApiView.as_view()),
-    path('airflow/<str:id>/', DagView.as_view()),
     path('airflow/<str:id>/', DagView.as_view()),
     path('airflow/<str:id>/update/', DagView.as_view()),
 
-    # ---------------------- End of Airflow Endpoints -------------------------------------
+    # ---------------------- Airflow  Endpoints ------------------------------------------
+    path('process/', GetProcessChain.as_view()),
+    path('process/run/<str:id>', RunProcessChain.as_view()),
+    path('process/<str:id>/', GetProcessChain.as_view()),
 
     # ---------------------- Data upload Endpoints ------------------------------------------
 

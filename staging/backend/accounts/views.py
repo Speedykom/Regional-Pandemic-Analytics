@@ -40,7 +40,7 @@ class KeyCloakLoginAPI(APIView):
     """
     API for authenticating with Keycloak
     """
-    permission_classes = [AllowAny, ]
+    permission_classes = [AllowAny]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -64,13 +64,6 @@ class KeyCloakLoginAPI(APIView):
         if res.status_code == 200:
             data = res.json()
             return Response(data, status=status.HTTP_200_OK)
-        
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            print(admin_login["data"])
-        
-        print(admin_login)
 
         return Response({"result": "Login Failed"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -195,8 +188,8 @@ class ListUsersAPI(APIView):
 
         users = response.json()
         return Response(users, status=status.HTTP_200_OK)
-    
-    
+
+
 class ListRolesAPI(APIView):
     """
     API view to get realm roles
@@ -222,7 +215,7 @@ class ListRolesAPI(APIView):
             return Response(response.reason, status=response.status_code)
 
         roles = response.json()
-        return Response(roles, status=status.HTTP_200_OK)    
+        return Response(roles, status=status.HTTP_200_OK)
 
 
 class GetUserAPI(APIView):
@@ -246,7 +239,7 @@ class GetUserAPI(APIView):
 
         if response.status_code != 200:
             return Response(response.reason, status=response.status_code)
-        
+
         users = response.json()
         return Response(users, status=status.HTTP_200_OK)
     
