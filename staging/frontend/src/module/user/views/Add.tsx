@@ -1,37 +1,69 @@
-import { SaveOutlined } from "@ant-design/icons";
+import { getData } from "@/utils";
+import { OpenNotification } from "@/utils/notify";
+import { DeleteColumnOutlined, DeleteRowOutlined, SaveOutlined,  } from "@ant-design/icons";
 import {
-	AutoComplete,
+	Alert,
 	Button,
-	Cascader,
-	Checkbox,
-	Col,
 	Drawer,
 	Form,
 	Input,
-	InputNumber,
-	Row,
-	Select,
 	Switch,
+	notification,
 } from "antd";
-import { useState } from "react";
+import { NotificationPlacement } from "antd/es/notification/interface";
+import axios from "axios";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 
 interface props {
 	openDrawer: boolean;
 	closeDrawer: () => void;
+	refetch: () => void;
 }
 
-const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters'];
+const OPTIONS = ["Apples", "Nails", "Bananas", "Helicopters"];
 
-export const AddUser = ({ openDrawer, closeDrawer }: props) => {
+export const AddUser = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const [selectedItems, setSelectedItems] = useState<string[]>([]);
 	const [enabled, setEnabled] = useState(false);
 
-  const filteredOptions = OPTIONS.filter((o) => !selectedItems.includes(o));
+	const filteredOptions = OPTIONS.filter((o) => !selectedItems.includes(o));
 
 	const [form] = Form.useForm();
+	const [api, contextHolder] = notification.useNotification();
+	const router = useRouter()
 
-	const onFinish = (values: any) => {
-		console.log("Received values of form: ", values);
+	const [token, setToken] = useState<string>("");
+
+	const fetchToken = async () => {
+		try {
+			const url = "/api/get-access-token/";
+			const response = await getData(url);
+			setToken(response?.accessToken);
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
+
+	const onFinish = async (values: any) => {
+		await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user`, values, {
+			headers: {
+				'Authorization': `Bearer ${token}`,
+				'Content-Type': "application/json"
+			},
+		}).then((res) => {
+			closeDrawer()
+			refetch()
+			OpenNotification(res.data?.message, 'topRight', 'success')
+		}).catch((err) => {
+			api.info({
+				message: `User Creation`,
+				description: err.response.data,
+				placement: 'topRight',
+				type: "success"
+			  });
+		})
+		
 	};
 
 	const formItemLayout = {
@@ -45,62 +77,64 @@ export const AddUser = ({ openDrawer, closeDrawer }: props) => {
 		},
 	};
 
-	const tailFormItemLayout = {
-		wrapperCol: {
-			xs: {
-				span: 24,
-				offset: 0,
-			},
-			sm: {
-				span: 16,
-				offset: 8,
-			},
-		},
-	};
-
 	const triggerEnabled = () => {
 		if (enabled) {
-			setEnabled(false)
+			setEnabled(false);
+		} else {
+			setEnabled(true);
 		}
-		else {
-			setEnabled(true)
-		}
-		console.log({enabled});
-		
-	}
+		console.log({ enabled });
+	};
+
+	useEffect(() => {
+		fetchToken()
+	}, [])
 
 	return (
 		<Drawer
 			title={"Create a user"}
-			size={"large"}
+			size="large"
 			placement={"right"}
 			closable={true}
 			className="border-2"
 			destroyOnClose={true}
 			open={openDrawer}
 			onClose={closeDrawer}
+			width={700}
 			footer={
 				<div className="flex justify-end space-x-3 py-3 px-4">
-					<button
-						className="focus:outline-none px-8 py-2 text-gray-700 font-medium"
-						style={{
-							backgroundColor: "#48328526",
-						}}
-						type="submit"
+					<Form
+						form={form}
+						onFinish={onFinish}
 					>
-						Cancel
-					</button>
-					<Button
-						type="primary"
-						className="flex items-center"
-						icon={<SaveOutlined />}
-						style={{
-							backgroundColor: "#087757",
-							border: "1px solid #e65e01",
-						}}
-					>
-						New User
-					</Button>
+						<Form.Item>
+							<div className="flex space-x-2">
+							<Button
+								className="focus:outline-none px-6 py-2 text-gray-700 font-medium flex items-center"
+								style={{
+									backgroundColor: "#48328526",
+									border: "1px solid #48328526",
+								}}
+									type="primary"
+									icon={<DeleteColumnOutlined />}
+							>
+								Cancel
+							</Button>
+							<Button
+								type="primary"
+								className="flex items-center"
+								icon={<SaveOutlined />}
+								style={{
+									backgroundColor: "#087757",
+									border: "1px solid #e65e01",
+								}}
+								htmlType="submit"
+							>
+								New User
+							</Button>
+							</div>
+						</Form.Item>
+					</Form>
 				</div>
 			}
 		>
@@ -109,12 +143,14 @@ export const AddUser = ({ openDrawer, closeDrawer }: props) => {
 				form={form}
 				name="register"
 				onFinish={onFinish}
-				style={{ maxWidth: 600 }}
 				scrollToFirstError
+				size="large"
+				className="w-full"
 			>
 				<Form.Item
 					name="firstName"
 					label="Given Names"
+					className="w-full"
 					rules={[
 						{
 							required: true,
@@ -122,7 +158,7 @@ export const AddUser = ({ openDrawer, closeDrawer }: props) => {
 						},
 					]}
 				>
-					<Input />
+					<Input className="w-full" />
 				</Form.Item>
 				<Form.Item
 					name="lastName"
@@ -150,7 +186,7 @@ export const AddUser = ({ openDrawer, closeDrawer }: props) => {
 						},
 					]}
 				>
-					<Input />
+					<Input className="w-full" />
 				</Form.Item>
 				<Form.Item
 					name="username"
@@ -171,10 +207,14 @@ export const AddUser = ({ openDrawer, closeDrawer }: props) => {
 					valuePropName="checked"
 					tooltip="Do you want to automatically enable this user?"
 				>
-					<Switch checked={enabled} onChange={triggerEnabled} style={{ backgroundColor: "#8c8c8c" }} />
+					<Switch
+						checked={enabled}
+						onChange={triggerEnabled}
+						style={{ backgroundColor: "#8c8c8c" }}
+					/>
 				</Form.Item>
 
-				<Form.Item
+				{/* <Form.Item
 					name="realmRoles"
 					label="Assign Roles"
 					tooltip="Select roles to assign to the user"
@@ -191,13 +231,7 @@ export const AddUser = ({ openDrawer, closeDrawer }: props) => {
 							label: item,
 						}))}
 					/>
-				</Form.Item>
-				
-				<Form.Item {...tailFormItemLayout}>
-					<Button type="primary" htmlType="submit">
-						Register
-					</Button>
-				</Form.Item>
+				</Form.Item> */}
 			</Form>
 		</Drawer>
 	);
