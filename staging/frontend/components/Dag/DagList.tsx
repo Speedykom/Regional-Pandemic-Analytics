@@ -39,7 +39,7 @@ export default function DagList({ dag }: Props) {
   }, [])
 
   useEffect(() => {
-    setEnabled(dag?.isActive);
+    setEnabled(dag?.is_active);
   }, [dag]);
 
   const handleBtnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -54,9 +54,9 @@ export default function DagList({ dag }: Props) {
     setFile(fileList[0]);
   }
 
-  const handleDataUpload = (e: React.FormEvent<HTMLFormElement>) =>{
+  const handleDataUpload = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if(!fileName){
+    if (!fileName) {
       toast.error('Please enter the file name!', {
         position: "top-right",
         autoClose: 5000,
@@ -70,7 +70,7 @@ export default function DagList({ dag }: Props) {
       return
     }
 
-    if(!fileType){
+    if (!fileType) {
       toast.error('Please select a file type!', {
         position: "top-right",
         autoClose: 5000,
@@ -84,7 +84,7 @@ export default function DagList({ dag }: Props) {
       return
     }
 
-    if(!file){
+    if (!file) {
       toast.error('Please upload a file!', {
         position: "top-right",
         autoClose: 5000,
@@ -106,11 +106,11 @@ export default function DagList({ dag }: Props) {
     formData.append('file', file, file['name'])
 
     axios.post('/api/data/upload/', formData, {
-      headers:{
+      headers: {
         "Content-Type": "multipart/form-data"
       }
-    }).then(response =>{
-      if(response.status == 201){
+    }).then(response => {
+      if (response.status == 201) {
         toast.success('File uploaded successfully!', {
           position: "top-right",
           autoClose: 5000,
@@ -126,6 +126,9 @@ export default function DagList({ dag }: Props) {
         .catch(error => {
 
         })
+  }
+  const run = () => {
+
   }
 
   return (
@@ -282,7 +285,7 @@ export default function DagList({ dag }: Props) {
         </button>
       </div>
       <div>
-        <h4>{dag?.dagId}</h4>
+        <h4>{dag?.dag_id}</h4>
       </div>
       <div>
         <h6>{dag?.description}</h6>
@@ -291,7 +294,7 @@ export default function DagList({ dag }: Props) {
         <button className="px-3 py-1 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white">
           Edit
         </button>
-        <button className="px-3 py-1 border border-green-500 text-green-500 rounded-md hover:bg-green-500 hover:text-white focus:outline-none focus:bg-green-500 focus:text-white">
+        <button onClick={run} className="px-3 py-1 border border-green-500 text-green-500 rounded-md hover:bg-green-500 hover:text-white focus:outline-none focus:bg-green-500 focus:text-white">
           Run
         </button>
         <button className="px-3 py-1 border border-purple-500 text-purple-500 rounded-md hover:bg-purple-500 hover:text-white focus:outline-none focus:bg-purple-500 focus:text-white">
