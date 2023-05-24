@@ -1,8 +1,29 @@
-import { Input } from "antd";
+import { OpenNotification } from "@/utils/notify";
+import { Button, Form, Input } from "antd";
+import axios from "axios";
 import { useRouter } from "next/router";
 
 export const ResetPassword = () => {
-	const router = useRouter()
+	const router = useRouter();
+	const [form] = Form.useForm()
+	const resetPassword = async (values: any) => {
+		await axios
+			.put(
+				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/reset/password`, values,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			)
+			.then((res) => {
+				OpenNotification(res.data?.message, "topRight", "success");
+				router.push("/");
+			})
+			.catch((err) => {
+				OpenNotification(err.response?.data, "topRight", "error");
+			});
+	};
 	return (
 		<div className="max-w-4xl mx-auto mt-24 w-full h-full">
 			<div className="flex flex-col items-center justify-center p-4 space-y-4 antialiased text-gray-900">
@@ -16,22 +37,34 @@ export const ResetPassword = () => {
 						address associated with your account and we'll send you a link to
 						reset your password.
 					</p>
-					<form action="#" className="space-y-6 w-ful">
-						<div>
-							<label htmlFor="email" className="test-base pl-1 mb-2">Email</label>
-							<Input type="email" autoComplete="true" size="large" placeholder="Email address" required />
-						</div>
-						<div>
-							<button
-								type="submit"
-								className="w-full px-4 py-2 font-medium text-center text-white bg-indigo-600 transition-colors duration-200 rounded-md bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
+					<Form form={form} onFinish={resetPassword} className="space-y-6 w-ful">
+						<Form.Item>
+							<label htmlFor="email" className="test-base pl-1 mb-2">
+								Email
+							</label>
+							<Input
+								type="email"
+								autoComplete="true"
+								size="large"
+								placeholder="Email address"
+								required
+							/>
+						</Form.Item>
+						<Form.Item>
+							<Button
+								size="large"
+								htmlType="submit"
+								className="w-full px-4 py-2 font-medium text-center text-white bg-emerald-700 transition-colors duration-200 rounded-md bg-primary hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1"
 							>
 								Continue
-							</button>
-						</div>
-					</form>
+							</Button>
+						</Form.Item>
+					</Form>
 					<div className="text-sm text-gray-600 items-center flex justify-between">
-						<p className="text-gray-800 cursor-pointer hover:text-blue-500 inline-flex items-center ml-4" onClick={() => router.push("/")}>
+						<p
+							className="text-gray-800 cursor-pointer hover:text-blue-500 inline-flex items-center ml-4"
+							onClick={() => router.push("/")}
+						>
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								className="h-5 w-5 mr-2"
