@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "@hookform/resolvers": "^3.1.0",
-    "cookies-next": "^2.1.1",
-    "zod": "^3.21.4"
-  }
-}
