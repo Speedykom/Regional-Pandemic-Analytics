@@ -13,10 +13,9 @@ from rest_framework.permissions import AllowAny
 from utils.env_configs import (APP_USER_BASE_URL, APP_CLIENT_ID, APP_CLIENT_SECRET, APP_REALM, APP_USER_ROLES)
 
 from utils.generators import get_random_secret
-from utils.keycloak_auth import keycloak_admin_login
+from utils.keycloak_auth import keycloak_admin_login, create_keycloak_user
 
 BASE_URL = os.getenv("BASE_URL")
-
 
 def homepage(request):
     print(os.getenv('CLIENT_ID'))
@@ -108,63 +107,66 @@ class CreateUserAPI(APIView):
     """
     API view to create Keycloak user
     """
+    permission_classes = [AllowAny,]
+
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
             'firstName': openapi.Schema(type=openapi.TYPE_STRING),
             'lastName': openapi.Schema(type=openapi.TYPE_STRING),
             'username': openapi.Schema(type=openapi.TYPE_STRING),
-            'email': openapi.Schema(type=openapi.TYPE_STRING)
+            'email': openapi.Schema(type=openapi.TYPE_STRING),
+            'enabled': openapi.Schema(type=openapi.TYPE_BOOLEAN)
         }
     ))
-    def post(self, request):
+
+    def post(self, request, *args, **kwargs):
         form_data = {
             "firstName": request.data.get("firstName", None),
             "lastName": request.data.get("lastName", None),
             "username": request.data.get("username", None),
             "email": request.data.get("email", None),
-            "enabled": True,
+            "enabled": request.data.get("enabled", None),
             "credentials": [
                 {
                     "type": "password",
-                    "value": get_random_secret(8),
+                    "value": get_random_secret(10),
                     "temporary": False
                 }
             ],
+            "emailVerified": False,
             "requiredActions": [
                 "VERIFY_EMAIL"
-            ],
-            "groups": [],
-            "attributes": {
-                "locale": [
-                    "en"
-                ]
-            }
+            ]
         }
 
-        # Login to admin
+        #Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
             return Response(admin_login["data"], status=admin_login["status"])
-        
+
         headers = {
-            'Authorization': f"Bearer {admin_login['data']['access_token']}",
-            'Content-Type': 'application/json'
+            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
+            'Content-Type': "application/json",
+            'cache-control': "no-cache"
         }
 
-        response = requests.post(url=APP_USER_BASE_URL, data=form_data, headers=headers)
+        res = requests.post(f"{APP_USER_BASE_URL}", json=form_data, headers=headers)
 
-        if response.status_code != 200 or response.status_code != 201:
-            return Response(response.reason, status=response.status_code)
+        if res.status_code != 201:
+            return Response(res.reason, status=res.status_code)
         
         user = {
             "firstName": form_data["firstName"],
             "lastName": form_data["lastName"],
             "username": form_data["username"],
             "email": form_data["email"],
+            "enabled": form_data["enabled"],
+            "emailVerified": form_data["emailVerified"]
         }
-        return Response(user, status=status.HTTP_200_OK)
+
+        return Response({"message": "User created successfully", "user": user}, status=status.HTTP_200_OK)
 
 
 class ListUsersAPI(APIView):
@@ -189,7 +191,7 @@ class ListUsersAPI(APIView):
         response = requests.get(f"{APP_USER_BASE_URL}", headers=headers)
 
         if response.status_code != 200:
-            return Response(response.reason, status=response.status_code)
+            return Response(response.json(), status=response.status_code)
 
         users = response.json()
         return Response(users, status=status.HTTP_200_OK)
@@ -228,7 +230,7 @@ class GetUserAPI(APIView):
     API view to get user profile
     """   
     permission_classes = [AllowAny, ]
-    def get(self, request):
+    def get(self, request, **kwargs):
         #Login to admin
         admin_login = keycloak_admin_login()
 
@@ -240,11 +242,80 @@ class GetUserAPI(APIView):
             'Content-Type': "application/json"
         }
 
-        response = requests.get(url=f"{APP_USER_BASE_URL}/{request.query_params.get('id', None)}", headers=headers)
+        response = requests.get(url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
 
         if response.status_code != 200:
             return Response(response.reason, status=response.status_code)
         
         users = response.json()
         return Response(users, status=status.HTTP_200_OK)
+    
+
+class DeleteUserAPI(APIView):
+    """
+    API view to delete user from keycloak
+    """   
+    permission_classes = [AllowAny, ]
+    def delete(self, request, **kwargs):
+        #Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
+            'Content-Type': "application/json"
+        }
+
+        response = requests.delete(url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
+
+        if response.status_code != 200:
+            return Response(response.reason, status=response.status_code)
+        
+        return Response({'message': 'User deleted successfully'}, status=status.HTTP_200_OK)  
+     
+    
+class AssignRolesAPI(APIView):
+    """
+    API view to assign roles to users
+    """   
+    permission_classes = [AllowAny, ]
+
+    roleObject = {
+        'id': str,
+        'name': str
+    }
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'roles': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(openapi.TYPE_OBJECT))
+        }
+    ))
+
+    def put(self, request, **kwargs):
+        form_data = {
+            'roles': request.data.get("roles", [self.roleObject])
+        }
+        #Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
+            'Content-Type': "application/json"
+        }
+
+        response = requests.post(url=f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings/realm", json=form_data, headers=headers)
+
+        if response.status_code != 200:
+            return Response(response.reason, status=response.status_code)
+        
+        return Response({'message': 'Roles has been assigned successfully'}, status=status.HTTP_200_OK)       
+
+
+
 

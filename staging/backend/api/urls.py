@@ -7,7 +7,9 @@ from airflow.views.gdag import DagView
 from airflow.views.dags import DagApiView
 from airflow.views.gdag import DagView
 from data.views import DataUploadAPI
-from accounts.views import LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI, CreateUserAPI, ListUsersAPI
+from accounts.views import (
+    LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI, CreateUserAPI, ListUsersAPI, ListRolesAPI, GetUserAPI, DeleteUserAPI, AssignRolesAPI
+)
 
 
 app_name = 'api'
@@ -35,18 +37,18 @@ urlpatterns = [
 
 
     # ---------------------- Keycloak Endpoints ------------------------------------------
-    # Keycloak login
-    path('accounts/auth/', KeyCloakLoginAPI.as_view()),
-    # Keycloak refresh token
-    path('accounts/refresh/', KeycloakRefreshTokenAPI.as_view()),
+    path('accounts/auth/', KeyCloakLoginAPI.as_view()), # Keycloak login
+    path('accounts/refresh/', KeycloakRefreshTokenAPI.as_view()), # Keycloak refresh token
 
     # ---------------------- End of Keycloak Endpoints -----------------------------------
 
     # ---------------------- Keycloak User Management Endpoints --------------------------
-    #Create User
-    path('account/user/', CreateUserAPI.as_view()),
-    #get users
-    path('account/user/all', ListUsersAPI.as_view()),
+    path('account/user', CreateUserAPI.as_view()), #Create User
+    path('account/users', ListUsersAPI.as_view()), #get users
+    path('account/roles', ListRolesAPI.as_view()), #keycloak roles
+    path('account/user/<str:id>/', GetUserAPI.as_view()), #get user
+    path('account/user/<str:id>/delete', DeleteUserAPI.as_view()), #delete user
+    path('account/user/<str:id>/assign-roles', AssignRolesAPI.as_view()), #assign user
     # ---------------------- End of User Management Endpoints ----------------------------
 
     # ---------------------- Airflow  Endpoints ------------------------------------------
