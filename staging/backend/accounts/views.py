@@ -352,5 +352,41 @@ class ResetPasswordAPI(APIView):
         return Response({'message': 'Reset password link has been sent to your email'}, status=status.HTTP_200_OK)       
 
 
+class CreateRolesAPI(APIView):
+    """
+    API view to create Keycloak roles
+    """
+    permission_classes = [AllowAny,]
 
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'name': openapi.Schema(type=openapi.TYPE_STRING),
+            'description': openapi.Schema(type=openapi.TYPE_STRING)
+        }
+    ))
 
+    def post(self, request, *args, **kwargs):
+        form_data = {
+            "name": request.data.get("name", None),
+            "description": request.data.get("description", None),
+        }
+
+        #Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
+            'Content-Type': "application/json",
+            'cache-control': "no-cache"
+        }
+
+        res = requests.post(f"{APP_USER_ROLES}", json=form_data, headers=headers)
+
+        if res.status_code != 201:
+            return Response(res.reason, status=res.status_code)
+
+        return Response({"message": f'{form_data["name"]} role created successfully'}, status=status.HTTP_200_OK)
