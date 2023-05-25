@@ -5,11 +5,12 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import MultiPartParser
 from data.serializers import FileUploadSerializer
+from data.models import FileUpload
 from rest_framework.permissions import AllowAny
 
 
 class DataUploadAPI(APIView):
-    permission_classes = [AllowAny,]
+    permission_classes = [AllowAny, ]
     parser = [MultiPartParser]
 
     @swagger_auto_schema(request_body=openapi.Schema(
@@ -20,8 +21,12 @@ class DataUploadAPI(APIView):
             'file': openapi.Schema(type=openapi.TYPE_FILE)
         }
     ))
+    def get(self, request, *args, **kwargs):
+        data = FileUpload.objects.all().order_by("-date_added")
+        serializer = FileUploadSerializer(data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def post(self, request, *args, **kwargs):
-        print(request.data)
         serializer = FileUploadSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
