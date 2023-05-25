@@ -316,10 +316,6 @@ class ResetPasswordAPI(APIView):
     """   
     permission_classes = [AllowAny, ]
 
-    roleObject = {
-        'id': str,
-        'name': str
-    }
 
     def put(self, request, **kwargs):
         #Login to admin
@@ -339,12 +335,16 @@ class ResetPasswordAPI(APIView):
 
         checkUser = requests.get(f"{APP_USER_BASE_URL}?email={request_body['email']}", headers=headers)
         if checkUser.status_code != 200:
-            return Response(response.reason, status=response.status_code)
+            return Response(checkUser.reason, status=response.status_code)
 
-        user = checkUser.json()
-        form_data = ["UPDATE_PASSWORD"]
+        users = checkUser.json()
 
-        response = requests.put(url=f"{APP_USER_BASE_URL}/{user['id']}/execute-actions-email", json=form_data, headers=headers)
+        if len(users) == 0:
+            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        user = users[0]
+
+        response = requests.put(url=f"{APP_USER_BASE_URL}/{user['id']}/execute-actions-email", json=["UPDATE_PASSWORD"], headers=headers)
 
         if response.status_code != 200:
             return Response(response.reason, status=response.status_code)
