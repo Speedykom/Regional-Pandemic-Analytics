@@ -6,9 +6,9 @@ x-common:
     environment:
       - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
     volumes:
-      - ./staging/superset/client_secret.json:/app/superset/client_secret.json
-      - ./staging/superset/security.py:/app/superset/security.py
-      - ./staging/superset/config.py:/app/superset/config.py
+       - ./staging/superset/client_secret.json:/app/superset/client_secret.json
+      - ./staging/superset/security_manager.py:/app/superset/security_manager.py
+      - ./staging/superset/superset_config.py:/app/superset/superset_config.py
 
 x-airflow-common:
   &x-airflow-common
