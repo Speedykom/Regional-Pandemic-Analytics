@@ -10,6 +10,7 @@ import sys
 from collections import OrderedDict
 from datetime import timedelta
 from email.mime.multipart import MIMEMultipart
+from tracemalloc import BaseFilter
 from typing import (
     Any,
     Callable,
@@ -85,7 +86,7 @@ PACKAGE_JSON_FILE = pkg_resources.resource_filename(
 '''
 curr  =  os.path.abspath(os.getcwd())
 AUTH_TYPE = AUTH_OID
-SECRET_KEY = 'UKMzEm3yIuFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E'
+SECRET_KEY = os.environ.get("SUPERSET_SECRET_KEY") or CHANGE_ME_SECRET_KEY
 OIDC_CLIENT_SECRETS = curr + '/docker/pythonpath_dev/client_secret.json'
 OIDC_ID_TOKEN_COOKIE_SECURE = False
 OIDC_REQUIRE_VERIFIED_EMAIL = False
