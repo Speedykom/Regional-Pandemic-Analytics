@@ -1,10 +1,11 @@
 import os
 import sys
+from datetime import timedelta
+
 import environ
 import dj_database_url
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
-
 
 env = environ.Env()
 # environ.Env.read_env()
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'drf_yasg',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -159,3 +161,22 @@ KEYCLOAK_CONFIG = {
     'KEYCLOAK_CLIENT_ID': os.getenv("CLIENT_ID"),
     'KEYCLOAK_CLIENT_SECRET_KEY': os.getenv("CLIENT_SECRET")
 }
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
+MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
+MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET")
+MINIO_ENDPOINT = os.getenv("MINIO_URL")
+
+AWS_ACCESS_KEY_ID = MINIO_ACCESS_KEY
+AWS_SECRET_ACCESS_KEY = MINIO_SECRET_KEY
+AWS_STORAGE_BUCKET_NAME = MINIO_BUCKET_NAME
+AWS_S3_ENDPOINT_URL = MINIO_ENDPOINT
+AWS_DEFAULT_ACL = None
+AWS_QUERYSTRING_AUTH = False
+AWS_S3_FILE_OVERWRITE = False
+AWS_DEFAULT_REGION = "us-east-1"
+AWS_S3_SECURE_URLS = False
+AWS_S3_VERIFY = False
+
