@@ -11,7 +11,6 @@ from accounts.views import (
     LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI, CreateUserAPI, ListUsersAPI, ListRolesAPI, GetUserAPI, DeleteUserAPI, AssignRolesAPI, ResetPasswordAPI, CreateRolesAPI
 )
 
-
 app_name = 'api'
 
 schema_view = get_schema_view(
