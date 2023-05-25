@@ -6,7 +6,8 @@ import { useRouter } from "next/router";
 export const ResetPassword = () => {
 	const router = useRouter();
 	const [form] = Form.useForm()
-	const resetPassword = async (values: any) => {
+	const onFinish = async (values: any) => {
+		console.log({values});
 		await axios
 			.put(
 				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/reset/password`, values,
@@ -37,18 +38,22 @@ export const ResetPassword = () => {
 						address associated with your account and we'll send you a link to
 						reset your password.
 					</p>
-					<Form form={form} onFinish={resetPassword} className="space-y-6 w-ful">
-						<Form.Item>
-							<label htmlFor="email" className="test-base pl-1 mb-2">
-								Email
-							</label>
-							<Input
-								type="email"
-								autoComplete="true"
-								size="large"
-								placeholder="Email address"
-								required
-							/>
+					<Form form={form} onFinish={onFinish} className="space-y-6 w-ful" layout="vertical">
+						<Form.Item
+							name="email"
+							label={"E-mail"}
+							rules={[
+								{
+									type: "email",
+									message: "The input is not valid E-mail!",
+								},
+								{
+									required: true,
+									message: "Please input your E-mail!",
+								},
+							]}
+						>
+							<Input />
 						</Form.Item>
 						<Form.Item>
 							<Button
