@@ -5,8 +5,14 @@ from flask_oidc import OpenIDConnect
 from flask_appbuilder.security.views import AuthOIDView
 from flask_login import login_user
 from urllib.parse import quote
-from flask_appbuilder.views import ModelView, SimpleFormView, expose
-import logging
+from flask_appbuilder.views import expose
+
+class OIDCSecurityManager(SupersetSecurityManager):
+    def __init__(self,appbuilder):
+        super(OIDCSecurityManager, self).__init__(appbuilder)
+        if self.auth_type == AUTH_OID:
+            self.oid = OpenIDConnect(self.appbuilder.get_app)
+        self.authoidview = AuthOIDCView
 
 class AuthOIDCView(AuthOIDView):
     @expose('/login/', methods=['GET', 'POST'])
@@ -35,9 +41,3 @@ class AuthOIDCView(AuthOIDView):
         redirect_url = request.url_root.strip('/') + self.appbuilder.get_url_for_login
         return redirect(oidc.client_secrets.get('issuer') + '/protocol/openid-connect/logout?redirect_uri=' + quote(redirect_url))
     
-class OIDCSecurityManager(SupersetSecurityManager):
-    def __init__(self,appbuilder):
-        super(OIDCSecurityManager, self).__init__(appbuilder)
-        if self.auth_type == AUTH_OID:
-            self.oid = OpenIDConnect(self.appbuilder.get_app)
-        self.authoidview = AuthOIDCView

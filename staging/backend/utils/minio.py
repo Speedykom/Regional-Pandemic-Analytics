@@ -31,11 +31,13 @@ def upload_file_to_minio(bucket_name, uploaded_file):
         uploaded_file.seek(0)
 
         # Upload the file to the bucket.
-        client.put_object(
+        file_upload = client.put_object(
             bucket_name,uploaded_file.name, uploaded_file, length=uploaded_file.size
         )
 
         # Return True to indicate successful upload
+
+        print(file_upload)
         return True
 
     except S3Error as exc:

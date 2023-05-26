@@ -1,12 +1,9 @@
 import { ColumnsType } from "antd/es/table";
 import { IUser } from "./interface";
-import { DummyUsers } from "./dommy";
 import { Popconfirm, Tag } from "antd";
 import { FiEdit, FiEye, FiTrash } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Action } from "@/components/common/action";
-import { PreviewUser } from "./views/Preview";
-import { useState } from "react";
 import axios from "axios";
 import { OpenNotification } from "@/utils/notify";
 
@@ -173,5 +170,5 @@ export const useUsers = ({ edit, del, viewPro, refetch }: props) => {
 		},
 	];
 
-	return { rows: DummyUsers, columns, loading: false };
+	return { columns, loading: false };
 };

@@ -30,7 +30,7 @@ export const UserList = () => {
 	};
 
 	const [open, setOpen] = useState<boolean>(false);
-	const [data, setData] = useState([]);
+	const [data, setData] = useState<Array<IUser>>([]);
 
 	const [view, setView] = useState<boolean>(false);
 	const [userId, setUserId] = useState<string>()
@@ -68,7 +68,7 @@ export const UserList = () => {
 		fetchUsers();
 	}, []);
 
-	const { rows, columns, loading } = useUsers({ edit, del, viewPro, refetch });
+	const { columns, loading } = useUsers({ edit, del, viewPro, refetch });
 	return (
 		<div className="">
 			<nav>

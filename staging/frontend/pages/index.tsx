@@ -56,6 +56,8 @@ export default function LoginForm() {
 
           // @ts-ignore
           secureLocalStorage.setItem("username", payload?.given_name);
+          // @ts-ignore
+          secureLocalStorage.setItem("sue", payload?.email)
           secureLocalStorage.setItem("sua", "authenticated");
 
           router.push("/dashboard/");
@@ -64,7 +66,7 @@ export default function LoginForm() {
       .catch((error: unknown) => {
 
         if (error instanceof Error) {
-          toast.error('Wrong username or password! :' + error.toString(), {
+          toast.error('Wrong username or password!', {
             position: "top-right",
             autoClose: 5000,
             hideProgressBar: false,
