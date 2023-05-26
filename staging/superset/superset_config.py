@@ -10,6 +10,7 @@ import sys
 from collections import OrderedDict
 from datetime import timedelta
 from email.mime.multipart import MIMEMultipart
+from tracemalloc import BaseFilter
 from typing import (
     Any,
     Callable,
@@ -33,7 +34,7 @@ from flask import Blueprint
 from flask_appbuilder.security.manager import AUTH_DB, AUTH_OID
 from pandas._libs.parsers import STR_NA_VALUES  # pylint: disable=no-name-in-module
 from sqlalchemy.orm.query import Query
-from staging.superset.security import OIDCSecurityManager
+from superset.security_manager import OIDCSecurityManager
 
 from superset.advanced_data_type.plugins.internet_address import internet_address
 from superset.advanced_data_type.plugins.internet_port import internet_port
@@ -83,18 +84,17 @@ PACKAGE_JSON_FILE = pkg_resources.resource_filename(
 '''
 ---------------------------KEYCLOACK CONFIG----------------------------
 '''
+curr  =  os.path.abspath(os.getcwd())
 AUTH_TYPE = AUTH_OID
-OIDC_CLIENT_SECRETS='client_secret.json'
+SECRET_KEY = 'UKMzEm3yIuFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E'
+OIDC_CLIENT_SECRETS = curr + '/docker/pythonpath_dev/client_secret.json'
 OIDC_ID_TOKEN_COOKIE_SECURE = False
 OIDC_REQUIRE_VERIFIED_EMAIL = False
-OIDC_CLOCK_SKEW = 560
 OIDC_OPENID_REALM = 'regional-pandemic-analytics'
-OIDC_VALID_ISSUERS = 'https://auth2.igad-health.eu/auth/realms/regional-pandemic-analytics'
+OIDC_INTROSPECTION_AUTH_METHOD = 'client_secret_post'
+CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
 AUTH_USER_REGISTRATION = True
 AUTH_USER_REGISTRATION_ROLE = 'Gamma'
-CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
-OIDC_INTROSPECTION_AUTH_METHOD = 'client_secret_post'
-OIDC_TOKEN_TYPE_HINT = 'access_token'
 '''
 ---------------------------END KEYCLOAK CONFIG--------------------------
 '''
@@ -1582,7 +1582,7 @@ if CONFIG_PATH_ENV_VAR in os.environ:
 elif importlib.util.find_spec("superset_config") and not is_test():
     try:
         # pylint: disable=import-error,wildcard-import,unused-wildcard-import
-        import superset_config
+        # import superset_config
         from superset_config import *  # type: ignore
 
         print(f"Loaded your LOCAL configuration at [{superset_config.__file__}]")

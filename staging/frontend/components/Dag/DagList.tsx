@@ -10,6 +10,10 @@ import {
   CubeIcon,
   CubeTransparentIcon,
 } from "@heroicons/react/24/outline";
+import {toast} from "react-toastify";
+import axios from 'axios'
+import secureLocalStorage from "react-secure-storage";
+
 
 interface IDag {
   [key: string]: unknown;
@@ -22,6 +26,17 @@ interface Props {
 export default function DagList({ dag }: Props) {
   const [enabled, setEnabled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [fileName, setFIleName] = useState<string>("")
+  const [fileType, setFileType] = useState<string>("")
+  const [file, setFile] = useState<File>()
+
+  const [username, setUsername] = useState<string>("")
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage){
+      setUsername(secureLocalStorage.getItem("sue") as string)
+    }
+  }, [])
 
   useEffect(() => {
     setEnabled(dag?.is_active);
@@ -31,8 +46,89 @@ export default function DagList({ dag }: Props) {
     setOpen(!open);
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = e.target.files;
+
+    if (!fileList) return;
+
+    setFile(fileList[0]);
+  }
+
+  const handleDataUpload = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!fileName) {
+      toast.error('Please enter the file name!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return
+    }
+
+    if (!fileType) {
+      toast.error('Please select a file type!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return
+    }
+
+    if (!file) {
+      toast.error('Please upload a file!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return
+    }
+
+    const formData = new FormData()
+
+    formData.append("username", username)
+    formData.append('file_name', fileName)
+    formData.append('file_type', fileType)
+    formData.append('file', file, file['name'])
+
+    axios.post('/api/data/upload/', formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    }).then(response => {
+      if (response.status == 201) {
+        toast.success('File uploaded successfully!', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
+    })
+        .catch(error => {
+
+        })
+  }
   const run = () => {
-    
+
   }
 
   return (
@@ -63,7 +159,7 @@ export default function DagList({ dag }: Props) {
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
-                  <form>
+                  <form onSubmit={handleDataUpload}>
                     <div>
                       <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100">
                         <ArrowUpOnSquareIcon
@@ -83,28 +179,35 @@ export default function DagList({ dag }: Props) {
                             <TextInput
                               icon={DocumentTextIcon}
                               placeholder="Name of data file"
+                              name="fileName"
+                              value={fileName}
+                              onChange={(e:React.ChangeEvent<HTMLInputElement>) => {setFIleName(e.target.value)}}
                             />
+                            <span className="text-xs tracking-wide text-red-600">
+
+                            </span>
                           </div>
                           <div className="mt-3">
                             <Dropdown
                               className="mt-2"
+                              value={fileType}
                               onValueChange={(value) =>
-                                console.log("The selected value is", value)
+                                setFileType(value)
                               }
                               placeholder="Please select file extension"
                             >
                               <DropdownItem
-                                value="1"
+                                value="csv"
                                 text="csv"
                                 icon={CubeTransparentIcon}
                               />
                               <DropdownItem
-                                value="2"
+                                value="excel"
                                 text="excel"
                                 icon={CubeTransparentIcon}
                               />
                               <DropdownItem
-                                value="3"
+                                value="json"
                                 text="json"
                                 icon={CubeIcon}
                               />
@@ -135,20 +238,21 @@ export default function DagList({ dag }: Props) {
                                   <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
                                     <span className="font-semibold">
                                       Click to upload
-                                    </span>{" "}
-                                    or drag and drop
-                                  </p>
-                                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                                    SVG, PNG, JPG or GIF (MAX. 800x400px)
+                                    </span>
                                   </p>
                                 </div>
                                 <input
                                   id="dropzone-file"
                                   type="file"
                                   className="hidden"
+                                  name="file"
+                                  onChange={handleFileChange}
                                 />
                               </label>
                             </div>
+                            <span className="text-xs tracking-wide text-red-600">
+
+                            </span>
                           </div>
                         </div>
                       </div>
