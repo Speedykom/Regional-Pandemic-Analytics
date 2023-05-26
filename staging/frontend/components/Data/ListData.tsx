@@ -14,7 +14,6 @@ import {
 } from "@tremor/react";
 import React from "react";
 import {LinkIcon} from "@heroicons/react/20/solid";
-import Link from "next/link";
 
 export interface IData {
     id: number;
