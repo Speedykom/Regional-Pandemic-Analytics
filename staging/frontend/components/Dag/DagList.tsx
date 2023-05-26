@@ -1,6 +1,6 @@
 import { Dialog, Switch, Transition } from "@headlessui/react";
 
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState, useCallback } from "react";
 import { Dropdown, DropdownItem } from "@tremor/react";
 import { Flex, TextInput } from "@tremor/react";
 import { DagType } from "../TABS/interface";
@@ -13,6 +13,7 @@ import {
 import {toast} from "react-toastify";
 import axios from 'axios'
 import secureLocalStorage from "react-secure-storage";
+import {useDropzone} from "react-dropzone";
 
 
 interface IDag {
@@ -28,9 +29,17 @@ export default function DagList({ dag }: Props) {
   const [open, setOpen] = useState(false);
   const [fileName, setFIleName] = useState<string>("")
   const [fileType, setFileType] = useState<string>("")
-  const [file, setFile] = useState<File>()
+  //const [file, setFile] = useState<File>()
 
   const [username, setUsername] = useState<string>("")
+
+  const {acceptedFiles, getRootProps, getInputProps} = useDropzone({});
+
+  const files = acceptedFiles.map(file => (
+      <li key={file.name}>
+        {file.name} - {file.size} bytes
+      </li>
+  ));
 
   useEffect(() => {
     if (typeof window !== "undefined" && window.localStorage){
@@ -45,15 +54,6 @@ export default function DagList({ dag }: Props) {
   const handleBtnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     setOpen(!open);
   };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const fileList = e.target.files;
-
-    if (!fileList) return;
-
-    setFile(fileList[0]);
-  }
-
   const handleDataUpload = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!fileName) {
@@ -70,40 +70,14 @@ export default function DagList({ dag }: Props) {
       return
     }
 
-    if (!fileType) {
-      toast.error('Please select a file type!', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-      return
-    }
-
-    if (!file) {
-      toast.error('Please upload a file!', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-      return
-    }
-
     const formData = new FormData()
 
     formData.append("username", username)
     formData.append('file_name', fileName)
-    formData.append('file_type', fileType)
-    formData.append('file', file, file['name'])
+
+    acceptedFiles.forEach((file,index) => {
+      formData.append(`uploadedFiles_${index}`, file, file.name);
+    });
 
     axios.post('/api/data/upload/', formData, {
       headers: {
@@ -188,82 +162,31 @@ export default function DagList({ dag }: Props) {
                             </span>
                           </div>
                           <div className="mt-3">
-                            <Dropdown
-                              className="mt-2"
-                              value={fileType}
-                              onValueChange={(value) =>
-                                setFileType(value)
-                              }
-                              placeholder="Please select file extension"
-                            >
-                              <DropdownItem
-                                value="csv"
-                                text="csv"
-                                icon={CubeTransparentIcon}
-                              />
-                              <DropdownItem
-                                value="excel"
-                                text="excel"
-                                icon={CubeTransparentIcon}
-                              />
-                              <DropdownItem
-                                value="json"
-                                text="json"
-                                icon={CubeIcon}
-                              />
-                            </Dropdown>
-                          </div>
-                          <div className="mt-3">
-                            <div className="flex items-center justify-center w-full">
-                              <label
-                                htmlFor="dropzone-file"
-                                className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-                              >
-                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                  <svg
-                                    aria-hidden="true"
-                                    className="w-10 h-10 mb-3 text-gray-400"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                                    ></path>
-                                  </svg>
-                                  <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                    <span className="font-semibold">
-                                      Click to upload
-                                    </span>
-                                  </p>
-                                </div>
-                                <input
-                                  id="dropzone-file"
-                                  type="file"
-                                  className="hidden"
-                                  name="file"
-                                  onChange={handleFileChange}
-                                />
-                              </label>
-                            </div>
-                            <span className="text-xs tracking-wide text-red-600">
-
-                            </span>
+                            <section className="container">
+                              <div {...getRootProps({className: 'dropzone border-dashed border-2 border-gray-300 p-4 rounded-md'})}>
+                                <input {...getInputProps()} />
+                                <p>Drag 'n' drop some files here, or click to select files</p>
+                              </div>
+                              {acceptedFiles.length > 0 && (
+                                  <div>
+                                    <h4 className="text-lg font-semibold">Selected Files:</h4>
+                                    {acceptedFiles.map((file) => (
+                                        <p key={file.name} className="mt-2">{file.name}</p>
+                                    ))}
+                                    <div className="mt-5 sm:mt-6">
+                                      <button
+                                          type="submit"
+                                          className="inline-flex w-full justify-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                                      >
+                                        Upload Data
+                                      </button>
+                                    </div>
+                                  </div>
+                              )}
+                            </section>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="mt-5 sm:mt-6">
-                      <button
-                        type="submit"
-                        className="inline-flex w-full justify-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                      >
-                        Upload Data
-                      </button>
                     </div>
                   </form>
                 </Dialog.Panel>
