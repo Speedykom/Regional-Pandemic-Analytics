@@ -1,0 +1,7 @@
+{
+  "realm": "regional-pandemic-analytics",
+  "auth-server-url": "https://auth2.igad-health.eu",
+  "resource": "hop-client",
+  "public-client": true,
+  "use-resource-role-mappings": false
+}
