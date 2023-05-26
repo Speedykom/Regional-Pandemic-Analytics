@@ -86,15 +86,15 @@ PACKAGE_JSON_FILE = pkg_resources.resource_filename(
 '''
 curr  =  os.path.abspath(os.getcwd())
 AUTH_TYPE = AUTH_OID
-# OIDC_CLIENT_SECRETS = curr + '/docker/pythonpath_dev/client_secret.json'
-OIDC_CLIENT_SECRETS = 'client_secret.json'
+OIDC_CLIENT_SECRETS = curr + '/docker/pythonpath_dev/client_secret.json'
 OIDC_ID_TOKEN_COOKIE_SECURE = False
 OIDC_REQUIRE_VERIFIED_EMAIL = False
-# OIDC_OPENID_REALM = 'regional-pandemic-analytics'
-# OIDC_INTROSPECTION_AUTH_METHOD = 'client_secret_post'
+OIDC_OPENID_REALM = 'regional-pandemic-analytics'
+OIDC_INTROSPECTION_AUTH_METHOD = 'client_secret_post'
 CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
 AUTH_USER_REGISTRATION = True
 AUTH_USER_REGISTRATION_ROLE = 'Gamma'
+OIDC_VALID_ISSUERS = ['https://auth2.igad-health.eu/realms/regional-pandemic-analytics']
 '''
 ---------------------------END KEYCLOAK CONFIG--------------------------
 '''
