@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { setCookie } from 'cookies-next';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import {server} from "next-auth/client/__tests__/helpers/mocks";
 
 export default async function handler(
     req: NextApiRequest,
