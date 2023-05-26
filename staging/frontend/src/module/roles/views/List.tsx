@@ -5,6 +5,7 @@ import { useRoles } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { getData } from "@/utils";
+import { IRoles } from "../interface";
 
 interface props {
 	viewPro: () => void;
@@ -27,7 +28,7 @@ export const RoleList = () => {
 		}
 	};
 
-	const [data, setData] = useState([]);
+	const [data, setData] = useState<Array<IRoles>>([]);
 
 	const [view, setView] = useState<boolean>(false);
 	const [roleId, setRoleId] = useState<string>();
@@ -82,6 +83,7 @@ export const RoleList = () => {
 	}, []);
 
 	const { columns, loading } = useRoles({ edit, del, refetch });
+	// @ts-ignore
 	return (
 		<div className="">
 			<nav>
@@ -113,6 +115,7 @@ export const RoleList = () => {
 					<IGADTable
 						key={"id"}
 						loading={loading}
+						// @ts-ignore
 						rows={data}
 						columns={columns}
 					/>
