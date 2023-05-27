@@ -31,14 +31,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             // Access the fields and files from the parsed form data
             const {username, file_name, file_type} = fields;
-            const {file} = files;
 
             const formData = new FormData()
 
             formData.append("username", username)
             formData.append("file_name", file_name)
-            formData.append("file_type", file_type)
-            formData.append("file", fs.createReadStream(file.filepath))
+
+            // Access the uploaded files
+            for (const key in files) {
+                if (Object.hasOwnProperty.call(files, key)) {
+                    const file = files[key];
+                    formData.append('files', fs.createReadStream(file.filepath))
+                }
+            }
+
 
             try {
                 const response = await axios.post(`${server_url}/api/data/upload/`, formData, {
@@ -55,4 +61,3 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(500).json({ result: 'Failed to upload file' });
     }
 }
-
