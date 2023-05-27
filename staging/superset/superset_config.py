@@ -81,12 +81,13 @@ PACKAGE_JSON_FILE = pkg_resources.resource_filename(
     "superset", "static/assets/package.json"
 )
 
+
+
 '''
 ---------------------------KEYCLOACK CONFIG----------------------------
 '''
 curr  =  os.path.abspath(os.getcwd())
 AUTH_TYPE = AUTH_OID
-SECRET_KEY = 'UKMzEm3yIuFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E'
 OIDC_CLIENT_SECRETS = curr + '/docker/pythonpath_dev/client_secret.json'
 OIDC_ID_TOKEN_COOKIE_SECURE = False
 OIDC_REQUIRE_VERIFIED_EMAIL = False
@@ -95,6 +96,7 @@ OIDC_INTROSPECTION_AUTH_METHOD = 'client_secret_post'
 CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
 AUTH_USER_REGISTRATION = True
 AUTH_USER_REGISTRATION_ROLE = 'Gamma'
+OIDC_VALID_ISSUERS = ['https://auth2.igad-health.eu/realms/regional-pandemic-analytics']
 '''
 ---------------------------END KEYCLOAK CONFIG--------------------------
 '''
@@ -271,7 +273,7 @@ SHOW_STACKTRACE = True
 # Use all X-Forwarded headers when ENABLE_PROXY_FIX is True.
 # When proxying to a different port, set "x_port" to 0 to avoid downstream issues.
 ENABLE_PROXY_FIX = True
-PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 1, "x_prefix": 1}
+PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 0, "x_prefix": 1}
 
 # Configuration for scheduling queries from SQL Lab.
 SCHEDULED_QUERIES: Dict[str, Any] = {}
