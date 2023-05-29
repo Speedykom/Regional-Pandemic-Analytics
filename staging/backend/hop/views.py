@@ -6,7 +6,14 @@ from core import settings
 from bs4 import BeautifulSoup
 from django.http import HttpResponse
 
-# Create your views here.
+def get_file_by_name(filename: str)-> any:
+  """Looks for a file by it name and return the found item"""
+  if os.path.isfile(os.path.join(settings.HOP_FILES_DIR, filename)):
+    return os.path.join(settings.HOP_FILES_DIR, filename)
+  else:
+    return False
+      
+
 class ListHopAPIView(APIView):
     """
     This view returns the api response for the hop
@@ -33,23 +40,50 @@ class GetSingleHopAPIView(APIView):
     """
     Returns a single hop data in xml format
     """
-
-    def get_file_by_name(self, filename: str)-> any:
-      """Looks for a file by it name and return the found item"""
-      if os.path.isfile(os.path.join(settings.HOP_FILES_DIR, filename)):
-        return os.path.join(settings.HOP_FILES_DIR, filename)
-      else:
-        return False
   
     def get(self, request, filename: str):
       """Returns a single file"""
-      result = self.get_file_by_name(filename)
+      result = get_file_by_name(filename)
       if result:
         contents = None
+
+        # iterate ovet the file
         with open(result) as f:
           contents = f.read()
-        bs_data = BeautifulSoup(contents, "xml")
+        bs_content = BeautifulSoup(contents, "xml")
+        bs_data = bs_content.find("info")
         return HttpResponse(bs_data.prettify(), content_type="text/xml")
       else:
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
-      # request.data.get("name", None),
+
+    def patch(self, request, filename):
+       # request.data.get("name", None),
+      result = get_file_by_name(filename)
+      if result:
+        contents = None
+
+        # iterate ovet the file
+        with open(result) as f:
+          contents = f.read()
+        bs_content = BeautifulSoup(contents, "xml")
+        bs_data = bs_content.find("info")
+        return HttpResponse(bs_data.prettify(), content_type="text/xml")
+      else:
+        return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
+      
+      """Returns a single file and update it"""
+      if request.method == 'Patch':
+        # request.data.get("name", None),
+        result = get_file_by_name(filename)
+        if result:
+          contents = None
+
+          # iterate ovet the file
+          with open(result) as f:
+            contents = f.read()
+          bs_data = BeautifulSoup(contents, "xml")
+          return HttpResponse(bs_data.prettify(), content_type="text/xml")
+        else:
+          return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
+      else:
+        Response({'status': 'error', 'message': 'Only PATCH method is allowed for this resource'}, status=500)
