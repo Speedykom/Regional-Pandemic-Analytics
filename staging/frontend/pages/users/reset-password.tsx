@@ -10,7 +10,7 @@ export const ResetPassword = () => {
 		console.log({values});
 		await axios
 			.put(
-				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/reset/password`, values,
+				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/reset/password-request`, values,
 				{
 					headers: {
 						"Content-Type": "application/json",
