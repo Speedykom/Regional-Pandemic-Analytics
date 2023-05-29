@@ -80,7 +80,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
         <Link href="/dashboard/process-chains">
           <div
             className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-              router.pathname == "/process-chains"
+              router.pathname == "/dashboard/process-chains"
                 ? "bg-green-100 text-green-500"
                 : "text-gray-400 hover:bg-green-100 hover:text-green-500"
             }`}
@@ -96,7 +96,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
         <Link href="/dashboard/data">
           <div
               className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-                  router.pathname == "/users"
+                  router.pathname == "/dashboard/data"
                       ? "bg-green-100 text-green-500"
                       : "text-gray-400 hover:bg-green-100 hover:text-green-500"
               }`}

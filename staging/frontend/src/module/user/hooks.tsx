@@ -8,14 +8,13 @@ import axios from "axios";
 import { OpenNotification } from "@/utils/notify";
 
 interface props {
-	edit: () => void;
-	del: () => void;
+	edit: (id: string, firstName: string, lastName: string, username: string, email: string, enabled: boolean) => void;
 	viewPro: (id: string) => void;
 	refetch: () => void;
 }
 
-export const useUsers = ({ edit, del, viewPro, refetch }: props) => {
-	const action = (id: string) => {
+export const useUsers = ({ edit, viewPro, refetch }: props) => {
+	const action = (id: string, firstName: string, lastName: string, username: string, email: string, enabled: boolean) => {
 		const deleteUser = async () => {
 			await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${id}/delete`, {
 				headers: {
@@ -44,7 +43,10 @@ export const useUsers = ({ edit, del, viewPro, refetch }: props) => {
 					</li>
 					<li>
 						<button
-							onClick={edit}
+							onClick={(e) => {
+								e.preventDefault()
+								edit(id, firstName, lastName, username, email, enabled)
+							}}
 							className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
 						>
 							<FiEdit className="mt-1" /> <span>Edit</span>
@@ -166,7 +168,7 @@ export const useUsers = ({ edit, del, viewPro, refetch }: props) => {
 			align: "right",
 			width: 100,
 			key: "action",
-			render: (id) => action(id.id),
+			render: (id, record) => action(record.id, record.firstName, record.lastName, record.username, record.email, record.enabled),
 		},
 	];
 
