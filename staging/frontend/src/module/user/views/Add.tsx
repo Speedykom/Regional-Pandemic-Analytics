@@ -55,6 +55,7 @@ export const AddUser = ({ openDrawer, closeDrawer, refetch }: props) => {
 			closeDrawer()
 			refetch()
 			OpenNotification(res.data?.message, 'topRight', 'success')
+			form.resetFields()
 		}).catch((err) => {
 			api.info({
 				message: `User Creation`,
@@ -130,7 +131,7 @@ export const AddUser = ({ openDrawer, closeDrawer, refetch }: props) => {
 								}}
 								htmlType="submit"
 							>
-								New User
+								Save User
 							</Button>
 							</div>
 						</Form.Item>
