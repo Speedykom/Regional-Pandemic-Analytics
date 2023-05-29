@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'accounts',
     'airflow',
     'data',
+    'hop',
     'rest_framework.authtoken',
     'rest_framework',
     'corsheaders',
