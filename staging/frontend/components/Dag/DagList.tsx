@@ -35,7 +35,7 @@ export default function DagList({ dag }: Props) {
 
   const {acceptedFiles, getRootProps, getInputProps} = useDropzone({});
 
-  const files = acceptedFiles.map(file => (
+  const files = acceptedFiles.map((file: any) => (
       <li key={file.name}>
         {file.name} - {file.size} bytes
       </li>
