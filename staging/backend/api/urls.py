@@ -8,7 +8,7 @@ from airflow.views.process import GetProcessChain, RunProcessChain
 from airflow.views.gdag import DagView
 from data.views import DataUploadAPI
 from accounts.views import (
-    LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI, CreateUserAPI, ListUsersAPI, ListRolesAPI, GetUserAPI, DeleteUserAPI, AssignRolesAPI, ResetPasswordAPI, CreateRolesAPI
+    LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI, CreateUserAPI, ListUsersAPI, ListRolesAPI, GetUserAPI, DeleteUserAPI, AssignRolesAPI, ResetPasswordAPI, CreateRolesAPI, UpdateUserAPI, UpdateRolesAPI, DeleteRolesAPI, ResetPasswordRequestAPI
 )
 
 app_name = 'api'
@@ -46,9 +46,13 @@ urlpatterns = [
     path('account/roles', ListRolesAPI.as_view()), #keycloak roles
     path('account/user/<str:id>/', GetUserAPI.as_view()), #get user
     path('account/user/<str:id>/delete', DeleteUserAPI.as_view()), #delete user
+    path('account/user/<str:id>/update', UpdateUserAPI.as_view()), #update user
     path('account/user/<str:id>/assign-roles', AssignRolesAPI.as_view()), #assign user
     path('account/user/reset/password', ResetPasswordAPI.as_view()), #reset user password
+    path('account/user/reset/password-request', ResetPasswordRequestAPI.as_view()), #reset user password request
     path('account/roles/create', CreateRolesAPI.as_view()), #create role
+    path('account/roles/<str:id>/update', UpdateRolesAPI.as_view()), #update role
+    path('account/roles/<str:id>/delete', DeleteRolesAPI.as_view()), #delete role
     # ---------------------- End of User Management Endpoints ----------------------------
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
