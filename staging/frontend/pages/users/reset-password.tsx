@@ -9,7 +9,7 @@ export const ResetPassword = () => {
 	const onFinish = async (values: any) => {
 		console.log({values});
 		await axios
-			.put(
+			.post(
 				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/reset/password-request`, values,
 				{
 					headers: {
