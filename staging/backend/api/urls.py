@@ -12,7 +12,7 @@ from accounts.views import (
 )
 
 from hop.views import (
-    ListHopViewSet
+    ListHopAPIView, GetSingleHopAPIView
 )
 
 app_name = 'api'
@@ -75,8 +75,8 @@ urlpatterns = [
     # ---------------------- Hop Endpoints ------------------------------------------
 
     # endpoint for uploading data
-    path('hop/', ListHopViewSet.as_view({'get': 'get_all'})),
-    path('hop/<str:hop_title>/', ListHopViewSet.as_view({'get': 'get_single'})),
+    path('hop/', ListHopAPIView.as_view()),
+    path('hop/<str:filename>/', GetSingleHopAPIView.as_view()),
 
     # ---------------------- End of Hop Endpoints -----------------------------------
 ]
