@@ -11,7 +11,7 @@ interface prop {
 
 export const AppDrawer = ({ state, onClose, title, children, footer }: prop) => {
   return (
-    <Drawer footer={footer} title={title} width={400} maskClosable={false} open={state} onClose={onClose}>
+    <Drawer footer={footer} title={title} width={500} maskClosable={false} open={state} onClose={onClose}>
       {children}
     </Drawer>
   );
