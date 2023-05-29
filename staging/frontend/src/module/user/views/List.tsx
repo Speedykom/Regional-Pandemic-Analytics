@@ -124,7 +124,7 @@ export const UserList = () => {
 		fetchUsers();
 	}, []);
 
-	const { columns, loading } = useUsers({ edit, del, viewPro, refetch });
+	const { columns, loading } = useUsers({ edit, viewPro, refetch });
 	return (
 		<div className="">
 			<nav>
