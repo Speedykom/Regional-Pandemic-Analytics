@@ -38,13 +38,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             formData.append("file_name", file_name)
 
             // Access the uploaded files
+            let newPath;
             for (const key in files) {
                 if (Object.hasOwnProperty.call(files, key)) {
                     const file = files[key];
-                    formData.append('files', fs.createReadStream(file.filepath))
+                    formData.append('files', fs.createReadStream(file.filepath),{filename:file.originalFilename})
                 }
             }
-
 
             try {
                 const response = await axios.post(`${server_url}/api/data/upload/`, formData, {
