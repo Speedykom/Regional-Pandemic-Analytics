@@ -57,7 +57,7 @@ class GetSingleHopAPIView(APIView):
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
 
     def patch(self, request, filename):
-       # request.data.get("name", None),
+      """Receive a request and update the file based on the request given"""
       result = get_file_by_name(filename)
       if result:
         contents = None
@@ -66,8 +66,11 @@ class GetSingleHopAPIView(APIView):
         with open(result) as f:
           contents = f.read()
         bs_content = BeautifulSoup(contents, "xml")
-        bs_data = bs_content.find("info")
-        return HttpResponse(bs_data.prettify(), content_type="text/xml")
+        params = request.data.get("name", None),
+        bs_data = bs_content.find("name")
+        bs_data.string = params[0]
+        bsc_data = bs_content.find('info')
+        return HttpResponse(bsc_data.prettify(), content_type="text/xml")
       else:
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
       
