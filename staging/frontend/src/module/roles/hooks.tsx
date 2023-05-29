@@ -8,15 +8,15 @@ import axios from "axios";
 import { OpenNotification } from "@/utils/notify";
 
 interface props {
-    edit: () => void;
+    edit: (id: string,name: string, description: string) => void;
 	del: () => void;
 	refetch: () => void;
 }
 
 export const useRoles = ({ edit, del, refetch }: props) => {
-	const action = (id: string) => {
+	const action = (id: string, name: string, description: string) => {
 		const deleteUser = async () => {
-			await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${id}/delete`, {
+			await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles/${id}/delete`, {
 				headers: {
 					'Content-Type': 'application/json'
 				}
@@ -24,7 +24,7 @@ export const useRoles = ({ edit, del, refetch }: props) => {
 				refetch()
 				OpenNotification(res.data?.message, 'topRight', 'success')
 			}).catch((err) => {
-				OpenNotification(err.response?.data, 'topRight', 'error')
+				OpenNotification(err.response?.data?.errorMessage, 'topRight', 'error')
 			})
 		}
 		return (
@@ -32,7 +32,10 @@ export const useRoles = ({ edit, del, refetch }: props) => {
 				<ul>
 					<li>
 						<button
-							onClick={edit}
+							onClick={(e) => {
+								e.preventDefault()
+								edit(id, name, description)
+							}}
 							className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
 						>
 							<FiEdit className="mt-1" /> <span>Edit</span>
@@ -135,7 +138,7 @@ export const useRoles = ({ edit, del, refetch }: props) => {
 			align: "right",
 			width: 100,
 			key: "action",
-			render: (id) => action(id.id),
+			render: (id, record) => action(id.id, record.name, record.description),
 		},
 	];
 
