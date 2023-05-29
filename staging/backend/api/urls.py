@@ -11,6 +11,10 @@ from accounts.views import (
     LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI, CreateUserAPI, ListUsersAPI, ListRolesAPI, GetUserAPI, DeleteUserAPI, AssignRolesAPI, ResetPasswordAPI, CreateRolesAPI
 )
 
+from hop.views import (
+    ListHopViewSet
+)
+
 app_name = 'api'
 
 schema_view = get_schema_view(
@@ -68,4 +72,11 @@ urlpatterns = [
 
     # ---------------------- End of Data Upload Endpoints -----------------------------------
 
+    # ---------------------- Hop Endpoints ------------------------------------------
+
+    # endpoint for uploading data
+    path('hop/', ListHopViewSet.as_view({'get': 'get_all'})),
+    path('hop/<str:hop_title>/', ListHopViewSet.as_view({'get': 'get_single'})),
+
+    # ---------------------- End of Hop Endpoints -----------------------------------
 ]
