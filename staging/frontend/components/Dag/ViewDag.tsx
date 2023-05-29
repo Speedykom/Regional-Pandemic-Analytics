@@ -1,4 +1,4 @@
-import { Button, Form, Input } from "antd";
+import { Button, Collapse, Form, Input } from "antd";
 import { useState } from "react";
 import { AppDrawer } from "../AppDrawer";
 import { useFindOneQuery } from "@/redux/services/process";
@@ -12,49 +12,8 @@ interface prop {
 
 export const ViewDag = ({ onClose, state, id }: prop) => {
   const { data: dag, isLoading: loading } = useFindOneQuery(id);
-  //   const [form] = Form.useForm();
-  //   const [file, setFile] = useState("");
-  //   const [loading, setLoading] = useState(false);
-  //   const [error, setError] = useState<string | Array<string> | null>(null);
 
-  //   const [addCategory] = useNewCategoryMutation();
-
-  //   const onImageChange = (image: any) => setFile(image.blob);
-
-  //   const closeErrorFunc = (index: number) => {
-  //     const data: any = error;
-  //     const filter = data.filter((_: string, i: number) => i !== index);
-  //     setError(filter);
-  //   };
-
-  //   const onFinish = (value: any) => {
-  //     setError(null);
-  //     setLoading(true);
-  //     const form = new FormData();
-
-  //     form.append("name", value.name);
-  //     form.append("image", file);
-
-  //     addCategory(form)
-  //       .then((res: any) => {
-  //         if (res.error) {
-  //           const { data } = res.error;
-  //           const { message } = data;
-  //           setError(message);
-  //           return;
-  //         }
-
-  //         ShowMessage("success", "Category created successfully");
-  //         cancel();
-  //       })
-  //       .finally(() => setLoading(false));
-  //   };
-
-  //   const cancel = () => {
-  //     setError(null);
-  //     form.resetFields();
-  //     onClose();
-  //   };
+  const { Panel } = Collapse;
 
   return (
     <AppDrawer title="View Process" onClose={onClose} state={state}>
@@ -118,8 +77,14 @@ export const ViewDag = ({ onClose, state, id }: prop) => {
               {dag?.dag?.is_paused ? "Yes" : "No"}
             </p>
           </div>
-          <div>
-            <p className="font-semibold">Runs</p>
+          <div className="mt-5">
+            <Collapse defaultActiveKey={["1"]}>
+              {dag?.dag?.runs.map((run: any) => (
+                <Panel header={`${new Date(run.execution_date).toLocaleString()} - ${run.state}`} key={run.dag_run_id}>
+                  <p>{run.dag_run_id}</p>
+                </Panel>
+              ))}
+            </Collapse>
           </div>
         </div>
       )}
