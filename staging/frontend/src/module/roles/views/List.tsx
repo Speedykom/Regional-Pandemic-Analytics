@@ -27,6 +27,7 @@ export const RoleList = () => {
 	const [form] = Form.useForm();
 
 	const [token, setToken] = useState<string>("");
+	const [loading, setLoading] = useState<boolean>(true)
 
 	const fetchToken = async () => {
 		try {
@@ -45,13 +46,17 @@ export const RoleList = () => {
 
 	const fetchRoles = async () => {
 		try {
+			setLoading(true)
 			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
-			const response = await axios.get(url, {
+			await axios.get(url, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
-			});
-			setData(response?.data);
+			}).then((res) => {
+				setLoading(false)
+				setData(res?.data);
+			})
+			
 		} catch (error) {
 			console.error("Error:", error);
 		}
@@ -123,7 +128,7 @@ export const RoleList = () => {
 		fetchRoles();
 	}, []);
 
-	const { columns, loading } = useRoles({ edit, del, refetch });
+	const { columns } = useRoles({ edit, del, refetch });
 	// @ts-ignore
 	return (
 		<div className="">
@@ -156,7 +161,6 @@ export const RoleList = () => {
 					<IGADTable
 						key={"id"}
 						loading={loading}
-						// @ts-ignore
 						rows={data}
 						columns={columns}
 					/>

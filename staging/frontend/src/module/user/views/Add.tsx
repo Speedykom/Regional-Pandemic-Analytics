@@ -30,7 +30,6 @@ export const AddUser = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const filteredOptions = OPTIONS.filter((o) => !selectedItems.includes(o));
 
 	const [form] = Form.useForm();
-	const [api, contextHolder] = notification.useNotification();
 	const router = useRouter()
 
 	const [token, setToken] = useState<string>("");
@@ -57,12 +56,7 @@ export const AddUser = ({ openDrawer, closeDrawer, refetch }: props) => {
 			OpenNotification(res.data?.message, 'topRight', 'success')
 			form.resetFields()
 		}).catch((err) => {
-			api.info({
-				message: `User Creation`,
-				description: err.response.data,
-				placement: 'topRight',
-				type: "success"
-			  });
+			OpenNotification(err?.response?.data?.errorMessage, 'topRight', 'error')
 		})
 		
 	};
