@@ -8,3 +8,7 @@ iframe {
   border: 0;
   overflow: hidden;
 }
+
+.dag-btn:hover {
+  color: white !important;
+}
