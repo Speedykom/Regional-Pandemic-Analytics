@@ -182,3 +182,13 @@ AWS_DEFAULT_REGION = "us-east-1"
 AWS_S3_SECURE_URLS = False
 AWS_S3_VERIFY = False
 
+# EMAIL TRASMISSION SETTINGS
+
+EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'kom.speedy@gmail.com'
+EMAIL_HOST_PASSWORD = 'srxcesuhnjulboph'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
