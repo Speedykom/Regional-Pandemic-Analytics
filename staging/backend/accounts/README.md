@@ -24,29 +24,29 @@ Request Body
 ```
 
 ```javascript
-    {
-        "firstName": "John",
-        "lastName": "Doe",
-        "username": "johndoe",
-        "email": "john.doe@mail.com",
-        "enabled": true
-    }
+{
+    "firstName": "John",
+    "lastName": "Doe",
+    "username": "johndoe",
+    "email": "john.doe@mail.com",
+    "enabled": true
+}
 ```
 
 Create user Response
 
 ```javascript
 {
-     "message": "User created successfully",
-     "user": {
-         "id": "ba20d740-766f-4833-bc2a-73bbdc0b9355"
-         "firstName": "John",
+    "message": "User created successfully",
+    "user": {
+        "id": "ba20d740-766f-4833-bc2a-73bbdc0b9355"
+        "firstName": "John",
         "lastName": "Doe",
         "username": "johndoe",
         "email": "john.doe@mail.com",
         "enabled": true
-     }
     }
+}
 ```
 
 Get all users
@@ -54,24 +54,24 @@ Get all users
 `GET: /account/users`
 
 ```javascript
-        [
-         {
-             "id": "ba20d740-766f-4833-bc2a-73bbdc0b9355",
-             "createdTimestamp": 1683300192031,
-             "username": "airflow",
-             "enabled": true,
-             "totp": false,
-             "emailVerified": false,
-             "firstName": "Airflow",
-             "lastName": "RePan",
-             "disableableCredentialTypes":[],
-             "requiredActions":[],
-             "notBefore": 0,
-             "access":{
-                 "manageGroupMembership": true, "view": true, "mapRoles": true, "impersonate": true, "manage": true…
-             }
-         }
-    ]
+[
+    {
+        "id": "ba20d740-766f-4833-bc2a-73bbdc0b9355",
+        "createdTimestamp": 1683300192031,
+        "username": "airflow",
+        "enabled": true,
+        "totp": false,
+        "emailVerified": false,
+        "firstName": "Airflow",
+        "lastName": "RePan",
+        "disableableCredentialTypes":[],
+        "requiredActions":[],
+        "notBefore": 0,
+        "access":{
+            "manageGroupMembership": true, "view": true, "mapRoles": true, "impersonate": true, "manage": true…
+        }
+    }
+]
 ```
 
 Get a user
