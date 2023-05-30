@@ -1,22 +1,33 @@
 import { IGADTable } from "@/components/common/table";
-import { PlusOutlined } from "@ant-design/icons";
+import {
+	DeleteColumnOutlined,
+	PlusOutlined,
+	SaveOutlined,
+} from "@ant-design/icons";
 import { Button, Form, Input, Modal, Switch } from "antd";
 import { useRoles } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { getData } from "@/utils";
 import { IRoles } from "../interface";
+import { OpenNotification } from "@/utils/notify";
 
 interface props {
 	viewPro: () => void;
 }
 
+enum OPERATION_TYPES {
+	CREATE,
+	UPDATE,
+	NONE
+}
+
 export const RoleList = () => {
-	const edit = () => {};
-	const del = () => { };
-	const [form] = Form.useForm()
+	const del = () => {};
+	const [form] = Form.useForm();
 
 	const [token, setToken] = useState<string>("");
+	const [loading, setLoading] = useState<boolean>(true)
 
 	const fetchToken = async () => {
 		try {
@@ -35,13 +46,17 @@ export const RoleList = () => {
 
 	const fetchRoles = async () => {
 		try {
+			setLoading(true)
 			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
-			const response = await axios.get(url, {
+			await axios.get(url, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
-			});
-			setData(response?.data);
+			}).then((res) => {
+				setLoading(false)
+				setData(res?.data);
+			})
+			
 		} catch (error) {
 			console.error("Error:", error);
 		}
@@ -63,15 +78,45 @@ export const RoleList = () => {
 	};
 
 	const [open, setOpen] = useState(false);
-
-	const showModal = () => {
+	
+	const edit = (id: string, name: string, description: string) => {
+		setRoleId(id)
+		setOpertaionType(OPERATION_TYPES.UPDATE)
+		form.setFieldValue("name", name)
+		form.setFieldValue("description", description)
 		setOpen(true);
 	};
 
-	const handleOk = () => {
-		setTimeout(() => {
-			setOpen(false);
-		}, 3000);
+	const showModal = () => {
+		setOpertaionType(OPERATION_TYPES.CREATE)
+		setOpen(true);
+	};
+
+	const [operationType, setOpertaionType] = useState<OPERATION_TYPES>(OPERATION_TYPES.NONE)
+
+	const onFinish = async (values: any) => {
+		let url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`
+		url = operationType == OPERATION_TYPES.CREATE ? url + "/create" : url + `/${roleId}/update`
+		await axios
+			.post(
+				url,
+				values,
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+						"Content-Type": "application/json",
+					},
+				}
+			)
+			.then((res) => {
+				setOpen(false);
+				refetch();
+				OpenNotification(res.data?.message, "topRight", "success");
+				form.resetFields()
+			})
+			.catch((err) => {
+				OpenNotification(err.response?.data, "topRight", "error");
+			});
 	};
 
 	const handleCancel = () => {
@@ -79,10 +124,11 @@ export const RoleList = () => {
 	};
 
 	useEffect(() => {
+		fetchToken();
 		fetchRoles();
 	}, []);
 
-	const { columns, loading } = useRoles({ edit, del, refetch });
+	const { columns } = useRoles({ edit, del, refetch });
 	// @ts-ignore
 	return (
 		<div className="">
@@ -115,40 +161,53 @@ export const RoleList = () => {
 					<IGADTable
 						key={"id"}
 						loading={loading}
-						// @ts-ignore
 						rows={data}
 						columns={columns}
 					/>
 				</div>
 			</section>
-
 			<Modal
 				open={open}
-				title={"Create Role"}
+				title={operationType == OPERATION_TYPES.CREATE ? "Create Role" : operationType == OPERATION_TYPES.UPDATE && "Update Role"}
 				onCancel={handleCancel}
-				footer={[
-					<Button key="back" onClick={handleCancel}>
-						Return
-					</Button>,
-					<Button
-						key="submit"
-						type="primary"
-						style={{
-							backgroundColor: "#087757",
-							border: "1px solid #e65e01",
-						}}
-						loading={loading}
-						onClick={handleOk}
-					>
-						Submit
-					</Button>,
-				]}
+				footer={
+					<Form form={form} onFinish={onFinish}>
+						<Form.Item>
+							<div className="flex space-x-2 justify-end">
+								<Button
+									className="focus:outline-none px-6 py-2 text-gray-700 font-medium flex items-center"
+									style={{
+										backgroundColor: "#48328526",
+										border: "1px solid #48328526",
+									}}
+									type="primary"
+									icon={<DeleteColumnOutlined />}
+									onClick={handleCancel}
+								>
+									Cancel
+								</Button>
+								<Button
+									type="primary"
+									className="flex items-center"
+									icon={<SaveOutlined />}
+									style={{
+										backgroundColor: "#087757",
+										border: "1px solid #e65e01",
+									}}
+									htmlType="submit"
+								>
+									{operationType == OPERATION_TYPES.CREATE ? "Save Role" : operationType == OPERATION_TYPES.UPDATE && "Save Changes"}
+								</Button>
+							</div>
+						</Form.Item>
+					</Form>
+				}
 			>
 				<Form
 					{...formItemLayout}
 					form={form}
 					name="register"
-					// onFinish={onFinish}
+					onFinish={onFinish}
 					scrollToFirstError
 					size="large"
 					className="w-full"
@@ -177,27 +236,6 @@ export const RoleList = () => {
 						]}
 					>
 						<Input />
-					</Form.Item>
-					<Form.Item
-						name="composite"
-						label="Is Composite Role"
-						valuePropName="checked"
-						// tooltip="Do you want to automatically enable this user?"
-					>
-						<Switch
-							style={{ backgroundColor: "#8c8c8c" }}
-						/>
-					</Form.Item>
-
-					<Form.Item
-						name="clientRole"
-						label="Is Client Role"
-						valuePropName="checked"
-						// tooltip="Do you want to automatically enable this user?"
-					>
-						<Switch
-							style={{ backgroundColor: "#8c8c8c" }}
-						/>
 					</Form.Item>
 				</Form>
 			</Modal>
