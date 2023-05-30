@@ -143,13 +143,9 @@ export const UserList = () => {
 					<div>
 						<Button
 							type="primary"
-							className="flex items-center"
+							className="flex items-center bg-green-700 hover:bg-green-700"
 							size="large"
 							icon={<PlusOutlined />}
-							style={{
-								backgroundColor: "#087757",
-								border: "1px solid #e65e01",
-							}}
 							onClick={(e) => {
 								e.preventDefault();
 								setOpen(true);
