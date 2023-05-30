@@ -37,6 +37,7 @@ export const UserList = () => {
 
 	const [open, setOpen] = useState<boolean>(false);
 	const [data, setData] = useState<Array<IUser>>([]);
+	const [loading, setLoading] = useState<boolean>(true)
 
 	const [view, setView] = useState<boolean>(false);
 	const [userId, setUserId] = useState<string>();
@@ -54,13 +55,17 @@ export const UserList = () => {
 
 	const fetchUsers = async () => {
 		try {
+			setLoading(true)
 			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/users`;
-			const response = await axios.get(url, {
+			await axios.get(url, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
-			});
-			setData(response?.data);
+			}).then((res) => {
+				setLoading(false)
+				setData(res?.data);
+			})
+			
 		} catch (error) {
 			console.error("Error:", error);
 		}
@@ -124,7 +129,7 @@ export const UserList = () => {
 		fetchUsers();
 	}, []);
 
-	const { columns, loading } = useUsers({ edit, viewPro, refetch });
+	const { columns } = useUsers({ edit, viewPro, refetch });
 	return (
 		<div className="">
 			<nav>

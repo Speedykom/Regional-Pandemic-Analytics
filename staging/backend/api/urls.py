@@ -7,9 +7,7 @@ from airflow.views.gdag import DagView
 from airflow.views.process import GetProcessChain, RunProcessChain
 from airflow.views.gdag import DagView
 from data.views import DataUploadAPI
-from accounts.views import (
-    LoginAPI, KeyCloakLoginAPI, KeycloakRefreshTokenAPI, CreateUserAPI, ListUsersAPI, ListRolesAPI, GetUserAPI, DeleteUserAPI, AssignRolesAPI, ResetPasswordAPI, CreateRolesAPI, UpdateUserAPI, UpdateRolesAPI, DeleteRolesAPI, ResetPasswordRequestAPI
-)
+from accounts import views
 
 app_name = 'api'
 
@@ -32,27 +30,29 @@ urlpatterns = [
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 
     # Login Endpoint
-    path('accounts/login/', LoginAPI.as_view()),
+    path('accounts/login/', views.LoginAPI.as_view()),
 
     # ---------------------- Keycloak Endpoints ------------------------------------------
-    path('accounts/auth/', KeyCloakLoginAPI.as_view()), # Keycloak login
-    path('accounts/refresh/', KeycloakRefreshTokenAPI.as_view()), # Keycloak refresh token
+    path('accounts/auth/', views.KeyCloakLoginAPI.as_view()), # Keycloak login
+    path('accounts/refresh/', views.KeycloakRefreshTokenAPI.as_view()), # Keycloak refresh token
 
     # ---------------------- End of Keycloak Endpoints -----------------------------------
 
     # ---------------------- Keycloak User Management Endpoints --------------------------
-    path('account/user', CreateUserAPI.as_view()), #Create User
-    path('account/users', ListUsersAPI.as_view()), #get users
-    path('account/roles', ListRolesAPI.as_view()), #keycloak roles
-    path('account/user/<str:id>/', GetUserAPI.as_view()), #get user
-    path('account/user/<str:id>/delete', DeleteUserAPI.as_view()), #delete user
-    path('account/user/<str:id>/update', UpdateUserAPI.as_view()), #update user
-    path('account/user/<str:id>/assign-roles', AssignRolesAPI.as_view()), #assign user
-    path('account/user/reset/password', ResetPasswordAPI.as_view()), #reset user password
-    path('account/user/reset/password-request', ResetPasswordRequestAPI.as_view()), #reset user password request
-    path('account/roles/create', CreateRolesAPI.as_view()), #create role
-    path('account/roles/<str:id>/update', UpdateRolesAPI.as_view()), #update role
-    path('account/roles/<str:id>/delete', DeleteRolesAPI.as_view()), #delete role
+    path('account/user', views.CreateUserAPI.as_view()), #Create User
+    path('account/users', views.ListUsersAPI.as_view()), #get users
+    path('account/roles', views.ListRolesAPI.as_view()), #keycloak roles
+    path('account/user/<str:id>/', views.GetUserAPI.as_view()), #get user
+    path('account/user/<str:id>/delete', views.DeleteUserAPI.as_view()), #delete user
+    path('account/user/<str:id>/update', views.UpdateUserAPI.as_view()), #update user
+    path('account/user/<str:id>/assign-roles', views.AssignRolesAPI.as_view()), #assign user
+    path('account/user/reset/password', views.ResetPasswordAPI.as_view()), #reset user password
+    path('account/user/reset/password-request', views.ResetPasswordRequestAPI.as_view()), #reset user password request
+    path('account/roles/create', views.CreateRolesAPI.as_view()), #create role
+    path('account/roles/<str:id>/update', views.UpdateRolesAPI.as_view()), #update role
+    path('account/roles/<str:id>/delete', views.DeleteRolesAPI.as_view()), #delete role
+    path('account/verify-token', views.VerifyResetTokenAPI.as_view()), #verify token
+    path('account/create-password', views.CreatePasswordAPI.as_view()), #create password
     # ---------------------- End of User Management Endpoints ----------------------------
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
