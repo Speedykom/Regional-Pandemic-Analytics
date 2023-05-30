@@ -388,7 +388,7 @@ class ResetPasswordAPI(APIView):
         users = checkUser.json()
 
         if len(users) == 0:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'errorMessage': "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
         user = users[0]
 
@@ -429,7 +429,7 @@ class ResetPasswordRequestAPI(APIView):
         users = checkUser.json()
 
         if len(users) == 0:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'errorMessage': 'Account not found'}, status=status.HTTP_404_NOT_FOUND)
 
         user = users[0]
 
@@ -554,7 +554,76 @@ class UpdateRolesAPI(APIView):
         if res.status_code != 204:
             return Response(res.reason, status=res.status_code)
 
-        return Response({'message': 'Role update was successful'}, status=status.HTTP_200_OK)        
+        return Response({'message': 'Role update was successful'}, status=status.HTTP_200_OK)   
 
-# class SendMailAPI(APIView):
-#     permission_classes = [AllowAny,]
+
+class VerifyResetTokenAPI(APIView):
+    """
+    API view to verify reset password token
+    """
+    permission_classes = [AllowAny,]
+
+    def post(self, request, *args, **kwargs):
+        form_data = {
+            "token": request.data.get("token", None),
+        }
+
+        try:
+            decode = jwt.decode(form_data["token"], APP_SECRET_KEY, algorithms=['HS256'])
+            return Response(decode, status=status.HTTP_200_OK) 
+        except jwt.ExpiredSignatureError:
+            return Response({'errorMessage': 'Reset password token expired'}, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidTokenError:
+            return Response({'errorMessage': 'Token provided is invalid'}, status=status.HTTP_401_UNAUTHORIZED)
+       
+
+class CreatePasswordAPI(APIView):
+    """
+    API view to update Keycloak user password
+    """
+    permission_classes = [AllowAny,]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'newPassword': openapi.Schema(type=openapi.TYPE_STRING),
+            'confirmPassword': openapi.Schema(type=openapi.TYPE_STRING),
+            'token': openapi.Schema(type=openapi.TYPE_STRING),
+        }
+    ))
+
+    def put(self, request, *args, **kwargs):
+        form_data = {
+            "newPassword": request.data.get("newPassword", None),
+            "confirmPassword": request.data.get("lastName", None),
+            "token": request.data.get("token", None),
+        }
+
+        #Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
+            'Content-Type': "application/json",
+            'cache-control': "no-cache"
+        }
+
+        credentials = {
+            "type": "password",
+            "value": form_data["newPassword"],
+            "temporary": False
+        }
+
+        try:
+            decode = jwt.decode(form_data["token"], APP_SECRET_KEY, algorithms=['HS256'])
+            requests.put(f"{APP_USER_BASE_URL}/{decode['id']}/reset-password", json=credentials, headers=headers)
+            return Response({'message': 'Password created successfully'}, status=status.HTTP_200_OK) 
+        except jwt.ExpiredSignatureError:
+            return Response({'errorMessage': 'Reset password token expired'}, status=status.HTTP_401_UNAUTHORIZED)
+        except jwt.InvalidTokenError:
+            return Response({'errorMessage': 'Token provided is invalid'}, status=status.HTTP_401_UNAUTHORIZED)
+       
+
