@@ -3,10 +3,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import re_path, path
-from airflow.views.gdag import DagView
-from airflow.views.process import GetProcessChain, RunProcessChain
-from airflow.views.gdag import DagView
-from airflow.views.hop import HopView
+from airflow.views.process import GetProcess, RunProcess, RequestEditProcess, CreateProcess, EditProcess, DeleteProcess
 from data.views import DataUploadAPI
 from accounts import views
 
@@ -57,15 +54,12 @@ urlpatterns = [
     # ---------------------- End of User Management Endpoints ----------------------------
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
-    path('airflow/', DagView.as_view()),
-    path('airflow/<str:id>', DagView.as_view()),
-    path('airflow/<str:id>/update/', DagView.as_view()),
-
-    # ---------------------- Airflow  Endpoints ------------------------------------------
-    path('process/', GetProcessChain.as_view()),
-    path('process/run/<str:id>', RunProcessChain.as_view()),
-    path('process/edit/<str:id>', HopView.as_view()),
-    path('process/<str:id>/', GetProcessChain.as_view()),
+    path('process/', CreateProcess.as_view()),
+    # path('process/run/<str:id>', RunProcess.as_view()),
+    # path('process/access/<str:dag_name>', RequestEditProcess.as_view()),
+    # path('process/<str:id>', EditProcess.as_view()),
+    path('process/<str:id>/', GetProcess.as_view()),
+    # path('process/<str:id>', DeleteProcess.as_view()),
 
     # ---------------------- Data upload Endpoints ------------------------------------------
 
