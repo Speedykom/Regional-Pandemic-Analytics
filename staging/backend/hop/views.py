@@ -2,6 +2,7 @@ import os
 from typing import List
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser
 from core import settings
 from bs4 import BeautifulSoup
 from django.http import HttpResponse
@@ -66,27 +67,22 @@ class GetSingleHopAPIView(APIView):
         with open(result) as f:
           contents = f.read()
         bs_content = BeautifulSoup(contents, "xml")
-        params = request.data.get("name", None),
-        bs_data = bs_content.find("name")
-        bs_data.string = params[0]
+
+        # iterate over the requedst dict, find the xml tag and update it content
+        for key, value in request.data.items():
+          bs_data = bs_content.find(key)
+          bs_data.string = value
+
+        # find the info tag content and return as the response
         bsc_data = bs_content.find('info')
         return HttpResponse(bsc_data.prettify(), content_type="text/xml")
       else:
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
       
-      """Returns a single file and update it"""
-      if request.method == 'Patch':
-        # request.data.get("name", None),
-        result = get_file_by_name(filename)
-        if result:
-          contents = None
+class NewHopAPIView(APIView):
+  parser_classes = (MultiPartParser,)
 
-          # iterate ovet the file
-          with open(result) as f:
-            contents = f.read()
-          bs_data = BeautifulSoup(contents, "xml")
-          return HttpResponse(bs_data.prettify(), content_type="text/xml")
-        else:
-          return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
-      else:
-        Response({'status': 'error', 'message': 'Only PATCH method is allowed for this resource'}, status=500)
+  def post(self, request):
+    file_obj = request.data['file']
+    return Response({'status': 'success', "message": "file: {} received".format(file_obj)}, status=200)
+    
