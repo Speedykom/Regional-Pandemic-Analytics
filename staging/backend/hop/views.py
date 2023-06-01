@@ -13,7 +13,14 @@ def get_file_by_name(filename: str)-> any:
     return os.path.join(settings.HOP_FILES_DIR, filename)
   else:
     return False
-      
+  
+def get_xml_content(content: str)-> any:
+  """Receives a content, open and read it, then convert to xml format an return it"""
+  contents = None
+  # iterate over the file
+  with open(content) as f:
+    contents = f.read()
+  return BeautifulSoup(contents, "xml")
 
 class ListHopAPIView(APIView):
     """
@@ -46,12 +53,7 @@ class GetSingleHopAPIView(APIView):
       """Returns a single file"""
       result = get_file_by_name(filename)
       if result:
-        contents = None
-
-        # iterate ovet the file
-        with open(result) as f:
-          contents = f.read()
-        bs_content = BeautifulSoup(contents, "xml")
+        bs_content = get_xml_content(result)
         bs_data = bs_content.find("info")
         return HttpResponse(bs_data.prettify(), content_type="text/xml")
       else:
@@ -61,14 +63,9 @@ class GetSingleHopAPIView(APIView):
       """Receive a request and update the file based on the request given"""
       result = get_file_by_name(filename)
       if result:
-        contents = None
+        bs_content = get_xml_content(result)
 
-        # iterate ovet the file
-        with open(result) as f:
-          contents = f.read()
-        bs_content = BeautifulSoup(contents, "xml")
-
-        # iterate over the requedst dict, find the xml tag and update it content
+        # iterate over the request dict, find the xml tag and update it content
         for key, value in request.data.items():
           bs_data = bs_content.find(key)
           bs_data.string = value
@@ -88,17 +85,12 @@ class GetSingleHopAPIView(APIView):
       """Receive a request and delete a tag based on the request given"""
       result = get_file_by_name(filename)
       if result:
-        contents = None
+        bs_content = get_xml_content(result)
 
-        # iterate ovet the file
-        with open(result) as f:
-          contents = f.read()
-        bs_content = BeautifulSoup(contents, "xml")
-
-        # iterate over the requedst dict, find the xml tag and update it content
-        for key, value in request.data.items():
-          bs_data = bs_content.find(key)
-          bs_data.string = value
+        # iterate over the request list
+        for item in request.data['tags']:
+          tag = bs_content.find(item) # find the xml tag
+          tag.decompose() # remove the tag from the tree
 
         # find the info tag content and return as the response
         bsc_data = bs_content.find('info')
