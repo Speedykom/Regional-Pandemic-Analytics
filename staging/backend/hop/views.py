@@ -73,6 +73,33 @@ class GetSingleHopAPIView(APIView):
           bs_data = bs_content.find(key)
           bs_data.string = value
 
+        with open(filename, 'w') as f:
+          # convert the files to a string and write to the file
+          contents = "".join(str(item) for item in bs_content.contents)
+          f.write(contents)
+        
+        # find the info tag content and return as the response
+        bsc_data = bs_content.find('info')
+        return HttpResponse(bsc_data.prettify(), content_type="text/xml")
+      else:
+        return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
+      
+    def delete(self, request, filename):
+      """Receive a request and delete a tag based on the request given"""
+      result = get_file_by_name(filename)
+      if result:
+        contents = None
+
+        # iterate ovet the file
+        with open(result) as f:
+          contents = f.read()
+        bs_content = BeautifulSoup(contents, "xml")
+
+        # iterate over the requedst dict, find the xml tag and update it content
+        for key, value in request.data.items():
+          bs_data = bs_content.find(key)
+          bs_data.string = value
+
         # find the info tag content and return as the response
         bsc_data = bs_content.find('info')
         return HttpResponse(bsc_data.prettify(), content_type="text/xml")
