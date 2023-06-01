@@ -42,8 +42,7 @@ class ListHopAPIView(APIView):
     def get(self, request):
       """Returns all the files from the hop directory"""
       return Response({'status': 'success', "data": "{}".format(self.get_all_directory_files())}, status=200)
-  
-      
+     
 class GetSingleHopAPIView(APIView):
     """
     Returns a single hop data in xml format
