@@ -48,7 +48,6 @@ class GetSingleHopAPIView(APIView):
     """
     Returns a single hop data in xml format
     """
-  
     def get(self, request, filename: str):
       """Returns a single file"""
       result = get_file_by_name(filename)
@@ -59,6 +58,26 @@ class GetSingleHopAPIView(APIView):
       else:
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
 
+    def post(self, request, filename):
+      """Receive a request and add a new tag"""
+      result = get_file_by_name(filename)
+      if result:
+        bs_content = get_xml_content(result)
+        # find the info tag content
+        bsc_data = bs_content.find('info')
+
+        # iterate over the request dict, find the xml tag and update it content
+        for key, value in request.data.items():
+          bs_data = bs_content.new_tag(key)
+          bs_data.string = value
+          bsc_data.append(bs_data) # append the new tag to the tree
+        
+        # find the info tag content and return as the response
+        bsc_data = bs_content.find('info')
+        return HttpResponse(bsc_data.prettify(), content_type="text/xml")
+      else:
+        return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
+    
     def patch(self, request, filename):
       """Receive a request and update the file based on the request given"""
       result = get_file_by_name(filename)
@@ -82,7 +101,7 @@ class GetSingleHopAPIView(APIView):
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
       
     def delete(self, request, filename):
-      """Receive a request and delete a tag based on the request given"""
+      """Receive a request and delete a tag (s) based on the request given"""
       result = get_file_by_name(filename)
       if result:
         bs_content = get_xml_content(result)
