@@ -10,7 +10,7 @@ from data.views import DataUploadAPI
 from accounts import views
 
 from hop.views import (
-    ListHopAPIView, GetSingleHopAPIView
+    ListHopAPIView, GetSingleHopAPIView, NewHopAPIView
 )
 
 app_name = 'api'
@@ -80,6 +80,7 @@ urlpatterns = [
 
     # endpoint for uploading data
     path('hop/', ListHopAPIView.as_view()),
+    path('hop/new/', NewHopAPIView.as_view()),
     path('hop/<str:filename>/', GetSingleHopAPIView.as_view()),
 
     # ---------------------- End of Hop Endpoints -----------------------------------
