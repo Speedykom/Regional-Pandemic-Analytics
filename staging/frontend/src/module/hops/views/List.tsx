@@ -4,13 +4,16 @@ import {
   PlusOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
-import { Button, Form, Input, Modal, Switch } from "antd";
+import { Button, Form, Input, Modal, message, Upload } from "antd";
 import { useHops } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { getData } from "@/utils";
 import { IRoles } from "../interface";
 import { OpenNotification } from "@/utils/notify";
+
+import { UploadOutlined } from "@ant-design/icons";
+import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 
 interface props {
   viewPro: () => void;
@@ -107,15 +110,15 @@ export const HopList = () => {
   );
 
   const onFinish = async (values: any) => {
-    let url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
+    let url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/hop`;
     url =
       operationType == OPERATION_TYPES.CREATE
-        ? url + "/create"
+        ? url + "/new/"
         : url + `/${roleId}/update`;
     await axios
       .post(url, values, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`, // `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       })
@@ -138,6 +141,49 @@ export const HopList = () => {
     fetchToken();
     fetchHops();
   }, []);
+
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  const handleUpload = async () => {
+    const formData = new FormData();
+    fileList.forEach((file) => {
+      formData.append("file", file as RcFile);
+    });
+    setUploading(true);
+    await axios
+      .post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/new/`, formData, {
+        headers: {
+          Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`, // `Bearer ${token}`
+        },
+      })
+      .then((res) => {
+        console.log(res);
+        setFileList([]);
+        message.success("upload successfully.");
+      })
+      .catch((err) => {
+        message.error(err?.response?.data?.detail);
+      })
+      .finally(() => {
+        setUploading(false);
+      });
+  };
+
+  const props: UploadProps = {
+    onRemove: (file) => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      setFileList(newFileList);
+    },
+    beforeUpload: (file) => {
+      setFileList([...fileList, file]);
+
+      return false;
+    },
+    fileList,
+  };
 
   const { columns } = useHops({ edit, del, refetch });
   // @ts-ignore
@@ -181,12 +227,12 @@ export const HopList = () => {
         open={open}
         title={
           operationType == OPERATION_TYPES.CREATE
-            ? "Create Role"
-            : operationType == OPERATION_TYPES.UPDATE && "Update Role"
+            ? "Create Template"
+            : operationType == OPERATION_TYPES.UPDATE && "Update Template"
         }
         onCancel={handleCancel}
         footer={
-          <Form form={form} onFinish={onFinish}>
+          <Form form={form} onFinish={handleUpload}>
             <Form.Item>
               <div className="flex space-x-2 justify-end">
                 <Button
@@ -229,30 +275,23 @@ export const HopList = () => {
           size="large"
           className="w-full"
         >
+          <Form.Item name="file_name" label="File Name" className="w-full">
+            <Input className="w-full" />
+          </Form.Item>
           <Form.Item
-            name="name"
-            label="Role Name"
+            name="file"
+            label="Select File"
             className="w-full"
             rules={[
               {
                 required: true,
-                message: "Please input role name",
+                message: "Please select the file",
               },
             ]}
           >
-            <Input className="w-full" />
-          </Form.Item>
-          <Form.Item
-            name="description"
-            label="Description"
-            rules={[
-              {
-                required: true,
-                message: "Please input role description",
-              },
-            ]}
-          >
-            <Input />
+            <Upload {...props}>
+              <Button icon={<UploadOutlined />}>Select File</Button>
+            </Upload>
           </Form.Item>
         </Form>
       </Modal>
