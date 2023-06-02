@@ -7,6 +7,9 @@ from core import settings
 from bs4 import BeautifulSoup
 from django.http import HttpResponse
 
+from django.core.files.storage import FileSystemStorage
+from django.core.files.base import ContentFile
+
 def get_file_by_name(filename: str)-> any:
   """Looks for a file by it name and return the found item"""
   if os.path.isfile(os.path.join(settings.HOP_FILES_DIR, filename)):
@@ -119,7 +122,21 @@ class GetSingleHopAPIView(APIView):
 class NewHopAPIView(APIView):
   parser_classes = (MultiPartParser,)
 
+  def validate_file_extension(self, value):
+    """Receives a file and validate it extension"""
+    ext = os.path.splitext(value.name)[1]
+    valid_extensions = ['.hpl']
+    if not ext in valid_extensions:
+      return 'File type not supported!'
+
   def post(self, request):
     file_obj = request.data['file']
-    return Response({'status': 'success', "message": "file: {} received".format(file_obj)}, status=200)
+  
+    if file_obj:
+      err = self.validate_file_extension(file_obj)
+      if err:
+        return Response({'status': 'error', "message": err}, status=500)
+      else:
+        FileSystemStorage(location=os.path.join(settings.HOP_FILES_DIR)).save(file_obj.name, file_obj)
+        return Response({'status': 'success', "message": "file uploaded successfully"}, status=200)
     
