@@ -1,14 +1,14 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
-import { RoleList } from "@/src/module/roles/views/List";
+import { HopList } from "@/src/module/hops/views/List";
 
-export const LoadRoles = () => {
+export const LoadHops = () => {
   return (
     <DashboardFrame title="List(s) of Hops">
-      <RoleList />
+      <HopList />
     </DashboardFrame>
   );
 };
 
 export default function Hops() {
-  return <LoadRoles />;
+  return <LoadHops />;
 }
