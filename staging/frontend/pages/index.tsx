@@ -52,12 +52,13 @@ export default function LoginForm() {
       })
       .then((response) => {
         if (response.status == 200) {
-          let payload = jwt_decode(response?.data?.result?.access_token);
-
+          let payload: any = jwt_decode(response?.data?.result?.access_token);
+          
           // @ts-ignore
           secureLocalStorage.setItem("username", payload?.given_name);
           // @ts-ignore
-          secureLocalStorage.setItem("sue", payload?.email)
+          secureLocalStorage.setItem("sue", payload?.email);
+          secureLocalStorage.setItem("userId", payload?.sub);
           secureLocalStorage.setItem("sua", "authenticated");
 
           router.push("/dashboard/");

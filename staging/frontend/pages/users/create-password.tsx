@@ -32,8 +32,8 @@ export default function CreatePasswordLayout() {
 	};
 	useEffect(() => {
 		getToken();
-	});
+	}, []);
     return (
-        <div>{tok && valid ? <CreatePassword mail={email} token={String(tok)} /> : <LinkExpired />}</div>
+        <div>{tok ? <CreatePassword mail={email} token={String(tok)} /> : <LinkExpired />}</div>
     );
 }
