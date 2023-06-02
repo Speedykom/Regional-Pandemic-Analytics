@@ -109,29 +109,28 @@ export const HopList = () => {
     OPERATION_TYPES.NONE
   );
 
-  const onFinish = async (values: any) => {
-    let url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/hop`;
-    url =
-      operationType == OPERATION_TYPES.CREATE
-        ? url + "/new/"
-        : url + `/${roleId}/update`;
-    await axios
-      .post(url, values, {
-        headers: {
-          Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`, // `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        setOpen(false);
-        refetch();
-        OpenNotification(res.data?.message, "topRight", "success");
-        form.resetFields();
-      })
-      .catch((err) => {
-        OpenNotification(err.response?.data, "topRight", "error");
-      });
-  };
+  // const onFinish = async (values: any) => {
+  //   let url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/hop`;
+  //   url =
+  //     operationType == OPERATION_TYPES.CREATE
+  //       ? url + "/new/"
+  //       : url + `/${roleId}/update`;
+  //   await axios
+  //     .post(url, values, {
+  //       headers: {
+  //         Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`, // `Bearer ${token}`,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       setOpen(false);
+  //       refetch();
+  //       OpenNotification(res.data?.message, "topRight", "success");
+  //       form.resetFields();
+  //     })
+  //     .catch((err) => {
+  //       OpenNotification(err.response?.data, "topRight", "error");
+  //     });
+  // };
 
   const handleCancel = () => {
     setOpen(false);
@@ -145,8 +144,16 @@ export const HopList = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
 
-  const handleUpload = async () => {
+  const handleUpload = async (formFieldValues: any) => {
+    console.log(formFieldValues);
     const formData = new FormData();
+
+    if (formFieldValues.filename != undefined) {
+      formData.append("filename", formFieldValues.filename);
+    } else {
+      formData.append("filename", "");
+    }
+
     fileList.forEach((file) => {
       formData.append("file", file as RcFile);
     });
@@ -158,12 +165,17 @@ export const HopList = () => {
         },
       })
       .then((res) => {
-        console.log(res);
         setFileList([]);
-        message.success("upload successfully.");
+        refetch();
+        message.success(res?.data?.message);
+        setOpen(false);
       })
       .catch((err) => {
-        message.error(err?.response?.data?.detail);
+        if (err?.response?.data?.detail) {
+          message.error(err?.response?.data?.detail);
+        } else {
+          message.error(err?.response?.data?.message);
+        }
       })
       .finally(() => {
         setUploading(false);
@@ -234,7 +246,7 @@ export const HopList = () => {
         footer={
           <Form form={form} onFinish={handleUpload}>
             <Form.Item>
-              <div className="flex space-x-2 justify-end">
+              <div className="flex space-x-2 justify-center">
                 <Button
                   className="focus:outline-none px-6 py-2 text-gray-700 font-medium flex items-center"
                   style={{
@@ -269,13 +281,13 @@ export const HopList = () => {
         <Form
           {...formItemLayout}
           form={form}
-          name="register"
-          onFinish={onFinish}
+          name="uploadFile"
+          onFinish={handleUpload}
           scrollToFirstError
           size="large"
           className="w-full"
         >
-          <Form.Item name="file_name" label="File Name" className="w-full">
+          <Form.Item name="filename" label="File Name" className="w-full">
             <Input className="w-full" />
           </Form.Item>
           <Form.Item
