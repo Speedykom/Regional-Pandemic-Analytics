@@ -1,6 +1,9 @@
 import { getData } from "@/utils";
 import { OpenNotification } from "@/utils/notify";
-import { DeleteColumnOutlined, DeleteRowOutlined, SaveOutlined,  } from "@ant-design/icons";
+import {
+	DeleteColumnOutlined,
+	SaveOutlined,
+} from "@ant-design/icons";
 import {
 	Alert,
 	Button,
@@ -8,9 +11,7 @@ import {
 	Form,
 	Input,
 	Switch,
-	notification,
 } from "antd";
-import { NotificationPlacement } from "antd/es/notification/interface";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -21,16 +22,11 @@ interface props {
 	refetch: () => void;
 }
 
-const OPTIONS = ["Apples", "Nails", "Bananas", "Helicopters"];
-
 export const AddUser = ({ openDrawer, closeDrawer, refetch }: props) => {
-	const [selectedItems, setSelectedItems] = useState<string[]>([]);
 	const [enabled, setEnabled] = useState(false);
 
-	const filteredOptions = OPTIONS.filter((o) => !selectedItems.includes(o));
-
 	const [form] = Form.useForm();
-	const router = useRouter()
+	const router = useRouter();
 
 	const [token, setToken] = useState<string>("");
 
@@ -45,20 +41,26 @@ export const AddUser = ({ openDrawer, closeDrawer, refetch }: props) => {
 	};
 
 	const onFinish = async (values: any) => {
-		await axios.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user`, values, {
-			headers: {
-				'Authorization': `Bearer ${token}`,
-				'Content-Type': "application/json"
-			},
-		}).then((res) => {
-			closeDrawer()
-			refetch()
-			OpenNotification(res.data?.message, 'topRight', 'success')
-			form.resetFields()
-		}).catch((err) => {
-			OpenNotification(err?.response?.data?.errorMessage, 'topRight', 'error')
-		})
-		
+		await axios
+			.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user`, values, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+			})
+			.then((res) => {
+				closeDrawer();
+				refetch();
+				OpenNotification(res.data?.message, "topRight", "success");
+				form.resetFields();
+			})
+			.catch((err) => {
+				OpenNotification(
+					err?.response?.data?.errorMessage,
+					"topRight",
+					"error"
+				);
+			});
 	};
 
 	const formItemLayout = {
@@ -82,8 +84,8 @@ export const AddUser = ({ openDrawer, closeDrawer, refetch }: props) => {
 	};
 
 	useEffect(() => {
-		fetchToken()
-	}, [])
+		fetchToken();
+	}, []);
 
 	return (
 		<Drawer
@@ -98,35 +100,32 @@ export const AddUser = ({ openDrawer, closeDrawer, refetch }: props) => {
 			width={700}
 			footer={
 				<div className="flex justify-end space-x-3 py-3 px-4">
-					<Form
-						form={form}
-						onFinish={onFinish}
-					>
+					<Form form={form} onFinish={onFinish}>
 						<Form.Item>
 							<div className="flex space-x-2">
-							<Button
-								className="focus:outline-none px-6 py-2 text-gray-700 font-medium flex items-center"
-								style={{
-									backgroundColor: "#48328526",
-									border: "1px solid #48328526",
-								}}
+								<Button
+									className="focus:outline-none px-6 py-2 text-gray-700 font-medium flex items-center"
+									style={{
+										backgroundColor: "#48328526",
+										border: "1px solid #48328526",
+									}}
 									type="primary"
 									icon={<DeleteColumnOutlined />}
-							>
-								Cancel
-							</Button>
-							<Button
-								type="primary"
-								className="flex items-center"
-								icon={<SaveOutlined />}
-								style={{
-									backgroundColor: "#087757",
-									border: "1px solid #e65e01",
-								}}
-								htmlType="submit"
-							>
-								Save User
-							</Button>
+								>
+									Cancel
+								</Button>
+								<Button
+									type="primary"
+									className="flex items-center"
+									icon={<SaveOutlined />}
+									style={{
+										backgroundColor: "#087757",
+										border: "1px solid #e65e01",
+									}}
+									htmlType="submit"
+								>
+									Save User
+								</Button>
 							</div>
 						</Form.Item>
 					</Form>
@@ -208,25 +207,6 @@ export const AddUser = ({ openDrawer, closeDrawer, refetch }: props) => {
 						style={{ backgroundColor: "#8c8c8c" }}
 					/>
 				</Form.Item>
-
-				{/* <Form.Item
-					name="realmRoles"
-					label="Assign Roles"
-					tooltip="Select roles to assign to the user"
-				>
-					<Select
-						mode="multiple"
-						placeholder="Inserted are removed"
-						value={selectedItems}
-						onChange={setSelectedItems}
-						className="w-full"
-						style={{ width: "100%" }}
-						options={filteredOptions.map((item) => ({
-							value: item,
-							label: item,
-						}))}
-					/>
-				</Form.Item> */}
 			</Form>
 		</Drawer>
 	);
