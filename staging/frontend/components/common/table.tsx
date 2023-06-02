@@ -36,9 +36,9 @@ export const IGADTable = ({
 	pagination,
 }: props) => {
 	return (
-		<IGADCard className="">
+		<div className="border p-1 rounded-lg">
 			<Table
-				className="cursor-pointer px-2"
+				className="cursor-pointer"
 				components={components}
 				onRow={onRow}
 				size="small"
@@ -50,7 +50,7 @@ export const IGADTable = ({
 				style={{ width: "100%" }}
 				pagination={pagination}
 			/>
-		</IGADCard>
+		</div>
 	);
 };
 
