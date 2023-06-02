@@ -6,9 +6,8 @@ from rest_framework.parsers import MultiPartParser
 from core import settings
 from bs4 import BeautifulSoup
 from django.http import HttpResponse
-
 from django.core.files.storage import FileSystemStorage
-from django.core.files.base import ContentFile
+from django.utils.datastructures import MultiValueDictKeyError
 
 def get_file_by_name(filename: str)-> any:
   """Looks for a file by it name and return the found item"""
@@ -127,16 +126,37 @@ class NewHopAPIView(APIView):
     ext = os.path.splitext(value.name)[1]
     valid_extensions = ['.hpl']
     if not ext in valid_extensions:
-      return 'File type not supported!'
+      return 'File type not supported! Please upload a .hpl file.'
 
   def post(self, request):
-    file_obj = request.data['file']
-  
-    if file_obj:
-      err = self.validate_file_extension(file_obj)
-      if err:
-        return Response({'status': 'error', "message": err}, status=500)
+    """Receives a request to upload a file and sends it to filesystem for now. Later the file will be uploaded to minio server."""
+    try:
+      file_obj = request.data['file']
+      filename = request.data['filename']
+      extensionError = self.validate_file_extension(file_obj)
+
+      # validate the file extension
+      if extensionError:
+        return Response({'status': 'error', "message": extensionError}, status=500)
+      
+      # check that a filename is passed
+      if(len(filename) != 0):
+        # check if the filename does exist and throw error otherwise; save the file as the name passed
+        if get_file_by_name(filename):
+          return Response({'status': 'error', "message": '{} already exists'.format(filename)}, status=409)
+        else:
+          # replace the file storage from filestorage to minio
+          FileSystemStorage(location=os.path.join(settings.HOP_FILES_DIR)).save('{}.hpl'.format(filename), file_obj)
+          return Response({'status': 'success', "message": "template file uploaded successfully"}, status=200)
       else:
-        FileSystemStorage(location=os.path.join(settings.HOP_FILES_DIR)).save(file_obj.name, file_obj)
-        return Response({'status': 'success', "message": "file uploaded successfully"}, status=200)
+        # check if the filename does exist and throw error otherwise; save the file as it is
+        if get_file_by_name(file_obj.name):
+          return Response({'status': 'error', "message": '{} already exists'.format(file_obj.name)}, status=409)
+        else:
+          # replace the file storage from filestorage to minio
+          FileSystemStorage(location=os.path.join(settings.HOP_FILES_DIR)).save(file_obj.name, file_obj)
+          return Response({'status': 'success', "message": "template file uploaded successfully"}, status=200)
+    except MultiValueDictKeyError:
+      return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
+         
     
