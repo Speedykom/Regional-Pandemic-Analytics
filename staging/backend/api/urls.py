@@ -6,6 +6,7 @@ from django.urls import re_path, path
 from airflow.views.gdag import DagView
 from airflow.views.process import GetProcessChain, RunProcessChain
 from airflow.views.gdag import DagView
+from airflow.views.hop import HopView
 from data.views import DataUploadAPI
 from accounts import views
 
@@ -61,12 +62,13 @@ urlpatterns = [
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
     path('airflow/', DagView.as_view()),
-    path('airflow/<str:id>/', DagView.as_view()),
+    path('airflow/<str:id>', DagView.as_view()),
     path('airflow/<str:id>/update/', DagView.as_view()),
 
     # ---------------------- Airflow  Endpoints ------------------------------------------
     path('process/', GetProcessChain.as_view()),
     path('process/run/<str:id>', RunProcessChain.as_view()),
+    path('process/edit/<str:id>', HopView.as_view()),
     path('process/<str:id>/', GetProcessChain.as_view()),
 
     # ---------------------- Data upload Endpoints ------------------------------------------

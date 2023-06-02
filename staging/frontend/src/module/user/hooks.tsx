@@ -80,11 +80,11 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 			render: (firstName, record) => (
 				<div className="flex items-center pr-1">
 					<div>
-						<div className="w-10 h-10 mr-3 overflow-hidden rounded-full flex items-center justify-center border border-gray-400">
+						<div className="w-8 h-8 mr-3 overflow-hidden rounded-full flex items-center justify-center border border-gray-300">
 							<img src="/avater.png" className="w-full h-full" />
 						</div>
 					</div>
-					<p className="font-sans text-base">
+					<p className="font-sans">
 						{record.firstName} {record?.lastName}
 					</p>
 				</div>
@@ -113,10 +113,10 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 			key: "emailVerified",
 			dataIndex: "emailVerified",
 			render: (emailVerified, record) => (
-				<div>
+				<div className="flex">
 					{record.emailVerified ? (
 						<Tag
-							className="flex items-center text-lg"
+							className="flex items-center"
 							icon={<CheckCircleOutlined />}
 							color="processing"
 						>
@@ -124,7 +124,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 						</Tag>
 					) : (
 						<Tag
-							className="flex items-center text-lg"
+							className="flex items-center"
 							icon={<ClockCircleOutlined />}
 							color="default"
 						>
@@ -141,10 +141,10 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 			key: "enabled",
 			dataIndex: "enabled",
 			render: (enabled, record) => (
-				<div>
+				<div className="flex">
 					{record.enabled ? (
 						<Tag
-							className="flex items-center text-lg"
+							className="flex items-center"
 							icon={<CheckCircleOutlined />}
 							color="warning"
 						>
@@ -152,7 +152,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 						</Tag>
 					) : (
 						<Tag
-							className="flex items-center text-lg"
+							className="flex items-center"
 							icon={<ClockCircleOutlined />}
 							color="default"
 						>

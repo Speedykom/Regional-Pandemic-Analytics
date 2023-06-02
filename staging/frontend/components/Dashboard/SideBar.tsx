@@ -31,7 +31,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
       <div className="flex flex-col">
         <Link href="/dashboard/">
           <div
-            className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+            className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
               router.pathname == "/dashboard"
                 ? "bg-green-100 text-green-500"
                 : "text-gray-400 hover:bg-green-100 hover:text-green-500"
@@ -47,7 +47,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
         </Link>
         <Link href="/dashboard/superset-dashboards/">
           <div
-            className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+            className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
               router.pathname == "/superset-dashboards"
                 ? "bg-green-100 text-green-500"
                 : "text-gray-400 hover:bg-green-100 hover:text-green-500"
@@ -63,8 +63,8 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
         </Link>
         <Link href="/dashboard/charts">
           <div
-            className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-              router.pathname == "/process-chains"
+            className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+              router.pathname == "/dashboard/charts"
                 ? "bg-green-100 text-green-500"
                 : "text-gray-400 hover:bg-green-100 hover:text-green-500"
             }`}
@@ -77,10 +77,10 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
             </div>
           </div>
         </Link>
-        <Link href="/dashboard/process-chains">
+        <Link href="/process-chains">
           <div
-            className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-              router.pathname == "/dashboard/process-chains"
+            className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+              router.pathname == "/process-chains"
                 ? "bg-green-100 text-green-500"
                 : "text-gray-400 hover:bg-green-100 hover:text-green-500"
             }`}
@@ -95,7 +95,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
         </Link>
         <Link href="/dashboard/data">
           <div
-              className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+              className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
                   router.pathname == "/dashboard/data"
                       ? "bg-green-100 text-green-500"
                       : "text-gray-400 hover:bg-green-100 hover:text-green-500"
@@ -111,7 +111,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
         </Link>
         <Link href="/users">
           <div
-            className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+            className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
               router.pathname == "/users"
                 ? "bg-green-100 text-green-500"
                 : "text-gray-400 hover:bg-green-100 hover:text-green-500"
@@ -127,7 +127,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
         </Link>
         <Link href="/roles">
           <div
-            className={`pl-6 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+            className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
               router.pathname == "/roles"
                 ? "bg-green-100 text-green-500"
                 : "text-gray-400 hover:bg-green-100 hover:text-green-500"
