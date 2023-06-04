@@ -12,7 +12,6 @@ import { AddUser } from "./Add";
 import axios from "axios";
 import { getData } from "@/utils";
 import { PreviewUser } from "./Preview";
-import form from "antd/es/form";
 import { OpenNotification } from "@/utils/notify";
 
 interface props {
@@ -21,7 +20,6 @@ interface props {
 
 export const UserList = () => {
 	const [form] = Form.useForm();
-	const del = () => {};
 
 	const [token, setToken] = useState<string>("");
 
@@ -30,6 +28,7 @@ export const UserList = () => {
 			const url = "/api/get-access-token/";
 			const response = await getData(url);
 			setToken(response?.accessToken);
+			console.log(response?.accessToken)
 		} catch (error) {
 			console.error("Error:", error);
 		}
@@ -72,6 +71,7 @@ export const UserList = () => {
 	};
 
 	const refetch = () => {
+		fetchToken();
 		fetchUsers();
 	};
 
