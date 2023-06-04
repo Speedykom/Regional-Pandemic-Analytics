@@ -3,14 +3,22 @@ import { ReactNode, useEffect, useState } from "react";
 import secureLocalStorage from "react-secure-storage";
 import { useRouter } from "next/router";
 import axios from "axios";
-import Login from "@/pages/index"; // Import the Login component
+import Login from "@/pages/index";
+import { BiArrowBack } from "react-icons/bi";
 
 interface Props {
   title: string;
   children: ReactNode;
+  back?: boolean;
+  onBackPress?: () => void;
 }
 
-export default function DashboardFrame(props: Props) {
+export default function DashboardFrame({
+  title,
+  back,
+  onBackPress,
+  children,
+}: Props) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -53,8 +61,15 @@ export default function DashboardFrame(props: Props) {
 
   return (
     <Layout>
-      <p className="text-gray-700 text-3xl mb-8 font-bold">{props.title}</p>
-      {props.children}
+      <div className="flex items-center space-x-5 mb-8">
+        {back ? (
+          <button onClick={onBackPress}>
+            <BiArrowBack className="text-2xl" />
+          </button>
+        ) : null}
+        <p className="text-gray-700 text-3xl font-bold">{title}</p>
+      </div>
+      {children}
     </Layout>
   );
 }

@@ -1,5 +1,4 @@
 import { Button, Collapse, Form, Input } from "antd";
-import { useState } from "react";
 import { AppDrawer } from "../AppDrawer";
 import { useFindOneQuery } from "@/redux/services/process";
 import { Loader } from "../Loader";
@@ -19,8 +18,8 @@ export const ViewDag = ({ onClose, state, id }: prop) => {
   return (
     <AppDrawer title="View Process" onClose={onClose} state={state}>
       {loading ? (
-        <div>
-          <Loader />
+        <div className="flex justify-center items-center h-full">
+          <div className="w-10 h-10"><Loader /></div>
         </div>
       ) : (
         <div className="text-sm">
@@ -76,6 +75,12 @@ export const ViewDag = ({ onClose, state, id }: prop) => {
             <p className="w-1/3">Paused:</p>
             <p className="font-semibold w-2/3 flex justify-end">
               {dag?.dag?.is_paused ? "Yes" : "No"}
+            </p>
+          </div>
+          <div className="flex justify-between items-center mb-5">
+            <p className="w-1/3">Druid Schema:</p>
+            <p className="font-semibold w-2/3 flex justify-end">
+              {dag?.dag?.data_source_name}
             </p>
           </div>
           <div className="flex justify-between items-center mb-5">

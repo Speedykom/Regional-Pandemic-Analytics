@@ -11,14 +11,25 @@ export const processApi = createApi({
   tagTypes: ["processes"],
   endpoints: (builder) => ({
     findAll: builder.query<Process, void>({
-      query: () => "/api/process/",
+      query: () => "/api/process/list",
     }),
     findOne: builder.query<Process, string>({
-      query: (id) => `/api/process/${id}`,
+      query: (id) => `/api/process/one/${id}`,
     }),
-    runPipeline: builder.mutation<Process, string>({
+    editAccess: builder.mutation<Process, string>({
+      query: (id) => `/api/process/access/${id}`,
+    }),
+    runProcess: builder.mutation<Process, string>({
       query: (id) => ({
         url: `/api/process/run/${id}`,
+        method: "POST",
+        body: {},
+      }),
+      invalidatesTags: ["processes"],
+    }),
+    createProcess: builder.mutation<Process, string>({
+      query: (id) => ({
+        url: '/api/process',
         method: "POST",
         body: {},
       }),
@@ -29,4 +40,4 @@ export const processApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useFindAllQuery, useFindOneQuery, useRunPipelineMutation } = processApi;
+export const { useFindAllQuery, useFindOneQuery, useRunProcessMutation, useEditAccessMutation } = processApi;
