@@ -1,22 +1,54 @@
 import { useState } from "react";
 import {
+  useEditAccessMutation,
   useFindAllQuery,
-  useRunPipelineMutation,
+  useRunProcessMutation,
 } from "@/redux/services/process";
 import { Button, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import LoadData from "./upload";
 import { ShowMessage } from "../ShowMessage";
 import { ViewDag } from "../Dag/ViewDag";
+import Router from "next/router";
+
+const EditButton = ({ id }: { id: string }) => {
+  const [editAccess] = useEditAccessMutation();
+
+  const [loading, setLoading] = useState(false);
+
+  const edit = () => {
+    setLoading(true);
+    editAccess(id).then((res: any) => {
+      if (res.error) {
+        ShowMessage("error", res.error.message);
+        return;
+      }
+
+      Router.push("/process-chains/hop");
+    });
+  };
+
+  return (
+    <Button
+      loading={loading}
+      onClick={() => edit()}
+      className="dag-btn border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white"
+    >
+      Edit
+    </Button>
+  );
+};
 
 export default function Dag() {
   const { data, isLoading: loading } = useFindAllQuery();
+  const [editAccess] = useEditAccessMutation();
   const [open, setOpen] = useState(false);
   const [view, setView] = useState(false);
   const [isRuning, setRuning] = useState(false);
+  const [isEditing, setEditing] = useState(false);
   const [dag, setDag] = useState<any>();
 
-  const [runPipeline] = useRunPipelineMutation();
+  const [runPipeline] = useRunProcessMutation();
 
   const run = (dag_id: string) => {
     setRuning(true);
@@ -51,6 +83,8 @@ export default function Dag() {
     setView(true);
     setDag(dag_id);
   };
+
+  const editDag = (dag_id: any) => {};
 
   const loadData = (dag: any) => {
     setOpen(true);
@@ -112,9 +146,7 @@ export default function Dag() {
           >
             View
           </Button>
-          <Button className="dag-btn border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white">
-            Edit
-          </Button>
+          <EditButton id={dag.dag_id} />
           <Button className="dag-btn border-purple-500 text-purple-500 rounded-md hover:bg-purple-500 hover:text-white focus:outline-none focus:bg-purple-500 focus:text-white">
             Pipeline
           </Button>

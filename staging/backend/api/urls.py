@@ -54,11 +54,12 @@ urlpatterns = [
     # ---------------------- End of User Management Endpoints ----------------------------
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
-    path('process/', CreateProcess.as_view()),
-    # path('process/run/<str:id>', RunProcess.as_view()),
-    # path('process/access/<str:dag_name>', RequestEditProcess.as_view()),
-    # path('process/<str:id>', EditProcess.as_view()),
-    path('process/<str:id>/', GetProcess.as_view()),
+    path('process', CreateProcess.as_view()),
+    path('process/list', GetProcess.as_view()),
+    path('process/run/<str:id>', RunProcess.as_view()),
+    path('process/access/<str:dag_id>', RequestEditProcess.as_view()),
+    path('process/<str:id>', EditProcess.as_view()),
+    path('process/one/<str:dag_id>', GetProcess.as_view()),
     # path('process/<str:id>', DeleteProcess.as_view()),
 
     # ---------------------- Data upload Endpoints ------------------------------------------

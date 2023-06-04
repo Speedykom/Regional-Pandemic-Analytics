@@ -11,6 +11,7 @@ import {
 import { TextInput } from "@tremor/react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import Router from "next/router";
 
 type FormValues = {
   dagName: string;
@@ -39,12 +40,7 @@ export default function ProcessChains() {
       data_source_name: data?.dataSource,
     };
     axios
-      .post("http://localhost:/api/airflow/", dagData, {
-        auth: {
-          username: "admin",
-          password: "back@123",
-        },
-      })
+      .post("http://localhost:/api/process", dagData)
       .then((response) => {
         console.log(response.data);
       })

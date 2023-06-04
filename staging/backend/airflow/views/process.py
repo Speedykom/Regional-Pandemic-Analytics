@@ -1,12 +1,15 @@
 import requests
 import os
+import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from ..gdags.dynamic import DynamicDag
+from rest_framework import status
+from django.shortcuts import get_object_or_404
 from ..models import Dag
 from ..serializers import DagSerializer
-from ..gdags.hop import EditProcess
+from ..gdags.dynamic import DynamicDag
+from ..gdags.hop import EditAccessProcess
 
 api = os.getenv("AIRFLOW_API")
 username = os.getenv("AIRFLOW_USER")
@@ -30,8 +33,8 @@ class EditProcess(APIView):
 
         if serializer.is_valid():
             # remove existing dag
-            dag_name = check_serializer.data['dag_name']
-            file_to_rem = pathlib.Path("{}{}.py".format(self.output, dag_name))
+            dag_id = check_serializer.data['dag_id']
+            file_to_rem = pathlib.Path("{}{}.py".format(self.output, dag_id))
             file_to_rem.unlink()
 
             serializer.save()
@@ -39,7 +42,7 @@ class EditProcess(APIView):
             # init dynamic dag class
             dynamic_dag = DynamicDag(output=self.output, template=self.template)
             # create dag
-            dynamic_dag.new_dag(request.data['dag_name'], request.data['dag_id'], request.data['parquet_path'],
+            dynamic_dag.new_dag(request.data['dag_id'], request.data['dag_id'], request.data['parquet_path'],
                                 request.data['data_source_name'], request.data['schedule_interval'],
                                 request.data['path'])
 
@@ -63,11 +66,12 @@ class DeleteProcess(APIView):
         result = get_object_or_404(Dag, id=id)
         serializer = DagSerializer(result)
 
-        file_to_rem = pathlib.Path("{}{}.py".format(self.output, serializer.data['dag_name']))
+        file_to_rem = pathlib.Path("{}{}.py".format(self.output, serializer.data['dag_id']))
         file_to_rem.unlink()
 
         result.delete()
         return Response({"status": "success", "data": "Record Deleted"})
+
 
 class CreateProcess(APIView):
 
@@ -81,14 +85,22 @@ class CreateProcess(APIView):
 
     def post(self, request):
         serializer = DagSerializer(data=request.data)
+        dag_id = request.data['dag_id']
 
         if serializer.is_valid():
+
+            process = Dag.objects.filter(dag_id=dag_id)
+
+            if (len(process) > 0):
+                return Response({"status": "Fail", "message": "process already exist with this dag_id {}".format(dag_id)}, status=409)
+
             serializer.save()
 
             # init dynamic dag class
             dynamic_dag = DynamicDag(output=self.output, template=self.template)
+
             # create dag
-            dynamic_dag.new_dag(request.data['dag_name'], request.data['dag_id'], request.data['parquet_path'],
+            dynamic_dag.new_dag(request.data['dag_id'], request.data['dag_id'], request.data['parquet_path'],
                                 request.data['data_source_name'], request.data['schedule_interval'],
                                 request.data['path'])
 
@@ -100,22 +112,32 @@ class GetProcess(APIView):
     
     permission_classes = [AllowAny]
 
-    def get(self, request, id=None):
-        if id:
-            route = "{}/dags/{}".format(api, id)
+    def get(self, request, dag_id=None):
+        if dag_id:
+            process = Dag.objects.filter(dag_id=dag_id)
+            
+            if (len(process) <= 0): return Response({'status': 'success', "message": "No process found for this dag_id {}".format(dag_id)}, status=404)
+
+            route = "{}/dags/{}".format(api, dag_id)
             client = requests.get(route, auth=(username, password))
 
-            route = "{}/dags/{}/dagRuns".format(api, id)
+            res_status = client.status_code
+            
+            if (res_status == 404): return Response({'status': 'success', "message": client.json()['detail']}, status=res_status)
+
+            route = "{}/dags/{}/dagRuns".format(api, dag_id)
             runs = requests.get(route, json={}, auth=(username, password))
 
             respose = client.json()
             respose['runs'] = runs.json()['dag_runs']
+            respose["data_source_name"] = "ebola-hop-druid"
 
             return Response({'status': 'success', "dag": respose}, status=200)
 
         route = "{}/dags".format(api)
         client = requests.get(route, auth=(username, password))
         return Response({'status': 'success', "dags": client.json()['dags']}, status=200)
+
 
 class RunProcess(APIView):
 
@@ -124,7 +146,11 @@ class RunProcess(APIView):
     def post(self, request, id=None):
         route = "{}/dags/{}/dagRuns".format(api, id)
         client = requests.post(route, json={}, auth=(username, password))
-        return Response({'status': 'success', "message": "{} process start running!".format(id)}, status=200)
+
+        res_status = client.status_code
+        
+        if (res_status == 404): return Response({'status': 'success', "message": "No process found for this dag_id {}".format(id)}, status=res_status)
+        else: return Response({'status': 'success', "message": "{} process start running!".format(id)}, status=res_status)
 
 class RunDetailsProcessChain(APIView):
 
@@ -133,8 +159,14 @@ class RunDetailsProcessChain(APIView):
     def get(self, request, id=None):
         route = "{}/dags/{}/dagRuns".format(api, id)
         client = requests.get(route, json={}, auth=(username, password))
-        return Response({'status': 'success', "message": "{} process start running!".format(id)}, status=200)
 
+        res_status = client.status_code
+        
+        if (res_status == 404): return Response({'status': 'success', "message": client.json()['detail']}, status=res_status)
+        else: return Response({'status': 'success', "message": client.json()['dag_runs'].format(id)}, status=200)
+        
+
+# Request edit access
 class RequestEditProcess(APIView):
 
     permission_classes = [AllowAny]
@@ -142,12 +174,15 @@ class RequestEditProcess(APIView):
     # dynamic dag output
     file = "../hop/data-orch.list"
 
-    def get(self, request, dag_name=None):
-        process = Dag.objects.get(dag_name=dag_name)
-        file_path = 'file:///files/{}'.format(process.path)
+    def get(self, request, dag_id=None):
+        process = Dag.objects.filter(dag_id=dag_id)
+        
+        if (len(process) <= 0): return Response({'status': 'success', "message": "No process found for this dag_id {}".format(dag_id)}, status=404)
+
+        file_path = 'file:///files/{}'.format(process[0].path)
         payload = {"names": [file_path]}
         
-        edit_hop = EditProcess(file=self.file)
+        edit_hop = EditAccessProcess(file=self.file)
         edit_hop.request_edit(json.dumps(payload))
 
         return Response({"status": "success", "data": "Edit access granted!"}, status=status.HTTP_200_OK)
