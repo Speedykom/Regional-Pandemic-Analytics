@@ -1,0 +1,25 @@
+name: CI/CD Development Server
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+      - name: connect dev server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PERSONAL_KEY }}
+          script: |
+            cd Regional-Pandemic-Analytics/
+            git pull
+            docker-compose down --remove-orphans
+            docker-compose build && clear
+            docker-compose up -d
