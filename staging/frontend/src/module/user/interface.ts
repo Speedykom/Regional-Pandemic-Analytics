@@ -6,5 +6,12 @@ export interface IUser {
     email: string;
     enabled: boolean;
     emailVerified: boolean;
+    attributes: {
+        code: string[],
+        phone: string[],
+        gender: string[],
+        country: string[],
+        avatar: string[]
+    },
     realmRoles?: []
 }

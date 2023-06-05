@@ -38,6 +38,10 @@ export default function TopBar({ showNav, setShowNav }: props) {
 		setView(false);
 	};
 
+	const profile: any = secureLocalStorage.getItem(
+		"user"
+	) as object;
+
 	useEffect(() => {
 		if (typeof window !== undefined && window.localStorage) {
 			const user: string | null = secureLocalStorage.getItem(
@@ -60,7 +64,7 @@ export default function TopBar({ showNav, setShowNav }: props) {
 	};
 	return (
 		<div
-			className={`fixed w-full h-16 z-50 flex justify-between items-center transition-all duration-[400ms] ${
+			className={`fixed bg-white w-full h-16 z-50 flex justify-between items-center transition-all duration-[400ms] ${
 				showNav ? "pl-56" : ""
 			}`}
 		>
@@ -155,7 +159,7 @@ export default function TopBar({ showNav, setShowNav }: props) {
 						<Menu.Button className="inline-flex w-full justify-center items-center">
 							<picture>
 								<img
-									src="/images/fsnk.jpg"
+									src={profile && profile?.avatar ? profile?.avatar : '/avater.png'}
 									className="rounded-full h-8 md:mr-4 border-2 border-white shadow-sm"
 									alt="profile picture"
 								/>
@@ -190,6 +194,7 @@ export default function TopBar({ showNav, setShowNav }: props) {
 								<Menu.Item>
 									<Link
 										href="#"
+										onClick={() => router.push("/users/myprofile")}
 										className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
 									>
 										<Cog8ToothIcon className="h-4 w-4 mr-2" />
