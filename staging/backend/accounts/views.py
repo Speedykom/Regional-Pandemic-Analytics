@@ -9,7 +9,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.parsers import FileUploadParser
+from rest_framework.parsers import MultiPartParser
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import AllowAny
@@ -17,8 +17,9 @@ from mailer.sender import SendMail
 from utils.filename import gen_filename
 from utils.env_configs import (APP_USER_BASE_URL, APP_SECRET_KEY, APP_REALM, APP_USER_ROLES, REST_REDIRECT_URI)
 import minio
+from utils.minio import upload_file_to_minio
+from django.utils.datastructures import MultiValueDictKeyError
 
-from .serializers import UploadedFileSerializer
 from .serializers import  *
 from .models import *
 from rest_framework.decorators import api_view , permission_classes
@@ -751,35 +752,96 @@ class UpdateProfileAPI(APIView):
         return Response({'errorMessage': 'Error changing password'}, status=status.HTTP_401_UNAUTHORIZED)  
 
 
-class UploadAvatarAPI (APIView):
+# class UploadAvatarAPI (APIView):
+#     """
+#     API view to upload Keycloak user avatar to minio
+#     """
+#     permission_classes = [AllowAny,]
+
+#     def post (self, request, *args, **kwargs):
+#         #Login to admin
+#         admin_login = keycloak_admin_login()
+
+#         if admin_login["status"] != 200:
+#             return Response(admin_login["data"], status=admin_login["status"])
+
+#         headers = {
+#             'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
+#             'Content-Type': "application/json",
+#             'cache-control': "no-cache"
+#         }
+
+#         serializer = UploadedFileSerializer(data=request.data)
+#         #upload file to MINIO
+#         if serializer.is_valid():
+#             file = serializer.validated_data["file"]
+
+#             # get the format of file
+#             type = str(file).split(".")[1]
+
+#             name_generator = gen_filename(file.name)
+#             file.name = name_generator['newName']
+
+#             response = requests.get(url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
+
+#             if response.status_code != 200:
+#                 return Response(response.reason, status=response.status_code)
+
+#             user: dict = response.json()
+
+#             serializer.save(size=file.size , type=type)
+
+#             date = datetime.now().strftime("%Y-%-m-%-d")
+
+#             if 'attributes' not in user:
+#                 user['attributes'] = {}
+#                 user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file.name}'
+
+#             else: 
+#                 user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file.name}'
+
+#             user_data = {
+#                 'attributes': user['attributes']
+#             }
+
+#             res = requests.put(f"{APP_USER_BASE_URL}/{kwargs['id']}", json=user_data, headers=headers)
+
+#             if res.status_code != 204:
+#                 return Response({'reason': res.reason, 'message': res.text, 'user': user_data}, status=res.status_code)
+            
+#             return Response({'message': 'Avatar updated successfully', 'avatarUrl': user["attributes"]['avatar']} , status.HTTP_201_CREATED)
+        # return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+
+class AvatarUploadApI(APIView):
     """
     API view to upload Keycloak user avatar to minio
     """
     permission_classes = [AllowAny,]
 
-    def post (self, request, *args, **kwargs):
-        #Login to admin
-        admin_login = keycloak_admin_login()
+    parser_classes = (MultiPartParser,)
 
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
+    def post(self, request, **kwargs):
+        """Receives a request to upload a file and sends it to filesystem for now. Later the file will be uploaded to minio server."""
+        try:
+            file_obj = request.data['file']
+            
+            name_generator = gen_filename(file_obj.name)
+            file_obj.name = name_generator['newName']
 
-        headers = {
-            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
-            'Content-Type': "application/json",
-            'cache-control': "no-cache"
-        }
+            # check that a filename is passed
+            upload_file_to_minio("avatars", file_obj)
 
-        serializer = UploadedFileSerializer(data=request.data)
-        #upload file to MINIO
-        if serializer.is_valid():
-            file = serializer.validated_data["file"]
+            admin_login = keycloak_admin_login()
 
-            # get the format of file
-            type = str(file).split(".")[1]
+            if admin_login["status"] != 200:
+                return Response(admin_login["data"], status=admin_login["status"])
 
-            name_generator = gen_filename(file.name)
-            file.name = name_generator['newName']
+            headers = {
+                'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
+                'Content-Type': "application/json",
+                'cache-control': "no-cache"
+            }
 
             response = requests.get(url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
 
@@ -788,16 +850,14 @@ class UploadAvatarAPI (APIView):
 
             user: dict = response.json()
 
-            serializer.save(size=file.size , type=type)
-
             date = datetime.now().strftime("%Y-%-m-%-d")
 
             if 'attributes' not in user:
                 user['attributes'] = {}
-                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file.name}'
+                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file_obj.name}'
 
             else: 
-                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file.name}'
+                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file_obj.name}'
 
             user_data = {
                 'attributes': user['attributes']
@@ -807,25 +867,11 @@ class UploadAvatarAPI (APIView):
 
             if res.status_code != 204:
                 return Response({'reason': res.reason, 'message': res.text, 'user': user_data}, status=res.status_code)
-            
-            return Response({'message': 'Avatar updated successfully', 'avatarUrl': user["attributes"]['avatar']} , status.HTTP_201_CREATED)
-        # return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
-
-
-class upload_my_file(APIView):
-    permission_classes = [AllowAny]
-    def post(self, request):
-        minioClient = minio.Minio(
-            endpoint="cache2.igad-health.eu:9001",
-            access_key="iQPN9LTshIlpPNut",
-            secret_key="rRNZehVgsesBz7pvkvadOIzLYyE9wI4T",
-            secure=False
-        )
-        exists = minioClient.bucket_exists("test-avatars")
-        if exists:
-            return Response('Bucket already exist')
-        minioClient.make_bucket("test-avatars")
-        return Response('Bucket created', status=status.HTTP_404_NOT_FOUND)
+            return Response({'status': 'success', "message": "Avatar uploaded successfully"}, status=200)
+        
+        except MultiValueDictKeyError:
+            return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
+    
     
 
 # endpoint="89.58.44.88:9001",
