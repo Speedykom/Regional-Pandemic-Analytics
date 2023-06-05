@@ -17,7 +17,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
   const router = useRouter();
 
   return (
-    <div ref={ref} className="fixed w-56 h-full bg-white shadow-lg">
+    <div ref={ref} className="fixed z-50 w-56 h-full bg-white shadow-lg">
       <div className="flex justify-center mt-6 mb-14">
         <picture>
           <img

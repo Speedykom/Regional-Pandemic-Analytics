@@ -53,7 +53,7 @@ export default function DashboardFrame(props: Props) {
 
   return (
     <Layout>
-      <p className="text-gray-700 text-3xl mb-8 font-bold">{props.title}</p>
+      <p className="text-gray-700 text-3xl mb-8 pt-8 font-bold">{props.title}</p>
       {props.children}
     </Layout>
   );
