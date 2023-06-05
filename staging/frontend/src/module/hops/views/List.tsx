@@ -11,7 +11,7 @@ import axios from "axios";
 import { getData } from "@/utils";
 import { IRoles } from "../interface";
 import { OpenNotification } from "@/utils/notify";
-
+import { useRouter } from "next/router";
 import { UploadOutlined } from "@ant-design/icons";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 
@@ -28,6 +28,7 @@ enum OPERATION_TYPES {
 export const HopList = () => {
   const del = () => {};
   const [form] = Form.useForm();
+  const router = useRouter();
 
   const [token, setToken] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
@@ -209,6 +210,13 @@ export const HopList = () => {
             loading={loading}
             rows={data}
             columns={columns}
+            onRow={(record: any, rowIndex: number) => {
+              return {
+                onClick: () => {
+                  router.push(`/hops/${record?.name}`);
+                },
+              };
+            }}
           />
         </div>
       </section>
