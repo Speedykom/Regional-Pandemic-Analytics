@@ -36,8 +36,6 @@ def upload_file_to_minio(bucket_name, uploaded_file):
         )
 
         # Return True to indicate successful upload
-
-        print(file_upload)
         return True
 
     except S3Error as exc:
