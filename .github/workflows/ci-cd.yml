@@ -1,10 +1,10 @@
 name: CI/CD Dev Server
-
+  
 on:
   push:
     branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   deploy:
@@ -19,8 +19,5 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PERSONAL_KEY }}
           script: |
-            cd Regional-Pandemic-Analytics/
-            git pull
-            docker-compose down --remove-orphans
-            docker-compose build && clear
-            docker-compose up -d
+            echo "what"
+            whoami
