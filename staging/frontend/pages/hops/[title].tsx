@@ -1,14 +1,16 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
 import axios from "axios";
-import { Button } from "antd";
-import { useState, useEffect } from "react";
+import { Button, Switch } from "antd";
+import { useState } from "react";
 import XMLViewer from "react-xml-viewer";
+import ParseXml from "./parseXml";
 
 export default function HopDetail({ hopsData, hopTitle }: any) {
   const [newTags, setNewTags] = useState<any>();
   const [updateTags, setUpdateTags] = useState<any>();
   const [deleteTags, setDeleteTags] = useState<any>();
-  const [data, setData] = useState<any>(hopsData);
+  const [xmlData, setXmlData] = useState<any>(hopsData);
+  const [isSwitch, setIsSwitch] = useState<boolean>(false);
 
   const handleAddingTags = async () => {
     await axios
@@ -26,7 +28,7 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
       .then((res) => {
         if (res.data) {
           setNewTags("");
-          setData(res.data);
+          setXmlData(res.data);
         }
       })
       .catch((err) => console.log(err));
@@ -48,7 +50,7 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
       .then((res) => {
         if (res.data) {
           setUpdateTags("");
-          setData(res.data);
+          setXmlData(res.data);
         }
       })
       .catch((err) => console.log(err));
@@ -69,29 +71,45 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
       .then((res) => {
         if (res.data) {
           setDeleteTags("");
-          setData(res.data);
+          setXmlData(res.data);
         }
       })
       .catch((err) => console.log(err));
   };
 
   const customTheme = {
-    separatorColor: "#087757",
-    tagColor: "red",
-    textColor: "#FFFFFF",
+    separatorColor: "#f43f5e",
+    tagColor: "#fda4af",
+    textColor: "#22d3ee",
   };
 
   return (
     <DashboardFrame title="Hop Details">
       <section className="flex space-x-2 h-auto">
-        <div className="w-1/2 h-[35rem] bg-gray-800 overflow-y-auto p-4">
-          <XMLViewer
-            xml={data}
-            indentSize={5}
-            collapsible
-            theme={customTheme}
-            overflowBreak
-          />
+        {/* xml display container */}
+        <div className="w-1/2 h-[35rem] bg-cyan-950 p-4">
+          <div className="flex justify-end mb-5 w-full">
+            <Switch
+              checkedChildren="Show XML"
+              unCheckedChildren="Parse XML"
+              onChange={(value: any) => setIsSwitch(value)}
+            />
+          </div>
+          <div className="h-[30rem] overflow-y-auto">
+            <div>
+              {isSwitch ? (
+                <ParseXml xmlData={xmlData} />
+              ) : (
+                <XMLViewer
+                  xml={xmlData}
+                  indentSize={5}
+                  collapsible
+                  theme={customTheme}
+                  overflowBreak
+                />
+              )}
+            </div>
+          </div>
         </div>
 
         <section className="w-1/2 bg-blue-50 p-4">
@@ -170,23 +188,6 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
     </DashboardFrame>
   );
 }
-
-// export async function getStaticPaths() {
-//   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/`, {
-//     headers: {
-//       Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
-//       "Content-Type": "application/xml; charset=utf-8",
-//       // `Bearer ${token}`
-//     },
-//   });
-//   const users = await res.json();
-//   console.log(users);
-//   // const paths = users.map((user: any) => ({
-//   //   params: { title: user.name.toString() },
-//   // }));
-
-//   return { paths: "ljkh", fallback: false };
-// }
 
 export async function getServerSideProps({ params }: any) {
   let results;
