@@ -577,10 +577,9 @@ export const ProfileSettings = () => {
 								<div className="border border-1 p-5 flex flex-col ">
 									<Divider
 										type="horizontal"
-										children={
-											<p className="text-lg mb-5">Create New Password</p>
-										}
-									/>
+									>
+										<p className="text-lg mb-5">Create New Password</p>
+									</Divider>
 									<Form form={passwordForm} onFinish={handlePasswordChange}>
 										<div className="flex">
 											<div className="w-1/2">
