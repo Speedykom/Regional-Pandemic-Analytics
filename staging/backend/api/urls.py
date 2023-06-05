@@ -7,6 +7,10 @@ from airflow.views.process import GetProcess, RunProcess, RequestEditProcess, Cr
 from data.views import DataUploadAPI
 from accounts import views
 
+from hop.views import (
+    ListHopAPIView, GetSingleHopAPIView, NewHopAPIView
+)
+
 app_name = 'api'
 
 schema_view = get_schema_view(
@@ -69,4 +73,12 @@ urlpatterns = [
 
     # ---------------------- End of Data Upload Endpoints -----------------------------------
 
+    # ---------------------- Hop Endpoints ------------------------------------------
+
+    # endpoint for uploading data
+    path('hop/', ListHopAPIView.as_view()),
+    path('hop/new/', NewHopAPIView.as_view()),
+    path('hop/<str:filename>/', GetSingleHopAPIView.as_view()),
+
+    # ---------------------- End of Hop Endpoints -----------------------------------
 ]
