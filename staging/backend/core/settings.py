@@ -80,7 +80,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
+DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "True") == "True"
 
 if DEVELOPMENT_MODE is True:
     DATABASES = {
@@ -140,8 +140,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-        'rest_framework.permissions.AllowAny'
+        'rest_framework.permissions.IsAuthenticated'
     ),
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
@@ -172,10 +171,10 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
-# MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
+MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
+MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
 MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET")
-# MINIO_ENDPOINT = os.getenv("MINIO_URL")
+MINIO_ENDPOINT = os.getenv("MINIO_URL")
 
 # EMAIL TRASMISSION SETTINGS
 
@@ -187,26 +186,25 @@ EMAIL_HOST_PASSWORD = 'srxcesuhnjulboph'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
-
-MINIO_ENDPOINT = os.getenv("MINIO_URL")
-MINIO_EXTERNAL_ENDPOINT = os.getenv("MINIO_URL")
-MINIO_EXTERNAL_ENDPOINT_USE_HTTPS = False  # Default is same as MINIO_USE_HTTPS
-MINIO_REGION = 'us-east-1'  # Default is set to None
-MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
-MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
-MINIO_USE_HTTPS = False
-MINIO_URL_EXPIRY_HOURS = timedelta(days=1)  # Default is 7 days (longest) if not defined
-MINIO_CONSISTENCY_CHECK_ON_START = True
-MINIO_PRIVATE_BUCKETS = [
-    'avatars'
-]
-MINIO_PUBLIC_BUCKETS = [
-    'test',
-]
-MINIO_POLICY_HOOKS: List[Tuple[str, dict]] = []
+# MINIO_ENDPOINT = os.getenv("MINIO_URL")
+# MINIO_EXTERNAL_ENDPOINT = os.getenv("MINIO_URL")
+# MINIO_EXTERNAL_ENDPOINT_USE_HTTPS = False  # Default is same as MINIO_USE_HTTPS
+# MINIO_REGION = 'us-east-1'  # Default is set to None
+# MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
+# MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
+# MINIO_USE_HTTPS = False
+# MINIO_URL_EXPIRY_HOURS = timedelta(days=1)  # Default is 7 days (longest) if not defined
+# MINIO_CONSISTENCY_CHECK_ON_START = True
+# MINIO_PRIVATE_BUCKETS = [
+#     'avatars'
+# ]
+# MINIO_PUBLIC_BUCKETS = [
+#     'test',
+# ]
+# MINIO_POLICY_HOOKS: List[Tuple[str, dict]] = []
 # MINIO_MEDIA_FILES_BUCKET = 'my-media-files-bucket'  # replacement for MEDIA_ROOT
 # MINIO_STATIC_FILES_BUCKET = 'my-static-files-bucket'  # replacement for STATIC_ROOT
-MINIO_BUCKET_CHECK_ON_SAVE = True  # Default: True // Creates bucket if missing, then save
+# MINIO_BUCKET_CHECK_ON_SAVE = True  # Default: True // Creates bucket if missing, then save
 
 AWS_ACCESS_KEY_ID = MINIO_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY = MINIO_SECRET_KEY
