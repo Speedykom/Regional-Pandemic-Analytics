@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 from core import settings
+from utils.minio import upload_file_to_minio
 from bs4 import BeautifulSoup
 from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
@@ -146,7 +147,7 @@ class NewHopAPIView(APIView):
           return Response({'status': 'error', "message": '{} already exists'.format(filename)}, status=409)
         else:
           # replace the file storage from filestorage to minio
-          FileSystemStorage(location=os.path.join(settings.HOP_FILES_DIR)).save('{}.hpl'.format(filename), file_obj)
+          upload_file_to_minio("hop_bucket", file_obj)
           return Response({'status': 'success', "message": "template file uploaded successfully"}, status=200)
       else:
         # check if the filename does exist and throw error otherwise; save the file as it is
@@ -154,7 +155,7 @@ class NewHopAPIView(APIView):
           return Response({'status': 'error', "message": '{} already exists'.format(file_obj.name)}, status=409)
         else:
           # replace the file storage from filestorage to minio
-          FileSystemStorage(location=os.path.join(settings.HOP_FILES_DIR)).save(file_obj.name, file_obj)
+          upload_file_to_minio("hop_bucket", file_obj)
           return Response({'status': 'success', "message": "template file uploaded successfully"}, status=200)
     except MultiValueDictKeyError:
       return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
