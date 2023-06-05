@@ -1,4 +1,4 @@
-name: CI/CD Development Server
+name: CI/CD Dev Server
 
 on:
   push:
