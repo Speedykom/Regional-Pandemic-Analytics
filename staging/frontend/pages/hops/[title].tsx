@@ -1,18 +1,14 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
 import axios from "axios";
-import { Button, Input } from "antd";
+import { Button } from "antd";
 import { useState, useEffect } from "react";
-import xml2js from "xml2js";
+import XMLViewer from "react-xml-viewer";
 
 export default function HopDetail({ hopsData, hopTitle }: any) {
   const [newTags, setNewTags] = useState<any>();
   const [updateTags, setUpdateTags] = useState<any>();
   const [deleteTags, setDeleteTags] = useState<any>();
   const [data, setData] = useState<any>(hopsData);
-  // let parser = new xml2js.Parser();
-  // parser.parseString(hopsData, function (err, result) {
-  //   console.log(result);
-  // });
 
   const handleAddingTags = async () => {
     await axios
@@ -28,11 +24,9 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
         }
       )
       .then((res) => {
-        console.log(res.data);
         if (res.data) {
           setNewTags("");
           setData(res.data);
-          // refetch();
         }
       })
       .catch((err) => console.log(err));
@@ -52,75 +46,42 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
         }
       )
       .then((res) => {
-        console.log(res.data);
         if (res.data) {
           setUpdateTags("");
           setData(res.data);
-          // refetch();
         }
       })
       .catch((err) => console.log(err));
   };
 
   const handleDeletingTags = async () => {
-    // await axios
-    //   .delete(
-    //     `${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/${hopTitle}/`,
-    //     tags,
-    //     {
-    //       headers: {
-    //         Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
-    //         "Content-Type": "application/json; charset=utf-8",
-    //         // `Bearer ${token}`
-    //       },
-    //     }
-    //   )
-    //   .then((res) => {
-    //     console.log(res.data);
-    //     if (res.data) {
-    //       setTags("");
-    //       setData(res.data);
-    //       // refetch();
-    //     }
-    //   })
-    //   .catch((err) => console.log(err));
+    await axios
+      .delete(`${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/${hopTitle}/`, {
+        headers: {
+          Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
+          "Content-Type": "application/json; charset=utf-8",
+          // `Bearer ${token}`
+        },
+        data: {
+          tags: deleteTags.split(","),
+        },
+      })
+      .then((res) => {
+        if (res.data) {
+          setDeleteTags("");
+          setData(res.data);
+        }
+      })
+      .catch((err) => console.log(err));
   };
-
-  const fetchHop = async () => {
-    try {
-      await axios
-        .get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/${hopTitle}/`, {
-          headers: {
-            Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
-            "Content-Type": "application/xml; charset=utf-8",
-            // `Bearer ${token}`
-          },
-        })
-        .then((res) => {
-          if (res.data) {
-            setData(res.data);
-          }
-        })
-        .catch((err) => console.log(err));
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  const refetch = () => {
-    fetchHop();
-  };
-
-  useEffect(() => {
-    refetch();
-  }, []);
 
   return (
     <DashboardFrame title="Hop Details">
       <section className="flex space-x-2 h-auto">
-        <textarea name="" id="" className="w-1/2 h-2/3" rows="25">
-          {data}
-        </textarea>
+        <div className="w-1/2 h-[35rem] bg-red-50 overflow-y-auto">
+          <XMLViewer xml={data} />
+        </div>
+
         <section className="w-1/2 bg-blue-50 p-4">
           {/* add new tags section */}
           <div>
@@ -139,6 +100,7 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
                   border: "1px solid #e65e01",
                 }}
                 onClick={handleAddingTags}
+                disabled={newTags ? false : true}
               >
                 Add Tags
               </Button>
@@ -161,6 +123,7 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
                   backgroundColor: "#FFBF00",
                 }}
                 onClick={handleUpdatingTags}
+                disabled={updateTags ? false : true}
               >
                 Update Tags
               </Button>
@@ -184,6 +147,7 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
                   border: "1px solid #e65e01",
                 }}
                 onClick={handleDeletingTags}
+                disabled={deleteTags ? false : true}
               >
                 Delete Tags
               </Button>
@@ -194,6 +158,23 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
     </DashboardFrame>
   );
 }
+
+// export async function getStaticPaths() {
+//   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/`, {
+//     headers: {
+//       Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
+//       "Content-Type": "application/xml; charset=utf-8",
+//       // `Bearer ${token}`
+//     },
+//   });
+//   const users = await res.json();
+//   console.log(users);
+//   // const paths = users.map((user: any) => ({
+//   //   params: { title: user.name.toString() },
+//   // }));
+
+//   return { paths: "ljkh", fallback: false };
+// }
 
 export async function getServerSideProps({ params }: any) {
   let results;
