@@ -137,6 +137,26 @@ export const ProfileSettings = () => {
 		setPreviewOpen(true);
 	};
 
+	const handleDetailsEdit = async (values: any) => {
+		await axios
+			.put(
+				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/update`,
+				values,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			)
+			.then((res) => {
+				OpenNotification(res?.data?.message, "topRight", "success");
+				form.resetFields();
+			})
+			.catch((err) => {
+				OpenNotification(err.response?.data?.errorMessage, "topRight", "error");
+			});
+	}
+
 	const password: string = secureLocalStorage.getItem("passcode") as string;
 
 	const handlePasswordChange = async (values: any) => {
@@ -346,7 +366,7 @@ export const ProfileSettings = () => {
 									<span>Update Details</span>
 								</Button>
 							</div>
-							<Form form={form} name="edit" scrollToFirstError>
+							<Form form={form} name="edit" onFinish={handleDetailsEdit} scrollToFirstError>
 								<div className="lg:col-span-2">
 									<div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
 										<div className="md:col-span-5">
@@ -611,11 +631,11 @@ export const ProfileSettings = () => {
 														rules={[
 															{
 																required: true,
-																validator(value, callback) {
+																validator(rule, value, callback) {
 																	if (value === "") {
 																		callback("This field is required");
 																	} else if (value !== newPass) {
-																		callback("Two inputs don't match!");
+																		callback("Passwords do not match!");
 																	} else {
 																		callback();
 																	}
