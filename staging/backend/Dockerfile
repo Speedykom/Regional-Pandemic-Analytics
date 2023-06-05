@@ -21,7 +21,7 @@ RUN python /backend/manage.py initialize_buckets
 
 COPY . .
 
-RUN python /backend/manage.py initialize_buckets
+RUN python manage.py initialize_buckets
 
 # run entrypoint.sh
 ENTRYPOINT ["/backend/entrypoint.sh"]
