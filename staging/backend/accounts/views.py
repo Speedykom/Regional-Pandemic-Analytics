@@ -9,11 +9,20 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.parsers import FileUploadParser
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import AllowAny
 from mailer.sender import SendMail
+from utils.filename import gen_filename
 from utils.env_configs import (APP_USER_BASE_URL, APP_SECRET_KEY, APP_REALM, APP_USER_ROLES, REST_REDIRECT_URI)
+import minio
+
+from .serializers import UploadedFileSerializer
+from .serializers import  *
+from .models import *
+from rest_framework.decorators import api_view , permission_classes
+from rest_framework import permissions
 
 from utils.generators import get_random_secret
 from utils.keycloak_auth import keycloak_admin_login, create_keycloak_user
@@ -66,6 +75,7 @@ class KeyCloakLoginAPI(APIView):
 
         if res.status_code == 200:
             data = res.json()
+            print(data)
             return Response(data, status=status.HTTP_200_OK)
 
         return Response({"result": "Login Failed"}, status=status.HTTP_400_BAD_REQUEST)
@@ -112,7 +122,11 @@ class CreateUserAPI(APIView):
             'lastName': openapi.Schema(type=openapi.TYPE_STRING),
             'username': openapi.Schema(type=openapi.TYPE_STRING),
             'email': openapi.Schema(type=openapi.TYPE_STRING),
-            'enabled': openapi.Schema(type=openapi.TYPE_BOOLEAN)
+            'enabled': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+            'code': openapi.Schema(type=openapi.TYPE_STRING),
+            "phone": openapi.Schema(type=openapi.TYPE_STRING),
+            "gender": openapi.Schema(type=openapi.TYPE_STRING),
+            "country": openapi.Schema(type=openapi.TYPE_STRING)
         }
     ))
 
@@ -124,16 +138,20 @@ class CreateUserAPI(APIView):
             "username": request.data.get("username", None),
             "email": request.data.get("email", None),
             "enabled": request.data.get("enabled", None),
+            "emailVerified": False,
+            "attributes": {
+                "code": request.data.get("code", None),
+                "phone": request.data.get("phone", None),
+                "gender": request.data.get("gender", None),
+                "country": request.data.get("country", None),
+                "avatar": ""
+            },
             "credentials": [
                 {
                     "type": "password",
                     "value": generate_password,
                     "temporary": False
                 }
-            ],
-            "emailVerified": False,
-            "requiredActions": [
-                "VERIFY_EMAIL"
             ]
         }
 
@@ -178,7 +196,11 @@ class UpdateUserAPI(APIView):
             'firstName': openapi.Schema(type=openapi.TYPE_STRING),
             'lastName': openapi.Schema(type=openapi.TYPE_STRING),
             'email': openapi.Schema(type=openapi.TYPE_STRING),
-            'enabled': openapi.Schema(type=openapi.TYPE_BOOLEAN)
+            'enabled': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+            'code': openapi.Schema(type=openapi.TYPE_STRING),
+            "phone": openapi.Schema(type=openapi.TYPE_STRING),
+            "gender": openapi.Schema(type=openapi.TYPE_STRING),
+            "country": openapi.Schema(type=openapi.TYPE_STRING)
         }
     ))
 
@@ -188,6 +210,13 @@ class UpdateUserAPI(APIView):
             "lastName": request.data.get("lastName", None),
             "email": request.data.get("email", None),
             "enabled": request.data.get("enabled", None),
+            "attributes": {
+                "code": request.data.get("code", None),
+                "phone": request.data.get("phone", None),
+                "gender": request.data.get("gender", None),
+                "country": request.data.get("country", None),
+                "avatar": ""
+            }
         }
 
         #Login to admin
@@ -380,6 +409,8 @@ class ResetPasswordAPI(APIView):
         request_body = {
             "email": request.data.get("email", None)
         }
+
+        # 079356992 - sheku
 
         checkUser = requests.get(f"{APP_USER_BASE_URL}?email={request_body['email']}", headers=headers)
         if checkUser.status_code != 200:
@@ -627,3 +658,176 @@ class CreatePasswordAPI(APIView):
             return Response({'errorMessage': 'Token provided is invalid'}, status=status.HTTP_401_UNAUTHORIZED)
        
 
+class ChangePasswordAPI(APIView):
+    """
+    API view to change Keycloak user password
+    """
+    permission_classes = [AllowAny,]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'newPassword': openapi.Schema(type=openapi.TYPE_STRING),
+            'confirmPassword': openapi.Schema(type=openapi.TYPE_STRING),
+        }
+    ))
+
+    def put(self, request, *args, **kwargs):
+        form_data = {
+            "newPassword": request.data.get("newPassword", None),
+            "confirmPassword": request.data.get("lastName", None),
+        }
+
+        #Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
+            'Content-Type': "application/json",
+            'cache-control': "no-cache"
+        }
+
+        credentials = {
+            "type": "password",
+            "value": form_data["newPassword"],
+            "temporary": False
+        }
+
+        res = requests.put(f"{APP_USER_BASE_URL}/{kwargs['id']}/reset-password", json=credentials, headers=headers)
+            
+        if res.status_code == 200:
+            return Response({'message': 'Password updated successfully'}, status=status.HTTP_200_OK)   
+        
+        print(res.text)
+        return Response({'errorMessage': 'Error changing password'}, status=res.status_code)
+    
+
+class UpdateProfileAPI(APIView):
+    """
+    API view to change Keycloak user password
+    """
+    permission_classes = [AllowAny,]
+
+    @swagger_auto_schema(request_body=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'newPassword': openapi.Schema(type=openapi.TYPE_STRING),
+            'confirmPassword': openapi.Schema(type=openapi.TYPE_STRING),
+            'userId': openapi.Schema(type=openapi.TYPE_STRING),
+        }
+    ))
+
+    def put(self, request, *args, **kwargs):
+        form_data = {
+            "newPassword": request.data.get("newPassword", None),
+            "confirmPassword": request.data.get("lastName", None),
+            "userId": request.data.get("userId", None),
+        }
+
+        #Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
+            'Content-Type': "application/json",
+            'cache-control': "no-cache"
+        }
+
+        credentials = {
+            "type": "password",
+            "value": form_data["newPassword"],
+            "temporary": False
+        }
+
+        res = requests.put(f"{APP_USER_BASE_URL}/{form_data['userId']}/reset-password", json=credentials, headers=headers)
+            
+        if res.status_code == 200:
+            return Response({'message': 'Password created successfully'}, status=status.HTTP_200_OK)   
+        
+        return Response({'errorMessage': 'Error changing password'}, status=status.HTTP_401_UNAUTHORIZED)  
+
+
+class UploadAvatarAPI (APIView):
+    """
+    API view to upload Keycloak user avatar to minio
+    """
+    permission_classes = [AllowAny,]
+
+    def post (self, request, *args, **kwargs):
+        #Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
+            'Content-Type': "application/json",
+            'cache-control': "no-cache"
+        }
+
+        serializer = UploadedFileSerializer(data=request.data)
+        #upload file to MINIO
+        if serializer.is_valid():
+            file = serializer.validated_data["file"]
+
+            # get the format of file
+            type = str(file).split(".")[1]
+
+            name_generator = gen_filename(file.name)
+            file.name = name_generator['newName']
+
+            response = requests.get(url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
+
+            if response.status_code != 200:
+                return Response(response.reason, status=response.status_code)
+
+            user: dict = response.json()
+
+            serializer.save(size=file.size , type=type)
+
+            date = datetime.now().strftime("%Y-%-m-%-d")
+
+            if 'attributes' not in user:
+                user['attributes'] = {}
+                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file.name}'
+
+            else: 
+                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file.name}'
+
+            user_data = {
+                'attributes': user['attributes']
+            }
+
+            res = requests.put(f"{APP_USER_BASE_URL}/{kwargs['id']}", json=user_data, headers=headers)
+
+            if res.status_code != 204:
+                return Response({'reason': res.reason, 'message': res.text, 'user': user_data}, status=res.status_code)
+            
+            return Response({'message': 'Avatar updated successfully', 'avatarUrl': user["attributes"]['avatar']} , status.HTTP_201_CREATED)
+        # return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+
+
+class upload_my_file(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        minioClient = minio.Minio(
+            endpoint="cache2.igad-health.eu:9001",
+            access_key="iQPN9LTshIlpPNut",
+            secret_key="rRNZehVgsesBz7pvkvadOIzLYyE9wI4T",
+            secure=False
+        )
+        exists = minioClient.bucket_exists("test-avatars")
+        if exists:
+            return Response('Bucket already exist')
+        minioClient.make_bucket("test-avatars")
+        return Response('Bucket created', status=status.HTTP_404_NOT_FOUND)
+    
+
+# endpoint="89.58.44.88:9001",
