@@ -74,7 +74,6 @@ countries.forEach((item, index) => {
 export const ProfileSettings = () => {
 	const [form] = Form.useForm();
 	const [passwordForm] = Form.useForm();
-	const [profile, setProfile] = useState<any | null>();
 	const [visible, setVisible] = useState(false);
 	const [changePassword, setChangePassword] = useState(false);
 	// const [user, setUser] = useState<any>();
@@ -258,7 +257,7 @@ export const ProfileSettings = () => {
 										}}
 										
 									>
-										<Button type="link" className="flex items-center px-2" icon={<UploadOutlined />}>Upload Avatar</Button>
+										<Button type="link" className="flex items-center px-2"><UploadOutlined /> Upload Avatar</Button>
 									</Upload>
 								</ImgCrop>
 								{/* <img
