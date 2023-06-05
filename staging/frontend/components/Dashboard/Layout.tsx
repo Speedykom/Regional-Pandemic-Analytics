@@ -51,7 +51,7 @@ export default function Layout({ children }: props) {
           showNav && !isMobile ? "pl-56" : ""
         }`}
       >
-        <div className="px-4 md:px-16 bg-gray-100">{children}</div>
+        <div className="px-4 md:px-16 bg-gray-100 h-screen">{children}</div>
       </main>
     </>
   );
