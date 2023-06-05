@@ -109,29 +109,6 @@ export const HopList = () => {
     OPERATION_TYPES.NONE
   );
 
-  // const onFinish = async (values: any) => {
-  //   let url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/hop`;
-  //   url =
-  //     operationType == OPERATION_TYPES.CREATE
-  //       ? url + "/new/"
-  //       : url + `/${roleId}/update`;
-  //   await axios
-  //     .post(url, values, {
-  //       headers: {
-  //         Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`, // `Bearer ${token}`,
-  //       },
-  //     })
-  //     .then((res) => {
-  //       setOpen(false);
-  //       refetch();
-  //       OpenNotification(res.data?.message, "topRight", "success");
-  //       form.resetFields();
-  //     })
-  //     .catch((err) => {
-  //       OpenNotification(err.response?.data, "topRight", "error");
-  //     });
-  // };
-
   const handleCancel = () => {
     setOpen(false);
   };
