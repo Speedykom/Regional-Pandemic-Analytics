@@ -59,6 +59,8 @@ export default function LoginForm() {
           // @ts-ignore
           secureLocalStorage.setItem("sue", payload?.email);
           secureLocalStorage.setItem("userId", payload?.sub);
+          secureLocalStorage.setItem("user", payload);
+          secureLocalStorage.setItem("passcode", Buffer.from(data.password).toString("base64"));
           secureLocalStorage.setItem("sua", "authenticated");
 
           router.push("/dashboard/");

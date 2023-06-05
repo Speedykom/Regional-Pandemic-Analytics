@@ -4,19 +4,53 @@ import {
 	PlusOutlined,
 	SaveOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Form, Input, Modal, Popconfirm, Switch, message } from "antd";
+import {
+	Button,
+	Divider,
+	Form,
+	Input,
+	Modal,
+	Popconfirm,
+	Radio,
+	Select,
+	SelectProps,
+	Switch,
+	message,
+} from "antd";
 import { useUsers } from "../hooks";
 import { IUser } from "../interface";
 import { useEffect, useState } from "react";
-import { AddUser } from "./Add";
+import { AddUser123 } from "./AddUser";
 import axios from "axios";
 import { getData } from "@/utils";
 import { PreviewUser } from "./Preview";
 import { OpenNotification } from "@/utils/notify";
+import { countries } from "@/utils/countries";
 
 interface props {
 	viewPro: () => void;
 }
+
+const genderOptions = [
+	{ label: "Male", value: "Male" },
+	{ label: "Female", value: "Female" },
+];
+
+const myCodeOptions: SelectProps["options"] = [];
+const countryOptions: SelectProps["options"] = [];
+
+countries.forEach((item, index) => {
+	myCodeOptions.push({
+		key: index,
+		value: item.code,
+		label: item.code,
+	});
+	countryOptions.push({
+		key: index,
+		value: item.name,
+		label: item.name,
+	});
+});
 
 export const UserList = () => {
 	const [form] = Form.useForm();
@@ -28,7 +62,7 @@ export const UserList = () => {
 			const url = "/api/get-access-token/";
 			const response = await getData(url);
 			setToken(response?.accessToken);
-			console.log(response?.accessToken)
+			console.log(response?.accessToken);
 		} catch (error) {
 			console.error("Error:", error);
 		}
@@ -36,7 +70,8 @@ export const UserList = () => {
 
 	const [open, setOpen] = useState<boolean>(false);
 	const [data, setData] = useState<Array<IUser>>([]);
-	const [loading, setLoading] = useState<boolean>(true)
+	const [loading, setLoading] = useState<boolean>(true);
+	const [code, setCode] = useState<string>("");
 
 	const [view, setView] = useState<boolean>(false);
 	const [userId, setUserId] = useState<string>();
@@ -54,17 +89,18 @@ export const UserList = () => {
 
 	const fetchUsers = async () => {
 		try {
-			setLoading(true)
+			setLoading(true);
 			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/users`;
-			await axios.get(url, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			}).then((res) => {
-				setLoading(false)
-				setData(res?.data);
-			})
-			
+			await axios
+				.get(url, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				})
+				.then((res) => {
+					setLoading(false);
+					setData(res?.data);
+				});
 		} catch (error) {
 			console.error("Error:", error);
 		}
@@ -77,14 +113,32 @@ export const UserList = () => {
 
 	const [openModal, setOpenModal] = useState<boolean>(false);
 
-	const edit = (id: string, firstName: string, lastName: string, username: string, email: string, enabled: boolean) => {
+	const edit = (
+		id: string,
+		firstName: string,
+		lastName: string,
+		username: string,
+		email: string,
+		enabled: boolean,
+		code: string,
+		phone: string,
+		country: string,
+		gender: string,
+		avatar: string
+	) => {
 		setUserId(id);
 		setOpenModal(true);
 		form.setFieldValue("firstName", firstName);
 		form.setFieldValue("lastName", lastName);
 		form.setFieldValue("username", username);
 		form.setFieldValue("email", email);
-		form.setFieldValue("enabled", enabled)
+		form.setFieldValue("enabled", enabled);
+		form.setFieldValue("code", code);
+		form.setFieldValue("phone", phone);
+		form.setFieldValue("country", country);
+		form.setFieldValue("avatar", avatar);
+		form.setFieldValue("gender", gender);
+		setCode(code);
 	};
 
 	const handleCancel = () => {
@@ -118,12 +172,23 @@ export const UserList = () => {
 				OpenNotification(res?.data?.message, "topRight", "success");
 				setOpenModal(false);
 				refetch();
-				form.resetFields()
+				form.resetFields();
 			})
 			.catch((err) => {
 				OpenNotification(err.response?.data?.error, "topRight", "error");
 			});
 	};
+
+	const selectBefore = (
+		<Select
+			size="large"
+			value={code}
+			onChange={setCode}
+			showSearch
+			placeholder="code"
+			options={myCodeOptions}
+		/>
+	);
 
 	useEffect(() => {
 		fetchUsers();
@@ -167,7 +232,11 @@ export const UserList = () => {
 				</div>
 			</section>
 			<div>
-				<AddUser openDrawer={open} closeDrawer={onClose} refetch={fetchUsers} />
+				<AddUser123
+					openDrawer={open}
+					closeDrawer={onClose}
+					refetch={fetchUsers}
+				/>
 			</div>
 			<div>
 				{view && userId && (
@@ -226,6 +295,7 @@ export const UserList = () => {
 						scrollToFirstError
 						size="large"
 						className="w-full"
+						labelAlign="left"
 					>
 						<Form.Item
 							name="firstName"
@@ -280,7 +350,52 @@ export const UserList = () => {
 						>
 							<Input disabled />
 						</Form.Item>
-
+						<Form.Item
+							name="phone"
+							label="Phone"
+							rules={[
+								{
+									required: true,
+									message: "Please input your username",
+								},
+							]}
+						>
+							<Input addonBefore={selectBefore} />
+						</Form.Item>
+						<Form.Item
+							name="country"
+							label="Country"
+							rules={[
+								{
+									required: true,
+									message: "Please select your country",
+								},
+							]}
+						>
+							<Select
+								showSearch
+								placeholder="select country"
+								size="large"
+								className="h-10 w-full mt-1 bg-gray-50"
+								options={countryOptions}
+							/>
+						</Form.Item>
+						<Form.Item
+							name={"gender"}
+							rules={[
+								{
+									required: true,
+									message: "Please select gender",
+								},
+							]}
+						>
+							<Radio.Group
+								options={genderOptions}
+								className="h-10 mt-1 w-full"
+								optionType="button"
+								buttonStyle="solid"
+							/>
+						</Form.Item>
 						<Form.Item
 							name="enabled"
 							label="Enable"
@@ -290,7 +405,7 @@ export const UserList = () => {
 							<Switch style={{ backgroundColor: "#8c8c8c" }} />
 						</Form.Item>
 					</Form>
-					<Divider dashed={true} style={{border: "1px solid gray"}} />
+					<Divider dashed={true} style={{ border: "1px solid gray" }} />
 				</div>
 			</Modal>
 		</div>
