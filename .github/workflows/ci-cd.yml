@@ -3,14 +3,13 @@ name: CI/CD Development Server
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [ main ]
 
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
 
+    steps:
       - name: connect dev server and deploy
         uses: appleboy/ssh-action@master
         with:
