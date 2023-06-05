@@ -3,6 +3,8 @@ name: CI/CD Dev Server
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   deploy:
