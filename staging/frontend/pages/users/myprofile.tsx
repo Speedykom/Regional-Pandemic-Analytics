@@ -224,7 +224,7 @@ export const ProfileSettings = () => {
 										onPreview={handlePreview}
 										showUploadList={{ showRemoveIcon: false }}
 										maxCount={1}
-										action={`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/avatar-upload`}
+										action={`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/avatar-upload1`}
 										customRequest={(options) => {
 											const data = new FormData();
 											data.append("file", options.file);
