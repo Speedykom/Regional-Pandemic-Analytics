@@ -673,10 +673,9 @@ export const ProfileSettings = () => {
 																	}}
 																	type="primary"
 																	size="large"
-																	icon={<DeleteColumnOutlined />}
 																	onClick={triggerPasswordChange}
 																>
-																	Cancel
+																	<DeleteColumnOutlined /> Cancel
 																</Button>
 																<Button
 																	type="primary"
