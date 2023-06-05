@@ -157,13 +157,13 @@ export const UserList = () => {
 	};
 
 	const onFinish = async (values: any) => {
+		values['code'] = code;
 		await axios
 			.put(
 				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${userId}/update`,
 				values,
 				{
 					headers: {
-						Authorization: `Bearer ${token}`,
 						"Content-Type": "application/json",
 					},
 				}
@@ -185,7 +185,7 @@ export const UserList = () => {
 			value={code}
 			onChange={setCode}
 			showSearch
-			placeholder="code"
+			placeholder={!code && "+232"}
 			options={myCodeOptions}
 		/>
 	);
@@ -252,7 +252,7 @@ export const UserList = () => {
 				title={"Update Account"}
 				onCancel={handleCancel}
 				footer={
-					<Form form={form} name="update" onFinish={onFinish}>
+					<Form form={form} onFinish={onFinish}>
 						<Form.Item>
 							<div className="flex space-x-2 justify-end">
 								<Button
@@ -290,7 +290,6 @@ export const UserList = () => {
 					<Form
 						{...formItemLayout}
 						form={form}
-						name="update"
 						onFinish={onFinish}
 						scrollToFirstError
 						size="large"
@@ -308,7 +307,7 @@ export const UserList = () => {
 								},
 							]}
 						>
-							<Input className="w-full" />
+							<Input className="w-full" placeholder="John" />
 						</Form.Item>
 						<Form.Item
 							name="lastName"
@@ -320,7 +319,7 @@ export const UserList = () => {
 								},
 							]}
 						>
-							<Input />
+							<Input placeholder="Doe" />
 						</Form.Item>
 						<Form.Item
 							name="email"
@@ -336,7 +335,7 @@ export const UserList = () => {
 								},
 							]}
 						>
-							<Input className="w-full" />
+							<Input className="w-full" placeholder="john.doe@mail.com" />
 						</Form.Item>
 						<Form.Item
 							name="username"
@@ -356,11 +355,21 @@ export const UserList = () => {
 							rules={[
 								{
 									required: true,
-									message: "Please input your username",
+									validator(rule, value, callback) {
+										if (value === "") {
+											callback('Please input your phone number')
+										}
+										else if (!code) {
+											callback('Please select country code')
+										}
+										else {
+											callback()
+										}
+									}
 								},
 							]}
 						>
-							<Input addonBefore={selectBefore} />
+							<Input addonBefore={selectBefore} placeholder="76293389" />
 						</Form.Item>
 						<Form.Item
 							name="country"
@@ -400,7 +409,7 @@ export const UserList = () => {
 							name="enabled"
 							label="Enable"
 							valuePropName="checked"
-							tooltip="Do you want to automatically enable this user?"
+							tooltip="Toggle to enable or disable this user"
 						>
 							<Switch style={{ backgroundColor: "#8c8c8c" }} />
 						</Form.Item>

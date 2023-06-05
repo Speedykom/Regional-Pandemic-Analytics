@@ -84,7 +84,6 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const onFinish = async (values: any) => {
 		values["enabled"] = enabled;
 		values["emailVerified"] = emailVerified;
-		values["phone"] = code + values["phone"];
 		await axios
 			.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user`, values, {
 				headers: {
