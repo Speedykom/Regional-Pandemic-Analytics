@@ -5,7 +5,8 @@ import {
   ChevronDoubleRightIcon,
   ChartBarSquareIcon,
   UsersIcon,
-    CircleStackIcon
+  CircleStackIcon,
+  DocumentIcon,
 } from "@heroicons/react/24/solid";
 import { useRouter } from "next/router";
 
@@ -95,11 +96,11 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
         </Link>
         <Link href="/dashboard/data">
           <div
-              className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-                  router.pathname == "/dashboard/data"
-                      ? "bg-green-100 text-green-500"
-                      : "text-gray-400 hover:bg-green-100 hover:text-green-500"
-              }`}
+            className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+              router.pathname == "/dashboard/data"
+                ? "bg-green-100 text-green-500"
+                : "text-gray-400 hover:bg-green-100 hover:text-green-500"
+            }`}
           >
             <div className="mr-2">
               <CircleStackIcon className="h-5 w-5" />
@@ -138,6 +139,22 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
             </div>
             <div>
               <p>App Roles</p>
+            </div>
+          </div>
+        </Link>
+        <Link href="/hops">
+          <div
+            className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+              router.pathname == "/hopes"
+                ? "bg-green-100 text-green-500"
+                : "text-gray-400 hover:bg-green-100 hover:text-green-500"
+            }`}
+          >
+            <div className="mr-2">
+              <DocumentIcon className="h-5 w-5" />
+            </div>
+            <div>
+              <p>Hops</p>
             </div>
           </div>
         </Link>
