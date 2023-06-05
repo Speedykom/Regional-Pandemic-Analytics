@@ -19,5 +19,5 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            echo "what"
-            whoami
+            cd Regional-Pandemic-Analytics/
+            git pull
