@@ -187,24 +187,24 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 # MINIO_ENDPOINT = os.getenv("MINIO_URL")
-# MINIO_EXTERNAL_ENDPOINT = os.getenv("MINIO_URL")
-# MINIO_EXTERNAL_ENDPOINT_USE_HTTPS = False  # Default is same as MINIO_USE_HTTPS
-# MINIO_REGION = 'us-east-1'  # Default is set to None
+MINIO_EXTERNAL_ENDPOINT = os.getenv("MINIO_URL")
+MINIO_EXTERNAL_ENDPOINT_USE_HTTPS = False  # Default is same as MINIO_USE_HTTPS
+MINIO_REGION = 'us-east-1'  # Default is set to None
 # MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
 # MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
-# MINIO_USE_HTTPS = False
-# MINIO_URL_EXPIRY_HOURS = timedelta(days=1)  # Default is 7 days (longest) if not defined
-# MINIO_CONSISTENCY_CHECK_ON_START = True
-# MINIO_PRIVATE_BUCKETS = [
-#     'avatars'
-# ]
-# MINIO_PUBLIC_BUCKETS = [
-#     'test',
-# ]
-# MINIO_POLICY_HOOKS: List[Tuple[str, dict]] = []
+MINIO_USE_HTTPS = False
+MINIO_URL_EXPIRY_HOURS = timedelta(days=1)  # Default is 7 days (longest) if not defined
+MINIO_CONSISTENCY_CHECK_ON_START = True
+MINIO_PRIVATE_BUCKETS = [
+    'avatars'
+]
+MINIO_PUBLIC_BUCKETS = [
+    'test',
+]
+MINIO_POLICY_HOOKS: List[Tuple[str, dict]] = []
 # MINIO_MEDIA_FILES_BUCKET = 'my-media-files-bucket'  # replacement for MEDIA_ROOT
 # MINIO_STATIC_FILES_BUCKET = 'my-static-files-bucket'  # replacement for STATIC_ROOT
-# MINIO_BUCKET_CHECK_ON_SAVE = True  # Default: True // Creates bucket if missing, then save
+MINIO_BUCKET_CHECK_ON_SAVE = True  # Default: True // Creates bucket if missing, then save
 
 AWS_ACCESS_KEY_ID = MINIO_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY = MINIO_SECRET_KEY
