@@ -144,7 +144,6 @@ class CreateUserAPI(APIView):
                 "phone": request.data.get("phone", None),
                 "gender": request.data.get("gender", None),
                 "country": request.data.get("country", None),
-                "avatar": ""
             },
             "credentials": [
                 {
@@ -215,7 +214,6 @@ class UpdateUserAPI(APIView):
                 "phone": request.data.get("phone", None),
                 "gender": request.data.get("gender", None),
                 "country": request.data.get("country", None),
-                "avatar": ""
             }
         }
 
