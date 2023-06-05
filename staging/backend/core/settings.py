@@ -43,8 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'drf_yasg',
-    'storages',
-    'django_minio_backend'
+    'storages'
 ]
 
 MIDDLEWARE = [
