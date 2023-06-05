@@ -17,9 +17,11 @@ RUN sed -i 's/\r$//g' /backend/entrypoint.sh
 
 RUN chmod +x /backend/entrypoint.sh
 
-RUN python manage.py initialize_buckets
+RUN python /backend/manage.py initialize_buckets
 
 COPY . .
+
+RUN python /backend/manage.py initialize_buckets
 
 # run entrypoint.sh
 ENTRYPOINT ["/backend/entrypoint.sh"]
