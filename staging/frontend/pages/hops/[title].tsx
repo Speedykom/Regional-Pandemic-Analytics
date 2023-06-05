@@ -75,11 +75,23 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
       .catch((err) => console.log(err));
   };
 
+  const customTheme = {
+    separatorColor: "#087757",
+    tagColor: "red",
+    textColor: "#FFFFFF",
+  };
+
   return (
     <DashboardFrame title="Hop Details">
       <section className="flex space-x-2 h-auto">
-        <div className="w-1/2 h-[35rem] bg-red-50 overflow-y-auto">
-          <XMLViewer xml={data} />
+        <div className="w-1/2 h-[35rem] bg-gray-800 overflow-y-auto p-4">
+          <XMLViewer
+            xml={data}
+            indentSize={5}
+            collapsible
+            theme={customTheme}
+            overflowBreak
+          />
         </div>
 
         <section className="w-1/2 bg-blue-50 p-4">
