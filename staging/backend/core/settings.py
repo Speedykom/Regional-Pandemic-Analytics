@@ -1,3 +1,4 @@
+from typing import List, Tuple
 import os
 import sys
 from datetime import timedelta
@@ -40,6 +41,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'storages',
+    'django_minio_backend'
 ]
 
 MIDDLEWARE = [
@@ -136,6 +138,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny'
     ),
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
@@ -164,10 +167,43 @@ KEYCLOAK_CONFIG = {
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
+# MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
+MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET")
+# MINIO_ENDPOINT = os.getenv("MINIO_URL")
+
+# EMAIL TRASMISSION SETTINGS
+
+EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'kom.speedy@gmail.com'
+EMAIL_HOST_PASSWORD = 'srxcesuhnjulboph'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+
+MINIO_ENDPOINT = os.getenv("MINIO_URL")
+MINIO_EXTERNAL_ENDPOINT = os.getenv("MINIO_URL")
+MINIO_EXTERNAL_ENDPOINT_USE_HTTPS = False  # Default is same as MINIO_USE_HTTPS
+MINIO_REGION = 'us-east-1'  # Default is set to None
 MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
 MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
-MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET")
-MINIO_ENDPOINT = os.getenv("MINIO_URL")
+MINIO_USE_HTTPS = False
+MINIO_URL_EXPIRY_HOURS = timedelta(days=1)  # Default is 7 days (longest) if not defined
+MINIO_CONSISTENCY_CHECK_ON_START = True
+MINIO_PRIVATE_BUCKETS = [
+    'avatars'
+]
+MINIO_PUBLIC_BUCKETS = [
+    'test',
+]
+MINIO_POLICY_HOOKS: List[Tuple[str, dict]] = []
+# MINIO_MEDIA_FILES_BUCKET = 'my-media-files-bucket'  # replacement for MEDIA_ROOT
+# MINIO_STATIC_FILES_BUCKET = 'my-static-files-bucket'  # replacement for STATIC_ROOT
+MINIO_BUCKET_CHECK_ON_SAVE = True  # Default: True // Creates bucket if missing, then save
 
 AWS_ACCESS_KEY_ID = MINIO_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY = MINIO_SECRET_KEY
@@ -179,14 +215,4 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_REGION = "us-east-1"
 AWS_S3_SECURE_URLS = False
 AWS_S3_VERIFY = False
-
-# EMAIL TRASMISSION SETTINGS
-
-EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'kom.speedy@gmail.com'
-EMAIL_HOST_PASSWORD = 'srxcesuhnjulboph'
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
 

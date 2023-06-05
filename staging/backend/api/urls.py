@@ -54,6 +54,8 @@ urlpatterns = [
     path('account/roles/<str:id>/delete', views.DeleteRolesAPI.as_view()), #delete role
     path('account/verify-token', views.VerifyResetTokenAPI.as_view()), #verify token
     path('account/create-password', views.CreatePasswordAPI.as_view()), #create password
+    path('account/user/<str:id>/change-password', views.ChangePasswordAPI.as_view()), #change password
+    path('account/user/<str:id>/avatar-upload', views.UploadAvatarAPI.as_view()), #update avatar
     # ---------------------- End of User Management Endpoints ----------------------------
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
@@ -71,6 +73,7 @@ urlpatterns = [
 
     # endpoint for uploading data
     path('data/upload/', DataUploadAPI.as_view()),
+    path('account/upload/', views.upload_my_file.as_view())
 
     # ---------------------- End of Data Upload Endpoints -----------------------------------
 
