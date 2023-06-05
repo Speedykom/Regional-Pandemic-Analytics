@@ -34,6 +34,6 @@ export default function CreatePasswordLayout() {
 		getToken();
 	}, []);
     return (
-        <div>{tok ? <CreatePassword mail={email} token={String(tok)} /> : <LinkExpired />}</div>
+        <div>{tok && valid ? <CreatePassword mail={email} token={String(tok)} /> : <LinkExpired />}</div>
     );
 }
