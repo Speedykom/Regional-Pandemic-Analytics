@@ -11,6 +11,7 @@ import {
 import { TextInput } from "@tremor/react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import Router from "next/router";
 
 type FormValues = {
   dagName: string;
@@ -59,7 +60,9 @@ export default function ProcessChains() {
     setOpen(!open);
   };
   return (
-    <DashboardFrame title="Hop Process Chains">
+    <DashboardFrame title="Hop Process Chains" back onBackPress={() => {
+      Router.back()
+    }}>
       <iframe src="http://localhost:8882" />
     </DashboardFrame>
   );
