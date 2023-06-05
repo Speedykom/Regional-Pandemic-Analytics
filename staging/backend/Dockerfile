@@ -8,6 +8,8 @@ ENV PYTHONUNBUFFERED 1
 
 COPY requirements.txt .
 
+RUN pip uninstall django-minio-backend
+
 RUN pip install -r requirements.txt
 
 # copy entrypoint.sh
