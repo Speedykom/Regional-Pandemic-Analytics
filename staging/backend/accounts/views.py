@@ -752,67 +752,6 @@ class UpdateProfileAPI(APIView):
         return Response({'errorMessage': 'Error changing password'}, status=status.HTTP_401_UNAUTHORIZED)  
 
 
-# class UploadAvatarAPI (APIView):
-#     """
-#     API view to upload Keycloak user avatar to minio
-#     """
-#     permission_classes = [AllowAny,]
-
-#     def post (self, request, *args, **kwargs):
-#         #Login to admin
-#         admin_login = keycloak_admin_login()
-
-#         if admin_login["status"] != 200:
-#             return Response(admin_login["data"], status=admin_login["status"])
-
-#         headers = {
-#             'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
-#             'Content-Type': "application/json",
-#             'cache-control': "no-cache"
-#         }
-
-#         serializer = UploadedFileSerializer(data=request.data)
-#         #upload file to MINIO
-#         if serializer.is_valid():
-#             file = serializer.validated_data["file"]
-
-#             # get the format of file
-#             type = str(file).split(".")[1]
-
-#             name_generator = gen_filename(file.name)
-#             file.name = name_generator['newName']
-
-#             response = requests.get(url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
-
-#             if response.status_code != 200:
-#                 return Response(response.reason, status=response.status_code)
-
-#             user: dict = response.json()
-
-#             serializer.save(size=file.size , type=type)
-
-#             date = datetime.now().strftime("%Y-%-m-%-d")
-
-#             if 'attributes' not in user:
-#                 user['attributes'] = {}
-#                 user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file.name}'
-
-#             else: 
-#                 user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file.name}'
-
-#             user_data = {
-#                 'attributes': user['attributes']
-#             }
-
-#             res = requests.put(f"{APP_USER_BASE_URL}/{kwargs['id']}", json=user_data, headers=headers)
-
-#             if res.status_code != 204:
-#                 return Response({'reason': res.reason, 'message': res.text, 'user': user_data}, status=res.status_code)
-            
-#             return Response({'message': 'Avatar updated successfully', 'avatarUrl': user["attributes"]['avatar']} , status.HTTP_201_CREATED)
-        # return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
-
-
 class AvatarUploadApI(APIView):
     """
     API view to upload Keycloak user avatar to minio
@@ -850,14 +789,14 @@ class AvatarUploadApI(APIView):
 
             user: dict = response.json()
 
-            date = datetime.now().strftime("%Y-%-m-%-d")
+            # date = datetime.now().strftime("%Y-%-m-%-d")
 
             if 'attributes' not in user:
                 user['attributes'] = {}
-                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file_obj.name}'
+                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{file_obj.name}'
 
             else: 
-                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file_obj.name}'
+                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{file_obj.name}'
 
             user_data = {
                 'attributes': user['attributes']
