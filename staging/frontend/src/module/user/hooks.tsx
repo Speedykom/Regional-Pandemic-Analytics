@@ -8,33 +8,63 @@ import axios from "axios";
 import { OpenNotification } from "@/utils/notify";
 
 interface props {
-	edit: (id: string, firstName: string, lastName: string, username: string, email: string, enabled: boolean) => void;
+	edit: (
+		id: string,
+		firstName: string,
+		lastName: string,
+		username: string,
+		email: string,
+		enabled: boolean,
+		code: string,
+		phone: string,
+		country: string,
+		gender: string,
+		avatar: string
+	) => void;
 	viewPro: (id: string) => void;
 	refetch: () => void;
 }
 
 export const useUsers = ({ edit, viewPro, refetch }: props) => {
-	const action = (id: string, firstName: string, lastName: string, username: string, email: string, enabled: boolean) => {
+	const action = (
+		id: string,
+		firstName: string,
+		lastName: string,
+		username: string,
+		email: string,
+		enabled: boolean,
+		code: string,
+		phone: string,
+		country: string,
+		gender: string,
+		avatar: string
+	) => {
 		const deleteUser = async () => {
-			await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${id}/delete`, {
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			}).then((res) => {
-				refetch()
-				OpenNotification(res.data?.message, 'topRight', 'success')
-			}).catch((err) => {
-				OpenNotification(err.response?.data, 'topRight', 'error')
-			})
-		}
+			await axios
+				.delete(
+					`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${id}/delete`,
+					{
+						headers: {
+							"Content-Type": "application/json",
+						},
+					}
+				)
+				.then((res) => {
+					refetch();
+					OpenNotification(res.data?.message, "topRight", "success");
+				})
+				.catch((err) => {
+					OpenNotification(err.response?.data, "topRight", "error");
+				});
+		};
 		return (
 			<Action>
 				<ul>
 					<li>
 						<button
 							onClick={(e) => {
-								e.preventDefault
-								viewPro(id)
+								e.preventDefault;
+								viewPro(id);
 							}}
 							className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
 						>
@@ -44,8 +74,8 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 					<li>
 						<button
 							onClick={(e) => {
-								e.preventDefault()
-								edit(id, firstName, lastName, username, email, enabled)
+								e.preventDefault();
+								edit(id, firstName, lastName, username, email, enabled, code, phone, country, gender, avatar);
 							}}
 							className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
 						>
@@ -168,7 +198,20 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 			align: "right",
 			width: 100,
 			key: "action",
-			render: (id, record) => action(record.id, record.firstName, record.lastName, record.username, record.email, record.enabled),
+			render: (id, record) =>
+				action(
+					record.id,
+					record.firstName,
+					record.lastName,
+					record.username,
+					record.email,
+					record.enabled,
+					record.attributes?.code ? record.attributes?.code[0] : '',
+					record.attributes?.phone ? record.attributes?.phone[0]: '',
+					record.attributes?.country ? record.attributes?.country[0] : '',
+					record.attributes?.gender ? record.attributes?.gender[0]: '',
+					record.attributes?.avatar ? record.attributes?.avatar[0] : '',
+				),
 		},
 	];
 

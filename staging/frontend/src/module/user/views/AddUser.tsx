@@ -1,13 +1,8 @@
 import { getData } from "@/utils";
 import { countries } from "@/utils/countries";
 import { OpenNotification } from "@/utils/notify";
+import { DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
 import {
-	DeleteColumnOutlined,
-	DeleteRowOutlined,
-	SaveOutlined,
-} from "@ant-design/icons";
-import {
-	Alert,
 	Button,
 	Drawer,
 	Form,
@@ -17,7 +12,6 @@ import {
 	Select,
 	SelectProps,
 	Switch,
-	notification,
 } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -47,16 +41,30 @@ countries.forEach((item, index) => {
 		key: index,
 		value: item.name,
 		label: item.name,
-	})
+	});
 });
 
-const selectBefore = (
-	<Select size="large" defaultValue="+232" options={myCodeOptions} />
-);
-
 export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
-	const [enabled, setEnabled] = useState(false);
+	const [enabled, setEnabled] = useState<boolean>(false);
+	const [emailVerified, setVerify] = useState<boolean>(false);
 	const [gender, setGender] = useState<string>();
+
+	const [code, setCode] = useState<string>();
+
+	const onChangeCode = (value: string) => {
+		setCode(value);
+	};
+
+	const selectBefore = (
+		<Select
+			size="large"
+			value={code}
+			onChange={setCode}
+			showSearch
+			placeholder="code"
+			options={myCodeOptions}
+		/>
+	);
 
 	const [form] = Form.useForm();
 	const router = useRouter();
@@ -74,6 +82,9 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	};
 
 	const onFinish = async (values: any) => {
+		values["enabled"] = enabled;
+		values["emailVerified"] = emailVerified;
+		values["phone"] = code + values["phone"];
 		await axios
 			.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user`, values, {
 				headers: {
@@ -96,24 +107,20 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 			});
 	};
 
-	const formItemLayout = {
-		labelCol: {
-			xs: { span: 24 },
-			sm: { span: 8 },
-		},
-		wrapperCol: {
-			xs: { span: 24 },
-			sm: { span: 16 },
-		},
-	};
-
 	const triggerEnabled = () => {
-		if (enabled) {
+		if (enabled == true) {
 			setEnabled(false);
-		} else {
+		} else if (enabled == false) {
 			setEnabled(true);
 		}
-		console.log({ enabled });
+	};
+
+	const triggerVerify = () => {
+		if (emailVerified) {
+			setVerify(false);
+		} else {
+			setVerify(true);
+		}
 	};
 
 	const onGenderChange = ({ target: { value } }: RadioChangeEvent) => {
@@ -147,7 +154,12 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 										border: "1px solid #48328526",
 									}}
 									type="primary"
+									size="large"
 									icon={<DeleteColumnOutlined />}
+									onClick={() => {
+										form.resetFields();
+										closeDrawer();
+									}}
 								>
 									Cancel
 								</Button>
@@ -159,6 +171,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 										backgroundColor: "#087757",
 										border: "1px solid #e65e01",
 									}}
+									size="large"
 									htmlType="submit"
 								>
 									Save User
@@ -169,293 +182,218 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 				</div>
 			}
 		>
-			<div className="lg:col-span-2">
-				<div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
-					<div className="md:col-span-5">
-						<label htmlFor="full_name">Given Names*</label>
-						<Input
-							type="text"
-							name="full_name"
-							id="full_name"
-							className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-							placeholder="John"
-						/>
-					</div>
-
-					<div className="md:col-span-5">
-						<label htmlFor="full_name">Last Name*</label>
-						<Input
-							type="text"
-							name="full_name"
-							id="full_name"
-							className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-							placeholder="Doe"
-						/>
-					</div>
-
-					<div className="md:col-span-5">
-						<label htmlFor="email">Email Address*</label>
-						<Input
-							type="email"
-							name="email"
-							id="email"
-							className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-							placeholder="email@domain.com"
-						/>
-					</div>
-
-					<div className="md:col-span-3">
-						<label htmlFor="address">Username*</label>
-						<Input
-							type="text"
-							name="address"
-							id="address"
-							className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-							placeholder="john-doe"
-						/>
-					</div>
-
-					<div className="md:col-span-2">
-						<label htmlFor="gender">Gender*</label>
-						<Radio.Group
-							options={genderOptions}
-							onChange={onGenderChange}
-							name="gender"
-							id="gender"
-							size="large"
-							className="h-10 mt-1 w-full"
-							optionType="button"
-							buttonStyle="solid"
-						/>
-					</div>
-
-					<div className="md:col-span-3 mt-3">
-						<label htmlFor="phone">Phone Number*</label>
-						<Input
-							addonBefore={selectBefore}
-							type="number"
-							name="phone"
-							id="phone"
-							size="large"
-							placeholder="76293389"
-						/>
-					</div>
-
-					<div className="md:col-span-2 mt-3">
-						<label htmlFor="country">Country*</label>
-						<Select
-							id="country"
-							defaultValue="Germany"
-							size="large"
-							className="h-10 w-full"
-							options={countryOptions}
-						/>
-					</div>
-
-					<div className="md:col-span-2">
-						<label htmlFor="state">State / province</label>
-						<div className="h-10 bg-gray-50 flex border border-gray-200 rounded items-center mt-1">
-							<input
-								name="state"
-								id="state"
-								placeholder="State"
-								className="px-4 appearance-none outline-none text-gray-800 w-full bg-transparent"
-								value=""
-							/>
-							<button
-								tabIndex={1}
-								className="cursor-pointer outline-none focus:outline-none transition-all text-gray-300 hover:text-red-600"
+			<Form form={form} name="register" onFinish={onFinish} scrollToFirstError>
+				<div className="lg:col-span-2">
+					<div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
+						<div className="md:col-span-5">
+							<label htmlFor="firstName">Given Names*</label>
+							<Form.Item
+								name={"firstName"}
+								rules={[
+									{
+										required: true,
+										message: "Please input your given names",
+									},
+								]}
 							>
-								<svg
-									className="w-4 h-4 mx-2 fill-current"
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-								>
-									<line x1="18" y1="6" x2="6" y2="18"></line>
-									<line x1="6" y1="6" x2="18" y2="18"></line>
-								</svg>
-							</button>
-							<button
-								tabIndex={1}
-								className="cursor-pointer outline-none focus:outline-none border-l border-gray-200 transition-all text-gray-300 hover:text-blue-600"
-							>
-								<svg
-									className="w-4 h-4 mx-2 fill-current"
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 24 24"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-								>
-									<polyline points="18 15 12 9 6 15"></polyline>
-								</svg>
-							</button>
+								<Input
+									type="text"
+									name="firstName"
+									id="firstName"
+									className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+									placeholder="John"
+								/>
+							</Form.Item>
 						</div>
-					</div>
 
-					<div className="md:col-span-1">
-						<label htmlFor="zipcode">Zipcode</label>
-						<input
-							type="text"
-							name="zipcode"
-							id="zipcode"
-							className="transition-all flex items-center h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-							placeholder=""
-							value=""
-						/>
-					</div>
-
-					<div className="md:col-span-5">
-						<div className="inline-flex items-center">
-							<input
-								type="checkbox"
-								name="billing_same"
-								id="billing_same"
-								className="htmlForm-checkbox"
-							/>
-							<label htmlFor="billing_same" className="ml-2">
-								My billing address is different than above.
-							</label>
-						</div>
-					</div>
-
-					<div className="md:col-span-2">
-						<label htmlFor="soda">How many soda pops?</label>
-						<div className="h-10 w-28 bg-gray-50 flex border border-gray-200 rounded items-center mt-1">
-							<button
-								tabIndex={1}
-								className="cursor-pointer outline-none focus:outline-none border-r border-gray-200 transition-all text-gray-500 hover:text-blue-600"
+						<div className="md:col-span-5">
+							<label htmlFor="lastName">Last Name*</label>
+							<Form.Item
+								name={"lastName"}
+								rules={[
+									{
+										required: true,
+										message: "Please input your family name",
+									},
+								]}
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									className="h-4 w-4 mx-2"
-									viewBox="0 0 20 20"
-									fill="currentColor"
+								<Input
+									type="text"
+									name="lastName"
+									id="lastName"
+									className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+									placeholder="Doe"
+								/>
+							</Form.Item>
+						</div>
+
+						<div className="md:col-span-5">
+							<label htmlFor="email">Email Address*</label>
+							<Form.Item
+								name={"email"}
+								rules={[
+									{
+										type: "email",
+										message: "The input is not valid E-mail!",
+									},
+									{
+										required: true,
+										message: "Please input your E-mail!",
+									},
+								]}
+							>
+								<Input
+									type="email"
+									name="email"
+									id="email"
+									className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+									placeholder="email@domain.com"
+								/>
+							</Form.Item>
+						</div>
+
+						<div className="md:col-span-3">
+							<label htmlFor="username">Username*</label>
+							<Form.Item
+								name="username"
+								rules={[
+									{
+										required: true,
+										message: "Please input your username",
+									},
+								]}
+							>
+								<Input
+									type="text"
+									name="username"
+									id="username"
+									className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+									placeholder="john-doe"
+								/>
+							</Form.Item>
+						</div>
+
+						<div className="md:col-span-2">
+							<label htmlFor="gender">Gender*</label>
+							<Form.Item
+								name={"gender"}
+								rules={[
+									{
+										required: true,
+										message: "Please select gender",
+									},
+								]}
+							>
+								<Radio.Group
+									options={genderOptions}
+									onChange={onGenderChange}
+									name="gender"
+									id="gender"
+									size="large"
+									className="h-10 mt-1 w-full"
+									optionType="button"
+									buttonStyle="solid"
+								/>
+							</Form.Item>
+						</div>
+
+						<div className="md:col-span-3">
+							<label htmlFor="phone">Phone Number*</label>
+							<div className="flex items-center">
+								<Form.Item
+									name="code"
+									className="w-1/14"
+									rules={[
+										{
+											required: true,
+											message: "Please select country code",
+										},
+									]}
 								>
-									<path
-										fill-rule="evenodd"
-										d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-										clip-rule="evenodd"
+									<Select
+										value={code}
+										onChange={setCode}
+										showSearch
+										placeholder={"+232"}
+										options={myCodeOptions}
+										className="mt-1"
+										size="large"
 									/>
-								</svg>
-							</button>
-							<input
-								name="soda"
-								id="soda"
-								placeholder="0"
-								className="px-2 text-center appearance-none outline-none text-gray-800 w-full bg-transparent"
-								value="0"
-							/>
-							<button
-								tabIndex={1}
-								className="cursor-pointer outline-none focus:outline-none border-l border-gray-200 transition-all text-gray-500 hover:text-blue-600"
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									className="h-4 w-4 mx-2 fill-current"
-									viewBox="0 0 20 20"
-									fill="currentColor"
+								</Form.Item>
+								<Form.Item
+									className="w-full"
+									name={"phone"}
+									rules={[
+										{
+											required: true,
+											message: "Please input your number",
+										},
+									]}
 								>
-									<path
-										fill-rule="evenodd"
-										d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-										clip-rule="evenodd"
+									<Input
+										// addonBefore={selectBefore}
+										size="large"
+										placeholder={"76293389"}
+										className="mt-1 bg-gray-50 w-full"
 									/>
-								</svg>
-							</button>
-						</div>
-					</div>
+								</Form.Item>
+							</div>
+						</div>	
 
-					<div className="md:col-span-5 text-right">
-						<div className="inline-flex items-end">
-							<button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-								Submit
-							</button>
+						<div className="md:col-span-2">
+							<label htmlFor="country">Country*</label>
+							<Form.Item
+								name={"country"}
+								rules={[
+									{
+										required: true,
+										message: "Please select your country",
+									},
+								]}
+							>
+								<Select
+									showSearch
+									id="country"
+									placeholder="select country"
+									size="large"
+									className="h-10 w-full mt-1 bg-gray-50"
+									options={countryOptions}
+								/>
+							</Form.Item>
+						</div>
+
+						<div className="md:col-span-2 mt-3">
+							<label htmlFor="enabled">Enable User</label>
+							<Form.Item name="enabled" valuePropName="enabled">
+								<Switch
+									checked={Boolean(enabled)}
+									id="enabled"
+									onChange={triggerEnabled}
+									style={{
+										backgroundColor: !enabled ? "#8c8c8c" : "cornflowerblue",
+									}}
+								/>
+							</Form.Item>
+						</div>
+
+						<div className="md:col-span-3 mt-3">
+							<label htmlFor="emailVerified">Is Email Verified</label>
+							<Form.Item name="emailVerified" valuePropName="emailverified">
+								<Switch
+									checked={Boolean(emailVerified)}
+									id="emailVerified"
+									onChange={triggerVerify}
+									style={{
+										backgroundColor: !emailVerified
+											? "#8c8c8c"
+											: "cornflowerblue",
+									}}
+								/>
+							</Form.Item>
 						</div>
 					</div>
 				</div>
-			</div>
-			{/* <Form
-				{...formItemLayout}
-				form={form}
-				name="register"
-				onFinish={onFinish}
-				scrollToFirstError
-				size="large"
-				className="w-full"
-			>
-				<Form.Item
-					name="firstName"
-					label="Given Names"
-					className="w-full"
-					rules={[
-						{
-							required: true,
-							message: "Please input your given names",
-						},
-					]}
-				>
-					<Input className="w-full" />
-				</Form.Item>
-				<Form.Item
-					name="lastName"
-					label="Family Name"
-					rules={[
-						{
-							required: true,
-							message: "Please input your family name",
-						},
-					]}
-				>
-					<Input />
-				</Form.Item>
-				<Form.Item
-					name="email"
-					label="E-mail"
-					rules={[
-						{
-							type: "email",
-							message: "The input is not valid E-mail!",
-						},
-						{
-							required: true,
-							message: "Please input your E-mail!",
-						},
-					]}
-				>
-					<Input className="w-full" />
-				</Form.Item>
-				<Form.Item
-					name="username"
-					label="Username"
-					rules={[
-						{
-							required: true,
-							message: "Please input your username",
-						},
-					]}
-				>
-					<Input />
-				</Form.Item>
-
-				<Form.Item
-					name="enabled"
-					label="Enable"
-					valuePropName="checked"
-					tooltip="Do you want to automatically enable this user?"
-				>
-					<Switch
-						checked={enabled}
-						onChange={triggerEnabled}
-						style={{ backgroundColor: "#8c8c8c" }}
-					/>
-				</Form.Item>
-			</Form> */}
+			</Form>
 		</Drawer>
 	);
 };
