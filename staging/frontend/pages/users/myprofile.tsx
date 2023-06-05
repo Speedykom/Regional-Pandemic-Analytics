@@ -523,15 +523,13 @@ export const ProfileSettings = () => {
 														}}
 														type="primary"
 														size="large"
-														icon={<DeleteColumnOutlined />}
 														onClick={cancelEdit}
 													>
-														Cancel
+														<DeleteColumnOutlined /> Cancel
 													</Button>
 													<Button
 														type="primary"
 														className="flex items-center"
-														icon={<SaveOutlined />}
 														style={{
 															backgroundColor: "#087757",
 															border: "1px solid #e65e01",
@@ -539,7 +537,7 @@ export const ProfileSettings = () => {
 														size="large"
 														htmlType="submit"
 													>
-														Save Changes
+														<SaveOutlined /> Save Changes
 													</Button>
 												</div>
 											</Form.Item>
@@ -683,7 +681,6 @@ export const ProfileSettings = () => {
 																<Button
 																	type="primary"
 																	className="flex items-center"
-																	icon={<SaveOutlined />}
 																	style={{
 																		backgroundColor: "#087757",
 																		border: "1px solid #e65e01",
@@ -691,7 +688,7 @@ export const ProfileSettings = () => {
 																	size="large"
 																	htmlType="submit"
 																>
-																	Save Changes
+																	<SaveOutlined /> Save Changes
 																</Button>
 															</div>
 														</Form.Item>
