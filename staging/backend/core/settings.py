@@ -43,8 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'drf_yasg',
-    'storages',
-    'django_minio_backend'
+    'storages'
 ]
 
 MIDDLEWARE = [
@@ -140,8 +139,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-        'rest_framework.permissions.AllowAny'
+        'rest_framework.permissions.IsAuthenticated'
     ),
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
@@ -172,10 +170,10 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
-# MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
+MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
+MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
 MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET")
-# MINIO_ENDPOINT = os.getenv("MINIO_URL")
+MINIO_ENDPOINT = os.getenv("MINIO_URL")
 
 # EMAIL TRASMISSION SETTINGS
 
@@ -187,13 +185,12 @@ EMAIL_HOST_PASSWORD = 'srxcesuhnjulboph'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
-
-MINIO_ENDPOINT = os.getenv("MINIO_URL")
+# MINIO_ENDPOINT = os.getenv("MINIO_URL")
 MINIO_EXTERNAL_ENDPOINT = os.getenv("MINIO_URL")
 MINIO_EXTERNAL_ENDPOINT_USE_HTTPS = False  # Default is same as MINIO_USE_HTTPS
 MINIO_REGION = 'us-east-1'  # Default is set to None
-MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
-MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
+# MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
+# MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
 MINIO_USE_HTTPS = False
 MINIO_URL_EXPIRY_HOURS = timedelta(days=1)  # Default is 7 days (longest) if not defined
 MINIO_CONSISTENCY_CHECK_ON_START = True
