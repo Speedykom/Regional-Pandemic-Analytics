@@ -149,6 +149,16 @@ export const ProfileSettings = () => {
 				}
 			)
 			.then((res) => {
+				let newUserData = user
+				secureLocalStorage.removeItem('user')
+				newUserData.given_name = values['firstName']
+				newUserData.family_name = values['lastName']
+				newUserData.phone = values['phone']
+				newUserData.code = values['code']
+				newUserData.country = values['country']
+				newUserData.gender = values['gender']
+				newUserData.name = `${values['firstName']} ${values['lastName']}`
+				secureLocalStorage.setItem('user', newUserData)
 				OpenNotification(res?.data?.message, "topRight", "success");
 				form.resetFields();
 			})
@@ -182,6 +192,8 @@ export const ProfileSettings = () => {
 					}
 				)
 				.then((res) => {
+					secureLocalStorage.removeItem('passcode')
+					secureLocalStorage.setItem("passcode", Buffer.from(values["newPassword"]).toString("base64"));
 					OpenNotification(res.data?.message, "topRight", "success");
 					passwordForm.resetFields();
 				})
