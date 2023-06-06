@@ -11,5 +11,5 @@ jobs:
         with:
           node-version: '18.x'
           working-directory: staging/frontend
-      - run: npm ci
-      - run: npm run build --if-present
+        run: npm ci && npm run build --if-present
+        working-directory: staging/frontend
