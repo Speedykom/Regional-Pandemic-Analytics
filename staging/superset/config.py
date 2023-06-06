@@ -81,25 +81,13 @@ PACKAGE_JSON_FILE = pkg_resources.resource_filename(
     "superset", "static/assets/package.json"
 )
 
-
-
-'''
----------------------------KEYCLOACK CONFIG----------------------------
-'''
-curr  =  os.path.abspath(os.getcwd())
 AUTH_TYPE = AUTH_OID
-OIDC_CLIENT_SECRETS = curr + '/docker/pythonpath_dev/client_secret.json'
+OIDC_CLIENT_SECRETS = 'client_secret.json'
 OIDC_ID_TOKEN_COOKIE_SECURE = False
 OIDC_REQUIRE_VERIFIED_EMAIL = False
-OIDC_OPENID_REALM = 'regional-pandemic-analytics'
-OIDC_INTROSPECTION_AUTH_METHOD = 'client_secret_post'
 CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
 AUTH_USER_REGISTRATION = True
 AUTH_USER_REGISTRATION_ROLE = 'Gamma'
-OIDC_VALID_ISSUERS = ['https://auth2.igad-health.eu/realms/regional-pandemic-analytics']
-'''
----------------------------END KEYCLOAK CONFIG--------------------------
-'''
 
 # Multiple favicons can be specified here. The "href" property
 # is mandatory, but "sizes," "type," and "rel" are optional.
@@ -185,7 +173,7 @@ SUPERSET_DASHBOARD_PERIODICAL_REFRESH_LIMIT = 0
 SUPERSET_DASHBOARD_PERIODICAL_REFRESH_WARNING_MESSAGE = None
 
 SUPERSET_DASHBOARD_POSITION_DATA_LIMIT = 65535
-CUSTOM_SECURITY_MANAGER = None
+# CUSTOM_SECURITY_MANAGER = None
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 # ---------------------------------------------------------
 
@@ -320,7 +308,7 @@ DRUID_ANALYSIS_TYPES = ["cardinality"]
 # AUTH_DB : Is for database (username/password)
 # AUTH_LDAP : Is for LDAP
 # AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
-AUTH_TYPE = AUTH_DB
+# AUTH_TYPE = AUTH_DB
 
 # Uncomment to setup Full admin role name
 # AUTH_ROLE_ADMIN = 'Admin'
