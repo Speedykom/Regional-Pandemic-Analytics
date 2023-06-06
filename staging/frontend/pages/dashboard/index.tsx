@@ -2,7 +2,7 @@ import Head from "next/head";
 import { Inter } from "next/font/google";
 import AnalyticsCard from "@/components/Dashboard/AnalyticsCard";
 import TimeSeries from "@/components/Dashboard/TimeSeries";
-import DashboardFrame p from "@/components/Dashboard/DashboardFrame";
+import DashboardFrame from "@/components/Dashboard/DashboardFrame";
 
 const inter = Inter({ subsets: ["latin"] });
 
