@@ -16,10 +16,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
+
+      - name: Install dependencies
         working-directory: staging/frontend
         run: npm install
 
-      - name: Connect dev server and deploy
+      - name: connect dev server and deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
