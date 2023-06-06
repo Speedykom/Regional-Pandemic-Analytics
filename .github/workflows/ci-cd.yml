@@ -7,6 +7,24 @@ on:
     branches: [main]
 
 jobs:
+  frontend:
+    name: Buili Frontend
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x, 18.x, 20.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          script: |
+            cd Regional-Pandemic-Analytics/staging/frontend/
+            npm run build
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
@@ -21,3 +39,4 @@ jobs:
           script: |
             cd Regional-Pandemic-Analytics/
             git pull
+            cd staging/frontend/
