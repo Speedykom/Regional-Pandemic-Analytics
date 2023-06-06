@@ -3,9 +3,8 @@ on: [push]
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    name: Build and test
+    name: Build and test frontend
     steps:
-      - uses: actions/checkout@v2
       - name: Use node.js
         uses: actions/setup-node@v3
         with:
