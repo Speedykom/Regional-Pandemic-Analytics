@@ -19,6 +19,7 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: staging
+        run: ls
 
       - name: connect dev server and deploy
         uses: appleboy/ssh-action@master
