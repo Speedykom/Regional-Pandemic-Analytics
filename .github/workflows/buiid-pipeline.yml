@@ -1,0 +1,14 @@
+on: [push]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    name: Build and test
+    steps:
+      - uses: actions/checkout@v2
+      - uses: bahmutov/npm-install@v1.4.5
+        with:
+          working-directory: staging/frontend
+      - name: Run tests
+        run: npm build
+        working-directory: staging/frontend
