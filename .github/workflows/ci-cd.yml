@@ -17,9 +17,6 @@ jobs:
         with:
           node-version: '18.x'
 
-      - name: Install frontend dependencies
-        run: cd /home/runner/work/Regional-Pandemic-Analytics/Regional-Pandemic-Analytics/ && ls
-
       - name: connect dev server and deploy
         uses: appleboy/ssh-action@master
         with:
@@ -30,3 +27,4 @@ jobs:
             cd Regional-Pandemic-Analytics/
             git pull
             cd staging/frontend/
+            docker-compose up
