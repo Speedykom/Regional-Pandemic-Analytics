@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Build and test frontend
+      - uses: actions/checkout@v2
+      - name: Use node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
