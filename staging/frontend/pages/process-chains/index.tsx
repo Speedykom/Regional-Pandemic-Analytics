@@ -12,6 +12,8 @@ import { TextInput } from "@tremor/react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Router from "next/router";
+import { useCreateProcessMutation } from "@/redux/services/process";
+import { ShowMessage } from "@/components/ShowMessage";
 
 type FormValues = {
   dagName: string;
@@ -24,6 +26,7 @@ type FormValues = {
 
 export default function ProcessChains() {
   const [open, setOpen] = useState(false);
+  const [addProcess] = useCreateProcessMutation();
 
   const {
     register,
@@ -31,7 +34,7 @@ export default function ProcessChains() {
     formState: { errors },
   } = useForm<FormValues>();
   const onSubmit = handleSubmit((data) => {
-    const dagData = {
+    const dagData: any = {
       dag_name: data?.dagName,
       dag_id: data?.dagID,
       path: data?.dagPath,
@@ -39,16 +42,19 @@ export default function ProcessChains() {
       parquet_path: data?.parquetPath,
       data_source_name: data?.dataSource,
     };
-    axios
-      .post("http://localhost:/api/process", dagData)
-      .then((response) => {
-        console.log(response.data);
+
+    addProcess(dagData)
+      .then((res: any) => {
+        if (res.error) {
+          const { data } = res.error;
+          const { message } = data;
+          ShowMessage("success", message);
+          return;
+        }
+
+        ShowMessage("success", res.data.message);
       })
-      .catch((error) => {
-        console.log(error);
-      });
-    console.log(data);
-    setOpen(false);
+      .finally(() => setOpen(false));
   });
 
   const handleBtnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -164,7 +170,7 @@ export default function ProcessChains() {
       >
         Add Process Chain
       </button>
-      <Dag/>
+      <Dag />
     </DashboardFrame>
   );
 }
