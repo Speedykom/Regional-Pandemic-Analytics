@@ -1,4 +1,4 @@
-name: CI/CD Dev Server
+name: Build Pipeline
   
 on:
   push:
