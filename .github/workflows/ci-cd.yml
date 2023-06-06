@@ -12,13 +12,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Build frontend
+      - name: Install Node
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
 
-      - name: Install dependencies
-        working-directory: ./staging/frontend
+      - name: Install frontend dependencies
+        working-directory: /Regional-Pandemic-Analytics/staging/frontend
         run: npm install
 
       - name: connect dev server and deploy
