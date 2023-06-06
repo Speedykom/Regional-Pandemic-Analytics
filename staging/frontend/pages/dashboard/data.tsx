@@ -10,7 +10,6 @@ export default function DataPage() {
 
     const [username, setUsername] = useState<string>("")
 
-p
     useEffect(() => {
         if(typeof window !== undefined && window.localStorage){
             setUsername(secureLocalStorage.getItem("sue") as string)
