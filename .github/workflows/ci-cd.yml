@@ -19,6 +19,7 @@ jobs:
 
       - name: Install frontend dependencies
         # working-directory: /home/runner/work/Regional-Pandemic-Analytics/staging/frontend
+        run: cd ~
         run: ls
 
       - name: connect dev server and deploy
