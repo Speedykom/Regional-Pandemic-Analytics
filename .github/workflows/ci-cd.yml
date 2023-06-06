@@ -18,8 +18,8 @@ jobs:
           node-version: '18.x'
 
       - name: Install frontend dependencies
-        working-directory: /home/runner/work/Regional-Pandemic-Analytics/staging/frontend
-        run: npm install
+        # working-directory: /home/runner/work/Regional-Pandemic-Analytics/staging/frontend
+        run: ls
 
       - name: connect dev server and deploy
         uses: appleboy/ssh-action@master
