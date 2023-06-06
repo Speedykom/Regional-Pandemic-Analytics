@@ -9,7 +9,6 @@
 /frontend
 /backend
 
-.env
 venv/
 /venv/
 
