@@ -10,6 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Build and test frontend
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+          working-directory: staging/frontend
+      - run: npm install
+        working-directory: staging/frontend
+      - run: npm run build --if-present
+        working-directory: staging/frontend
+
       - name: Connect dev server and deploy
         uses: appleboy/ssh-action@master
         with:
