@@ -6,9 +6,11 @@ jobs:
     name: Build and test
     steps:
       - uses: actions/checkout@v2
-      - uses: bahmutov/npm-install@v1.4.5
+      - name: Use node.js
+        uses: actions/setup-node@v3
         with:
+        node-version: '18.x'
           working-directory: staging/frontend
       - name: Install frontend dependencies
-        run: npm install
+        run: ls
         working-directory: staging/frontend
