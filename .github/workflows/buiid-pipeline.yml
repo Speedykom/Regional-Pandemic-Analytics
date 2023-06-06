@@ -9,7 +9,7 @@ jobs:
       - name: Use node.js
         uses: actions/setup-node@v3
         with:
-        node-version: '18.x'
+          node-version: '18.x'
           working-directory: staging/frontend
       - name: Install frontend dependencies
         run: ls
