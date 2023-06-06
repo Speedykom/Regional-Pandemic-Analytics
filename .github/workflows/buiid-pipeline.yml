@@ -29,7 +29,7 @@ jobs:
           working-directory: staging/backend
       # You can test your matrix by printing the current Python version
       - name: Display Python version
-        run: |
-          pip install -r requirements.txt
-          pytest
+      - run: pip install -r requirements.txt
+        working-directory: staging/backend
+      - run: pytest .
         working-directory: staging/backend
