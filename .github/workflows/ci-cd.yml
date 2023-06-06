@@ -18,9 +18,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-          script: |
-            cd Regional-Pandemic-Analytics/staging/frontend/
-            npm install
+
+      - name: Install dependencies
+        script: cd Regional-Pandemic-Analytics/staging/frontend/
+        run: npm install
 
       - name: connect dev server and deploy
         uses: appleboy/ssh-action@master
