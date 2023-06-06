@@ -1,14 +1,9 @@
-name: Build Pipeline
-  
-on:
-  push:
-    branches: [main]
+on: [push]
 
 jobs:
-  build-and-deploy:
-    name: Deploy
+  build-and-test:
     runs-on: ubuntu-latest
-
+    name: Build and test frontend
     steps:
       - uses: actions/checkout@v2
 
@@ -39,14 +34,3 @@ jobs:
       - name: Run tests
         run: python manage.py test
         working-directory: staging/backend
-
-      - name: Connect dev server and deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          script: |
-            cd Regional-Pandemic-Analytics/
-            git pull
-            ./run.sh
