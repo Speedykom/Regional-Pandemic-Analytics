@@ -160,7 +160,7 @@ export default function Dag() {
 
   return (
     <>
-      <div className="border p-1 mt-10">
+      <div className="border bg-white rounded-md p-1 mt-10">
         <Table
           columns={columns}
           dataSource={data?.dags || []}
