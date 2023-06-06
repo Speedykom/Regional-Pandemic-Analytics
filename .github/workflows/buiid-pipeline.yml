@@ -5,6 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and test frontend
     steps:
+      - uses: actions/checkout@v2
       - name: Use node.js
         uses: actions/setup-node@v3
         with:
