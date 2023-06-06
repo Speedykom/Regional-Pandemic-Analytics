@@ -22,14 +22,15 @@ jobs:
       - name: Build Backend 
         uses: actions/setup-python@v4
         with:
-          # Semantic version range syntax or exact version of a Python version
           python-version: '3.x'
-          # Optional - x64 or x86 architecture, defaults to x64
           architecture: 'x64'
           working-directory: staging/backend
-      # You can test your matrix by printing the current Python version
-      - name: Display Python version
-      - run: pip install -r requirements.txt
+      - name: Install backend modules
+        run: pip install -r requirements.txt
         working-directory: staging/backend
-      - run: pytest .
+      - name: Run migrations
+        run: python manage.py migrate
+        working-directory: staging/backend
+      - name: Run tests
+        run: python manage.py test
         working-directory: staging/backend
