@@ -18,8 +18,7 @@ jobs:
           node-version: '18.x'
 
       - name: Install frontend dependencies
-        run: npm ci
-        working-directory: staging/frontend
+        working-directory: staging
 
       - name: connect dev server and deploy
         uses: appleboy/ssh-action@master
