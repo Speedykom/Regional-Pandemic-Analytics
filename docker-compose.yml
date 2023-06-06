@@ -266,6 +266,7 @@ services:
       - "8882:8080"
     volumes:
       - ./staging/hop/pipelines:/files
+      - ./staging/hop/data-orch.list:/files
       - ./staging/storage:/home
       - ./staging/hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
