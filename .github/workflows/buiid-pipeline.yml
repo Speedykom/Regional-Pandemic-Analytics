@@ -26,7 +26,9 @@ jobs:
           python-version: '3.x'
           # Optional - x64 or x86 architecture, defaults to x64
           architecture: 'x64'
+          working-directory: staging/backend
       # You can test your matrix by printing the current Python version
       - name: Display Python version
         run: |
           pip install -r requirements.txt
+        working-directory: staging/backend
