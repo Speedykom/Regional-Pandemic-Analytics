@@ -9,6 +9,6 @@ jobs:
       - uses: bahmutov/npm-install@v1.4.5
         with:
           working-directory: staging/frontend
-      - name: Run tests
-        run: npm build
+      - name: Install frontend dependencies
+        run: npm install
         working-directory: staging/frontend
