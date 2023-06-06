@@ -14,4 +14,4 @@ jobs:
       - name: Install frontend dependencies
       - run: npm ci
       - run: npm run build --if-present
-          working-directory: staging/frontend
+        working-directory: staging/frontend
