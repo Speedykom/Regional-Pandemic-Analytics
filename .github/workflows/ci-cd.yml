@@ -19,7 +19,7 @@ jobs:
 
       - name: Install frontend dependencies
         run: npm ci
-        working-directory: Regional-Pandemic-Analytics/staging/frontend
+        working-directory: staging/frontend
 
       - name: connect dev server and deploy
         uses: appleboy/ssh-action@master
