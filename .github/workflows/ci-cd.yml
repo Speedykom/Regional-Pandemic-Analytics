@@ -11,7 +11,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Use node.js
+
+      # Build Frontend
+      - name: Build Frontend
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
@@ -20,6 +22,23 @@ jobs:
         working-directory: staging/frontend
       - run: npm run build --if-present
         working-directory: staging/frontend
+
+      # Build Backend 
+      - name: Build Backend 
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          architecture: 'x64'
+          working-directory: staging/backend
+      - name: Install backend modules
+        run: pip install -r requirements.txt
+        working-directory: staging/backend
+      - name: Run migrations
+        run: python manage.py migrate
+        working-directory: staging/backend
+      - name: Run tests
+        run: python manage.py test
+        working-directory: staging/backend
 
       - name: Connect dev server and deploy
         uses: appleboy/ssh-action@master
@@ -30,5 +49,4 @@ jobs:
           script: |
             cd Regional-Pandemic-Analytics/
             git pull
-            docker-compose build && clear
-            docker-compose up -d
+            ./run.sh
