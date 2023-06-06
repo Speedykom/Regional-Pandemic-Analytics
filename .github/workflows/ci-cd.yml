@@ -21,6 +21,5 @@ jobs:
           script: |
             cd Regional-Pandemic-Analytics/
             git pull
-            docker-compose down --remove-orphans
             docker-compose build && clear
             docker-compose up -d
