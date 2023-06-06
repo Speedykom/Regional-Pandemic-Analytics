@@ -7,14 +7,7 @@ on:
     branches: [main]
 
 jobs:
-  frontend:
-    name: Buili Frontend
-    runs-on: ubuntu-latest
-
-    steps:
-      
-
-  deploy:
+  build-and-deploy:
     name: Deploy
     runs-on: ubuntu-latest
 
