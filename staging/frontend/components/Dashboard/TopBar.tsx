@@ -183,8 +183,7 @@ export default function TopBar({ showNav, setShowNav }: props) {
 							<div className="p-1">
 								<Menu.Item>
 									<Link
-										href="#"
-										onClick={viewPro}
+										href="/users/myprofile"
 										className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
 									>
 										<UserIcon className="h-4 w-4 mr-2" />
@@ -194,7 +193,6 @@ export default function TopBar({ showNav, setShowNav }: props) {
 								<Menu.Item>
 									<Link
 										href="#"
-										onClick={() => router.push("/users/myprofile")}
 										className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
 									>
 										<Cog8ToothIcon className="h-4 w-4 mr-2" />

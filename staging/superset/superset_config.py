@@ -34,7 +34,7 @@ from flask import Blueprint
 from flask_appbuilder.security.manager import AUTH_DB, AUTH_OID
 from pandas._libs.parsers import STR_NA_VALUES  # pylint: disable=no-name-in-module
 from sqlalchemy.orm.query import Query
-from superset.security_manager import OIDCSecurityManager
+from .keycloak_security_manager import OIDCSecurityManager
 
 from superset.advanced_data_type.plugins.internet_address import internet_address
 from superset.advanced_data_type.plugins.internet_port import internet_port
@@ -88,7 +88,7 @@ PACKAGE_JSON_FILE = pkg_resources.resource_filename(
 '''
 curr  =  os.path.abspath(os.getcwd())
 AUTH_TYPE = AUTH_OID
-OIDC_CLIENT_SECRETS = curr + '/docker/pythonpath_dev/client_secret.json'
+OIDC_CLIENT_SECRETS = curr + 'client_secret.json'
 OIDC_ID_TOKEN_COOKIE_SECURE = False
 OIDC_REQUIRE_VERIFIED_EMAIL = False
 OIDC_OPENID_REALM = 'regional-pandemic-analytics'
