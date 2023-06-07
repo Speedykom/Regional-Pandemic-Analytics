@@ -86,6 +86,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 		values["enabled"] = enabled;
 		values["emailVerified"] = emailVerified;
 		values["code"] = code;
+		values["role"] = JSON.parse(values["role"])
 
 		await axios
 			.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user`, values, {
@@ -416,7 +417,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 										return (
 											{
 												key: i,
-												value: val?.id,
+												value: JSON.stringify({ id: val?.id, name: val?.name }),
 												label: val?.name
 											}
 										)
