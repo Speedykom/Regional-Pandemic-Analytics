@@ -12,7 +12,9 @@ RUN pip install -r requirements.txt
 
 # copy entrypoint.sh
 COPY ./entrypoint.sh .
+
 RUN sed -i 's/\r$//g' /backend/entrypoint.sh
+
 RUN chmod +x /backend/entrypoint.sh
 
 COPY . .

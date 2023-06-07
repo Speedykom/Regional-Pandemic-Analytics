@@ -15,6 +15,8 @@ import Router from "next/router";
 import { Button, Form, Input, message, Upload, Select, Tooltip } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
+import { ShowMessage } from "@/components/ShowMessage";
+import { useCreateProcessMutation } from "@/redux/services/process";
 
 type FormValues = {
   dagName: string;
@@ -32,6 +34,7 @@ export default function ProcessChains() {
   const [selectedHopTemplate, setSelectedHopTemplate] = useState<any>();
   const [isShowNewTemplateForm, SetIsShowNewTemplateForm] = useState(false);
   const [form] = Form.useForm();
+  const [addProcess] = useCreateProcessMutation();
 
   const formItemLayout = {
     labelCol: {
@@ -50,7 +53,7 @@ export default function ProcessChains() {
     formState: { errors },
   } = useForm<FormValues>();
   const onSubmit = handleSubmit((data) => {
-    const dagData = {
+    const dagData: any = {
       dag_name: data?.dagName,
       dag_id: data?.dagID,
       path: data?.dagPath, // replace the current value ->>> data?.dagPath <<<- to ->>> selectedHopTemplate?.path <<<-
@@ -60,16 +63,19 @@ export default function ProcessChains() {
       // hop_template_name: selectedHopTemplate?.value,
       // hop_template_path: selectedHopTemplate?.path,
     };
-    axios
-      .post("http://localhost:/api/process", dagData)
-      .then((response) => {
-        console.log(response.data);
+
+    addProcess(dagData)
+      .then((res: any) => {
+        if (res.error) {
+          const { data } = res.error;
+          const { message } = data;
+          ShowMessage("success", message);
+          return;
+        }
+
+        ShowMessage("success", res.data.message);
       })
-      .catch((error) => {
-        console.log(error);
-      });
-    console.log(data);
-    setOpen(false);
+      .finally(() => setOpen(false));
   });
 
   const fetchHops = async () => {

@@ -9,25 +9,28 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from rest_framework.parsers import FileUploadParser
+from rest_framework.parsers import MultiPartParser
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import AllowAny
 from mailer.sender import SendMail
 from utils.filename import gen_filename
-from utils.env_configs import (APP_USER_BASE_URL, APP_SECRET_KEY, APP_REALM, APP_USER_ROLES, REST_REDIRECT_URI)
+from utils.env_configs import (
+    APP_USER_BASE_URL, APP_SECRET_KEY, APP_REALM, APP_USER_ROLES, REST_REDIRECT_URI)
 import minio
+from utils.minio import upload_file_to_minio
+from django.utils.datastructures import MultiValueDictKeyError
 
-from .serializers import UploadedFileSerializer
-from .serializers import  *
+from .serializers import *
 from .models import *
-from rest_framework.decorators import api_view , permission_classes
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions
 
 from utils.generators import get_random_secret
-from utils.keycloak_auth import keycloak_admin_login, create_keycloak_user
+from utils.keycloak_auth import keycloak_admin_login, create_keycloak_user, role_assign
 
 BASE_URL = os.getenv("BASE_URL")
+
 
 def homepage(request):
     print(os.getenv('CLIENT_ID'))
@@ -75,7 +78,6 @@ class KeyCloakLoginAPI(APIView):
 
         if res.status_code == 200:
             data = res.json()
-            print(data)
             return Response(data, status=status.HTTP_200_OK)
 
         return Response({"result": "Login Failed"}, status=status.HTTP_400_BAD_REQUEST)
@@ -129,7 +131,6 @@ class CreateUserAPI(APIView):
             "country": openapi.Schema(type=openapi.TYPE_STRING)
         }
     ))
-
     def post(self, request, *args, **kwargs):
         generate_password = get_random_secret(10)
         form_data = {
@@ -138,13 +139,12 @@ class CreateUserAPI(APIView):
             "username": request.data.get("username", None),
             "email": request.data.get("email", None),
             "enabled": request.data.get("enabled", None),
-            "emailVerified": False,
+            "emailVerified": request.data.get("emailVerified", None),
             "attributes": {
                 "code": request.data.get("code", None),
                 "phone": request.data.get("phone", None),
                 "gender": request.data.get("gender", None),
                 "country": request.data.get("country", None),
-                "avatar": ""
             },
             "credentials": [
                 {
@@ -155,7 +155,7 @@ class CreateUserAPI(APIView):
             ]
         }
 
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -167,11 +167,12 @@ class CreateUserAPI(APIView):
             'cache-control': "no-cache"
         }
 
-        res = requests.post(f"{APP_USER_BASE_URL}", json=form_data, headers=headers)
+        res = requests.post(f"{APP_USER_BASE_URL}",
+                            json=form_data, headers=headers)
 
         if res.status_code != 201:
             return Response(res.reason, status=res.status_code)
-        
+
         user = {
             "firstName": form_data["firstName"],
             "lastName": form_data["lastName"],
@@ -181,8 +182,12 @@ class CreateUserAPI(APIView):
             "emailVerified": form_data["emailVerified"]
         }
 
-        return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_200_OK)
-    
+        assign_role = role_assign(kwargs['id'], request.data.get("role", dict[str, str]), headers)
+
+        if assign_role: 
+            return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_201_CREATED)
+        return Response({'errorMessage': 'Role was not assigned'}, status=status.HTTP_201_CREATED)
+
 
 class UpdateUserAPI(APIView):
     """
@@ -203,7 +208,6 @@ class UpdateUserAPI(APIView):
             "country": openapi.Schema(type=openapi.TYPE_STRING)
         }
     ))
-
     def put(self, request, *args, **kwargs):
         form_data = {
             "firstName": request.data.get("firstName", None),
@@ -215,11 +219,10 @@ class UpdateUserAPI(APIView):
                 "phone": request.data.get("phone", None),
                 "gender": request.data.get("gender", None),
                 "country": request.data.get("country", None),
-                "avatar": ""
             }
         }
 
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -231,12 +234,34 @@ class UpdateUserAPI(APIView):
             'cache-control': "no-cache"
         }
 
-        res = requests.put(f"{APP_USER_BASE_URL}/{kwargs['id']}", json=form_data, headers=headers)
+        checkUser = requests.get(
+            url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
+        
+        if checkUser.status_code != 200:
+            return Response({'errorMessage': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        user = checkUser.json()
+
+        if 'attributes' not in user:
+            user['attributes'] = {}
+
+        if "avatar" in user["attributes"]:
+            form_data["attributes"]["avatar"] = user["attributes"]["avatar"]
+
+        if "status" in user["attributes"]:
+            form_data["attributes"]["status"] = user["attributes"]["status"]    
+
+        res = requests.put(
+            f"{APP_USER_BASE_URL}/{kwargs['id']}", json=form_data, headers=headers)
 
         if res.status_code != 204:
             return Response(res.reason, status=res.status_code)
+        
+        assign_role = role_assign(kwargs['id'], request.data.get("role", dict[str, str]), headers)
 
-        return Response({'message': 'Account details updated successfully'}, status=status.HTTP_200_OK)    
+        if assign_role: 
+            return Response({'message': 'Account details updated successfully'}, status=status.HTTP_200_OK)
+        return Response({'errorMessage': 'Role was not assigned'}, status=status.HTTP_200_OK)
 
 
 class ListUsersAPI(APIView):
@@ -245,8 +270,8 @@ class ListUsersAPI(APIView):
     """
     permission_classes = [AllowAny, ]
 
-    def get(self, request, *args, **kwargs): 
-        #Login to admin
+    def get(self, request, *args, **kwargs):
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -273,8 +298,8 @@ class ListRolesAPI(APIView):
     """
     permission_classes = [AllowAny, ]
 
-    def get(self, request, *args, **kwargs): 
-        #Login to admin
+    def get(self, request, *args, **kwargs):
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -289,7 +314,7 @@ class ListRolesAPI(APIView):
         response = requests.get(f"{APP_USER_ROLES}/", headers=headers)
 
         if response.status_code != 200:
-            return Response(response.reason, status=response.status_code) 
+            return Response(response.reason, status=response.status_code)
 
         roles = response.json()
         return Response(roles, status=status.HTTP_200_OK)
@@ -298,10 +323,11 @@ class ListRolesAPI(APIView):
 class GetUserAPI(APIView):
     """
     API view to get user profile
-    """   
+    """
     permission_classes = [AllowAny, ]
+
     def get(self, request, **kwargs):
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -312,22 +338,24 @@ class GetUserAPI(APIView):
             'Content-Type': "application/json"
         }
 
-        response = requests.get(url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
+        response = requests.get(
+            url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
 
         if response.status_code != 200:
             return Response(response.reason, status=response.status_code)
 
         users = response.json()
         return Response(users, status=status.HTTP_200_OK)
-    
+
 
 class DeleteUserAPI(APIView):
     """
     API view to delete user from keycloak
-    """   
+    """
     permission_classes = [AllowAny, ]
+
     def delete(self, request, **kwargs):
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -338,18 +366,39 @@ class DeleteUserAPI(APIView):
             'Content-Type': "application/json"
         }
 
-        response = requests.delete(url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
+        checkUser = requests.get(
+            url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
+        if checkUser.status_code != 200:
+            return Response({'errorMessage': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        user: dict = checkUser.json()
+
+        if 'attributes' not in user:
+            user['attributes'] = {}
+            user['attributes']['status'] = "Archived"
+
+        else:
+            user['attributes']['status'] = "Archived"
+
+        user['enabled'] = False
+        # user_data = {
+
+        #     'attributes': user['attributes']
+        # }    
+
+        response = requests.put(
+            url=f"{APP_USER_BASE_URL}/{kwargs['id']}", json=user, headers=headers)
 
         if response.status_code != 200:
             return Response(response.reason, status=response.status_code)
         
-        return Response({'message': 'User deleted successfully'}, status=status.HTTP_200_OK)  
-     
-    
+        return Response({'message': 'User archived successfully'}, status=status.HTTP_200_OK)
+
+
 class AssignRolesAPI(APIView):
     """
     API view to assign roles to users
-    """   
+    """
     permission_classes = [AllowAny, ]
 
     roleObject = {
@@ -363,12 +412,11 @@ class AssignRolesAPI(APIView):
             'roles': openapi.Schema(type=openapi.TYPE_ARRAY, items=openapi.Items(openapi.TYPE_OBJECT))
         }
     ))
-
     def put(self, request, **kwargs):
         form_data = {
             'roles': request.data.get("roles", [self.roleObject])
         }
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -379,23 +427,23 @@ class AssignRolesAPI(APIView):
             'Content-Type': "application/json"
         }
 
-        response = requests.post(url=f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings/realm", json=form_data, headers=headers)
+        response = requests.post(
+            url=f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings/realm", json=form_data, headers=headers)
 
         if response.status_code != 200:
             return Response(response.reason, status=response.status_code)
-        
-        return Response({'message': 'Roles has been assigned successfully'}, status=status.HTTP_200_OK)       
+
+        return Response({'message': 'Roles has been assigned successfully'}, status=status.HTTP_200_OK)
 
 
 class ResetPasswordAPI(APIView):
     """
     API view to reset users password
-    """   
+    """
     permission_classes = [AllowAny, ]
 
-
     def put(self, request, **kwargs):
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -412,7 +460,8 @@ class ResetPasswordAPI(APIView):
 
         # 079356992 - sheku
 
-        checkUser = requests.get(f"{APP_USER_BASE_URL}?email={request_body['email']}", headers=headers)
+        checkUser = requests.get(
+            f"{APP_USER_BASE_URL}?email={request_body['email']}", headers=headers)
         if checkUser.status_code != 200:
             return Response(checkUser.reason, status=response.status_code)
 
@@ -423,22 +472,23 @@ class ResetPasswordAPI(APIView):
 
         user = users[0]
 
-        response = requests.put(url=f"{APP_USER_BASE_URL}/{user['id']}/execute-actions-email", json=["UPDATE_PASSWORD"], headers=headers)
+        response = requests.put(
+            url=f"{APP_USER_BASE_URL}/{user['id']}/execute-actions-email", json=["UPDATE_PASSWORD"], headers=headers)
 
         if response.status_code != 200:
             return Response(response.reason, status=response.status_code)
-        
-        return Response({'message': 'Reset password link has been sent to your email'}, status=status.HTTP_200_OK)       
+
+        return Response({'message': 'Reset password link has been sent to your email'}, status=status.HTTP_200_OK)
 
 
 class ResetPasswordRequestAPI(APIView):
     """
     API view to reset users password
-    """   
+    """
     permission_classes = [AllowAny, ]
 
     def post(self, request, **kwargs):
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -453,7 +503,8 @@ class ResetPasswordRequestAPI(APIView):
             "email": request.data.get("email", None)
         }
 
-        checkUser = requests.get(f"{APP_USER_BASE_URL}?email={request_body['email']}", headers=headers)
+        checkUser = requests.get(
+            f"{APP_USER_BASE_URL}?email={request_body['email']}", headers=headers)
         if checkUser.status_code != 200:
             return Response(checkUser.reason, status=checkUser.status_code)
 
@@ -477,8 +528,8 @@ class ResetPasswordRequestAPI(APIView):
         redirectUri = f"{REST_REDIRECT_URI}?tok={token}"
 
         SendMail("IGAD Reset Password", payload, redirectUri)
-        
-        return Response({'message': 'Reset password link has been sent to your email'}, status=status.HTTP_200_OK) 
+
+        return Response({'message': 'Reset password link has been sent to your email'}, status=status.HTTP_200_OK)
 
 
 class CreateRolesAPI(APIView):
@@ -494,14 +545,13 @@ class CreateRolesAPI(APIView):
             'description': openapi.Schema(type=openapi.TYPE_STRING)
         }
     ))
-
     def post(self, request, *args, **kwargs):
         form_data = {
             "name": request.data.get("name", None),
             "description": request.data.get("description", None),
         }
 
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -513,13 +563,14 @@ class CreateRolesAPI(APIView):
             'cache-control': "no-cache"
         }
 
-        res = requests.post(f"{APP_USER_ROLES}", json=form_data, headers=headers)
+        res = requests.post(f"{APP_USER_ROLES}",
+                            json=form_data, headers=headers)
 
         if res.status_code != 201:
             return Response(res.reason, status=res.status_code)
 
         return Response({'message': f'{form_data["name"]} role created successfully'}, status=status.HTTP_200_OK)
-    
+
 
 class DeleteRolesAPI(APIView):
     """
@@ -528,7 +579,7 @@ class DeleteRolesAPI(APIView):
     permission_classes = [AllowAny,]
 
     def delete(self, request, *args, **kwargs):
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -540,12 +591,13 @@ class DeleteRolesAPI(APIView):
             'cache-control': "no-cache"
         }
 
-        res = requests.delete(f"{BASE_URL}/admin/realms/{APP_REALM}/roles-by-id/{kwargs['id']}", headers=headers)
+        res = requests.delete(
+            f"{BASE_URL}/admin/realms/{APP_REALM}/roles-by-id/{kwargs['id']}", headers=headers)
 
         if res.status_code != 204:
             return Response(res.reason, status=res.status_code)
 
-        return Response({'message': 'Role deletion was successful'}, status=status.HTTP_200_OK)  
+        return Response({'message': 'Role deletion was successful'}, status=status.HTTP_200_OK)
 
 
 class UpdateRolesAPI(APIView):
@@ -561,14 +613,13 @@ class UpdateRolesAPI(APIView):
             'description': openapi.Schema(type=openapi.TYPE_STRING)
         }
     ))
-
     def post(self, request, *args, **kwargs):
         form_data = {
             "name": request.data.get("name", None),
             "description": request.data.get("description", None),
         }
 
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -580,12 +631,13 @@ class UpdateRolesAPI(APIView):
             'cache-control': "no-cache"
         }
 
-        res = requests.put(f"{BASE_URL}/admin/realms/{APP_REALM}/roles-by-id/{kwargs['id']}", json=form_data, headers=headers)
+        res = requests.put(
+            f"{BASE_URL}/admin/realms/{APP_REALM}/roles-by-id/{kwargs['id']}", json=form_data, headers=headers)
 
         if res.status_code != 204:
             return Response(res.reason, status=res.status_code)
 
-        return Response({'message': 'Role update was successful'}, status=status.HTTP_200_OK)   
+        return Response({'message': 'Role update was successful'}, status=status.HTTP_200_OK)
 
 
 class VerifyResetTokenAPI(APIView):
@@ -600,13 +652,14 @@ class VerifyResetTokenAPI(APIView):
         }
 
         try:
-            decode = jwt.decode(form_data["token"], APP_SECRET_KEY, algorithms=['HS256'])
-            return Response(decode, status=status.HTTP_200_OK) 
+            decode = jwt.decode(
+                form_data["token"], APP_SECRET_KEY, algorithms=['HS256'])
+            return Response(decode, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError:
             return Response({'errorMessage': 'Reset password token expired'}, status=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:
             return Response({'errorMessage': 'Token provided is invalid'}, status=status.HTTP_401_UNAUTHORIZED)
-       
+
 
 class CreatePasswordAPI(APIView):
     """
@@ -622,7 +675,6 @@ class CreatePasswordAPI(APIView):
             'token': openapi.Schema(type=openapi.TYPE_STRING),
         }
     ))
-
     def put(self, request, *args, **kwargs):
         form_data = {
             "newPassword": request.data.get("newPassword", None),
@@ -630,7 +682,7 @@ class CreatePasswordAPI(APIView):
             "token": request.data.get("token", None),
         }
 
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -649,14 +701,16 @@ class CreatePasswordAPI(APIView):
         }
 
         try:
-            decode = jwt.decode(form_data["token"], APP_SECRET_KEY, algorithms=['HS256'])
-            requests.put(f"{APP_USER_BASE_URL}/{decode['id']}/reset-password", json=credentials, headers=headers)
-            return Response({'message': 'Password created successfully'}, status=status.HTTP_200_OK) 
+            decode = jwt.decode(
+                form_data["token"], APP_SECRET_KEY, algorithms=['HS256'])
+            requests.put(
+                f"{APP_USER_BASE_URL}/{decode['id']}/reset-password", json=credentials, headers=headers)
+            return Response({'message': 'Password created successfully'}, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError:
             return Response({'errorMessage': 'Reset password token expired'}, status=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:
             return Response({'errorMessage': 'Token provided is invalid'}, status=status.HTTP_401_UNAUTHORIZED)
-       
+
 
 class ChangePasswordAPI(APIView):
     """
@@ -671,14 +725,13 @@ class ChangePasswordAPI(APIView):
             'confirmPassword': openapi.Schema(type=openapi.TYPE_STRING),
         }
     ))
-
     def put(self, request, *args, **kwargs):
         form_data = {
             "newPassword": request.data.get("newPassword", None),
             "confirmPassword": request.data.get("lastName", None),
         }
 
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -696,14 +749,15 @@ class ChangePasswordAPI(APIView):
             "temporary": False
         }
 
-        res = requests.put(f"{APP_USER_BASE_URL}/{kwargs['id']}/reset-password", json=credentials, headers=headers)
-            
+        res = requests.put(
+            f"{APP_USER_BASE_URL}/{kwargs['id']}/reset-password", json=credentials, headers=headers)
+
         if res.status_code == 200:
-            return Response({'message': 'Password updated successfully'}, status=status.HTTP_200_OK)   
-        
+            return Response({'message': 'Password updated successfully'}, status=status.HTTP_200_OK)
+
         print(res.text)
         return Response({'errorMessage': 'Error changing password'}, status=res.status_code)
-    
+
 
 class UpdateProfileAPI(APIView):
     """
@@ -719,7 +773,6 @@ class UpdateProfileAPI(APIView):
             'userId': openapi.Schema(type=openapi.TYPE_STRING),
         }
     ))
-
     def put(self, request, *args, **kwargs):
         form_data = {
             "newPassword": request.data.get("newPassword", None),
@@ -727,7 +780,7 @@ class UpdateProfileAPI(APIView):
             "userId": request.data.get("userId", None),
         }
 
-        #Login to admin
+        # Login to admin
         admin_login = keycloak_admin_login()
 
         if admin_login["status"] != 200:
@@ -745,89 +798,75 @@ class UpdateProfileAPI(APIView):
             "temporary": False
         }
 
-        res = requests.put(f"{APP_USER_BASE_URL}/{form_data['userId']}/reset-password", json=credentials, headers=headers)
-            
+        res = requests.put(
+            f"{APP_USER_BASE_URL}/{form_data['userId']}/reset-password", json=credentials, headers=headers)
+
         if res.status_code == 200:
-            return Response({'message': 'Password created successfully'}, status=status.HTTP_200_OK)   
-        
-        return Response({'errorMessage': 'Error changing password'}, status=status.HTTP_401_UNAUTHORIZED)  
+            return Response({'message': 'Password created successfully'}, status=status.HTTP_200_OK)
+
+        return Response({'errorMessage': 'Error changing password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
-class UploadAvatarAPI (APIView):
+class AvatarUploadApI(APIView):
     """
     API view to upload Keycloak user avatar to minio
     """
     permission_classes = [AllowAny,]
 
-    def post (self, request, *args, **kwargs):
-        #Login to admin
-        admin_login = keycloak_admin_login()
+    parser_classes = (MultiPartParser,)
 
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
+    def post(self, request, **kwargs):
+        """Receives a request to upload a file and sends it to filesystem for now. Later the file will be uploaded to minio server."""
+        try:
+            file_obj = request.data['file']
 
-        headers = {
-            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
-            'Content-Type': "application/json",
-            'cache-control': "no-cache"
-        }
+            name_generator = gen_filename(file_obj.name)
+            file_obj.name = name_generator['newName']
 
-        serializer = UploadedFileSerializer(data=request.data)
-        #upload file to MINIO
-        if serializer.is_valid():
-            file = serializer.validated_data["file"]
+            # check that a filename is passed
+            upload_file_to_minio("avatars", file_obj)
 
-            # get the format of file
-            type = str(file).split(".")[1]
+            admin_login = keycloak_admin_login()
 
-            name_generator = gen_filename(file.name)
-            file.name = name_generator['newName']
+            if admin_login["status"] != 200:
+                return Response(admin_login["data"], status=admin_login["status"])
 
-            response = requests.get(url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
+            headers = {
+                'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
+                'Content-Type': "application/json",
+                'cache-control': "no-cache"
+            }
+
+            response = requests.get(
+                url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
 
             if response.status_code != 200:
                 return Response(response.reason, status=response.status_code)
 
             user: dict = response.json()
 
-            serializer.save(size=file.size , type=type)
-
-            date = datetime.now().strftime("%Y-%-m-%-d")
+            # date = datetime.now().strftime("%Y-%-m-%-d")
 
             if 'attributes' not in user:
                 user['attributes'] = {}
-                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file.name}'
+                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{file_obj.name}'
 
-            else: 
-                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{date}/{file.name}'
+            else:
+                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{file_obj.name}'
 
             user_data = {
                 'attributes': user['attributes']
             }
 
-            res = requests.put(f"{APP_USER_BASE_URL}/{kwargs['id']}", json=user_data, headers=headers)
+            res = requests.put(
+                f"{APP_USER_BASE_URL}/{kwargs['id']}", json=user_data, headers=headers)
 
             if res.status_code != 204:
                 return Response({'reason': res.reason, 'message': res.text, 'user': user_data}, status=res.status_code)
-            
-            return Response({'message': 'Avatar updated successfully', 'avatarUrl': user["attributes"]['avatar']} , status.HTTP_201_CREATED)
-        # return Response(serializer.errors , status=status.HTTP_400_BAD_REQUEST)
+            return Response({'status': 'success', "message": "Avatar uploaded successfully"}, status=200)
 
+        except MultiValueDictKeyError:
+            return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
 
-class upload_my_file(APIView):
-    permission_classes = [AllowAny]
-    def post(self, request):
-        minioClient = minio.Minio(
-            endpoint="cache2.igad-health.eu:9001",
-            access_key="iQPN9LTshIlpPNut",
-            secret_key="rRNZehVgsesBz7pvkvadOIzLYyE9wI4T",
-            secure=False
-        )
-        exists = minioClient.bucket_exists("test-avatars")
-        if exists:
-            return Response('Bucket already exist')
-        minioClient.make_bucket("test-avatars")
-        return Response('Bucket created', status=status.HTTP_404_NOT_FOUND)
-    
 
 # endpoint="89.58.44.88:9001",

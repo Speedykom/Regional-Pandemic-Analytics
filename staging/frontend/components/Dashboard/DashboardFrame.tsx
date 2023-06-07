@@ -67,7 +67,7 @@ export default function DashboardFrame({
             <BiArrowBack className="text-2xl" />
           </button>
         ) : null}
-        <p className="text-gray-700 text-3xl font-bold">{title}</p>
+        <p className="text-gray-700 text-3xl font-bold mt-2">{title}</p>
       </div>
       {children}
     </Layout>

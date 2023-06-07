@@ -74,7 +74,6 @@ countries.forEach((item, index) => {
 export const ProfileSettings = () => {
 	const [form] = Form.useForm();
 	const [passwordForm] = Form.useForm();
-	const [profile, setProfile] = useState<any | null>();
 	const [visible, setVisible] = useState(false);
 	const [changePassword, setChangePassword] = useState(false);
 	// const [user, setUser] = useState<any>();
@@ -137,6 +136,36 @@ export const ProfileSettings = () => {
 		setPreviewOpen(true);
 	};
 
+	const handleDetailsEdit = async (values: any) => {
+		await axios
+			.put(
+				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/update`,
+				values,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			)
+			.then((res) => {
+				let newUserData = user
+				secureLocalStorage.removeItem('user')
+				newUserData.given_name = values['firstName']
+				newUserData.family_name = values['lastName']
+				newUserData.phone = values['phone']
+				newUserData.code = values['code']
+				newUserData.country = values['country']
+				newUserData.gender = values['gender']
+				newUserData.name = `${values['firstName']} ${values['lastName']}`
+				secureLocalStorage.setItem('user', newUserData)
+				OpenNotification(res?.data?.message, "topRight", "success");
+				form.resetFields();
+			})
+			.catch((err) => {
+				OpenNotification(err.response?.data?.errorMessage, "topRight", "error");
+			});
+	}
+
 	const password: string = secureLocalStorage.getItem("passcode") as string;
 
 	const handlePasswordChange = async (values: any) => {
@@ -162,6 +191,8 @@ export const ProfileSettings = () => {
 					}
 				)
 				.then((res) => {
+					secureLocalStorage.removeItem('passcode')
+					secureLocalStorage.setItem("passcode", Buffer.from(values["newPassword"]).toString("base64"));
 					OpenNotification(res.data?.message, "topRight", "success");
 					passwordForm.resetFields();
 				})
@@ -193,7 +224,7 @@ export const ProfileSettings = () => {
 										onPreview={handlePreview}
 										showUploadList={{ showRemoveIcon: false }}
 										maxCount={1}
-										action={`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/avatar-upload`}
+										action={`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/avatar-upload1`}
 										customRequest={(options) => {
 											const data = new FormData();
 											data.append("file", options.file);
@@ -226,7 +257,7 @@ export const ProfileSettings = () => {
 										}}
 										
 									>
-										<Button type="link" className="flex items-center px-2" icon={<UploadOutlined />}>Upload Avatar</Button>
+										<Button type="link" className="flex items-center px-2"><UploadOutlined /> Upload Avatar</Button>
 									</Upload>
 								</ImgCrop>
 								{/* <img
@@ -346,7 +377,7 @@ export const ProfileSettings = () => {
 									<span>Update Details</span>
 								</Button>
 							</div>
-							<Form form={form} name="edit" scrollToFirstError>
+							<Form form={form} name="edit" onFinish={handleDetailsEdit} scrollToFirstError>
 								<div className="lg:col-span-2">
 									<div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
 										<div className="md:col-span-5">
@@ -492,15 +523,13 @@ export const ProfileSettings = () => {
 														}}
 														type="primary"
 														size="large"
-														icon={<DeleteColumnOutlined />}
 														onClick={cancelEdit}
 													>
-														Cancel
+														<DeleteColumnOutlined /> Cancel
 													</Button>
 													<Button
 														type="primary"
 														className="flex items-center"
-														icon={<SaveOutlined />}
 														style={{
 															backgroundColor: "#087757",
 															border: "1px solid #e65e01",
@@ -508,7 +537,7 @@ export const ProfileSettings = () => {
 														size="large"
 														htmlType="submit"
 													>
-														Save Changes
+														<SaveOutlined /> Save Changes
 													</Button>
 												</div>
 											</Form.Item>
@@ -548,10 +577,9 @@ export const ProfileSettings = () => {
 								<div className="border border-1 p-5 flex flex-col ">
 									<Divider
 										type="horizontal"
-										children={
-											<p className="text-lg mb-5">Create New Password</p>
-										}
-									/>
+									>
+										<p className="text-lg mb-5">Create New Password</p>
+									</Divider>
 									<Form form={passwordForm} onFinish={handlePasswordChange}>
 										<div className="flex">
 											<div className="w-1/2">
@@ -611,11 +639,11 @@ export const ProfileSettings = () => {
 														rules={[
 															{
 																required: true,
-																validator(value, callback) {
+																validator(rule, value, callback) {
 																	if (value === "") {
 																		callback("This field is required");
 																	} else if (value !== newPass) {
-																		callback("Two inputs don't match!");
+																		callback("Passwords do not match!");
 																	} else {
 																		callback();
 																	}
@@ -644,15 +672,13 @@ export const ProfileSettings = () => {
 																	}}
 																	type="primary"
 																	size="large"
-																	icon={<DeleteColumnOutlined />}
 																	onClick={triggerPasswordChange}
 																>
-																	Cancel
+																	<DeleteColumnOutlined /> Cancel
 																</Button>
 																<Button
 																	type="primary"
 																	className="flex items-center"
-																	icon={<SaveOutlined />}
 																	style={{
 																		backgroundColor: "#087757",
 																		border: "1px solid #e65e01",
@@ -660,7 +686,7 @@ export const ProfileSettings = () => {
 																	size="large"
 																	htmlType="submit"
 																>
-																	Save Changes
+																	<SaveOutlined /> Save Changes
 																</Button>
 															</div>
 														</Form.Item>
