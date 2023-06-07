@@ -1,9 +1,10 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
 import axios from "axios";
 import { Button, Switch } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import XMLViewer from "react-xml-viewer";
 import ParseXml from "./parseXml";
+import { getData } from "@/utils";
 
 export default function HopDetail({ hopsData, hopTitle }: any) {
   const [newTags, setNewTags] = useState<any>();
@@ -12,6 +13,18 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
   const [xmlData, setXmlData] = useState<any>(hopsData);
   const [isSwitch, setIsSwitch] = useState<boolean>(false);
 
+  const [token, setToken] = useState<string>("");
+
+  const fetchToken = async () => {
+    try {
+      const url = "/api/get-access-token/";
+      const response = await getData(url);
+      setToken(response?.accessToken);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   const handleAddingTags = async () => {
     await axios
       .post(
@@ -19,9 +32,8 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
         newTags,
         {
           headers: {
-            Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
+            Authorization: `Bearer ${token}`, //`Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
             "Content-Type": "application/json; charset=utf-8",
-            // `Bearer ${token}`
           },
         }
       )
@@ -41,9 +53,8 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
         updateTags,
         {
           headers: {
-            Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
+            Authorization: `Bearer ${token}`, // `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
             "Content-Type": "application/json; charset=utf-8",
-            // `Bearer ${token}`
           },
         }
       )
@@ -61,9 +72,8 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
     await axios
       .delete(`${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/${hopTitle}/`, {
         headers: {
-          Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
+          Authorization: `Bearer ${token}`, // `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
           "Content-Type": "application/json; charset=utf-8",
-          // `Bearer ${token}`
         },
         data: {
           tags: deleteTags.split(","),
@@ -77,6 +87,10 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
       })
       .catch((err) => console.log(err));
   };
+
+  useEffect(() => {
+    fetchToken();
+  }, []);
 
   const customTheme = {
     separatorColor: "#f43f5e",
