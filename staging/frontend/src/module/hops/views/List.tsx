@@ -65,7 +65,7 @@ export const HopList = () => {
           res?.data?.data?.map((data: any, index: number) => {
             const template = {
               id: index + 1,
-              name: data,
+              name: data?.name,
             };
             templates.push(template);
           });
