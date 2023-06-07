@@ -48,6 +48,7 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
         }
       )
       .then((res) => {
+        console.log(res.data);
         if (res.data) {
           setUpdateTags("");
           setXmlData(res.data);
