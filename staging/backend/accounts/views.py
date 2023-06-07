@@ -182,7 +182,11 @@ class CreateUserAPI(APIView):
             "emailVerified": form_data["emailVerified"]
         }
 
-        return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_201_CREATED)
+        assign_role = role_assign(kwargs['id'], request.data.get("role", dict[str, str]), headers)
+
+        if assign_role: 
+            return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_201_CREATED)
+        return Response({'errorMessage': 'Role was not assigned'}, status=status.HTTP_201_CREATED)
 
 
 class UpdateUserAPI(APIView):
