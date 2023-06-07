@@ -63,7 +63,7 @@ export default function ProcessChains() {
     <DashboardFrame title="Hop Process Chains" back onBackPress={() => {
       Router.back()
     }}>
-      <iframe src="http://localhost:8882" />
+      <iframe src="https://integration2.igad-health.eu" />
     </DashboardFrame>
   );
 }
