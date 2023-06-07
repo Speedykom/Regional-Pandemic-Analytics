@@ -1,7 +1,7 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
 import Dag from "@/components/TABS/Dag";
 import { Dialog, Transition } from "@headlessui/react";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useMemo } from "react";
 import {
   ClockIcon,
   FingerPrintIcon,
@@ -12,7 +12,7 @@ import { TextInput } from "@tremor/react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Router from "next/router";
-import { Select, Space } from "antd";
+import { Select } from "antd";
 
 type FormValues = {
   dagName: string;
@@ -26,6 +26,8 @@ type FormValues = {
 export default function ProcessChains() {
   const [open, setOpen] = useState(false);
   const [openHopModal, setOpenHopModal] = useState(false);
+  const [hopTemplate, setHopTemplate] = useState([]);
+  const [selectedHopTemplate, setSelectedHopTemplate] = useState("");
 
   const {
     register,
@@ -40,6 +42,7 @@ export default function ProcessChains() {
       schedule_interval: data?.scheduleInterval,
       parquet_path: data?.parquetPath,
       data_source_name: data?.dataSource,
+      // hop_template: selectedHopTemplate,
     };
     axios
       .post("http://localhost:/api/process", dagData)
@@ -52,6 +55,36 @@ export default function ProcessChains() {
     console.log(data);
     setOpen(false);
   });
+
+  const fetchHops = async () => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/`;
+      await axios
+        .get(url, {
+          headers: {
+            Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
+            // `Bearer ${token}`
+          },
+        })
+        .then((res) => {
+          const templates: any = [];
+          res?.data?.data?.map((data: any, index: number) => {
+            const template = {
+              value: data,
+              label: data,
+            };
+            templates.push(template);
+          });
+          setHopTemplate(templates);
+        });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useMemo(() => {
+    fetchHops();
+  }, []);
 
   const handleBtnClick = (
     e: React.MouseEvent<HTMLButtonElement>,
@@ -239,12 +272,10 @@ export default function ProcessChains() {
                             <Select
                               placeholder="Please select an hop template"
                               className="w-full"
-                              onChange={(value) => console.log(value)}
-                              options={[
-                                { value: "jack", label: "Jack" },
-                                { value: "lucy", label: "Lucy" },
-                                { value: "Yiminghe", label: "yiminghe" },
-                              ]}
+                              onChange={(value) =>
+                                setSelectedHopTemplate(value)
+                              }
+                              options={hopTemplate}
                             />
                           </div>
                         </div>
