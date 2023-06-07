@@ -12,7 +12,9 @@ import { TextInput } from "@tremor/react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import Router from "next/router";
-import { Select } from "antd";
+import { Button, Form, Input, message, Upload, Select } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 
 type FormValues = {
   dagName: string;
@@ -28,6 +30,19 @@ export default function ProcessChains() {
   const [openHopModal, setOpenHopModal] = useState(false);
   const [hopTemplate, setHopTemplate] = useState([]);
   const [selectedHopTemplate, setSelectedHopTemplate] = useState("");
+  const [isShowNewTemplateForm, SetIsShowNewTemplateForm] = useState(false);
+  const [form] = Form.useForm();
+
+  const formItemLayout = {
+    labelCol: {
+      xs: { span: 24 },
+      sm: { span: 8 },
+    },
+    wrapperCol: {
+      xs: { span: 24 },
+      sm: { span: 16 },
+    },
+  };
 
   const {
     register,
@@ -99,6 +114,63 @@ export default function ProcessChains() {
       setOpenHopModal(!openHopModal);
     }
   };
+
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [uploading, setUploading] = useState(false);
+
+  const handleUpload = async (formFieldValues: any) => {
+    console.log(formFieldValues);
+    const formData = new FormData();
+
+    if (formFieldValues.filename != undefined) {
+      formData.append("filename", formFieldValues.filename);
+    } else {
+      formData.append("filename", "");
+    }
+
+    fileList.forEach((file) => {
+      formData.append("file", file as RcFile);
+    });
+    setUploading(true);
+    await axios
+      .post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/new/`, formData, {
+        headers: {
+          Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`, // `Bearer ${token}`
+        },
+      })
+      .then((res) => {
+        setFileList([]);
+        fetchHops();
+        message.success(res?.data?.message);
+        setOpen(false);
+      })
+      .catch((err) => {
+        if (err?.response?.data?.detail) {
+          message.error(err?.response?.data?.detail);
+        } else {
+          message.error(err?.response?.data?.message);
+        }
+      })
+      .finally(() => {
+        setUploading(false);
+      });
+  };
+
+  const props: UploadProps = {
+    onRemove: (file) => {
+      const index = fileList.indexOf(file);
+      const newFileList = fileList.slice();
+      newFileList.splice(index, 1);
+      setFileList(newFileList);
+    },
+    beforeUpload: (file) => {
+      setFileList([...fileList, file]);
+
+      return false;
+    },
+    fileList,
+  };
+
   return (
     <DashboardFrame title="List(s) of Process Chains">
       {/* process chain modal */}
@@ -268,16 +340,79 @@ export default function ProcessChains() {
                           Hop Template
                         </Dialog.Title>
                         <div className="mt-2">
+                          {/* content container */}
                           <div>
-                            <Select
-                              placeholder="Please select an hop template"
-                              className="w-full"
-                              onChange={(value) =>
-                                setSelectedHopTemplate(value)
-                              }
-                              options={hopTemplate}
-                            />
+                            {!isShowNewTemplateForm ? (
+                              // select component
+                              <Select
+                                placeholder="Please select an hop template"
+                                className="w-full"
+                                onChange={(value) =>
+                                  setSelectedHopTemplate(value)
+                                }
+                                options={hopTemplate}
+                              />
+                            ) : (
+                              // upload new template form component
+                              <Form
+                                {...formItemLayout}
+                                form={form}
+                                name="uploadFile"
+                                onFinish={handleUpload}
+                                scrollToFirstError
+                                size="large"
+                                className="w-full -mb-8 mt-5"
+                              >
+                                <Form.Item
+                                  name="filename"
+                                  label="File Name"
+                                  className="w-full -ml-5"
+                                >
+                                  <Input className="w-[15rem]" />
+                                </Form.Item>
+                                <Form.Item
+                                  name="file"
+                                  label="Select File"
+                                  className="w-full -ml-5"
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: "Please select the file",
+                                    },
+                                  ]}
+                                >
+                                  <Upload {...props} className="w-[15rem]">
+                                    <Button
+                                      icon={<UploadOutlined />}
+                                      className="w-[15rem]"
+                                    >
+                                      Select File
+                                    </Button>
+                                  </Upload>
+                                </Form.Item>
+                              </Form>
+                            )}
                           </div>
+
+                          <div className="relative flex py-5 items-center">
+                            <div className="flex-grow border-t border-gray-300"></div>
+                            <span className="flex-shrink mx-4 text-gray-300">
+                              or
+                            </span>
+                            <div className="flex-grow border-t border-gray-300"></div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              SetIsShowNewTemplateForm(!isShowNewTemplateForm)
+                            }
+                            className="text-gray-500 cursor-pointer hover:text-blue-500"
+                          >
+                            {!isShowNewTemplateForm
+                              ? "Create a new template"
+                              : "Select a template"}
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -285,6 +420,7 @@ export default function ProcessChains() {
                     <div className="mt-5 sm:mt-6">
                       <button
                         type="button"
+                        disabled={selectedHopTemplate === "" ? true : false}
                         onClick={(e) => handleBtnClick(e, "gotoProcessChain")}
                         className="inline-flex w-full justify-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                       >
