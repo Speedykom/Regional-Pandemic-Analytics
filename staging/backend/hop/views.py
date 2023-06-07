@@ -29,7 +29,6 @@ class ListHopAPIView(APIView):
     """
     This view returns the api response for the hop
     """
-
     def get_all_directory_files(self)-> List[str]:
       """Looks into the hops template, iterate over the files, append and return"""
       files: List[str] = []
@@ -147,7 +146,7 @@ class NewHopAPIView(APIView):
           return Response({'status': 'error', "message": '{} already exists'.format(filename)}, status=409)
         else:
           # replace the file storage from filestorage to minio
-          upload_file_to_minio("hop-bucket", file_obj)
+          # upload_file_to_minio("hop-bucket", file_obj)
           return Response({'status': 'success', "message": "template file uploaded successfully"}, status=200)
       else:
         # check if the filename does exist and throw error otherwise; save the file as it is
@@ -155,7 +154,7 @@ class NewHopAPIView(APIView):
           return Response({'status': 'error', "message": '{} already exists'.format(file_obj.name)}, status=409)
         else:
           # replace the file storage from filestorage to minio
-          upload_file_to_minio("hop-bucket", file_obj)
+          # upload_file_to_minio("hop-bucket", file_obj)
           return Response({'status': 'success', "message": "template file uploaded successfully"}, status=200)
     except MultiValueDictKeyError:
       return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)

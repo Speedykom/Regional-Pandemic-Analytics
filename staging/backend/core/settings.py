@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'storages',
-    'django_minio_backend'
+    # 'django_minio_backend'
 ]
 
 MIDDLEWARE = [
@@ -179,7 +179,7 @@ MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET")
 
 # EMAIL TRASMISSION SETTINGS
 
-EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'kom.speedy@gmail.com'
@@ -195,7 +195,8 @@ MINIO_REGION = 'us-east-1'  # Default is set to None
 MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
 MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
 MINIO_USE_HTTPS = False
-MINIO_URL_EXPIRY_HOURS = timedelta(days=1)  # Default is 7 days (longest) if not defined
+# Default is 7 days (longest) if not defined
+MINIO_URL_EXPIRY_HOURS = timedelta(days=1)
 MINIO_CONSISTENCY_CHECK_ON_START = True
 MINIO_PRIVATE_BUCKETS = [
     'avatars'
@@ -206,7 +207,8 @@ MINIO_PUBLIC_BUCKETS = [
 MINIO_POLICY_HOOKS: List[Tuple[str, dict]] = []
 # MINIO_MEDIA_FILES_BUCKET = 'my-media-files-bucket'  # replacement for MEDIA_ROOT
 # MINIO_STATIC_FILES_BUCKET = 'my-static-files-bucket'  # replacement for STATIC_ROOT
-MINIO_BUCKET_CHECK_ON_SAVE = True  # Default: True // Creates bucket if missing, then save
+# Default: True // Creates bucket if missing, then save
+MINIO_BUCKET_CHECK_ON_SAVE = True
 
 AWS_ACCESS_KEY_ID = MINIO_ACCESS_KEY
 AWS_SECRET_ACCESS_KEY = MINIO_SECRET_KEY
@@ -218,4 +220,3 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_REGION = "us-east-1"
 AWS_S3_SECURE_URLS = False
 AWS_S3_VERIFY = False
-
