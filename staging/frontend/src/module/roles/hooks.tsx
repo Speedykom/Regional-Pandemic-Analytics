@@ -8,7 +8,7 @@ import axios from "axios";
 import { OpenNotification } from "@/utils/notify";
 
 interface props {
-    edit: (id: string,name: string, description: string) => void;
+	edit: (id: string, name: string, description: string) => void;
 	del: () => void;
 	refetch: () => void;
 }
@@ -16,25 +16,35 @@ interface props {
 export const useRoles = ({ edit, del, refetch }: props) => {
 	const action = (id: string, name: string, description: string) => {
 		const deleteUser = async () => {
-			await axios.delete(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles/${id}/delete`, {
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			}).then((res) => {
-				refetch()
-				OpenNotification(res.data?.message, 'topRight', 'success')
-			}).catch((err) => {
-				OpenNotification(err.response?.data?.errorMessage, 'topRight', 'error')
-			})
-		}
+			await axios
+				.delete(
+					`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles/${id}/delete`,
+					{
+						headers: {
+							"Content-Type": "application/json",
+						},
+					}
+				)
+				.then((res) => {
+					refetch();
+					OpenNotification(res.data?.message, "topRight", "success");
+				})
+				.catch((err) => {
+					OpenNotification(
+						err.response?.data?.errorMessage,
+						"topRight",
+						"error"
+					);
+				});
+		};
 		return (
 			<Action>
 				<ul>
 					<li>
 						<button
 							onClick={(e) => {
-								e.preventDefault()
-								edit(id, name, description)
+								e.preventDefault();
+								edit(id, name, description);
 							}}
 							className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
 						>
@@ -49,6 +59,10 @@ export const useRoles = ({ edit, del, refetch }: props) => {
 							onConfirm={deleteUser}
 							okText="Yes"
 							cancelText="No"
+							okType="link"
+							okButtonProps={{
+								style: { backgroundColor: "#3f96ff", color: "white" },
+							}}
 						>
 							<button className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white">
 								<FiTrash className="mt-1" /> <span>Delete</span>
@@ -143,4 +157,13 @@ export const useRoles = ({ edit, del, refetch }: props) => {
 	];
 
 	return { columns, loading: false };
+};
+
+export const fetchRoles = async () => {
+	const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
+	return await axios.get(url).then((res) => {
+		return res.data;
+	}).catch((err) => {
+		console.log(err?.response)
+	});
 };
