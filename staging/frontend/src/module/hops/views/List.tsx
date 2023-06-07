@@ -55,8 +55,7 @@ export const HopList = () => {
       await axios
         .get(url, {
           headers: {
-            Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
-            // `Bearer ${token}`
+            Authorization: `Bearer ${token}`, // `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
           },
         })
         .then((res) => {

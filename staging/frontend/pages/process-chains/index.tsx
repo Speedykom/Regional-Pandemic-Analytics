@@ -17,6 +17,7 @@ import { UploadOutlined } from "@ant-design/icons";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { ShowMessage } from "@/components/ShowMessage";
 import { useCreateProcessMutation } from "@/redux/services/process";
+import { getData } from "@/utils";
 
 type FormValues = {
   dagName: string;
@@ -78,14 +79,26 @@ export default function ProcessChains() {
       .finally(() => setOpen(false));
   });
 
+  const [token, setToken] = useState<string>("");
+
+  const fetchToken = async () => {
+    try {
+      const url = "/api/get-access-token/";
+      const response = await getData(url);
+      setToken(response?.accessToken);
+      console.log(response?.accessToken);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   const fetchHops = async () => {
     try {
       const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/`;
       await axios
         .get(url, {
           headers: {
-            Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
-            // `Bearer ${token}`
+            Authorization: `Bearer ${token}`, // `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
           },
         })
         .then((res) => {
@@ -106,6 +119,7 @@ export default function ProcessChains() {
   };
 
   useMemo(() => {
+    fetchToken();
     fetchHops();
   }, []);
 
