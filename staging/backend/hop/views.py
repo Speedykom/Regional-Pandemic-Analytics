@@ -35,7 +35,11 @@ class ListHopAPIView(APIView):
     
       for filename in os.listdir(settings.HOP_FILES_DIR):
         if filename.endswith(".hpl"):
-          files.append(filename)
+          responseFormat = {
+            "name": filename,
+            "path": '{}/{}'.format(settings.HOP_FILES_DIR, filename)
+          }
+          files.append(responseFormat)
         else:
           continue
       
