@@ -4,4 +4,4 @@ from .models import FileUpload
 
 @admin.register(FileUpload)
 class FileUploadAdmin(admin.ModelAdmin):
-    list_display = ("username", "file_name", "file_type", "file", "date_added")
+    list_display = ("username", "file_name", "file", "date_added")
