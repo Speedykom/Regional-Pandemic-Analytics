@@ -5,7 +5,7 @@ import { appRoles, roles } from "@/utils/auth";
 export const LoadUsers = () => {
 	return (
 		<div>
-			{roles?.include(appRoles.ADMINISTRATOR) ? (
+			{roles?.includes(appRoles.ADMINISTRATOR) ? (
 				<DashboardFrame title="List(s) of Users">
 					<UserList />
 				</DashboardFrame>
