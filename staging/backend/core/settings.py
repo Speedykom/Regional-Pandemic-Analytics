@@ -146,11 +146,16 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        'anon': '100/day',
+        'anon': '5000/day',
         'user': '1000/day'
     },
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
 }
+
+# TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+
+# if TESTING:
+#   del REST_FRAMEWORK['DEFAULT_THROTTLE_RATES']
 
 CORS_ALLOW_ALL_ORIGINS = True
 

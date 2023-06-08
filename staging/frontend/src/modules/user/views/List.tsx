@@ -19,13 +19,14 @@ import {
 } from "antd";
 import { useUsers } from "../hooks";
 import { IUser } from "../interface";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AddUser123 } from "./AddUser";
 import axios from "axios";
 import { getData } from "@/utils";
 import { PreviewUser } from "./Preview";
 import { OpenNotification } from "@/utils/notify";
 import { countries } from "@/utils/countries";
+import { fetchRoles } from "../../roles/hooks";
 
 interface props {
 	viewPro: () => void;
@@ -72,6 +73,9 @@ export const UserList = () => {
 	const [data, setData] = useState<Array<IUser>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [code, setCode] = useState<string>("");
+	const [roles, setRoles] = useState([]);
+	const [role, setRole] = useState<string>("")
+	const [roleLoading, setRoleLoading] = useState(true)
 
 	const [view, setView] = useState<boolean>(false);
 	const [userId, setUserId] = useState<string>();
@@ -136,7 +140,6 @@ export const UserList = () => {
 		form.setFieldValue("code", code);
 		form.setFieldValue("phone", phone);
 		form.setFieldValue("country", country);
-		form.setFieldValue("avatar", avatar);
 		form.setFieldValue("gender", gender);
 		setCode(code);
 	};
@@ -157,7 +160,8 @@ export const UserList = () => {
 	};
 
 	const onFinish = async (values: any) => {
-		values['code'] = code;
+		values["code"] = code;
+		values["role"] = JSON.parse(values["role"])
 		await axios
 			.put(
 				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${userId}/update`,
@@ -190,9 +194,28 @@ export const UserList = () => {
 		/>
 	);
 
+	const fetchRoles = async () => {
+		try {
+			setRoleLoading(true)
+			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
+			await axios.get(url, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}).then((res) => {
+				setRoleLoading(false)
+				setRoles(res?.data);
+			})
+			
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
+
 	useEffect(() => {
+		fetchRoles();
 		fetchUsers();
-	}, []);
+	}, [])
 
 	const { columns } = useUsers({ edit, viewPro, refetch });
 	return (
@@ -357,19 +380,21 @@ export const UserList = () => {
 									required: true,
 									validator(rule, value, callback) {
 										if (value === "") {
-											callback('Please input your phone number')
+											callback("Please input your phone number");
+										} else if (!code) {
+											callback("Please select country code");
+										} else {
+											callback();
 										}
-										else if (!code) {
-											callback('Please select country code')
-										}
-										else {
-											callback()
-										}
-									}
+									},
 								},
 							]}
 						>
-							<Input addonBefore={selectBefore} placeholder="76293389" />
+							<Input
+								type="number"
+								addonBefore={selectBefore}
+								placeholder="76293389"
+							/>
 						</Form.Item>
 						<Form.Item
 							name="country"
@@ -391,6 +416,7 @@ export const UserList = () => {
 						</Form.Item>
 						<Form.Item
 							name={"gender"}
+							label="Gender"
 							rules={[
 								{
 									required: true,
@@ -412,6 +438,34 @@ export const UserList = () => {
 							tooltip="Toggle to enable or disable this user"
 						>
 							<Switch style={{ backgroundColor: "#8c8c8c" }} />
+						</Form.Item>
+						<Form.Item
+							name={"role"}
+							label="Role"
+							rules={[
+								{
+									required: true,
+									message: "Please select role",
+								},
+							]}
+						>
+							<Select
+								size="large"
+								value={role}
+								onChange={setRole}
+								showSearch
+								loading={roleLoading}
+								placeholder={"Select role"}
+								options={roles?.map((val: any, i: number) => {
+									return (
+										{
+											key: i,
+											value: JSON.stringify({ id: val?.id, name: val?.name }),
+											label: val?.name
+										}
+									)
+								})}
+							/>
 						</Form.Item>
 					</Form>
 					<Divider dashed={true} style={{ border: "1px solid gray" }} />
