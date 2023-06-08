@@ -88,7 +88,7 @@ PACKAGE_JSON_FILE = pkg_resources.resource_filename(
 '''
 curr  =  os.path.abspath(os.getcwd())
 AUTH_TYPE = AUTH_OID
-OIDC_CLIENT_SECRETS = curr + 'client_secret.json'
+OIDC_CLIENT_SECRETS = curr + 'app/superset/client_secret.json'
 OIDC_ID_TOKEN_COOKIE_SECURE = False
 OIDC_REQUIRE_VERIFIED_EMAIL = False
 OIDC_OPENID_REALM = 'regional-pandemic-analytics'

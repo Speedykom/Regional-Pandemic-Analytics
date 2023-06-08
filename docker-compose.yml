@@ -2,13 +2,13 @@ version: "3.4"
 
 x-superset-common:
   &superset
-    image: apache/superset
+    build: ./staging/superset/.
     environment:
       - SUPERSET_SECRET_KEY=uFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E
-    volumes:
-      - ./staging/superset/client_secret.json:/app/superset/client_secret.json
-      - ./staging/superset/security_manager.py:/app/superset/security_manager.py
-      - ./staging/superset/superset_config.py:/app/superset/superset_config.py
+    # volumes:
+    #   - ./staging/superset/client_secret.json:/app/superset/client_secret.json
+    #   - ./staging/superset/security_manager.py:/app/superset/security_manager.py
+    #   - ./staging/superset/config.py:/app/superset/config.py
 
 x-airflow-common:
   &airflow
