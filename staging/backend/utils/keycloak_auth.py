@@ -81,7 +81,5 @@ def create_keycloak_user ():
 
 def role_assign (userId: str, role_object: dict[str, str], headers: dict[str, str]):
     form_data = [role_object]
-    response = requests.post(url=f"{APP_USER_BASE_URL}/{userId}/role-mappings/realm", json=form_data, headers=headers)
-    if response.status_code != 200 or response.status_code != 201 or response.status_code != 204:
-        return False
+    requests.post(url=f"{APP_USER_BASE_URL}/{userId}/role-mappings/realm", json=form_data, headers=headers)
     return True
