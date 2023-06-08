@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { processApi } from "./services/process";
+import { processApi } from "../src/modules/process/process";
 
 export const store = configureStore({
   reducer: {
