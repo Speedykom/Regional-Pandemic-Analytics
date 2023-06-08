@@ -62,7 +62,8 @@ export default function LoginForm() {
           secureLocalStorage.setItem("user", payload);
           secureLocalStorage.setItem("passcode", Buffer.from(data.password).toString("base64"));
           secureLocalStorage.setItem("sua", "authenticated");
-
+          console.log({payload});
+          
           router.push("/dashboard/");
         }
       })
