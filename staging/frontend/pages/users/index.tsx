@@ -1,5 +1,5 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
-import { UserList } from "@/src/module/user/views/List";
+import { UserList } from "@/src/modules/user/views/List";
 
 export const LoadUsers = () => {
 	

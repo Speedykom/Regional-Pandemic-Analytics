@@ -1,5 +1,5 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
-import { RoleList } from "@/src/module/roles/views/List";
+import { RoleList } from "@/src/modules/roles/views/List";
 
 export const LoadRoles = () => {
 	

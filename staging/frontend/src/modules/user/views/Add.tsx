@@ -26,7 +26,6 @@ export const AddUser = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const [enabled, setEnabled] = useState(false);
 
 	const [form] = Form.useForm();
-	const router = useRouter();
 
 	const [token, setToken] = useState<string>("");
 
@@ -80,7 +79,6 @@ export const AddUser = ({ openDrawer, closeDrawer, refetch }: props) => {
 		} else {
 			setEnabled(true);
 		}
-		console.log({ enabled });
 	};
 
 	useEffect(() => {
