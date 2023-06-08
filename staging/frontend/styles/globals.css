@@ -12,3 +12,7 @@ iframe {
 .dag-btn:hover {
   color: white !important;
 }
+
+.ant-btn-primary {
+  background-color: #31713b;
+}
