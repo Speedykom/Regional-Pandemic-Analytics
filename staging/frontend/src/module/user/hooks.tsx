@@ -50,8 +50,8 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 					}
 				)
 				.then((res) => {
+					OpenNotification('User archived successfully', "topRight", "success");
 					refetch();
-					OpenNotification(res.data?.message, "topRight", "success");
 				})
 				.catch((err) => {
 					OpenNotification(err.response?.data, "topRight", "error");
@@ -90,6 +90,8 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 							onConfirm={deleteUser}
 							okText="Yes"
 							cancelText="No"
+							okType="link"
+							okButtonProps={{style: {backgroundColor: "#3f96ff", color: "white"}}}
 						>
 							<button className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white">
 								<FiTrash className="mt-1" /> <span>Delete</span>
@@ -111,7 +113,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 				<div className="flex items-center pr-1">
 					<div>
 						<div className="w-10 h-10 mr-3 overflow-hidden rounded-full flex items-center justify-center border border-gray-300">
-							<img src={record?.attributes?.avatar ? record?.attributes?.avatar[0] : '/avater.png'} className="w-full h-full" />
+							<img src={record?.attributes?.avatar && record?.attributes?.avatar[0] != "" ? record?.attributes?.avatar[0] : '/avater.png'} className="w-full h-full" />
 						</div>
 					</div>
 					<p className="font-sans">

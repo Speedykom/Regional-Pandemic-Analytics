@@ -41,3 +41,4 @@ export const processApi = createApi({
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const { useFindAllQuery, useFindOneQuery, useRunProcessMutation, useCreateProcessMutation, useEditAccessMutation } = processApi;
+

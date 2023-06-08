@@ -104,6 +104,7 @@ services:
       - "8000:8000"
     volumes:
       - ./staging/airflow/dags:/airflow/dags
+      - ./staging/hop/data-orch.list:/hop/data-orch.list
     environment:
       - DB_NAME=igad
       - DB_USER=igad
@@ -267,7 +268,8 @@ services:
     volumes:
       - ./staging/hop/pipelines:/files
       - ./staging/storage:/home
-      - ./staging/hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
+      - ./staging/hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
+    #   - ./staging/hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
   # =======
   # Airflow

@@ -7,6 +7,7 @@ import {
 	Drawer,
 	Form,
 	Input,
+	InputNumber,
 	Radio,
 	RadioChangeEvent,
 	Select,
@@ -16,6 +17,8 @@ import {
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { number, string } from "zod";
+import { fetchRoles } from "../../roles/hooks";
 
 interface props {
 	openDrawer: boolean;
@@ -48,12 +51,10 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const [enabled, setEnabled] = useState<boolean>(false);
 	const [emailVerified, setVerify] = useState<boolean>(false);
 	const [gender, setGender] = useState<string>();
+	const [roles, setRoles] = useState([])
+	const [roleLoading, setRoleLoading] = useState(true)
 
 	const [code, setCode] = useState<string>();
-
-	const onChangeCode = (value: string) => {
-		setCode(value);
-	};
 
 	const selectBefore = (
 		<Select
@@ -61,7 +62,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 			value={code}
 			onChange={setCode}
 			showSearch
-			placeholder="code"
+			placeholder="+232"
 			options={myCodeOptions}
 		/>
 	);
@@ -84,6 +85,9 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const onFinish = async (values: any) => {
 		values["enabled"] = enabled;
 		values["emailVerified"] = emailVerified;
+		values["code"] = code;
+		values["role"] = JSON.parse(values["role"])
+
 		await axios
 			.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user`, values, {
 				headers: {
@@ -126,8 +130,27 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 		setGender(value);
 	};
 
+	const fetchRoles = async () => {
+		try {
+			setRoleLoading(true)
+			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
+			await axios.get(url, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}).then((res) => {
+				setRoleLoading(false)
+				setRoles(res?.data);
+			})
+			
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
+
 	useEffect(() => {
 		fetchToken();
+		fetchRoles();
 	}, []);
 
 	return (
@@ -300,26 +323,6 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 							<label htmlFor="phone">Phone Number*</label>
 							<div className="flex items-center">
 								<Form.Item
-									name="code"
-									className="w-1/14"
-									rules={[
-										{
-											required: true,
-											message: "Please select country code",
-										},
-									]}
-								>
-									<Select
-										value={code}
-										onChange={setCode}
-										showSearch
-										placeholder={"+232"}
-										options={myCodeOptions}
-										className="mt-1"
-										size="large"
-									/>
-								</Form.Item>
-								<Form.Item
 									className="w-full"
 									name={"phone"}
 									rules={[
@@ -330,7 +333,8 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 									]}
 								>
 									<Input
-										// addonBefore={selectBefore}
+										type="number"
+										addonBefore={selectBefore}
 										size="large"
 										placeholder={"76293389"}
 										className="mt-1 bg-gray-50 w-full"
@@ -387,6 +391,37 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 											? "#8c8c8c"
 											: "cornflowerblue",
 									}}
+								/>
+							</Form.Item>
+						</div>
+
+						<div className="md:col-span-2">
+							<label htmlFor="role">Assign Role*</label>
+							<Form.Item
+								name={"role"}
+								rules={[
+									{
+										required: true,
+										message: "Please select role to be assigned",
+									},
+								]}
+							>
+								<Select
+									showSearch
+									id="role"
+									loading={roleLoading}
+									placeholder="select role"
+									size="large"
+									className="h-10 w-full mt-1 bg-gray-50"
+									options={roles?.map((val: any, i: number) => {
+										return (
+											{
+												key: i,
+												value: JSON.stringify({ id: val?.id, name: val?.name }),
+												label: val?.name
+											}
+										)
+									})}
 								/>
 							</Form.Item>
 						</div>
