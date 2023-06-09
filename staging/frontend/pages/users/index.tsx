@@ -6,7 +6,7 @@ import { UserList } from "@/src/modules/user/views/List";
 export const LoadUsers = () => {
 	const check: boolean = roles?.includes(appRoles.ADMINISTRATOR);
 	return (
-		<DashboardFrame title={check ? "List(s) of Users" : "Missing Permissions"}>
+		<DashboardFrame>
 			{check ? <UserList /> : <Unauthorised />}
 		</DashboardFrame>
 	);
