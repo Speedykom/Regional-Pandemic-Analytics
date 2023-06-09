@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @next/next/no-img-element */
 import { getData } from "@/utils";
 import {
 	CovertFromTimestampToDate,
@@ -16,15 +18,6 @@ interface props {
 export const PreviewUser = ({ openDrawer, closeDrawer, userId }: props) => {
 	const [data, setData] = useState<any>();
 	const [token, setToken] = useState<string>("");
-	const fetchToken = async () => {
-		try {
-			const url = "/api/get-access-token/";
-			const response = await getData(url);
-			setToken(response?.accessToken);
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
 
 	const fetchUser = async () => {
 		try {
@@ -43,6 +36,7 @@ export const PreviewUser = ({ openDrawer, closeDrawer, userId }: props) => {
 	useEffect(() => {
 		fetchUser();
 	}, []);
+	
 	return (
 		<Drawer
 			title={"User Profile"}

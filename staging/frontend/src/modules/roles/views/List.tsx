@@ -4,7 +4,7 @@ import {
 	PlusOutlined,
 	SaveOutlined,
 } from "@ant-design/icons";
-import { Button, Form, Input, Modal, Switch } from "antd";
+import { Button, Form, Input, Modal } from "antd";
 import { useRoles } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -126,6 +126,7 @@ export const RoleList = () => {
 	useEffect(() => {
 		fetchToken();
 		fetchRoles();
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const { columns } = useRoles({ edit, del, refetch });
