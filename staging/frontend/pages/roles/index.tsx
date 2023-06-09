@@ -6,7 +6,7 @@ import { appRoles, roles } from "@/utils/auth";
 export const LoadRoles = () => {
 	const check: boolean = roles?.includes(appRoles.ADMINISTRATOR);
 	return (
-		<DashboardFrame title={check ? "List(s) of Roles" : "Missing Permissions"}>
+		<DashboardFrame>
 			{check ? <RoleList /> : <Unauthorised />}
 		</DashboardFrame>
 	);
