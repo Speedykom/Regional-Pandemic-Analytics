@@ -36,7 +36,7 @@ export const IGADTable = ({
 	pagination,
 }: props) => {
 	return (
-		<div className="border p-1 rounded-lg">
+        <div className="border bg-white rounded-md p-1 mt-10">
 			<Table
 				className="cursor-pointer"
 				components={components}
