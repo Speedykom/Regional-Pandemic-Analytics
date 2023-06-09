@@ -73,10 +73,6 @@ urlpatterns = [
 
     # endpoint for uploading data
     path('data/upload/', DataUploadAPI.as_view()),
-<<<<<<< HEAD
-    path('account/upload/', views.upload_my_file.as_view()),
-=======
->>>>>>> e9e279db2e4409ef2aa59d633926e021e3852a75
 
     # ---------------------- End of Data Upload Endpoints -----------------------------------
 

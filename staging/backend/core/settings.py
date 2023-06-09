@@ -8,6 +8,9 @@ import dj_database_url
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
 
+# loggin formatter
+from core.log_formatters import CustomJsonFormatter
+
 env = environ.Env()
 # environ.Env.read_env()
 
@@ -79,7 +82,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
+DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "True") == "True"
 
 if DEVELOPMENT_MODE is True:
     DATABASES = {
@@ -162,6 +165,38 @@ CORS_ALLOW_ALL_ORIGINS = True
 CSRF_TRUSTED_ORIGINS = [
     'https://data2.igad-health.eu',
 ]
+
+# logging config
+LOGGING = {
+    'version': 1,
+    'disable_exising_loggers': True,
+
+    'formatters': {
+        'main_formatter': {
+            '()': CustomJsonFormatter,
+        },
+    },
+
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'main_formatter',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'info.log',
+            'formatter': 'main_formatter',
+        },
+    },
+
+    'loggers': {
+        'main': {
+            'handlers': ['console', 'file'],
+            'propagate': True,
+            'level': 'INFO',
+        },
+    },
+}
 
 KEYCLOAK_EXEMPT_URIS = []
 KEYCLOAK_CONFIG = {
