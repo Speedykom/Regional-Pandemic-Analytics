@@ -1,15 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { processApi } from "./services/process";
-import { hopReducer } from "./hop";
-import logger from 'redux-logger';
+import { processApi } from "../src/modules/process/process";
 
 export const store = configureStore({
   reducer: {
     [processApi.reducerPath]: processApi.reducer,
-    hopReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(processApi.middleware).concat(logger),
+    getDefaultMiddleware().concat(processApi.middleware),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

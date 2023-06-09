@@ -1,6 +1,6 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Process } from "../interface/process";
+import { Process } from "../../../redux/interface/process";
 
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -28,10 +28,10 @@ export const processApi = createApi({
       invalidatesTags: ["processes"],
     }),
     createProcess: builder.mutation<Process, string>({
-      query: (id) => ({
+      query: (body) => ({
         url: '/api/process',
         method: "POST",
-        body: {},
+        body: body,
       }),
       invalidatesTags: ["processes"],
     }),
@@ -40,4 +40,5 @@ export const processApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useFindAllQuery, useFindOneQuery, useRunProcessMutation, useEditAccessMutation, useCreateProcessMutation } = processApi;
+export const { useFindAllQuery, useFindOneQuery, useRunProcessMutation, useCreateProcessMutation, useEditAccessMutation } = processApi;
+

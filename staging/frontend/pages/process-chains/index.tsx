@@ -16,8 +16,9 @@ import { Button, Form, Input, message, Upload, Select, Tooltip } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { ShowMessage } from "@/components/ShowMessage";
-import { useCreateProcessMutation } from "@/redux/services/process";
 import { getData } from "@/utils";
+import { useCreateProcessMutation } from "@/src/modules/process/process";
+import { AddProcess } from "@/src/modules/process/views/add";
 
 type FormValues = {
   dagName: string;
@@ -201,7 +202,6 @@ export default function ProcessChains() {
 
   return (
     <DashboardFrame title="List(s) of Process Chains">
-      {/* trigger button */}
       <button
         onClick={(e) => handleBtnClick(e, "gotoHopTemplate")}
         className="px-3 py-1 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white"
