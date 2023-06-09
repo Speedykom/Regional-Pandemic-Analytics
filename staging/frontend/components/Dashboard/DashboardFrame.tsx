@@ -7,7 +7,7 @@ import Login from "@/pages/index";
 import { BiArrowBack } from "react-icons/bi";
 
 interface Props {
-  title: string;
+  title?: string;
   children: ReactNode;
   back?: boolean;
   onBackPress?: () => void;
