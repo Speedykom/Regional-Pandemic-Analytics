@@ -2,31 +2,31 @@ version: "3.4"
 
 x-superset-common:
   &superset
-    image: apache/superset
-    environment:
-      - SUPERSET_SECRET_KEY=uFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E
-    volumes:
-      - ./staging/superset/client_secret.json:/app/superset/client_secret.json
-      - ./staging/superset/security_manager.py:/app/superset/security_manager.py
-      - ./staging/superset/superset_config.py:/app/superset/superset_config.py
+  image: apache/superset
+  environment:
+    - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
+  volumes:
+    - ./staging/superset/client_secret.json:/app/superset/client_secret.json
+    - ./staging/superset/security_manager.py:/app/superset/security_manager.py
+    - ./staging/superset/superset_config.py:/app/superset/superset_config.py
 
 x-airflow-common:
   &airflow
   image: apache/airflow:2.5.2
   user: "0:0"
   environment:
-    - AIRFLOW__CORE__FERNET_KEY=UKMzEm3yIuFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E=
-    - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-    - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
-    - AIRFLOW__CORE__LOAD_EXAMPLES=False
-    - SQLALCHEMY_SILENCE_UBER_WARNING=1
-    - AIRFLOW_UID=0
-    - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-pg/airflow
-    - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=False
-    - _AIRFLOW_DB_UPGRADE=True
-    - _AIRFLOW_WWW_USER_CREATE=True
-    - _AIRFLOW_WWW_USER_USERNAME=airflow
-    - _AIRFLOW_WWW_USER_PASSWORD=airflow
+    - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW__CORE__FERNET_KEY}
+    - AIRFLOW__CORE__EXECUTOR=${AIRFLOW__CORE__EXECUTOR}
+    - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=${AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION}
+    - AIRFLOW__CORE__LOAD_EXAMPLES=${AIRFLOW__CORE__LOAD_EXAMPLES}
+    - SQLALCHEMY_SILENCE_UBER_WARNING=${SQLALCHEMY_SILENCE_UBER_WARNING}
+    - AIRFLOW_UID=${AIRFLOW_UID}
+    - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=${AIRFLOW__DATABASE__SQL_ALCHEMY_CONN}
+    - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=${AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS}
+    - _AIRFLOW_DB_UPGRADE=${_AIRFLOW_DB_UPGRADE}
+    - _AIRFLOW_WWW_USER_CREATE=${_AIRFLOW_WWW_USER_CREATE}
+    - _AIRFLOW_WWW_USER_USERNAME=${_AIRFLOW_WWW_USER_USERNAME}
+    - _AIRFLOW_WWW_USER_PASSWORD=${_AIRFLOW_WWW_USER_PASSWORD}
   volumes:
     - ./staging/airflow/dags:/opt/airflow/dags
     - ./staging/airflow/logs:/opt/airflow/logs
@@ -57,19 +57,22 @@ services:
     image: quay.io/minio/minio:RELEASE.2023-03-24T21-41-23Z
     container_name: storage
     command: minio server /data --console-address ":9090"
-    environment:
-        - MINIO_ROOT_USER=minio
-        - MINIO_ROOT_PASSWORD=minio@repan
+    env_file:
+      - ./staging/storage/.env
     ports:
-        - "9001:9000"
-        - "8887:9090"
+      - "9001:9000"
+      - "8887:9090"
     volumes:
-        - minio_data:/data
-  
+      - minio_data:/data
+
   # ========
   # Frontend
   # ========
   frontend:
+    env_file:
+      - ./staging/frontend/.env
+    environment:
+      - NEXT_PUBLIC_BASE_URL=http://backend:8000
     container_name: frontend
     build:
       context: ./staging/frontend
@@ -77,20 +80,20 @@ services:
     ports:
       - "3000:3000"
     restart: always
-    command: npm run start
-
-  # ========
-  # Backend
-  # ========
+    # command: npm run start
+    command: sh -c "npm run build && npm run start"
+    # ========
+    # Backend
+    # ========
   backend_db:
     image: postgres:14
     container_name: backend_db
     volumes:
       - backend_data:/var/lib/postgresql/data
     environment:
-      - POSTGRES_PASSWORD=igad
-      - POSTGRES_USER=igad
-      - POSTGRES_DB=igad
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
 
   backend:
     container_name: backend
@@ -106,11 +109,11 @@ services:
       - ./staging/airflow/dags:/airflow/dags
       - ./staging/hop/data-orch.list:/hop/data-orch.list
     environment:
-      - DB_NAME=igad
-      - DB_USER=igad
-      - DB_PASSWORD=igad
-      - DB_HOST=backend_db
-      - DB_PORT=5432
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
 
   # =======
   #  Druid
@@ -271,9 +274,9 @@ services:
       - ./staging/hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
     #   - ./staging/hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
-  # =======
-  # Airflow
-  # =======
+    # =======
+    # Airflow
+    # =======
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg

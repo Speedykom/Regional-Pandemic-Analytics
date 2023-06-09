@@ -17,19 +17,19 @@ from airflow.www.security import AirflowSecurityManager
 basedir = os.path.abspath(os.path.dirname(__file__))
 log = logging.getLogger(__name__)
 
-PROVIDER_NAME = 'keycloak'
-CLIENT_ID = 'airflow'
-CLIENT_SECRET = 'JQhOECE95K8xlKYBtTkAUnzP554BLano'
+PROVIDER_NAME = os.getenv("PROVIDER_NAME")
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 
-OIDC_ISSUER = 'https://auth2.igad-health.eu/realms/regional-pandemic-analytics'
-KEYCLOAK_BASE_URL = 'https://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect'
-KEYCLOAK_TOKEN_URL = 'https://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect/token'
-KEYCLOAK_AUTH_URL = 'https://auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect/auth'
+OIDC_ISSUER = os.getenv("OIDC_ISSUER")
+KEYCLOAK_BASE_URL = os.getenv("KEYCLOAK_BASE_URL")
+KEYCLOAK_TOKEN_URL = os.getenv("KEYCLOAK_TOKEN_URL")
+KEYCLOAK_AUTH_URL = os.getenv("KEYCLOAK_TOKEN_URL")
 
 AUTH_TYPE = AUTH_OAUTH
-AUTH_USER_REGISTRATION = True
-AUTH_USER_REGISTRATION_ROLE = "Public"
-AUTH_ROLES_SYNC_AT_LOGIN = True
+AUTH_USER_REGISTRATION = os.getenv("AUTH_USER_REGISTRATION")
+AUTH_USER_REGISTRATION_ROLE = os.getenv("AUTH_USER_REGISTRATION_ROLE")
+AUTH_ROLES_SYNC_AT_LOGIN = os.getenv("AUTH_ROLES_SYNC_AT_LOGIN")
 
 AUTH_ROLES_MAPPING = {
   "airflow_admin": ["Admin"],
