@@ -1,6 +1,5 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
 import { useEffect, useState } from "react";
-import { embedDashboard } from "@superset-ui/embedded-sdk";
 import ListDashboards, {
   IListDashboardsProps,
 } from "@/components/Superset/ListDashboards";

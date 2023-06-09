@@ -1,5 +1,5 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
-import { HopList } from "@/src/module/hops/views/List";
+import { HopList } from "@/src/modules/hops/views/List";
 
 export const LoadHops = () => {
   return (
