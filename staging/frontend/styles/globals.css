@@ -13,6 +13,6 @@ iframe {
   color: white !important;
 }
 
-.ant-btn-primary {
+.ant-btn-primary, .bg-prim {
   background-color: #31713b;
 }
