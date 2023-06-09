@@ -20,7 +20,6 @@ export default async function handler(
     password,
   });
 
-
   try {
     const response = await axios.post(`${server_url}/api/accounts/auth/`, body, {
       headers: { 'Content-Type': 'application/json' },
@@ -38,6 +37,7 @@ export default async function handler(
       secure: process.env.NODE_ENV !== 'development',
       path: '/',
     });
+    
     setCookie('refresh', response?.data?.refresh_token, {
       req,
       res,
@@ -49,7 +49,6 @@ export default async function handler(
     });
     return res.status(200).json({ result: response.data });
   } catch (error: unknown) {
-    console.log(error)
     return res.status(500).json({ result: 'Internal server error' });
   }
 }

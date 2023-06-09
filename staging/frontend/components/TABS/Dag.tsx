@@ -3,7 +3,7 @@ import {
   useEditAccessMutation,
   useFindAllQuery,
   useRunProcessMutation,
-} from "@/redux/services/process";
+} from "@/src/modules/process/process";
 import { Button, Table } from "antd";
 import { ColumnsType } from "antd/es/table";
 import LoadData from "./upload";
