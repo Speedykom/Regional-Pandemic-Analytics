@@ -2,13 +2,13 @@ version: "3.4"
 
 x-superset-common:
   &superset
-    image: apache/superset
-    environment:
-      - SUPERSET_SECRET_KEY=uFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E
-    volumes:
-      - ./staging/superset/client_secret.json:/app/superset/client_secret.json
-      - ./staging/superset/security_manager.py:/app/superset/security_manager.py
-      - ./staging/superset/superset_config.py:/app/superset/superset_config.py
+  image: apache/superset
+  environment:
+    - SUPERSET_SECRET_KEY=uFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E
+  volumes:
+    - ./staging/superset/client_secret.json:/app/superset/client_secret.json
+    - ./staging/superset/security_manager.py:/app/superset/security_manager.py
+    - ./staging/superset/superset_config.py:/app/superset/superset_config.py
 
 x-airflow-common:
   &airflow
@@ -58,19 +58,36 @@ services:
     container_name: storage
     command: minio server /data --console-address ":9090"
     environment:
-        - MINIO_ROOT_USER=minio
-        - MINIO_ROOT_PASSWORD=minio@repan
+      - MINIO_ROOT_USER=minio
+      - MINIO_ROOT_PASSWORD=minio@repan
     ports:
-        - "9001:9000"
-        - "8887:9090"
+      - "9001:9000"
+      - "8887:9090"
     volumes:
-        - minio_data:/data
-  
+      - minio_data:/data
+
   # ========
   # Frontend
   # ========
   frontend:
     container_name: frontend
+    environment:
+      - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
+      - NEXT_PUBLIC_AIRFLOW_URL=${FRONTEND_NEXT_PUBLIC_AIRFLOW_URL}
+      - NEXT_PUBLIC_AIRFLOW_USERNAME=${FRONTEND_NEXT_PUBLIC_AIRFLOW_USERNAME}
+      - NEXT_PUBLIC_AIRFLOW_PASSWORD=${FRONTEND_NEXT_PUBLIC_AIRFLOW_PASSWORD}
+      - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
+      - NEXTAUTH_SECRET=${FRONTEND_NEXTAUTH_SECRET}
+      - SUPERSET_USERNAME=${FRONTEND_SUPERSET_USERNAME}
+      - SUPERSET_PASSWORD=${FRONTEND_SUPERSET_PASSWORD}
+      - SUPERSET_URL=${FRONTEND_SUPERSET_URL}
+      - SUPERSET_GUEST_USERNAME=${FRONTEND_SUPERSET_GUEST_USERNAME}
+      - SUPERSET_GUEST_FIRSTNAME=${FRONTEND_SUPERSET_GUEST_FIRSTNAME}
+      - SUPERSET_GUEST_LASTNAME=${FRONTEND_SUPERSET_GUEST_LASTNAME}
+      - NEXT_PUBLIC_KEYCLOACK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOACK_CLIENT_ID}
+      - NEXT_PUBLIC_KEYCLOACK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOACK_REALM}
+      - NEXT_PUBLIC_KEYCLOACK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOACK_URL}
+      - NEXT_HOP_UI=${FRONTEND_NEXT_HOP_UI}
     build:
       context: ./staging/frontend
       dockerfile: Dockerfile
@@ -106,11 +123,46 @@ services:
       - ./staging/airflow/dags:/airflow/dags
       - ./staging/hop/data-orch.list:/hop/data-orch.list
     environment:
-      - DB_NAME=igad
-      - DB_USER=igad
-      - DB_PASSWORD=igad
-      - DB_HOST=backend_db
-      - DB_PORT=5432
+      - KEYCLOAK_ADMIN_CLIENT_ID=${BACKEND_KEYCLOAK_ADMIN_CLIENT_ID}
+      - KEYCLOAK_ADMIN_CLIENT_SECRET=${BACKEND_KEYCLOAK_ADMIN_CLIENT_SECRET}
+      - KEYCLOAK_ADMIN_AUTH_URL=${BACKEND_KEYCLOAK_ADMIN_AUTH_URL}
+      - KEYCLOAK_ADMIN_USERNAME=${BACKEND_KEYCLOAK_ADMIN_USERNAME}
+      - KEYCLOAK_ADMIN_PASSWORD=${BACKEND_KEYCLOAK_ADMIN_PASSWORD}
+      - APP_REALM=${BACKEND_APP_REALM}
+      - APP_CLIENT_ID=${BACKEND_APP_CLIENT_ID}
+      - APP_CLIENT_UUID=${BACKEND_APP_CLIENT_UUID}
+      - APP_CLIENT_SECRET=${BACKEND_APP_CLIENT_SECRET}
+      - APP_USER_BASE_URL=${BACKEND_APP_USER_BASE_URL}
+      - BASE_URL=${BACKEND_BASE_URL}
+      - APP_SECRET_KEY=${BACKEND_APP_SECRET_KEY}
+      - APP_USER_ROLES=${BACKEND_APP_USER_ROLES}
+      - CLIENT_ID=${BACKEND_CLIENT_ID}
+      - CLIENT_SECRET=${BACKEND_CLIENT_SECRET}
+      - KEYCLOAK_REALM=${BACKEND_KEYCLOAK_REALM}
+      - KEYCLOAK_SERVER_URL=${BACKEND_KEYCLOAK_SERVER_URL}
+      - REST_REDIRECT_URI=${BACKEND_REST_REDIRECT_URI}
+      - MINIO_URL=${BACKEND_MINIO_URL}
+      - MINIO_ACCESS_KEY=${BACKEND_MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${BACKEND_MINIO_SECRET_KEY}
+      - MINIO_BUCKET=${BACKEND_MINIO_BUCKET}
+      - AVATAR_BASE_URL=${BACKEND_AVATAR_BASE_URL}
+      - MAIL_MAILER=${BACKEND_MAIL_MAILER}
+      - MAIL_HOST=${BACKEND_MAIL_HOST}
+      - MAIL_PORT=${BACKEND_MAIL_PORT}
+      - MAIL_SENDER=${BACKEND_MAIL_SENDER}
+      - MAIL_USER=${BACKEND_MAIL_USER}
+      - MAIL_PASSWORD=${BACKEND_MAIL_PASSWORD}
+      - MAIL_ENCRYPTION=${BACKEND_MAIL_ENCRYPTION}
+      - MAIL_FROM_NAME=${BACKEND_MAIL_FROM_NAME}
+      - DATABASE_URL=${BACKEND_DATABASE_URL}
+      - AIRFLOW_API=${BACKEND_AIRFLOW_API}
+      - AIRFLOW_USER=${BACKEND_AIRFLOW_USER}
+      - AIRFLOW_PASSWORD=${BACKEND_AIRFLOW_PASSWORD}
+      - DB_NAME=${BACKEND_DB_NAME}
+      - DB_USER=${BACKEND_DB_USER}
+      - DB_PASSWORD=${BACKEND_DB_PASSWORD}
+      - DB_HOST=${BACKEND_DB_HOST}
+      - DB_PORT=${BACKEND_DB_PORT}
 
   # =======
   #  Druid
@@ -271,9 +323,9 @@ services:
       - ./staging/hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
     #   - ./staging/hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
-  # =======
-  # Airflow
-  # =======
+    # =======
+    # Airflow
+    # =======
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg
