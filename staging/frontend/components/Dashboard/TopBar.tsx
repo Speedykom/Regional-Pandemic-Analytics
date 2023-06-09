@@ -161,7 +161,7 @@ export default function TopBar({ showNav, setShowNav }: props) {
 								<img
 									src={profile && profile?.avatar ? profile?.avatar : '/avater.png'}
 									className="rounded-full h-8 md:mr-4 border-2 border-white shadow-sm"
-									alt="profile picture"
+									alt="avat"
 								/>
 							</picture>
 							<span className="hidden md:block font-medium text-gray-700">
