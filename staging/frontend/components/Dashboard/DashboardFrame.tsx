@@ -62,15 +62,9 @@ export default function DashboardFrame({
 
   return (
     <Layout>
-      <div className="flex items-center space-x-5 py-10">
-        {back ? (
-          <button onClick={onBackPress}>
-            <BiArrowBack className="text-2xl" />
-          </button>
-        ) : null}
-        <p className="text-gray-700 text-3xl font-bold mt-2">{title}</p>
-      </div>
+      <div className="pt-10">
       {children}
+      </div>
     </Layout>
   );
 }
