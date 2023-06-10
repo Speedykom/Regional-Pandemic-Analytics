@@ -1,9 +1,7 @@
-import { CreatePassword } from "@/src/module/user/views/create-password";
 import { OpenNotification } from "@/utils/notify";
 import { Button, Form, Input } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
 
 export const ResetPassword = () => {
 	const router = useRouter();

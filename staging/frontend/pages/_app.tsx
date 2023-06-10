@@ -5,7 +5,8 @@ import { AppProps } from "next/app";
 import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Provider } from "react-redux";
-import { store } from "@/redux/store";
+import { store } from "@/src/redux/store";
+import { ConfigProvider } from "antd";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -17,8 +18,18 @@ export default function App({ Component, pageProps }: AppProps) {
       }}
     >
       <Provider store={store}>
-        <Component {...pageProps} />
-        <ToastContainer />
+        <ConfigProvider
+          theme={{
+            components: {},
+            token: {
+              colorPrimary: "#31713b",
+              fontSize: 14,
+            },
+          }}
+        >
+          <Component {...pageProps} />
+          <ToastContainer />
+        </ConfigProvider>
       </Provider>
     </SWRConfig>
   );
