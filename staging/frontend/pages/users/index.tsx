@@ -1,11 +1,13 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
-import { UserList } from "@/src/module/user/views/List";
+import { Unauthorised } from "@/components/common/unauth";
+import { appRoles, roles } from "@/utils/auth";
+import { UserList } from "@/src/modules/user/views/List";
 
 export const LoadUsers = () => {
-	
+	const check: boolean = roles?.includes(appRoles.ADMINISTRATOR);
 	return (
-		<DashboardFrame title="List(s) of Users">
-			<UserList />
+		<DashboardFrame>
+			{check ? <UserList /> : <Unauthorised />}
 		</DashboardFrame>
 	);
 };

@@ -10,7 +10,6 @@ import {
 	Form,
 	Input,
 	Modal,
-	Popconfirm,
 	Radio,
 	Select,
 	SelectProps,
@@ -231,8 +230,6 @@ export const UserList = () => {
 					<div>
 						<Button
 							type="primary"
-							className="flex items-center bg-green-700 hover:bg-green-700"
-							size="large"
 							icon={<PlusOutlined />}
 							onClick={(e) => {
 								e.preventDefault();

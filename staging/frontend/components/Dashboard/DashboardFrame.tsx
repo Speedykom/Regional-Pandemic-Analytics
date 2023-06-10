@@ -7,7 +7,7 @@ import Login from "@/pages/index";
 import { BiArrowBack } from "react-icons/bi";
 
 interface Props {
-  title: string;
+  title?: string;
   children: ReactNode;
   back?: boolean;
   onBackPress?: () => void;
@@ -49,6 +49,7 @@ export default function DashboardFrame({
     } else {
       setIsLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading) {
@@ -61,15 +62,9 @@ export default function DashboardFrame({
 
   return (
     <Layout>
-      <div className="flex items-center space-x-5 mb-8">
-        {back ? (
-          <button onClick={onBackPress}>
-            <BiArrowBack className="text-2xl" />
-          </button>
-        ) : null}
-        <p className="text-gray-700 text-3xl font-bold mt-2">{title}</p>
-      </div>
+      <div className="pt-10">
       {children}
+      </div>
     </Layout>
   );
 }

@@ -1,6 +1,6 @@
 import { Button, Collapse, Form, Input } from "antd";
 import { AppDrawer } from "../AppDrawer";
-import { useFindOneQuery } from "@/redux/services/process";
+import { useFindOneQuery } from "@/src/modules/process/process";
 import { Loader } from "../Loader";
 
 interface prop {

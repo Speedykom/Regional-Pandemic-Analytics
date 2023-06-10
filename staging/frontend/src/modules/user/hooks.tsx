@@ -85,8 +85,8 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 					<li>
 						<Popconfirm
 							placement="left"
-							title={"Delete User"}
-							description={"Are you sure you want to delete this user"}
+							title={"Disable User"}
+							description={"Are you sure you want to disable this user"}
 							onConfirm={deleteUser}
 							okText="Yes"
 							cancelText="No"
@@ -94,7 +94,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 							okButtonProps={{style: {backgroundColor: "#3f96ff", color: "white"}}}
 						>
 							<button className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white">
-								<FiTrash className="mt-1" /> <span>Delete</span>
+								<FiTrash className="mt-1" /> <span>Disable User</span>
 							</button>
 						</Popconfirm>
 					</li>
