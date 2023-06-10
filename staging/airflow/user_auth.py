@@ -9,14 +9,15 @@ from airflow.www.fab_security.sqla.models import User
 import logging
 import jwt
 import requests
+import os
 from base64 import b64decode
 from cryptography.hazmat.primitives import serialization
 
 CLIENT_AUTH: tuple[str, str] | Any | None = None
 log = logging.getLogger(__name__)
 
-CLIENT_ID = 'airflow'
-OIDC_ISSUER = 'https://auth2.igad-health.eu/realms/regional-pandemic-analytics'
+CLIENT_ID = os.getenv("CLIENT_ID")
+OIDC_ISSUER = os.getenv("OIDC_ISSUER")
 
 req = requests.get(OIDC_ISSUER)
 key_der_base64 = req.json()["public_key"]
