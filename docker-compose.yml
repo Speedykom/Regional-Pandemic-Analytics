@@ -5,10 +5,12 @@ x-superset-common:
   image: apache/superset
   environment:
     - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
-  volumes:
-    - ./staging/superset/client_secret.json:/app/superset/client_secret.json
-    - ./staging/superset/security_manager.py:/app/superset/security_manager.py
-    - ./staging/superset/superset_config.py:/app/superset/superset_config.py
+  build: ./staging/superset/.
+  # volumes:
+  #   - ./staging/superset/client_secret.json:/app/superset/client_secret.json
+  #   - ./staging/superset/security_manager.py:/app/superset/security_manager.py
+  #   - ./staging/superset/superset_config.py:/app/superset/superset_config.py
+
 x-druid-common:
   &druid
   environment:

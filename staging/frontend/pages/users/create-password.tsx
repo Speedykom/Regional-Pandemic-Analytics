@@ -1,5 +1,5 @@
-import { CreatePassword } from "@/src/module/user/views/create-password";
-import { LinkExpired } from "@/src/module/user/views/link-expired";
+import { CreatePassword } from "@/src/modules/user/views/create-password";
+import { LinkExpired } from "@/src/modules/user/views/link-expired";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
