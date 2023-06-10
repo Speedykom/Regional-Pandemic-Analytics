@@ -186,7 +186,7 @@ class CreateUserAPI(APIView):
 
         if assign_role: 
             return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_201_CREATED)
-        return Response({'errorMessage': 'Role was not assigned'}, status=status.HTTP_201_CREATED)
+        return Response({'errorMessage': 'Role was not assigned'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UpdateUserAPI(APIView):
@@ -257,11 +257,9 @@ class UpdateUserAPI(APIView):
         if res.status_code != 204:
             return Response(res.reason, status=res.status_code)
         
-        assign_role = role_assign(kwargs['id'], request.data.get("role", dict[str, str]), headers)
+        _ = role_assign(kwargs['id'], request.data.get("role", dict[str, str]), headers)
 
-        if assign_role: 
-            return Response({'message': 'Account details updated successfully'}, status=status.HTTP_200_OK)
-        return Response({'errorMessage': 'Role was not assigned'}, status=status.HTTP_200_OK)
+        return Response({'message': 'Account details updated successfully'}, status=status.HTTP_200_OK)
 
 
 class ListUsersAPI(APIView):

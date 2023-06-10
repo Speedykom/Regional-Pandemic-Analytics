@@ -4,7 +4,7 @@ type NotificationType = 'success' | 'info' | 'warning' | 'error';
 
 export const ShowMessage = (type: NotificationType, message: string) => {
   notification[type]({
-    message: "RePAN",
+    message: "Regional Pandemic",
     description: message
   });
 };

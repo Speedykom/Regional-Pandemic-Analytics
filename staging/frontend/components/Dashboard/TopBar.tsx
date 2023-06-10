@@ -18,7 +18,7 @@ import Link from "next/link";
 import secureLocalStorage from "react-secure-storage";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { PreviewUser } from "@/src/module/user/views/Preview";
+import { PreviewUser } from "@/src/modules/user/views/Preview";
 
 interface props {
 	showNav: boolean;
@@ -161,7 +161,7 @@ export default function TopBar({ showNav, setShowNav }: props) {
 								<img
 									src={profile && profile?.avatar ? profile?.avatar : '/avater.png'}
 									className="rounded-full h-8 md:mr-4 border-2 border-white shadow-sm"
-									alt="profile picture"
+									alt="avat"
 								/>
 							</picture>
 							<span className="hidden md:block font-medium text-gray-700">

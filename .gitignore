@@ -9,6 +9,8 @@
 /frontend
 /backend
 
+.vscode/
+
 venv/
 /venv/
 
