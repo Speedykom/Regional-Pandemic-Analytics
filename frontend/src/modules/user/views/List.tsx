@@ -1,4 +1,4 @@
-import { IGADTable } from "@/components/common/table";
+import { IGADTable } from "@/src/components/common/table";
 import {
 	DeleteColumnOutlined,
 	PlusOutlined,
@@ -220,7 +220,7 @@ export const UserList = () => {
 	return (
 		<div className="">
 			<nav>
-				<div className="flex justify-between">
+				<div className="flex justify-between items-center">
 					<div>
 						<h2 className="text-3xl">App Accounts</h2>
 						<p className="my-2 text-gray-600">
@@ -230,7 +230,7 @@ export const UserList = () => {
 					<div>
 						<Button
 							type="primary"
-							icon={<PlusOutlined />}
+							size="large"
 							onClick={(e) => {
 								e.preventDefault();
 								setOpen(true);
