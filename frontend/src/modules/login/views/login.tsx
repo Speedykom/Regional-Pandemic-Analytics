@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { Button, Checkbox, Form, Input } from "antd";
 import { useState } from "react";
 import { useLoginMutation } from "../login";
-import { ShowMessage } from "@/components/ShowMessage";
+import { ShowMessage } from "@/src/components/ShowMessage";
 import jwt_decode from "jwt-decode";
 import secureLocalStorage from "react-secure-storage";
 import axios from "axios";
@@ -53,7 +53,7 @@ export default function LoginForm() {
         <title>Regional Pandemic Analytics Tool | Welcome</title>
       </Head>
       <div className="flex min-h-screen bg-gray-50 items-center justify-center">
-        <div className="bg-white flex w-4/6 shadow-lg rounded-xl overflow-hidden">
+        <div className="bg-white flex w-3/5 shadow-lg rounded-xl overflow-hidden">
           <div className="w-1/2 p-10 pt-5">
             <div className="text-center mb-2">
               <Image
@@ -75,7 +75,6 @@ export default function LoginForm() {
               <div>
                 <Form.Item
                   name="username"
-                  label="Username"
                   rules={[
                     {
                       required: true,
@@ -92,7 +91,6 @@ export default function LoginForm() {
               </div>
               <Form.Item
                 name="password"
-                label="Password"
                 rules={[
                   {
                     required: true,

@@ -1,12 +1,12 @@
-import DashboardFrame from "@/components/Dashboard/DashboardFrame";
+import DashboardFrame from "@/src/components/Dashboard/DashboardFrame";
 import React, { useState } from "react";
 import { AddProcess } from "@/src/modules/process/views/add";
 import { Button, Table } from "antd";
-import LoadData from "@/components/TABS/upload";
-import { ViewDag } from "@/components/Dag/ViewDag";
+import LoadData from "@/src/components/TABS/upload";
+import { ViewDag } from "@/src/components/Dag/ViewDag";
 import { useProcessChainList } from "../hooks";
 import { PlusOutlined } from "@ant-design/icons";
-import { IGADTable } from "@/components/common/table";
+import { IGADTable } from "@/src/components/common/table";
 
 export default function ProcessChinList() {
   const [addProcess, setProcess] = useState(false);
@@ -50,7 +50,7 @@ export default function ProcessChinList() {
   return (
     <>
       <DashboardFrame>
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl">Process Chain</h2>
             <p className="my-2 text-gray-600">
@@ -62,7 +62,6 @@ export default function ProcessChinList() {
               onClick={() => openAdd()}
               type="primary"
               size="large"
-              icon={<PlusOutlined />}
             >
               Add Process Chain
             </Button>
