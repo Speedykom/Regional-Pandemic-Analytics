@@ -32,7 +32,7 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
         newTags,
         {
           headers: {
-            Authorization: `Bearer ${token}`, //`Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
+            Authorization: `Token 00716f5dbc217da0ffe3ac2198cbfa7bcde5e201`, // `Bearer ${token}`, //
             "Content-Type": "application/json; charset=utf-8",
           },
         }
@@ -89,7 +89,7 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
   };
 
   useEffect(() => {
-    fetchToken();
+    // fetchToken();
   }, []);
 
   const customTheme = {
@@ -209,7 +209,7 @@ export async function getServerSideProps({ params }: any) {
   await axios
     .get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/${params.title}`, {
       headers: {
-        Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
+        Authorization: `Token 00716f5dbc217da0ffe3ac2198cbfa7bcde5e201`,
         "Content-Type": "application/xml; charset=utf-8",
         // `Bearer ${token}`
       },

@@ -55,7 +55,8 @@ export const HopList = () => {
       await axios
         .get(url, {
           headers: {
-            Authorization: `Bearer ${token}`, // `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
+            Authorization: `Token 00716f5dbc217da0ffe3ac2198cbfa7bcde5e201`,
+            // `Bearer ${token}`, //
           },
         })
         .then((res) => {
@@ -114,7 +115,7 @@ export const HopList = () => {
   };
 
   useEffect(() => {
-    fetchToken();
+    // fetchToken();
     fetchHops();
   }, []);
 
@@ -187,11 +188,7 @@ export const HopList = () => {
             </p>
           </div>
           <div>
-            <Button
-              type="primary"
-              size="large"
-              onClick={showModal}
-            >
+            <Button type="primary" size="large" onClick={showModal}>
               Upload Template
             </Button>
           </div>
