@@ -3,10 +3,10 @@ import { setCookie } from 'cookies-next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(
-    req: NextApiRequest,
-    res: NextApiResponse
+  req: NextApiRequest,
+  res: NextApiResponse
 ) {
-  const server_url = process.env.NEXT_PUBLIC_BASE_URL;
+  const server_url = process.env.NEXT_PUBLIC_AUTH_URL;
 
   if (req.method !== 'POST') {
     return res.status(405).send(`Method ${req.method} not allowed`);
@@ -14,16 +14,19 @@ export default async function handler(
 
   const { username, password } = req.body;
 
-
   const body = JSON.stringify({
     username,
     password,
   });
 
   try {
-    const response = await axios.post(`${server_url}/api/accounts/auth/`, body, {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    const response = await axios.post(
+      `${server_url}/api/accounts/auth/`,
+      body,
+      {
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
 
     if (response.status !== 200)
       return res.status(response.status).json({ result: 'error logging in' });
@@ -37,7 +40,7 @@ export default async function handler(
       secure: process.env.NODE_ENV !== 'development',
       path: '/',
     });
-    
+
     setCookie('refresh', response?.data?.refresh_token, {
       req,
       res,
