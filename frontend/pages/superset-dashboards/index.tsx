@@ -1,8 +1,8 @@
-import DashboardFrame from "@/components/Dashboard/DashboardFrame";
+import DashboardFrame from "@/src/components/Dashboard/DashboardFrame";
 import { useEffect, useState } from "react";
 import ListDashboards, {
   IListDashboardsProps,
-} from "@/components/Superset/ListDashboards";
+} from "@/src/components/Superset/ListDashboards";
 import { getData } from "@/utils";
 import axios from "axios";
 

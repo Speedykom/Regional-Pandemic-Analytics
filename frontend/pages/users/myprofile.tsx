@@ -1,4 +1,4 @@
-import DashboardFrame from "@/components/Dashboard/DashboardFrame";
+import DashboardFrame from "@/src/components/Dashboard/DashboardFrame";
 import { countries } from "@/utils/countries";
 import { OpenNotification } from "@/utils/notify";
 import {

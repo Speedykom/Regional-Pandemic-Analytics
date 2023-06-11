@@ -1,8 +1,8 @@
-import DashboardFrame from "@/components/Dashboard/DashboardFrame";
+import DashboardFrame from "@/src/components/Dashboard/DashboardFrame";
 import { useEffect, useState } from "react";
 import { getData } from "@/utils";
 import axios from "axios";
-import ListCharts, { TChartData } from "@/components/Superset/ListCharts";
+import ListCharts, { TChartData } from "@/src/components/Superset/ListCharts";
 
 export default function Charts() {
   const [data, setData] = useState<TChartData>({ count: 0, result: [] });
