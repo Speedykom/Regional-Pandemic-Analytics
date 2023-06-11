@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { Button, Modal } from "antd";
+import { Button, Modal, Card, Col, Row } from "antd";
 
 const SelectHop = ({ openModal, parentCallback }: any) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   const showModal = () => {
     setOpen(true);
@@ -22,7 +22,8 @@ const SelectHop = ({ openModal, parentCallback }: any) => {
     <>
       <Modal
         open={openModal}
-        title="Title"
+        title="Select an hop template to continue"
+        width={800}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
@@ -34,11 +35,41 @@ const SelectHop = ({ openModal, parentCallback }: any) => {
           </Button>,
         ]}
       >
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
+        <Row gutter={16} className="my-5">
+          <Col span={8}>
+            <Card
+              title="Card title"
+              bordered={true}
+              headStyle={{ color: "#16a34a" }}
+              hoverable
+              className="border-2 border-gray-300 hover:border-green-800 cursor-pointer"
+            >
+              Card content
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card
+              title="Card title"
+              bordered={true}
+              headStyle={{ color: "#16a34a" }}
+              hoverable
+              className="border-2 border-gray-300 hover:border-green-800 cursor-pointer"
+            >
+              Card content
+            </Card>
+          </Col>
+          <Col span={8}>
+            <Card
+              title="Card title"
+              bordered={true}
+              headStyle={{ color: "#16a34a" }}
+              hoverable
+              className="border-2 border-gray-300 hover:border-green-800 cursor-pointer"
+            >
+              Card content
+            </Card>
+          </Col>
+        </Row>
       </Modal>
     </>
   );
