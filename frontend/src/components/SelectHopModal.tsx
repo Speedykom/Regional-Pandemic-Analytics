@@ -36,66 +36,20 @@ const SelectHop = ({ openModal, parentCallback, hopData }: any) => {
         ]}
       >
         <Row gutter={[16, 16]} className="my-5">
-          <Col span={8}>
-            <Card
-              title="Card title"
-              bordered={true}
-              headStyle={{ color: "#16a34a" }}
-              hoverable
-              size="small"
-              className="border-2 border-gray-300 hover:border-green-800 cursor-pointer"
-            >
-              Card content
-            </Card>
-          </Col>
-          <Col span={8}>
-            <Card
-              title="Card title"
-              bordered={true}
-              headStyle={{ color: "#16a34a" }}
-              hoverable
-              size="small"
-              className="border-2 border-gray-300 hover:border-green-800 cursor-pointer"
-            >
-              Card content
-            </Card>
-          </Col>
-          <Col span={8}>
-            <Card
-              title="Card title"
-              bordered={true}
-              headStyle={{ color: "#16a34a" }}
-              hoverable
-              size="small"
-              className="border-2 border-gray-300 hover:border-green-800 cursor-pointer"
-            >
-              Card content
-            </Card>
-          </Col>
-          <Col span={8}>
-            <Card
-              title="Card title"
-              bordered={true}
-              headStyle={{ color: "#16a34a" }}
-              hoverable
-              size="small"
-              className="border-2 border-gray-300 hover:border-green-800 cursor-pointer"
-            >
-              Card content
-            </Card>
-          </Col>
-          <Col span={8}>
-            <Card
-              title="Card title"
-              bordered={true}
-              headStyle={{ color: "#16a34a" }}
-              hoverable
-              size="small"
-              className="border-2 border-gray-300 hover:border-green-800 cursor-pointer"
-            >
-              Card content
-            </Card>
-          </Col>
+          {hopData?.map((data: any, index: number) => (
+            <Col key={index} span={8}>
+              <Card
+                title={data?.name}
+                bordered={true}
+                headStyle={{ color: "#16a34a" }}
+                hoverable
+                size="small"
+                className="border-2 border-gray-300 hover:border-green-800 cursor-pointer"
+              >
+                description...
+              </Card>
+            </Col>
+          ))}
         </Row>
       </Modal>
     </>

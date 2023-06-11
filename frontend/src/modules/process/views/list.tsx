@@ -16,6 +16,7 @@ export default function ProcessChinList() {
   const [view, setView] = useState(false);
   const [dag, setDag] = useState<any>();
   const [isShowHopModal, setIsShowHopModal] = useState(false);
+  const [hopData, setHopData] = useState([]);
 
   const closeAdd = () => {
     setProcess(false);
@@ -67,16 +68,7 @@ export default function ProcessChinList() {
           },
         })
         .then((res) => {
-          console.log(res);
-          // const templates: Array<any> = [];
-          // res?.data?.data?.map((data: any, index: number) => {
-          //   const template = {
-          //     id: index + 1,
-          //     name: data?.name,
-          //   };
-          //   templates.push(template);
-          // });
-          // setData(templates);
+          setHopData(res?.data?.data);
         });
     } catch (error) {
       console.error("Error:", error);
@@ -115,6 +107,7 @@ export default function ProcessChinList() {
         <SelectHopModal
           openModal={isShowHopModal}
           parentCallback={handleHopModalResponseData}
+          hopData={hopData}
         />
         {/* <AddProcess onClose={closeAdd} state={addProcess} /> */}
       </DashboardFrame>
