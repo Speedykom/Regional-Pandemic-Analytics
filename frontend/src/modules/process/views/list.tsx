@@ -1,5 +1,5 @@
 import DashboardFrame from "@/src/components/Dashboard/DashboardFrame";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AddProcess } from "@/src/modules/process/views/add";
 import { Button, Table } from "antd";
 import LoadData from "@/src/components/TABS/upload";
@@ -8,6 +8,7 @@ import { useProcessChainList } from "../hooks";
 import { PlusOutlined } from "@ant-design/icons";
 import { IGADTable } from "@/src/components/common/table";
 import SelectHopModal from "@/src/components/SelectHopModal";
+import axios from "axios";
 
 export default function ProcessChinList() {
   const [addProcess, setProcess] = useState(false);
@@ -54,6 +55,37 @@ export default function ProcessChinList() {
   const handleHopModalResponseData = (value: any) => {
     setIsShowHopModal(value);
   };
+
+  const fetchHops = async () => {
+    try {
+      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/`;
+      await axios
+        .get(url, {
+          headers: {
+            Authorization: `Token 00716f5dbc217da0ffe3ac2198cbfa7bcde5e201`,
+            // `Bearer ${token}`, //
+          },
+        })
+        .then((res) => {
+          console.log(res);
+          // const templates: Array<any> = [];
+          // res?.data?.data?.map((data: any, index: number) => {
+          //   const template = {
+          //     id: index + 1,
+          //     name: data?.name,
+          //   };
+          //   templates.push(template);
+          // });
+          // setData(templates);
+        });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchHops();
+  }, []);
 
   return (
     <>
