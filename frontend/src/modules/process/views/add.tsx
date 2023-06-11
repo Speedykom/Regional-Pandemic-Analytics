@@ -1,5 +1,5 @@
-import { AppDrawer } from "@/components/AppDrawer";
-import { ShowMessage } from "@/components/ShowMessage";
+import { AppDrawer } from "@/src/components/AppDrawer";
+import { ShowMessage } from "@/src/components/ShowMessage";
 import { useCreateProcessMutation } from "@/src/modules/process/process";
 import { schedule_intervals } from "@/utils/processs";
 import { Button, Form, Input, Select } from "antd";

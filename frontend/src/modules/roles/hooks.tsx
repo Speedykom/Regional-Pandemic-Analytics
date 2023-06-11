@@ -3,7 +3,7 @@ import { IRoles } from "./interface";
 import { Popconfirm, Tag } from "antd";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
-import { Action } from "@/components/common/action";
+import { Action } from "@/src/components/common/action";
 import axios from "axios";
 import { OpenNotification } from "@/utils/notify";
 
@@ -13,7 +13,7 @@ interface props {
 	refetch: () => void;
 }
 
-export const useRoles = ({ edit, del, refetch }: props) => {
+export const 	useRoles = ({ edit, del, refetch }: props) => {
 	const action = (id: string, name: string, description: string) => {
 		const deleteUser = async () => {
 			await axios
@@ -100,7 +100,6 @@ export const useRoles = ({ edit, del, refetch }: props) => {
 				<div>
 					{composite ? (
 						<Tag
-							className="flex items-center text-lg"
 							icon={<CheckCircleOutlined />}
 							color="processing"
 						>
@@ -108,7 +107,6 @@ export const useRoles = ({ edit, del, refetch }: props) => {
 						</Tag>
 					) : (
 						<Tag
-							className="flex items-center text-lg"
 							icon={<ClockCircleOutlined />}
 							color="default"
 						>
@@ -128,7 +126,6 @@ export const useRoles = ({ edit, del, refetch }: props) => {
 				<div>
 					{clientRole ? (
 						<Tag
-							className="flex items-center text-lg"
 							icon={<CheckCircleOutlined />}
 							color="warning"
 						>
@@ -136,7 +133,6 @@ export const useRoles = ({ edit, del, refetch }: props) => {
 						</Tag>
 					) : (
 						<Tag
-							className="flex items-center text-lg"
 							icon={<ClockCircleOutlined />}
 							color="default"
 						>

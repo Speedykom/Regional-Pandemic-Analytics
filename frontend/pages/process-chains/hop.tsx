@@ -1,5 +1,5 @@
-import DashboardFrame from "@/components/Dashboard/DashboardFrame";
-import Dag from "@/components/TABS/Dag";
+import DashboardFrame from "@/src/components/Dashboard/DashboardFrame";
+import Dag from "@/src/components/TABS/Dag";
 import { Dialog, Transition } from "@headlessui/react";
 import React, { Fragment, useState } from "react";
 import {
