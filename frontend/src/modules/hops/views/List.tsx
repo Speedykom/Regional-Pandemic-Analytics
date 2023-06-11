@@ -1,4 +1,4 @@
-import { IGADTable } from "@/components/common/table";
+import { IGADTable } from "@/src/components/common/table";
 import {
   DeleteColumnOutlined,
   PlusOutlined,
@@ -202,7 +202,7 @@ export const HopList = () => {
   return (
     <div className="">
       <nav>
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl">Hop Pipelines</h2>
             <p className="my-2 text-gray-600">
@@ -212,12 +212,7 @@ export const HopList = () => {
           <div>
             <Button
               type="primary"
-              className="flex items-center"
-              icon={<PlusOutlined />}
-              style={{
-                backgroundColor: "#087757",
-                border: "1px solid #e65e01",
-              }}
+              size="large"
               onClick={showModal}
             >
               Upload Template

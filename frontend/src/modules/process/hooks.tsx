@@ -5,7 +5,7 @@ import {
   useFindAllQuery,
   useRunProcessMutation,
 } from "./process";
-import { ShowMessage } from "@/components/ShowMessage";
+import { ShowMessage } from "@/src/components/ShowMessage";
 import { useState } from "react";
 import Router from "next/router";
 

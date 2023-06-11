@@ -1,8 +1,8 @@
-import DashboardFrame from "@/components/Dashboard/DashboardFrame";
-import ListData from "@/components/Data/ListData";
+import DashboardFrame from "@/src/components/Dashboard/DashboardFrame";
+import ListData from "@/src/components/Data/ListData";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import {IData} from "@/components/Data/ListData";
+import {IData} from "@/src/components/Data/ListData";
 import secureLocalStorage from "react-secure-storage";
 
 export default function DataPage() {
