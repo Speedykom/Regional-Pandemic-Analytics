@@ -7,19 +7,22 @@ import { ViewDag } from "@/src/components/Dag/ViewDag";
 import { useProcessChainList } from "../hooks";
 import { PlusOutlined } from "@ant-design/icons";
 import { IGADTable } from "@/src/components/common/table";
+import SelectHopModal from "@/src/components/SelectHopModal";
 
 export default function ProcessChinList() {
   const [addProcess, setProcess] = useState(false);
   const [open, setOpen] = useState(false);
   const [view, setView] = useState(false);
   const [dag, setDag] = useState<any>();
+  const [isShowHopModal, setIsShowHopModal] = useState(false);
 
   const closeAdd = () => {
     setProcess(false);
   };
 
   const openAdd = () => {
-    setProcess(true);
+    setIsShowHopModal(true);
+    // setProcess(true);
   };
 
   const closeLoad = () => {
@@ -47,6 +50,11 @@ export default function ProcessChinList() {
     viewProcess,
   });
 
+  // handle hop modal callback and hold the value returned
+  const handleHopModalResponseData = (value: any) => {
+    setIsShowHopModal(value);
+  };
+
   return (
     <>
       <DashboardFrame>
@@ -58,11 +66,7 @@ export default function ProcessChinList() {
             </p>
           </div>
           <div>
-            <Button
-              onClick={() => openAdd()}
-              type="primary"
-              size="large"
-            >
+            <Button onClick={() => openAdd()} type="primary" size="large">
               Add Process Chain
             </Button>
           </div>
@@ -75,7 +79,12 @@ export default function ProcessChinList() {
           onClose={closeView}
           key="view-dag"
         />
-        <AddProcess onClose={closeAdd} state={addProcess} />
+
+        <SelectHopModal
+          openModal={isShowHopModal}
+          parentCallback={handleHopModalResponseData}
+        />
+        {/* <AddProcess onClose={closeAdd} state={addProcess} /> */}
       </DashboardFrame>
     </>
   );
