@@ -64,7 +64,7 @@ export const PreviewUser = ({ openDrawer, closeDrawer, userId }: props) => {
 						<div className="bg-white p-3 border-t-4 border-green-400">
 							<img
 								className="h-32 w-32 rounded-md"
-								src="/avater.png"
+								src={data?.attributes?.avatar && data?.attributes?.avatar[0] != "" ? data?.attributes?.avatar[0] : "/avater.png"}
 								alt=""
 							/>
 							<h1 className="text-gray-900 font-bold text-xl leading-8 my-1">
@@ -132,11 +132,11 @@ export const PreviewUser = ({ openDrawer, closeDrawer, userId }: props) => {
 									</div>
 									<div className="grid grid-cols-2">
 										<div className="px-4 py-2 font-semibold">Gender</div>
-										<div className="px-4 py-2">Female</div>
+										<div className="px-4 py-2">{data?.attributes?.gender[0]}</div>
 									</div>
 									<div className="grid grid-cols-2">
 										<div className="px-4 py-2 font-semibold">Contact No.</div>
-										<div className="px-4 py-2">+11 998001001</div>
+										<div className="px-4 py-2">{data?.attributes?.code[0]} {data?.attributes?.phone[0]}</div>
 									</div>
 									<div className="grid grid-cols-2">
 										<div className="px-4 py-2 font-semibold">
@@ -160,6 +160,10 @@ export const PreviewUser = ({ openDrawer, closeDrawer, userId }: props) => {
 									<div className="grid grid-cols-2">
 										<div className="px-4 py-2 font-semibold">Email</div>
 										<div className="px-4 py-2">{data?.email}</div>
+									</div>
+									<div className="grid grid-cols-2">
+										<div className="px-4 py-2 font-semibold">Country</div>
+										<div className="px-4 py-2">{data?.attributes?.country[0]}</div>
 									</div>
 								</div>
 							</div>

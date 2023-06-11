@@ -1,3 +1,4 @@
+import { api_url } from "@/utils/auth";
 import { OpenNotification } from "@/utils/notify";
 import { Button, Form, Input } from "antd";
 import axios from "axios";
@@ -62,8 +63,8 @@ export const CreatePassword = ({ mail, token }: props) => {
 			);
 		} else {
 			await axios
-				.put(
-					`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/create-password`,
+				.post(
+					`${api_url}/api/auth/password`,
 					{
 						newPassword: values["password"],
 						confirmPassword: values["confirmPassword"],

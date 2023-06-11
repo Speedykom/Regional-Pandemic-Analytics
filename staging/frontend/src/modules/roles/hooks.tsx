@@ -15,10 +15,10 @@ interface props {
 
 export const useRoles = ({ edit, del, refetch }: props) => {
 	const action = (id: string, name: string, description: string) => {
-		const deleteUser = async () => {
+		const deleteRole = async () => {
 			await axios
 				.delete(
-					`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles/${id}/delete`,
+					`${process.env.NEXT_PUBLIC_BASE_URL}/api/role/${id}`,
 					{
 						headers: {
 							"Content-Type": "application/json",
@@ -26,8 +26,8 @@ export const useRoles = ({ edit, del, refetch }: props) => {
 					}
 				)
 				.then((res) => {
+					OpenNotification(res?.data?.message, "topRight", "success");
 					refetch();
-					OpenNotification(res.data?.message, "topRight", "success");
 				})
 				.catch((err) => {
 					OpenNotification(
@@ -54,9 +54,9 @@ export const useRoles = ({ edit, del, refetch }: props) => {
 					<li>
 						<Popconfirm
 							placement="left"
-							title={"Delete User"}
-							description={"Are you sure you want to delete this user"}
-							onConfirm={deleteUser}
+							title={"Delete Role"}
+							description={"Are you sure you want to delete this role"}
+							onConfirm={deleteRole}
 							okText="Yes"
 							cancelText="No"
 							okType="link"

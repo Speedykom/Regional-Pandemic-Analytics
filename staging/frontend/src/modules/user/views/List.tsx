@@ -57,21 +57,10 @@ export const UserList = () => {
 
 	const [token, setToken] = useState<string>("");
 
-	const fetchToken = async () => {
-		try {
-			const url = "/api/get-access-token/";
-			const response = await getData(url);
-			setToken(response?.accessToken);
-			console.log(response?.accessToken);
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
-
 	const [open, setOpen] = useState<boolean>(false);
 	const [data, setData] = useState<Array<IUser>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [code, setCode] = useState<string>("");
+	const [phoneCode, setPhoneCode] = useState();
 	const [roles, setRoles] = useState([]);
 	const [role, setRole] = useState<string>("")
 	const [roleLoading, setRoleLoading] = useState(true)
@@ -110,7 +99,6 @@ export const UserList = () => {
 	};
 
 	const refetch = () => {
-		fetchToken();
 		fetchUsers();
 	};
 
@@ -123,7 +111,7 @@ export const UserList = () => {
 		username: string,
 		email: string,
 		enabled: boolean,
-		code: string,
+		code: any,
 		phone: string,
 		country: string,
 		gender: string,
@@ -136,11 +124,12 @@ export const UserList = () => {
 		form.setFieldValue("username", username);
 		form.setFieldValue("email", email);
 		form.setFieldValue("enabled", enabled);
-		form.setFieldValue("code", code);
 		form.setFieldValue("phone", phone);
 		form.setFieldValue("country", country);
 		form.setFieldValue("gender", gender);
-		setCode(code);
+		if (code != "") {
+			setPhoneCode(code);
+		}
 	};
 
 	const handleCancel = () => {
@@ -159,7 +148,7 @@ export const UserList = () => {
 	};
 
 	const onFinish = async (values: any) => {
-		values["code"] = code;
+		values["code"] = phoneCode;
 		values["role"] = JSON.parse(values["role"])
 		await axios
 			.put(
@@ -185,10 +174,10 @@ export const UserList = () => {
 	const selectBefore = (
 		<Select
 			size="large"
-			value={code}
-			onChange={setCode}
+			value={phoneCode}
+			onChange={setPhoneCode}
 			showSearch
-			placeholder={!code && "+232"}
+			placeholder="+232"
 			options={myCodeOptions}
 		/>
 	);
@@ -196,7 +185,7 @@ export const UserList = () => {
 	const fetchRoles = async () => {
 		try {
 			setRoleLoading(true)
-			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
+			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/role`;
 			await axios.get(url, {
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -378,7 +367,7 @@ export const UserList = () => {
 									validator(rule, value, callback) {
 										if (value === "") {
 											callback("Please input your phone number");
-										} else if (!code) {
+										} else if (!phoneCode) {
 											callback("Please select country code");
 										} else {
 											callback();

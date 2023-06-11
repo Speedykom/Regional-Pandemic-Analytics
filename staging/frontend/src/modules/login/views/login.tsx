@@ -18,7 +18,7 @@ export default function LoginForm() {
     setLoading(true);
 
     axios
-      .post("/api/accounts/login/", JSON.stringify(data), {
+      .post("/api/auth/login/", JSON.stringify(data), {
         headers: {
           "Content-Type": "application/json",
         },
@@ -26,7 +26,8 @@ export default function LoginForm() {
       .then((res: any) => {
         if (res.status == 200) {
           let payload: any = jwt_decode(res?.data?.result?.access_token);
-
+          console.log({payload});
+          
           // @ts-ignore
           secureLocalStorage.setItem("username", payload?.given_name);
           // @ts-ignore

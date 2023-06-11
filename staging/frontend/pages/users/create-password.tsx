@@ -1,5 +1,6 @@
 import { CreatePassword } from "@/src/modules/user/views/create-password";
 import { LinkExpired } from "@/src/modules/user/views/link-expired";
+import { api_url } from "@/utils/auth";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -11,8 +12,8 @@ export default function CreatePasswordLayout() {
 	const { tok } = router.query;
     const getToken = async () => {
 		await axios
-			.post(
-				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/verify-token`,
+			.patch(
+				`${api_url}/api/auth/reset-verify`,
 				{
 					token: String(tok),
 				},

@@ -19,6 +19,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { number, string } from "zod";
 import { fetchRoles } from "../../roles/hooks";
+import { api_url } from "@/utils/auth";
 
 interface props {
 	openDrawer: boolean;
@@ -71,17 +72,6 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const router = useRouter();
 
 	const [token, setToken] = useState<string>("");
-
-	const fetchToken = async () => {
-		try {
-			const url = "/api/get-access-token/";
-			const response = await getData(url);
-			setToken(response?.accessToken);
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
-
 	const onFinish = async (values: any) => {
 		values["enabled"] = enabled;
 		values["emailVerified"] = emailVerified;
@@ -89,9 +79,8 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 		values["role"] = JSON.parse(values["role"])
 
 		await axios
-			.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user`, values, {
+			.post(`${api_url}/api/account/user`, values, {
 				headers: {
-					Authorization: `Bearer ${token}`,
 					"Content-Type": "application/json",
 				},
 			})
@@ -133,7 +122,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const fetchRoles = async () => {
 		try {
 			setRoleLoading(true)
-			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
+			const url = `${api_url}/api/role`;
 			await axios.get(url, {
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -149,7 +138,6 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	};
 
 	useEffect(() => {
-		fetchToken();
 		fetchRoles();
 	}, []);
 

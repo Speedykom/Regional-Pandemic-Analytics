@@ -8,9 +8,9 @@ import { Button, Form, Input, Modal } from "antd";
 import { useRoles } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { getData } from "@/utils";
 import { IRoles } from "../interface";
 import { OpenNotification } from "@/utils/notify";
+import { api_url } from "@/utils/auth";
 
 interface props {
 	viewPro: () => void;
@@ -19,7 +19,7 @@ interface props {
 enum OPERATION_TYPES {
 	CREATE,
 	UPDATE,
-	NONE
+	NONE,
 }
 
 export const RoleList = () => {
@@ -27,17 +27,7 @@ export const RoleList = () => {
 	const [form] = Form.useForm();
 
 	const [token, setToken] = useState<string>("");
-	const [loading, setLoading] = useState<boolean>(true)
-
-	const fetchToken = async () => {
-		try {
-			const url = "/api/get-access-token/";
-			const response = await getData(url);
-			setToken(response?.accessToken);
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
+	const [loading, setLoading] = useState<boolean>(true);
 
 	const [data, setData] = useState<Array<IRoles>>([]);
 
@@ -46,17 +36,18 @@ export const RoleList = () => {
 
 	const fetchRoles = async () => {
 		try {
-			setLoading(true)
-			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
-			await axios.get(url, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			}).then((res) => {
-				setLoading(false)
-				setData(res?.data);
-			})
-			
+			setLoading(true);
+			const url = `${api_url}/api/role`;
+			await axios
+				.get(url, {
+					headers: {
+						"Content-Type": `application/json`,
+					},
+				})
+				.then((res) => {
+					setLoading(false);
+					setData(res?.data);
+				});
 		} catch (error) {
 			console.error("Error:", error);
 		}
@@ -78,41 +69,42 @@ export const RoleList = () => {
 	};
 
 	const [open, setOpen] = useState(false);
-	
+
 	const edit = (id: string, name: string, description: string) => {
-		setRoleId(id)
-		setOpertaionType(OPERATION_TYPES.UPDATE)
-		form.setFieldValue("name", name)
-		form.setFieldValue("description", description)
+		setRoleId(id);
+		setOpertaionType(OPERATION_TYPES.UPDATE);
+		form.setFieldValue("name", name);
+		form.setFieldValue("description", description);
 		setOpen(true);
 	};
 
 	const showModal = () => {
-		setOpertaionType(OPERATION_TYPES.CREATE)
+		setOpertaionType(OPERATION_TYPES.CREATE);
 		setOpen(true);
 	};
 
-	const [operationType, setOpertaionType] = useState<OPERATION_TYPES>(OPERATION_TYPES.NONE)
+	const [operationType, setOpertaionType] = useState<OPERATION_TYPES>(
+		OPERATION_TYPES.NONE
+	);
 
 	const onFinish = async (values: any) => {
-		let url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`
-		url = operationType == OPERATION_TYPES.CREATE ? url + "/create" : url + `/${roleId}/update`
-		await axios
-			.post(
-				url,
-				values,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-						"Content-Type": "application/json",
-					},
-				}
-			)
+		let url = `${api_url}/api/role`;
+		url = operationType == OPERATION_TYPES.CREATE ? url : url + `/${roleId}`;
+		let method = operationType == OPERATION_TYPES.CREATE ? "POST" : "PUT";
+
+		await axios({
+			url,
+			method: method,
+			data: values,
+			headers: {
+				"Content-Type": "application/json",
+			},
+		})
 			.then((res) => {
+				OpenNotification(res?.data?.message, "topRight", "success");
+				form.resetFields();
 				setOpen(false);
 				refetch();
-				OpenNotification(res.data?.message, "topRight", "success");
-				form.resetFields()
 			})
 			.catch((err) => {
 				OpenNotification(err.response?.data, "topRight", "error");
@@ -124,9 +116,8 @@ export const RoleList = () => {
 	};
 
 	useEffect(() => {
-		fetchToken();
 		fetchRoles();
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const { columns } = useRoles({ edit, del, refetch });
@@ -169,7 +160,11 @@ export const RoleList = () => {
 			</section>
 			<Modal
 				open={open}
-				title={operationType == OPERATION_TYPES.CREATE ? "Create Role" : operationType == OPERATION_TYPES.UPDATE && "Update Role"}
+				title={
+					operationType == OPERATION_TYPES.CREATE
+						? "Create Role"
+						: operationType == OPERATION_TYPES.UPDATE && "Update Role"
+				}
 				onCancel={handleCancel}
 				footer={
 					<Form form={form} onFinish={onFinish}>
@@ -197,7 +192,9 @@ export const RoleList = () => {
 									}}
 									htmlType="submit"
 								>
-									{operationType == OPERATION_TYPES.CREATE ? "Save Role" : operationType == OPERATION_TYPES.UPDATE && "Save Changes"}
+									{operationType == OPERATION_TYPES.CREATE
+										? "Save Role"
+										: operationType == OPERATION_TYPES.UPDATE && "Save Changes"}
 								</Button>
 							</div>
 						</Form.Item>

@@ -55,7 +55,7 @@ export default function TopBar({ showNav, setShowNav }: props) {
 
 	const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
 		e.preventDefault();
-		await axios.post("/api/accounts/logout/").then((response) => {
+		await axios.post("/api/auth/logout/").then((response) => {
 			if (response.status === 200) {
 				router.push("/");
 				secureLocalStorage.clear();

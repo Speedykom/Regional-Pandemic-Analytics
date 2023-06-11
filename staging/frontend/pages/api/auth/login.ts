@@ -1,3 +1,4 @@
+import { api_url } from '@/utils/auth';
 import axios from 'axios';
 import { setCookie } from 'cookies-next';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -6,7 +7,6 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-  const server_url = process.env.NEXT_PUBLIC_BASE_URL;
 
   if (req.method !== 'POST') {
     return res.status(405).send(`Method ${req.method} not allowed`);
@@ -21,7 +21,7 @@ export default async function handler(
   });
 
   try {
-    const response = await axios.post(`${server_url}/api/accounts/auth/`, body, {
+    const response = await axios.post(`${api_url}/api/auth/key-auth`, body, {
       headers: { 'Content-Type': 'application/json' },
     });
 
