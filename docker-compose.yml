@@ -5,7 +5,7 @@ x-superset-common:
   image: apache/superset
   environment:
     - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
-  build: ./staging/superset/.
+  build: ./superset/.
   # volumes:
   #   - ./staging/superset/client_secret.json:/app/superset/client_secret.json
   #   - ./staging/superset/security_manager.py:/app/superset/security_manager.py
@@ -61,12 +61,12 @@ x-airflow-common:
     - AUTH_USER_REGISTRATION_ROLE=${AIRFLOW_AUTH_USER_REGISTRATION_ROLE}
     - AUTH_ROLES_SYNC_AT_LOGIN=${AIRFLOW_AUTH_ROLES_SYNC_AT_LOGIN}
   volumes:
-    - ./staging/airflow/dags:/opt/airflow/dags
-    - ./staging/airflow/logs:/opt/airflow/logs
-    - ./staging/airflow/plugins:/opt/airflow/plugins
-    - ./staging/airflow/webserver_config.py:/opt/airflow/webserver_config.py
-    - ./staging/airflow/user_auth.py:/opt/airflow/user_auth.py
-    - ./staging/airflow/airflow.cfg:/opt/airflow/airflow.cfg
+    - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/logs:/opt/airflow/logs
+    - ./airflow/plugins:/opt/airflow/plugins
+    - ./airflow/webserver_config.py:/opt/airflow/webserver_config.py
+    - ./airflow/user_auth.py:/opt/airflow/user_auth.py
+    - ./airflow/airflow.cfg:/opt/airflow/airflow.cfg
     - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
@@ -122,7 +122,7 @@ services:
       - NEXT_PUBLIC_KEYCLOACK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOACK_URL}
       - NEXT_HOP_UI=${FRONTEND_NEXT_HOP_UI}
     build:
-      context: ./staging/frontend
+      context: ./frontend
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
@@ -146,15 +146,15 @@ services:
     container_name: backend
     command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
     build:
-      context: ./staging/backend
+      context: ./backend
       dockerfile: Dockerfile
     depends_on:
       - backend_db
     ports:
       - "8000:8000"
     volumes:
-      - ./staging/airflow/dags:/airflow/dags
-      - ./staging/hop/data-orch.list:/hop/data-orch.list
+      - ./airflow/dags:/airflow/dags
+      - ./hop/data-orch.list:/hop/data-orch.list
     environment:
       - KEYCLOAK_ADMIN_CLIENT_ID=${BACKEND_KEYCLOAK_ADMIN_CLIENT_ID}
       - KEYCLOAK_ADMIN_CLIENT_SECRET=${BACKEND_KEYCLOAK_ADMIN_CLIENT_SECRET}
@@ -224,7 +224,7 @@ services:
     image: apache/druid:25.0.0
     container_name: coordinator
     volumes:
-      - ./staging/storage:/opt/shared
+      - ./storage:/opt/shared
       - coordinator_var:/opt/druid/var
     depends_on:
       - zookeeper
@@ -254,7 +254,7 @@ services:
     image: apache/druid:25.0.0
     container_name: historical
     volumes:
-      - ./staging/storage:/opt/shared
+      - ./storage:/opt/shared
       - historical_var:/opt/druid/var
     depends_on:
       - zookeeper
@@ -270,7 +270,7 @@ services:
     image: apache/druid:25.0.0
     container_name: middlemanager
     volumes:
-      - ./staging/storage:/opt/shared
+      - ./storage:/opt/shared
       - middle_var:/opt/druid/var
     depends_on:
       - zookeeper
@@ -287,7 +287,7 @@ services:
     image: apache/druid:25.0.0
     container_name: router
     volumes:
-      - ./staging/storage:/opt/shared
+      - ./storage:/opt/shared
       - router_var:/opt/druid/var
     depends_on:
       - zookeeper
@@ -346,9 +346,9 @@ services:
     ports:
       - "8882:8080"
     volumes:
-      - ./staging/hop/pipelines:/files
-      - ./staging/storage:/home
-      - ./staging/hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
+      - ./hop/pipelines:/files
+      - ./storage:/home
+      - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
     #   - ./staging/hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
     # =======
@@ -445,6 +445,6 @@ services:
       # dev server env
     restart: unless-stopped
     volumes:
-      - ./staging/keycloak/realm/realm.json:/opt/keycloak/data/import/realm.json
+      - ./keycloak/realm/realm.json:/opt/keycloak/data/import/realm.json
     depends_on:
       - keycloak-pg
