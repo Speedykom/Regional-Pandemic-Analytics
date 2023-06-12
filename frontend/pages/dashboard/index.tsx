@@ -1,8 +1,8 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
-import AnalyticsCard from "@/src/components/Dashboard/AnalyticsCard";
-import TimeSeries from "@/src/components/Dashboard/TimeSeries";
-import DashboardFrame from "@/src/components/Dashboard/DashboardFrame";
+import AnalyticsCard from "@/src/common/components/Dashboard/AnalyticsCard";
+import TimeSeries from "@/src/common/components/Dashboard/TimeSeries";
+import DashboardFrame from "@/src/common/components/Dashboard/DashboardFrame";
 
 const inter = Inter({ subsets: ["latin"] });
 

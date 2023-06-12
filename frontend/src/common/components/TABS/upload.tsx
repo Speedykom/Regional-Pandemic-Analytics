@@ -1,6 +1,6 @@
 import { Card, Flex, SelectBox, SelectBoxItem, TextInput } from "@tremor/react";
 import { useState, useEffect, Fragment } from "react";
-import DagList from "@/src/components/Dag/DagList";
+import DagList from "@/src/common/components/Dag/DagList";
 import { DagType } from "./interface";
 import { useFindAllQuery } from "@/src/modules/process/process";
 import { Button, Table } from "antd";

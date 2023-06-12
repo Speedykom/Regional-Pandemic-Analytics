@@ -1,4 +1,4 @@
-import { IGADTable } from "@/src/components/common/table";
+import { IGADTable } from "@/src/common/components/common/table";
 import {
   DeleteColumnOutlined,
   PlusOutlined,

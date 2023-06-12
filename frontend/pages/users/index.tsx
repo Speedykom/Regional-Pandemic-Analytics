@@ -1,5 +1,5 @@
-import DashboardFrame from "@/src/components/Dashboard/DashboardFrame";
-import { Unauthorised } from "@/src/components/common/unauth";
+import DashboardFrame from "@/src/common/components/Dashboard/DashboardFrame";
+import { Unauthorised } from "@/src/common/components/common/unauth";
 import { appRoles, roles } from "@/utils/auth";
 import { UserList } from "@/src/modules/user/views/List";
 
