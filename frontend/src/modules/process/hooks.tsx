@@ -8,7 +8,6 @@ import {
 import { ShowMessage } from "@/common/components/ShowMessage";
 import { useState } from "react";
 import Router from "next/router";
-import axios from "axios";
 
 interface Props {
   loadData: (id: string) => void;
@@ -16,18 +15,21 @@ interface Props {
 }
 
 const EditButton = ({ id }: { id: string }) => {
+  const [editAccess] = useEditAccessMutation();
+
   const [loading, setLoading] = useState(false);
 
   const edit = () => {
     setLoading(true);
-    axios
-      .post(`/api/process/access/${id}`)
-      .then((res: any) => {
-        Router.push("/process-chains/hop");
-      })
-      .catch((res: any) => {
+    editAccess(id).then((res: any) => {
+      if (res.error) {
+        ShowMessage("error", res.error.message);
         setLoading(false);
-      });
+        return;
+      }
+
+      Router.push("/process-chains/hop");
+    });
   };
 
   return (
@@ -77,6 +79,8 @@ const RunButton = ({ id }: { id: string }) => {
 };
 
 export const useProcessChainList = ({ loadData, viewProcess }: Props) => {
+  const { data: data, isLoading: loading } = useFindAllQuery();
+
   const columns: ColumnsType<any> = [
     {
       dataIndex: "load",
@@ -138,5 +142,5 @@ export const useProcessChainList = ({ loadData, viewProcess }: Props) => {
     },
   ];
 
-  return { columns };
+  return { columns, rows: data?.dags || [], loading };
 };
