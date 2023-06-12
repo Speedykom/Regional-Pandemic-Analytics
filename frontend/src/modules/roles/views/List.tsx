@@ -11,6 +11,7 @@ import axios from "axios";
 import { IRoles } from "../interface";
 import { OpenNotification } from "@/utils/notify";
 import { api_url } from "@/utils/auth";
+import secureLocalStorage from "react-secure-storage";
 
 interface props {
 	viewPro: () => void;
@@ -122,6 +123,9 @@ export const RoleList = () => {
 
 	const { columns } = useRoles({ edit, del, refetch });
 	// @ts-ignore
+
+	const userRole: any = secureLocalStorage.getItem("user_role");
+	const permits = userRole?.attributes;
 	return (
 		<div className="">
 			<nav>
@@ -132,20 +136,22 @@ export const RoleList = () => {
 							View and manage settings related to app roles.
 						</p>
 					</div>
-					<div>
-						<Button
-							type="primary"
-							className="flex items-center"
-							icon={<PlusOutlined />}
-							style={{
-								backgroundColor: "#087757",
-								border: "1px solid #e65e01",
-							}}
-							onClick={showModal}
-						>
-							New Role
-						</Button>
-					</div>
+					{permits?.Role && permits?.Role?.create && (
+						<div>
+							<Button
+								type="primary"
+								className="flex items-center"
+								icon={<PlusOutlined />}
+								style={{
+									backgroundColor: "#087757",
+									border: "1px solid #e65e01",
+								}}
+								onClick={showModal}
+							>
+								New Role
+							</Button>
+						</div>
+					)}
 				</div>
 			</nav>
 			<section className="mt-5">

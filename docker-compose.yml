@@ -7,9 +7,9 @@ x-superset-common:
     - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
   build: ./superset/.
   # volumes:
-  #   - ./staging/superset/client_secret.json:/app/superset/client_secret.json
-  #   - ./staging/superset/security_manager.py:/app/superset/security_manager.py
-  #   - ./staging/superset/superset_config.py:/app/superset/superset_config.py
+  #   - ./superset/client_secret.json:/app/superset/client_secret.json
+  #   - ./superset/security_manager.py:/app/superset/security_manager.py
+  #   - ./superset/superset_config.py:/app/superset/superset_config.py
 
 x-druid-common:
   &druid
@@ -104,8 +104,14 @@ services:
   # ========
   frontend:
     container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
     environment:
       - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
+      - BASE_URL=${FRONTEND_BASE_URL}
       - NEXT_PUBLIC_AIRFLOW_URL=${FRONTEND_NEXT_PUBLIC_AIRFLOW_URL}
       - NEXT_PUBLIC_AIRFLOW_USERNAME=${FRONTEND_NEXT_PUBLIC_AIRFLOW_USERNAME}
       - NEXT_PUBLIC_AIRFLOW_PASSWORD=${FRONTEND_NEXT_PUBLIC_AIRFLOW_PASSWORD}
@@ -121,11 +127,6 @@ services:
       - NEXT_PUBLIC_KEYCLOACK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOACK_REALM}
       - NEXT_PUBLIC_KEYCLOACK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOACK_URL}
       - NEXT_HOP_UI=${FRONTEND_NEXT_HOP_UI}
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
     restart: always
     command: npm run start
 
@@ -156,6 +157,7 @@ services:
       - ./airflow/dags:/airflow/dags
       - ./hop/data-orch.list:/hop/data-orch.list
     environment:
+      - DEVELOPMENT_MODE=${BACKEND_DEVELOPMENT_MODE}
       - KEYCLOAK_ADMIN_CLIENT_ID=${BACKEND_KEYCLOAK_ADMIN_CLIENT_ID}
       - KEYCLOAK_ADMIN_CLIENT_SECRET=${BACKEND_KEYCLOAK_ADMIN_CLIENT_SECRET}
       - KEYCLOAK_ADMIN_AUTH_URL=${BACKEND_KEYCLOAK_ADMIN_AUTH_URL}
@@ -340,7 +342,7 @@ services:
   #  Hop
   # =====
   hop:
-    build: ./staging/hop
+    build: ./hop
     container_name: hop
     user: "0:1000"
     ports:
@@ -349,7 +351,7 @@ services:
       - ./hop/pipelines:/files
       - ./storage:/home
       - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
-    #   - ./staging/hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
+    #   - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
     # =======
     # Airflow

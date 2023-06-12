@@ -109,7 +109,6 @@ class GetEditRole(APIView):
         response: any
 
         type = request.query_params['type']
-        print(f"type {type}")
 
         if type == None:
             return Response({'errorMessage': 'Query parameter `type` is required'}, status=status.HTTP_400_BAD_REQUEST)

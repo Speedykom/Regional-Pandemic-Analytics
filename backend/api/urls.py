@@ -54,8 +54,8 @@ urlpatterns = [
 #     path('account/user/<str:id>/change-password',
 #          views.ChangePasswordAPI.as_view()),  # change password
     # path('account/user/<str:id>/avatar-upload', views.UploadAvatarAPI.as_view()), #update avatar
-    path('account/user/<str:id>/avatar-upload1',
-         views.AvatarUploadApI.as_view()),  # update avatar
+    path('account/user/<str:id>/avatar-upload1', views.AvatarUploadApI.as_view()),  # update avatar
+    path('account/user/avatar/get', views.AvatarDownload.as_view()), # download avatar
     # ---------------------- End of User Management Endpoints ----------------------------
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------

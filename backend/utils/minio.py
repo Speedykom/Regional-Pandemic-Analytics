@@ -1,23 +1,24 @@
+from datetime import timedelta
 from minio import Minio
 from minio.error import S3Error
 import os
 import io
 
+MinioClient = Minio(
+    os.getenv('BACKEND_MINIO_URL'),
+    access_key=os.getenv("BACKEND_MINIO_ACCESS_KEY"),
+    secret_key=os.getenv("BACKEND_MINIO_SECRET_KEY"),
+    secure=False
+)
 
 def upload_file_to_minio(bucket_name, uploaded_file):
     try:
         # Create a client with the MinIO server and credentials.
-        client = Minio(
-            os.getenv('MINIO_URL'),
-            access_key=os.getenv("MINIO_ACCESS_KEY"),
-            secret_key=os.getenv("MINIO_SECRET_KEY"),
-            secure=False
-        )
 
         # Make bucket if it does not exist.
-        found = client.bucket_exists(bucket_name)
+        found = MinioClient.bucket_exists(bucket_name)
         if not found:
-            client.make_bucket(bucket_name)
+            MinioClient.make_bucket(bucket_name)
         else:
             print(f"Bucket {bucket_name} already exists")
 
@@ -31,7 +32,7 @@ def upload_file_to_minio(bucket_name, uploaded_file):
         uploaded_file.seek(0)
 
         # Upload the file to the bucket.
-        file_upload = client.put_object(
+        file_upload = MinioClient.put_object(
             bucket_name,uploaded_file.name, uploaded_file, length=uploaded_file.size
         )
 
@@ -45,4 +46,29 @@ def upload_file_to_minio(bucket_name, uploaded_file):
         # Return False to indicate upload failure
         return False
 
+def download_file (bucket_name: str, filename: str):
+    try:
+        file_data: any
+        file_object = MinioClient.get_object(bucket_name, filename)
+        with open('my-testfile', 'wb') as file_data:
+            for d in file_object.stream(32*1024):
+                file_data.write(d)
 
+        return file_data
+    except S3Error as exc:
+        print("An error occurred:", exc)
+        return exc
+
+def get_download_url (bucket_name: str, filename: str):
+    try:
+        url = MinioClient.get_presigned_url(
+            "GET",
+            bucket_name,
+            filename,
+            expires=timedelta(hours=5),
+        )
+        
+        return url
+    except S3Error as exc:
+        print("An error occurred:", exc)
+        return exc

@@ -16,15 +16,13 @@ from rest_framework.permissions import AllowAny
 from mailer.sender import SendMail
 from utils.filename import gen_filename
 from utils.env_configs import (
-    BASE_URL, APP_USER_BASE_URL, APP_SECRET_KEY, APP_REALM, APP_USER_ROLES, REST_REDIRECT_URI)
-import minio
-from utils.minio import upload_file_to_minio
+    APP_USER_BASE_URL, APP_SECRET_KEY, REST_REDIRECT_URI)
+
+from utils.minio import upload_file_to_minio, download_file
 from django.utils.datastructures import MultiValueDictKeyError
 
 from .serializers import *
 from .models import *
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework import permissions
 
 from utils.generators import get_random_secret
 from utils.keycloak_auth import keycloak_admin_login, create_keycloak_user, role_assign
@@ -608,5 +606,16 @@ class AvatarUploadApI(APIView):
         except MultiValueDictKeyError:
             return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
 
+
+class AvatarDownload(APIView):
+    """
+    API view to download user avatar from minio
+    """
+    permission_classes = [AllowAny,]
+    
+    def get(self, request, **kwargs):
+        filename = request.query_params['filename']
+        stream = download_file('avatars', filename)
+        file_buffer = stream.read()
 
 # endpoint="89.58.44.88:9001",

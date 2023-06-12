@@ -50,7 +50,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 						</div>
 					</div>
 				</Link>
-				{permits?.Dashboard && permits?.Dashboard?.Read && (
+				{permits?.Dashboard && permits?.Dashboard?.read && (
 					<Link href="/dashboard/superset-dashboards/">
 						<div
 							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
@@ -69,7 +69,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 					</Link>
 				)}
 
-				{permits?.Chart && permits?.Chart?.Read && (
+				{permits?.Chart && permits?.Chart?.read && (
 					<Link href="/dashboard/charts">
 						<div
 							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
@@ -87,7 +87,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 						</div>
 					</Link>
 				)}
-				{permits?.ProcessChain && permits?.ProcessChain?.Read && (
+				{permits?.ProcessChain && permits?.ProcessChain?.read && (
 					<Link href="/process-chains">
 						<div
 							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
@@ -105,7 +105,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 						</div>
 					</Link>
 				)}
-				{permits?.Data && permits?.Data?.Read && (
+				{permits?.Data && permits?.Data?.read && (
 					<Link href="/dashboard/data">
 						<div
 							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
@@ -124,7 +124,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 					</Link>
 				)}
 
-				{permits?.User && permits?.User?.Read && (
+				{permits?.User && permits?.User?.read && (
 					<Link href="/users">
 						<div
 							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
@@ -142,7 +142,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 						</div>
 					</Link>
 				)}
-				{permits?.Role && permits?.Role?.Read && (
+				{permits?.Role && permits?.Role?.read && (
 					<Link href="/roles">
 						<div
 							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${

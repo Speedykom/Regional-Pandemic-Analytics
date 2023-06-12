@@ -53,8 +53,8 @@ class KeyCloakLoginAPI(APIView):
             "username": request.data.get("username", None),
             "password": request.data.get("password", None),
             "grant_type": "password",
-            "client_id": os.getenv("CLIENT_ID"),
-            "client_secret": os.getenv("CLIENT_SECRET")
+            "client_id": os.getenv("BACKEND_CLIENT_ID"),
+            "client_secret": os.getenv("BACKEND_CLIENT_SECRET")
         }
 
         res = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/token",
@@ -77,8 +77,8 @@ class KeyCloakLoginAPI(APIView):
     def put(self, request, *args, **kwargs):
         refresh_token = request.data.get("refresh_token", None)
         form_data = {
-            "client_id": os.getenv("CLIENT_ID"),
-            "client_secret": os.getenv("CLIENT_SECRET"),
+            "client_id": os.getenv("BACKEND_CLIENT_ID"),
+            "client_secret": os.getenv("BACKEND_CLIENT_SECRET"),
             "grant_type": "refresh_token",
             "refresh_token": refresh_token
         }

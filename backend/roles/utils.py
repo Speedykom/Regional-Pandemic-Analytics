@@ -65,8 +65,8 @@ Process_chain_pers = {
     "delete": True
 }
 FALSE_process_chain_pers = {
-    "create": True,
-    "read": True,
-    "update": True,
-    "delete": True
+    "create": False,
+    "read": False,
+    "update": False,
+    "delete": False
 }
