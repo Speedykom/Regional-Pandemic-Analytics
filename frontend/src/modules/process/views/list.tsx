@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { AddProcess } from "@/modules/process/views/add";
 import { Button } from "antd";
 import LoadData from "@/common/components/TABS/upload";
-import { ViewDag } from "@/common/components/Dag/ViewDag";
+import { ViewDag } from "@/modules/process/views/view";
 import { useProcessChainList } from "../hooks";
 import { IGADTable } from "@/common/components/common/table";
 import axios from "axios";
@@ -30,7 +30,7 @@ export default function ProcessChinList() {
         setRows(res.data.dags);
       })
       .catch((res: any) => {
-        ShowMessage("error", "Wrong username or password!");
+        ShowMessage("error", "Something went wrong");
       })
       .finally(() => setLoading(false));
   };
@@ -84,7 +84,12 @@ export default function ProcessChinList() {
             </Button>
           </div>
         </div>
-        <IGADTable rowKey="dag_id" columns={columns} rows={rows || []} loading={loading} />
+        <IGADTable
+          rowKey="dag_id"
+          columns={columns}
+          rows={rows || []}
+          loading={loading}
+        />
         <LoadData onClose={closeLoad} state={open} dag={dag} />
         <ViewDag
           id={dag || ""}
