@@ -2,8 +2,6 @@ FROM node:18-alpine
 
 WORKDIR /frontend
 
-ENV NODE_ENV production
-
 COPY . .
 
 RUN npm install
