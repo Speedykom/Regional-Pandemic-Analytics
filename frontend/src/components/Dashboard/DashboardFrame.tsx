@@ -22,42 +22,42 @@ export default function DashboardFrame({
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  // useEffect(() => {
-  //   if (typeof window !== "undefined" && window.localStorage) {
-  //     const authState = secureLocalStorage.getItem("sua") as string;
-  //     if (authState !== "authenticated") {
-  //       secureLocalStorage.clear();
-  //       axios
-  //         .post("/api/accounts/logout/")
-  //         .then((response) => {
-  //           setIsAuthenticated(false); // Update isAuthenticated state
-  //           router.push("/");
-  //         })
-  //         .catch((error) => {
-  //           console.log("Logout failed:", error);
-  //           setIsAuthenticated(false); // Update isAuthenticated state
-  //           router.push("/");
-  //         })
-  //         .finally(() => {
-  //           setIsLoading(false);
-  //         });
-  //     } else {
-  //       setIsAuthenticated(true); // Update isAuthenticated state if authenticated
-  //       setIsLoading(false);
-  //     }
-  //   } else {
-  //     setIsLoading(false);
-  //   }
-  // // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const authState = secureLocalStorage.getItem("sua") as string;
+      if (authState !== "authenticated") {
+        secureLocalStorage.clear();
+        axios
+          .post("/api/accounts/logout/")
+          .then((response) => {
+            setIsAuthenticated(false); // Update isAuthenticated state
+            router.push("/");
+          })
+          .catch((error) => {
+            console.log("Logout failed:", error);
+            setIsAuthenticated(false); // Update isAuthenticated state
+            router.push("/");
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
+      } else {
+        setIsAuthenticated(true); // Update isAuthenticated state if authenticated
+        setIsLoading(false);
+      }
+    } else {
+      setIsLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // if (isLoading) {
-  //   return <div>Loading...</div>;
-  // }
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
-  // if (!isAuthenticated) {
-  //   return <Login />; // Redirect to Login component if not authenticated
-  // }
+  if (!isAuthenticated) {
+    return <Login />; // Redirect to Login component if not authenticated
+  }
 
   return (
     <Layout>

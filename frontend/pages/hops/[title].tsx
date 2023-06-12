@@ -205,13 +205,21 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
 }
 
 export async function getServerSideProps({ params }: any) {
+  let token = "";
+  try {
+    const url = "/api/get-access-token/";
+    const response = await getData(url);
+    token = response?.accessToken;
+  } catch (error) {
+    console.error("Error:", error);
+  }
+
   let results;
   await axios
     .get(`${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/${params.title}`, {
       headers: {
-        Authorization: `Token 00716f5dbc217da0ffe3ac2198cbfa7bcde5e201`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/xml; charset=utf-8",
-        // `Bearer ${token}`
       },
     })
     .then((res) => {

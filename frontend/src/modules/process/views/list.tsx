@@ -9,6 +9,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import { IGADTable } from "@/src/components/common/table";
 import SelectHopModal from "@/src/components/SelectHopModal";
 import axios from "axios";
+import { getData } from "@/utils";
 
 export default function ProcessChinList() {
   const [addProcess, setProcess] = useState(false);
@@ -64,14 +65,24 @@ export default function ProcessChinList() {
     }
   };
 
+  const [token, setToken] = useState<string>("");
+  const fetchToken = async () => {
+    try {
+      const url = "/api/get-access-token/";
+      const response = await getData(url);
+      setToken(response?.accessToken);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   const fetchHops = async () => {
     try {
       const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/`;
       await axios
         .get(url, {
           headers: {
-            Authorization: `Token 00716f5dbc217da0ffe3ac2198cbfa7bcde5e201`,
-            // `Bearer ${token}`, //
+            Authorization: `Bearer ${token}`,
           },
         })
         .then((res) => {
@@ -83,6 +94,7 @@ export default function ProcessChinList() {
   };
 
   useEffect(() => {
+    fetchToken();
     fetchHops();
   }, []);
 
