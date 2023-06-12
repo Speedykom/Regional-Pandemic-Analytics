@@ -8,17 +8,18 @@ import { useState } from "react";
 interface Props {
   state: boolean;
   onClose: () => void;
+  selectedTemplate: any;
 }
 
-export const AddProcess = ({ state, onClose }: Props) => {
+export const AddProcess = ({ state, onClose, selectedTemplate }: Props) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [addProcess] = useCreateProcessMutation();
 
   const onFinish = (value: any) => {
     setLoading(true);
-    
-    addProcess(value)
+
+    addProcess({ ...value, path: selectedTemplate?.path })
       .then((res: any) => {
         if (res.error) {
           const { data } = res.error;
@@ -90,18 +91,12 @@ export const AddProcess = ({ state, onClose }: Props) => {
         >
           <Input placeholder="Enter Dag Id" className="w-full" />
         </Form.Item>
-        <Form.Item
-          name="path"
-          label="Pipeline Path"
-          className="w-full"
-          rules={[
-            {
-              required: true,
-              message: "Please input your Path to Process Chain",
-            },
-          ]}
-        >
-          <Input placeholder="Pipeline Path" className="w-full" />
+        <Form.Item name="path" label="Pipeline Path" className="w-full">
+          <Input
+            disabled
+            placeholder={selectedTemplate?.path}
+            className="w-full"
+          />
         </Form.Item>
         <Form.Item
           name="parquet_path"

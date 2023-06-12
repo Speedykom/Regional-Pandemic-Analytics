@@ -17,6 +17,7 @@ export default function ProcessChinList() {
   const [dag, setDag] = useState<any>();
   const [isShowHopModal, setIsShowHopModal] = useState(false);
   const [hopData, setHopData] = useState([]);
+  const [selectedTemplate, setSelectedTemplate] = useState<object>({});
 
   const closeAdd = () => {
     setProcess(false);
@@ -24,7 +25,6 @@ export default function ProcessChinList() {
 
   const openAdd = () => {
     setIsShowHopModal(true);
-    // setProcess(true);
   };
 
   const closeLoad = () => {
@@ -54,7 +54,14 @@ export default function ProcessChinList() {
 
   // handle hop modal callback and hold the value returned
   const handleHopModalResponseData = (value: any) => {
-    setIsShowHopModal(value);
+    // if the value is an object that means it's a selected template
+    if (typeof value === "object" && value !== null) {
+      setSelectedTemplate(value);
+      setIsShowHopModal(false);
+      setProcess(true);
+    } else {
+      setIsShowHopModal(value);
+    }
   };
 
   const fetchHops = async () => {
@@ -109,7 +116,12 @@ export default function ProcessChinList() {
           parentCallback={handleHopModalResponseData}
           hopData={hopData}
         />
-        {/* <AddProcess onClose={closeAdd} state={addProcess} /> */}
+
+        <AddProcess
+          onClose={closeAdd}
+          state={addProcess}
+          selectedTemplate={selectedTemplate}
+        />
       </DashboardFrame>
     </>
   );
