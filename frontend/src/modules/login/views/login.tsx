@@ -3,7 +3,6 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { Button, Checkbox, Form, Input } from "antd";
 import { useState } from "react";
-import { useLoginMutation } from "../login";
 import { ShowMessage } from "@/src/components/ShowMessage";
 import jwt_decode from "jwt-decode";
 import secureLocalStorage from "react-secure-storage";
@@ -13,6 +12,11 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const router = useRouter();
+
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+  
+  console.log(BASE_URL);
+  
 
   const onFinish = (data: any) => {
     setLoading(true);
