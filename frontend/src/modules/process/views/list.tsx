@@ -1,39 +1,17 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { AddProcess } from "@/modules/process/views/add";
 import { Button } from "antd";
 import LoadData from "@/common/components/TABS/upload";
-import { ViewDag } from "@/modules/process/views/view";
 import { useProcessChainList } from "../hooks";
 import { IGADTable } from "@/common/components/common/table";
-import axios from "axios";
-import { ShowMessage } from "@/common/components/ShowMessage";
+import { ViewDag } from "./view";
 
 export default function ProcessChinList() {
   const [addProcess, setProcess] = useState(false);
-  const [rows, setRows] = useState([]);
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [view, setView] = useState(false);
   const [dag, setDag] = useState<any>();
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = () => {
-    setLoading(true);
-
-    axios
-      .post("/api/process/list/")
-      .then((res: any) => {
-        setRows(res.data.dags);
-      })
-      .catch((res: any) => {
-        ShowMessage("error", "Something went wrong");
-      })
-      .finally(() => setLoading(false));
-  };
 
   const closeAdd = () => {
     setProcess(false);
@@ -63,7 +41,7 @@ export default function ProcessChinList() {
     setDag(dag);
   };
 
-  const { columns } = useProcessChainList({
+  const { columns, rows, loading } = useProcessChainList({
     loadData,
     viewProcess,
   });
@@ -79,17 +57,16 @@ export default function ProcessChinList() {
             </p>
           </div>
           <div>
-            <Button onClick={() => openAdd()} type="primary" size="large">
+            <Button
+              onClick={() => openAdd()}
+              type="primary"
+              size="large"
+            >
               Add Process Chain
             </Button>
           </div>
         </div>
-        <IGADTable
-          rowKey="dag_id"
-          columns={columns}
-          rows={rows || []}
-          loading={loading}
-        />
+        <IGADTable columns={columns} rows={rows || []} loading={loading} />
         <LoadData onClose={closeLoad} state={open} dag={dag} />
         <ViewDag
           id={dag || ""}
