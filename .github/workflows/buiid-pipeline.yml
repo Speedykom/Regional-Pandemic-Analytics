@@ -12,11 +12,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-          working-directory: staging/frontend
+          working-directory: frontend/
       - run: npm install
-        working-directory: staging/frontend
+        working-directory: frontend/
       - run: npm run build --if-present
-        working-directory: staging/frontend
+        working-directory: frontend/
 
       # Build Backend 
       - name: Build Backend 
@@ -24,13 +24,13 @@ jobs:
         with:
           python-version: '3.x'
           architecture: 'x64'
-          working-directory: staging/backend
+          working-directory: backend/
       - name: Install backend modules
         run: pip install -r requirements.txt
-        working-directory: staging/backend
+        working-directory: backend/
       - name: Run migrations
         run: python manage.py migrate
-        working-directory: staging/backend
+        working-directory: backend/
       - name: Run tests
         run: python manage.py test
-        working-directory: staging/backend
+        working-directory: backend/
