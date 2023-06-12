@@ -1,6 +1,3 @@
-import { getData } from "@/utils";
-import { countries } from "@/utils/countries";
-import { OpenNotification } from "@/utils/notify";
 import { DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
 import {
 	Button,
@@ -19,6 +16,9 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { number, string } from "zod";
 import { fetchRoles } from "../../roles/hooks";
+import { countries } from "@/common/utils/countries";
+import { getData } from "@/common/utils";
+import { OpenNotification } from "@/common/utils/notify";
 
 interface props {
 	openDrawer: boolean;
