@@ -1,6 +1,6 @@
 import { BarChart, Card, Grid, Metric, Subtitle, Title } from "@tremor/react";
 import { useEffect } from "react";
-import MetricsCards from "@/src/common/components/Cards/MetricsCard";
+import MetricsCards from "@/common/components/Cards/MetricsCard";
 import { embedDashboard } from "@superset-ui/embedded-sdk";
 import useSWR from "swr";
 

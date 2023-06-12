@@ -15,7 +15,7 @@ import {
 } from "@tremor/react";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { getData } from "@/utils";
+import { getData } from "@/common/utils";
 
 export type TChartData = {
   count: number;

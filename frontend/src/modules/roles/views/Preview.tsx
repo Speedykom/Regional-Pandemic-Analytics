@@ -1,10 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @next/next/no-img-element */
-import { getData } from "@/utils";
-import {
-	CovertFromTimestampToDate,
-	ToMonthDayYear,
-} from "@/utils/date-converter";
+import { CovertFromTimestampToDate, ToMonthDayYear } from "@/common/utils/date-converter";
 import { Drawer } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";

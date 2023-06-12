@@ -1,7 +1,7 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Process } from "../../redux/interface/process";
-import { BASE_QUERY } from "@/src/common/config";
+import { Process } from "../../common/redux/interface/process";
+import { BASE_QUERY } from "@/common/config";
 
 // Define a service using a base URL and expected endpoints
 export const processApi = createApi({

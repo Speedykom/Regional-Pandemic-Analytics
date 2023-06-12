@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { Button, Checkbox, Form, Input } from "antd";
 import { useState } from "react";
-import { ShowMessage } from "@/src/common/components/ShowMessage";
+import { ShowMessage } from "@/common/components/ShowMessage";
 import jwt_decode from "jwt-decode";
 import secureLocalStorage from "react-secure-storage";
 import axios from "axios";

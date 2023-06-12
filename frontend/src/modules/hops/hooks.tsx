@@ -1,9 +1,9 @@
 import { ColumnsType } from "antd/es/table";
 import { Popconfirm } from "antd";
 import { FiEdit, FiTrash } from "react-icons/fi";
-import { Action } from "@/src/common/components/common/action";
+import { Action } from "@/common/components/common/action";
 import axios from "axios";
-import { OpenNotification } from "@/utils/notify";
+import { OpenNotification } from "@/common/utils/notify";
 
 interface props {
   edit: (id: string, name: string, description: string) => void;
