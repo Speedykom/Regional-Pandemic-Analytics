@@ -1,7 +1,10 @@
 import { Button, Collapse, Form, Input } from "antd";
-import { AppDrawer } from "../AppDrawer";
+import { AppDrawer } from "../../../common/components/AppDrawer";
 import { useFindOneQuery } from "@/modules/process/process";
-import { Loader } from "../Loader";
+import { Loader } from "../../../common/components/Loader";
+import axios from "axios";
+import { ShowMessage } from "@/common/components/ShowMessage";
+import { useEffect, useState } from "react";
 
 interface prop {
   onClose: () => void;
@@ -10,8 +13,29 @@ interface prop {
 }
 
 export const ViewDag = ({ onClose, state, id }: prop) => {
-  
-  const { data: dag, isLoading: loading } = useFindOneQuery(id);
+  const [loading, setLoading] = useState(false);
+  const [dag, setRow] = useState<any>();
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const fetchData = () => {
+    setLoading(true);
+    axios
+      .post(`/api/process/${id}`)
+      .then((res: any) => {
+        const row = res.data.dag;
+        setRow(row);
+      })
+      .catch((res: any) => {
+        onClose();
+      })
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchData();
+    }
+  }, [fetchData, id, state]);
 
   const { Panel } = Collapse;
 
@@ -19,7 +43,9 @@ export const ViewDag = ({ onClose, state, id }: prop) => {
     <AppDrawer title="View Process" onClose={onClose} state={state}>
       {loading ? (
         <div className="flex justify-center items-center h-full">
-          <div className="w-10 h-10"><Loader /></div>
+          <div className="w-10 h-10">
+            <Loader />
+          </div>
         </div>
       ) : (
         <div className="text-sm">
@@ -108,7 +134,9 @@ export const ViewDag = ({ onClose, state, id }: prop) => {
                   </div>
                   <div className="flex justify-between items-center mb-5">
                     <p>External trigger:</p>
-                    <p className="font-semibold">{run.external_trigger ? "Yes" : "No"}</p>
+                    <p className="font-semibold">
+                      {run.external_trigger ? "Yes" : "No"}
+                    </p>
                   </div>
                 </Panel>
               ))}
