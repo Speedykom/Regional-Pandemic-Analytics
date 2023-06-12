@@ -128,7 +128,7 @@ services:
       - NEXT_PUBLIC_KEYCLOACK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOACK_URL}
       - NEXT_HOP_UI=${FRONTEND_NEXT_HOP_UI}
     restart: always
-    command: npm run start
+    command: sh -c "npm run build && npm run start"
 
   # ========
   # Backend
