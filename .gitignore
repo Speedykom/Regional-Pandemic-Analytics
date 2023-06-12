@@ -1,13 +1,11 @@
 .idea
 .DS_Store
 /data
-/staging/hop/pipelines/watchDirLog.txt
-/staging/hop/pipelines/watchRuns.txt
-/staging/frontend/.next
-/staging/frontend/next-env.d.ts
-/staging/frontend/.env
-/frontend
-/backend
+/hop/pipelines/watchDirLog.txt
+/hop/pipelines/watchRuns.txt
+/frontend/.next
+/frontend/next-env.d.ts
+/frontend/.env
 
 .vscode/
 
