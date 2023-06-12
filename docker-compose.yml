@@ -2,14 +2,12 @@ version: "3.4"
 
 x-superset-common:
   &superset
-  image: apache/superset
+  image: apache/superset:2.1.0
   environment:
-    - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
-  build: ./superset/.
-  # volumes:
-  #   - ./superset/client_secret.json:/app/superset/client_secret.json
-  #   - ./superset/security_manager.py:/app/superset/security_manager.py
-  #   - ./superset/superset_config.py:/app/superset/superset_config.py
+    - SECRET_KEY=${SUPERSET_SECRET_KEY}
+    - DATABASE_URI=${SUPERSET_DATABASE_URI}
+  volumes:
+    - ./superset/superset_config.py:/app/superset/config.py
 
 x-druid-common:
   &druid
@@ -329,11 +327,13 @@ services:
   superset-init:
     <<: *superset
     container_name: superset-init
+    depends_on:
+      - superset_db
     entrypoint: /bin/bash
     command:
       - -c
       - |
-        superset fab create-admin --username admin --firstname Superset --lastname Admin --email admin@superset.com --password admin
+        superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
         superset db upgrade
         superset superset init
 
