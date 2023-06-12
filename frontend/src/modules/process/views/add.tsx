@@ -1,7 +1,7 @@
-import { AppDrawer } from "@/src/common/components/AppDrawer";
-import { ShowMessage } from "@/src/common/components/ShowMessage";
-import { useCreateProcessMutation } from "@/src/modules/process/process";
-import { schedule_intervals } from "@/utils/processs";
+import { AppDrawer } from "@/common/components/AppDrawer";
+import { ShowMessage } from "@/common/components/ShowMessage";
+import { schedule_intervals } from "@/common/utils/processs";
+import { useCreateProcessMutation } from "@/modules/process/process";
 import { Button, Form, Input, Select } from "antd";
 import { useState } from "react";
 

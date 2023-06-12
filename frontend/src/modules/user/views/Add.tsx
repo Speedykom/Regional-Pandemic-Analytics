@@ -1,5 +1,5 @@
-import { getData } from "@/utils";
-import { OpenNotification } from "@/utils/notify";
+import { getData } from "@/common/utils";
+import { OpenNotification } from "@/common/utils/notify";
 import {
 	DeleteColumnOutlined,
 	SaveOutlined,

@@ -18,7 +18,7 @@ import Link from "next/link";
 import secureLocalStorage from "react-secure-storage";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { PreviewUser } from "@/src/modules/user/views/Preview";
+import { PreviewUser } from "@/modules/user/views/Preview";
 
 interface props {
 	showNav: boolean;

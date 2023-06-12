@@ -3,9 +3,9 @@ import { IRoles } from "./interface";
 import { Popconfirm, Tag } from "antd";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
-import { Action } from "@/src/common/components/common/action";
+import { Action } from "@/common/components/common/action";
 import axios from "axios";
-import { OpenNotification } from "@/utils/notify";
+import { OpenNotification } from "@/common/utils/notify";
 
 interface props {
 	edit: (id: string, name: string, description: string) => void;

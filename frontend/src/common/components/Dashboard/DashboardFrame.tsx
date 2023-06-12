@@ -1,4 +1,4 @@
-import Layout from "@/src/common/components/Dashboard/Layout";
+import Layout from "@/common/components/Dashboard/Layout";
 import { ReactNode, useEffect, useState } from "react";
 import secureLocalStorage from "react-secure-storage";
 import { useRouter } from "next/router";
