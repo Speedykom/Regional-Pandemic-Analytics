@@ -1,3 +1,4 @@
+import { BASE_URL } from '@/common/config';
 import axios from 'axios';
 import { setCookie } from 'cookies-next';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -6,7 +7,7 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-  const server_url = process.env.NEXT_PUBLIC_BASE_URL;
+  const server_url = BASE_URL;
 
   if (req.method !== 'POST') {
     return res.status(405).send(`Method ${req.method} not allowed`);
