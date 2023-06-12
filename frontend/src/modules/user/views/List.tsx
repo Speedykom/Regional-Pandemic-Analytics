@@ -1,7 +1,6 @@
-import { IGADTable } from "@/src/common/components/common/table";
+import { IGADTable } from "@/common/components/common/table";
 import {
 	DeleteColumnOutlined,
-	PlusOutlined,
 	SaveOutlined,
 } from "@ant-design/icons";
 import {
@@ -14,18 +13,16 @@ import {
 	Select,
 	SelectProps,
 	Switch,
-	message,
 } from "antd";
 import { useUsers } from "../hooks";
 import { IUser } from "../interface";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AddUser123 } from "./AddUser";
 import axios from "axios";
-import { getData } from "@/utils";
 import { PreviewUser } from "./Preview";
-import { OpenNotification } from "@/utils/notify";
-import { countries } from "@/utils/countries";
-import { fetchRoles } from "../../roles/hooks";
+import { countries } from "@/common/utils/countries";
+import { getData } from "@/common/utils";
+import { OpenNotification } from "@/common/utils/notify";
 
 interface props {
 	viewPro: () => void;

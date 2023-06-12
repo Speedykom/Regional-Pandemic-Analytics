@@ -1,4 +1,4 @@
-import { OpenNotification } from "@/utils/notify";
+import { OpenNotification } from "@/common/utils/notify";
 import { Button, Form, Input } from "antd";
 import axios from "axios";
 import jwtDecode, { JwtDecodeOptions } from "jwt-decode";
