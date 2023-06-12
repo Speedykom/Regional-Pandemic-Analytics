@@ -11,10 +11,7 @@ import axios from "axios";
 export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-  const router = useRouter();
-
-  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-  
+  const router = useRouter();  
 
   const onFinish = (data: any) => {
     setLoading(true);
@@ -52,7 +49,7 @@ export default function LoginForm() {
   return (
     <>
       <Head>
-        <title>Regional Pandemic Analytics Tool | Welcome | {BASE_URL}</title>
+        <title>Regional Pandemic Analytics Tool | Welcome</title>
       </Head>
       <div className="flex min-h-screen bg-gray-50 items-center justify-center">
         <div className="bg-white flex w-3/5 shadow-lg rounded-xl overflow-hidden">
