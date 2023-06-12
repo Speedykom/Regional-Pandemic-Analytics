@@ -13,9 +13,6 @@ interface Props {
 }
 
 export default function DashboardFrame({
-  title,
-  back,
-  onBackPress,
   children,
 }: Props) {
   const router = useRouter();
@@ -29,7 +26,7 @@ export default function DashboardFrame({
         secureLocalStorage.clear();
         axios
           .post("/api/accounts/logout/")
-          .then((response) => {
+          .then(() => {
             setIsAuthenticated(false); // Update isAuthenticated state
             router.push("/");
           })
