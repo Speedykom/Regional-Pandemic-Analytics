@@ -1,4 +1,4 @@
-import DashboardFrame from "@/src/components/Dashboard/DashboardFrame";
+import DashboardFrame from "@/src/common/components/Dashboard/DashboardFrame";
 import { useEffect } from "react";
 import { embedDashboard } from "@superset-ui/embedded-sdk";
 import { useRouter } from "next/router";
