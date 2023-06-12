@@ -1,18 +1,39 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AddProcess } from "@/modules/process/views/add";
-import { Button, Table } from "antd";
+import { Button } from "antd";
 import LoadData from "@/common/components/TABS/upload";
 import { ViewDag } from "@/common/components/Dag/ViewDag";
 import { useProcessChainList } from "../hooks";
-import { PlusOutlined } from "@ant-design/icons";
 import { IGADTable } from "@/common/components/common/table";
+import axios from "axios";
+import { ShowMessage } from "@/common/components/ShowMessage";
 
 export default function ProcessChinList() {
   const [addProcess, setProcess] = useState(false);
+  const [rows, setRows] = useState([]);
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [view, setView] = useState(false);
   const [dag, setDag] = useState<any>();
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = () => {
+    setLoading(true);
+
+    axios
+      .post("/api/process/list/")
+      .then((res: any) => {
+        setRows(res.data.dags);
+      })
+      .catch((res: any) => {
+        ShowMessage("error", "Wrong username or password!");
+      })
+      .finally(() => setLoading(false));
+  };
 
   const closeAdd = () => {
     setProcess(false);
@@ -42,7 +63,7 @@ export default function ProcessChinList() {
     setDag(dag);
   };
 
-  const { columns, rows, loading } = useProcessChainList({
+  const { columns } = useProcessChainList({
     loadData,
     viewProcess,
   });
@@ -58,16 +79,12 @@ export default function ProcessChinList() {
             </p>
           </div>
           <div>
-            <Button
-              onClick={() => openAdd()}
-              type="primary"
-              size="large"
-            >
+            <Button onClick={() => openAdd()} type="primary" size="large">
               Add Process Chain
             </Button>
           </div>
         </div>
-        <IGADTable columns={columns} rows={rows || []} loading={loading} />
+        <IGADTable rowKey="dag_id" columns={columns} rows={rows || []} loading={loading} />
         <LoadData onClose={closeLoad} state={open} dag={dag} />
         <ViewDag
           id={dag || ""}
