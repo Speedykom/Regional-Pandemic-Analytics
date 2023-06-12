@@ -1,19 +1,16 @@
-import { IGADTable } from "@/src/common/components/common/table";
+import { IGADTable } from "@/common/components/common/table";
 import {
   DeleteColumnOutlined,
-  PlusOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
 import { Button, Form, Input, Modal, message, Upload } from "antd";
 import { useHops } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { getData } from "@/utils";
-import { IRoles } from "../interface";
-import { OpenNotification } from "@/utils/notify";
 
 import { UploadOutlined } from "@ant-design/icons";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
+import { getData } from "@/common/utils";
 
 interface props {
   viewPro: () => void;

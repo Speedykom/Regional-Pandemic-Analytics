@@ -1,4 +1,4 @@
-import { Button, Form, Input } from "antd";
+import { Button } from "antd";
 import { useRouter } from "next/router";
 
 export const LinkExpired = () => {

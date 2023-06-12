@@ -1,16 +1,11 @@
-import { IGADTable } from "@/src/common/components/common/table";
-import {
-  DeleteColumnOutlined,
-  PlusOutlined,
-  SaveOutlined,
-} from "@ant-design/icons";
+import { IGADTable } from "@/common/components/common/table";
 import { Button, Form, Input, Modal } from "antd";
 import { useRoles } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { getData } from "@/utils";
 import { IRoles } from "../interface";
-import { OpenNotification } from "@/utils/notify";
+import { getData } from "@/common/utils";
+import { OpenNotification } from "@/common/utils/notify";
 
 interface props {
   viewPro: () => void;

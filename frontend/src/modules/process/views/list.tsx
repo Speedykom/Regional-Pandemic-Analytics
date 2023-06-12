@@ -1,12 +1,12 @@
-import DashboardFrame from "@/src/common/components/Dashboard/DashboardFrame";
+import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import React, { useState } from "react";
-import { AddProcess } from "@/src/modules/process/views/add";
+import { AddProcess } from "@/modules/process/views/add";
 import { Button, Table } from "antd";
-import LoadData from "@/src/common/components/TABS/upload";
-import { ViewDag } from "@/src/common/components/Dag/ViewDag";
+import LoadData from "@/common/components/TABS/upload";
+import { ViewDag } from "@/common/components/Dag/ViewDag";
 import { useProcessChainList } from "../hooks";
 import { PlusOutlined } from "@ant-design/icons";
-import { IGADTable } from "@/src/common/components/common/table";
+import { IGADTable } from "@/common/components/common/table";
 
 export default function ProcessChinList() {
   const [addProcess, setProcess] = useState(false);

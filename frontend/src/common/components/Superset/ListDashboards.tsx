@@ -16,7 +16,7 @@ import {
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { getData } from "@/utils";
+import { getData } from "@/common/utils";
 
 interface IDashboardItem {
   id: string;
