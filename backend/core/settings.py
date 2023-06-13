@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'accounts',
-    'airflow',
+    'process',
     'data',
     'hop',
     'rest_framework.authtoken',
