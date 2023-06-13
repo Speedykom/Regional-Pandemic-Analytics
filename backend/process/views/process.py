@@ -23,7 +23,7 @@ class EditProcess(APIView):
     template = "process/gdags/template.py"
 
     # dynamic dag output
-    output = "../process/dags/"
+    output = "../airflow/dags/"
 
     # edit dag and dynamically edit dag file
     def patch(self, request, id):
@@ -60,7 +60,7 @@ class DeleteProcess(APIView):
     template = "process/gdags/template.py"
 
     # dynamic dag output
-    output = "../process/dags/"
+    output = "../airflow/dags/"
 
     def delete(self, request, id=None):
         result = get_object_or_404(Dag, id=id)
