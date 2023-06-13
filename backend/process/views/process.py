@@ -81,7 +81,7 @@ class CreateProcess(APIView):
     template = "process/gdags/template.py"
 
     # dynamic dag output
-    output = "../process/dags/"
+    output = "../airflow/dags/"
 
     def post(self, request):
         serializer = ProcessChainSerializer(data=request.data)
