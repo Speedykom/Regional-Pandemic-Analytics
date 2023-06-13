@@ -4,13 +4,46 @@ import { IUser } from "../interface";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { api_url } from "@/utils/auth";
+import { useRouter } from "next/router";
 
 export const DashboardList = () => {
 	const [data, setData] = useState<Array<IUser>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
+	const router = useRouter()
 
-	const viewDash = (id: number) => {
-		console.log({dashboardId: id});
+	const viewDash = async(id: number, dashboard_title: string) => {
+		try {
+			const response = await axios.get(
+				`${api_url}/api/v1/dashboard/${id}/embedded`
+			);
+			const dashboardUUID = response?.data?.result?.uuid;
+			router.push({
+				pathname: `/dashboard/superset-dashboards/${dashboardUUID}/`,
+				query: { dashboardTitl: dashboard_title },
+			});
+		} catch (error) {
+			console.error("Error fetching item:", error);
+		}
+	};
+
+	const btnViewClick = async (
+		e: React.MouseEvent<HTMLButtonElement>,
+		id: string,
+		dashboardTitle: string
+	) => {
+		e.preventDefault();
+		try {
+			const response = await axios.get(
+				`${api_url}/api/v1/dashboard/${id}/embedded`
+			);
+			const dashboardUUID = response?.data?.result?.uuid;
+			router.push({
+				pathname: `/dashboard/superset-dashboards/${dashboardUUID}/`,
+				query: { dashboardTitle },
+			});
+		} catch (error) {
+			console.error("Error fetching item:", error);
+		}
 	};
 
 	const fetchDashboards = async () => {
@@ -42,9 +75,9 @@ export const DashboardList = () => {
 			<nav>
 				<div className="flex justify-between">
 					<div>
-						<h2 className="text-3xl">App Accounts</h2>
+						<h2 className="text-3xl">Superset Dashboards</h2>
 						<p className="mt-2 text-gray-600">
-							View and manage settings related to app users.
+							Dashboard list created on Apache Superset.
 						</p>
 					</div>
 					

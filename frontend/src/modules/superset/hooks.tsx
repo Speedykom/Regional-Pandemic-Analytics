@@ -8,11 +8,11 @@ import axios from "axios";
 import { OpenNotification } from "@/utils/notify";
 
 interface props {
-	view: (id: number) => void;
+	view: (id: number, dashboard_title: string) => void;
 }
 
 export const useDashboards = ({ view }: props) => {
-	const action = (id: number) => {
+	const action = (id: number, dashboard_title: string) => {
 		return (
 			<Action>
 				<ul>
@@ -20,7 +20,7 @@ export const useDashboards = ({ view }: props) => {
 						<button
 							onClick={(e) => {
 								e.preventDefault;
-								view(id);
+								view(id, dashboard_title);
 							}}
 							className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
 						>
@@ -155,7 +155,7 @@ export const useDashboards = ({ view }: props) => {
 			align: "right",
 			width: 100,
 			key: "action",
-			render: (id, record) => action(record.id),
+			render: (id, record) => action(record.id, record.dashboard_title),
 		},
 	];
 
