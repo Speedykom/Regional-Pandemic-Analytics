@@ -45,15 +45,14 @@ export const HopList = () => {
 
   const fetchHops = async () => {
     // console.log(process.env.FRONTEND_NEXT_PUBLIC_BASE_URL);
-    const epoint = "http://localhost:8000";
+    // const epoint = "http://localhost:8000";
     try {
       setLoading(true);
-      const url = `${epoint}/api/hop/`;
+      const url = `${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}/api/hop/`;
       await axios
         .get(url, {
           headers: {
-            Authorization: `Token 25746e327dd2cc29ae304259574e381d9a334a39`,
-            // `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         })
         .then((res) => {
@@ -112,7 +111,7 @@ export const HopList = () => {
   };
 
   useEffect(() => {
-    // fetchToken();
+    fetchToken();
     fetchHops();
   }, []);
 
@@ -202,13 +201,13 @@ export const HopList = () => {
             loading={loading}
             rows={data}
             columns={columns}
-            onRow={(record: any, rowIndex: number) => {
-              return {
-                onClick: () => {
-                  router.push(`/hops/${record?.name}`);
-                },
-              };
-            }}
+            // onRow={(record: any, rowIndex: number) => {
+            //   return {
+            //     onClick: () => {
+            //       router.push(`/hops/${record?.name}`);
+            //     },
+            //   };
+            // }}
           />
         </div>
       </section>
