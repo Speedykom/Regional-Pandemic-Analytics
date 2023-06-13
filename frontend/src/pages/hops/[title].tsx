@@ -26,14 +26,17 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
   };
 
   const handleAddingTags = async () => {
-    // ${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}
     await axios
-      .post(`http://localhost:8000/api/hop/${hopTitle}/`, newTags, {
-        headers: {
-          Authorization: `Token 25746e327dd2cc29ae304259574e381d9a334a39`, // `Bearer ${token}`, //
-          "Content-Type": "application/json; charset=utf-8",
-        },
-      })
+      .post(
+        `${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}/api/hop/${hopTitle}/`,
+        newTags,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json; charset=utf-8",
+          },
+        }
+      )
       .then((res) => {
         if (res.data) {
           setNewTags("");
@@ -44,14 +47,17 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
   };
 
   const handleUpdatingTags = async () => {
-    //  ${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}
     await axios
-      .patch(`http://localhost:8000/api/hop/${hopTitle}/`, updateTags, {
-        headers: {
-          Authorization: `Token 25746e327dd2cc29ae304259574e381d9a334a39`,
-          "Content-Type": "application/json; charset=utf-8",
-        },
-      })
+      .patch(
+        `${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}/api/hop/${hopTitle}/`,
+        updateTags,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json; charset=utf-8",
+          },
+        }
+      )
       .then((res) => {
         console.log(res.data);
         if (res.data) {
@@ -63,17 +69,19 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
   };
 
   const handleDeletingTags = async () => {
-    // ${process.env.NEXT_PUBLIC_BASE_URL}
     await axios
-      .delete(`http://localhost:8000/api/hop/${hopTitle}/`, {
-        headers: {
-          Authorization: `Token 25746e327dd2cc29ae304259574e381d9a334a39`,
-          "Content-Type": "application/json; charset=utf-8",
-        },
-        data: {
-          tags: deleteTags.split(","),
-        },
-      })
+      .delete(
+        `${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}/api/hop/${hopTitle}/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json; charset=utf-8",
+          },
+          data: {
+            tags: deleteTags.split(","),
+          },
+        }
+      )
       .then((res) => {
         if (res.data) {
           setDeleteTags("");
@@ -84,7 +92,7 @@ export default function HopDetail({ hopsData, hopTitle }: any) {
   };
 
   useEffect(() => {
-    // fetchToken();
+    fetchToken();
   }, []);
 
   const customTheme = {
@@ -209,16 +217,17 @@ export async function getServerSideProps({ params }: any) {
     console.error("Error:", error);
   }
 
-  // ${process.env.NEXT_PUBLIC_BASE_URL}
-
   let results;
   await axios
-    .get(`http://localhost:8000/api/hop/${params.title}`, {
-      headers: {
-        Authorization: `Token 25746e327dd2cc29ae304259574e381d9a334a39`,
-        "Content-Type": "application/xml; charset=utf-8",
-      },
-    })
+    .get(
+      `${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}/api/hop/${params.title}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/xml; charset=utf-8",
+        },
+      }
+    )
     .then((res) => {
       if (res.data) {
         results = res.data;
