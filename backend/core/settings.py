@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'accounts',
-    'airflow',
+    'process',
     'data',
     'hop',
     'rest_framework.authtoken',
@@ -79,7 +79,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "True") == "True"
+DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", 'True').lower() in ('true', '1', 't')
 
 if DEVELOPMENT_MODE is True:
     DATABASES = {
@@ -88,11 +88,16 @@ if DEVELOPMENT_MODE is True:
             "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
         }
     }
-elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
-    if os.getenv("DATABASE_URL", None) is None:
-        raise Exception("DATABASE_URL environment variable not defined")
+else:
     DATABASES = {
-        "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+        'default': {
+            'ENGINE': os.environ.get('DB_ENGINE','django.db.backends.postgresql'),
+            'USER': os.environ.get('DB_USER'),
+            'PASSWORD':os.environ.get('DB_PASSWORD'),
+            'NAME': os.environ.get('DB_NAME'),
+            'PORT': os.environ.get('DB_PORT'),
+            'HOST': os.environ.get('DB_HOST')
+        }
     }
 
 AUTH_PASSWORD_VALIDATORS = [
