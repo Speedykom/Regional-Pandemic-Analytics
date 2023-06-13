@@ -43,7 +43,6 @@
     "react-toastify": "^9.1.2",
     "swr": "^2.1.2",
     "typescript": "5.0.3",
-    "xml2js": "^0.6.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {
