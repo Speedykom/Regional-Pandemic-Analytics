@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from ..models import Dag
-from ..serializers import DagSerializer
+from ..models import ProcessChain
+from ..serializers import ProcessChainSerializer
 from ..gdags.dynamic import DynamicDag
 from ..gdags.hop import EditAccessProcess
 
@@ -20,16 +20,16 @@ class EditProcess(APIView):
     permission_classes = [AllowAny]
 
     # dynamic dag template
-    template = "airflow/gdags/template.py"
+    template = "process/gdags/template.py"
 
     # dynamic dag output
-    output = "../airflow/dags/"
+    output = "../process/dags/"
 
     # edit dag and dynamically edit dag file
     def patch(self, request, id):
-        result = Dag.objects.get(id=id)
-        check_serializer = DagSerializer(result)
-        serializer = DagSerializer(result, data=request.data, partial=True)
+        result = ProcessChain.objects.get(id=id)
+        check_serializer = ProcessChainSerializer(result)
+        serializer = ProcessChainSerializer(result, data=request.data, partial=True)
 
         if serializer.is_valid():
             # remove existing dag
@@ -57,14 +57,14 @@ class DeleteProcess(APIView):
     permission_classes = [AllowAny]
 
     # dynamic dag template
-    template = "airflow/gdags/template.py"
+    template = "process/gdags/template.py"
 
     # dynamic dag output
-    output = "../airflow/dags/"
+    output = "../process/dags/"
 
     def delete(self, request, id=None):
         result = get_object_or_404(Dag, id=id)
-        serializer = DagSerializer(result)
+        serializer = ProcessChainSerializer(result)
 
         file_to_rem = pathlib.Path("{}{}.py".format(self.output, serializer.data['dag_id']))
         file_to_rem.unlink()
@@ -78,18 +78,18 @@ class CreateProcess(APIView):
     permission_classes = [AllowAny]
 
     # dynamic dag template
-    template = "airflow/gdags/template.py"
+    template = "process/gdags/template.py"
 
     # dynamic dag output
-    output = "../airflow/dags/"
+    output = "../process/dags/"
 
     def post(self, request):
-        serializer = DagSerializer(data=request.data)
+        serializer = ProcessChainSerializer(data=request.data)
         dag_id = request.data['dag_id']
 
         if serializer.is_valid():
 
-            process = Dag.objects.filter(dag_id=dag_id)
+            process = ProcessChain.objects.filter(dag_id=dag_id)
 
             if (len(process) > 0):
                 return Response({"status": "Fail", "message": "process already exist with this dag_id {}".format(dag_id)}, status=409)
@@ -114,7 +114,7 @@ class GetProcess(APIView):
 
     def get(self, request, dag_id=None):
         if dag_id:
-            process = Dag.objects.filter(dag_id=dag_id)
+            process = ProcessChain.objects.filter(dag_id=dag_id)
             
             if (len(process) <= 0): return Response({'status': 'success', "message": "No process found for this dag_id {}".format(dag_id)}, status=404)
 
@@ -134,9 +134,24 @@ class GetProcess(APIView):
 
             return Response({'status': 'success', "dag": respose}, status=200)
 
-        route = "{}/dags".format(api)
-        client = requests.get(route, auth=(username, password))
-        return Response({'status': 'success', "dags": client.json()['dags']}, status=200)
+        processes = []
+        snippets = ProcessChain.objects.all()
+        serializer = ProcessChainSerializer(snippets, many=True)
+
+        for process in serializer.data:
+            route = "{}/dags/{}".format(api, process['dag_id'])
+            dag = requests.get(route, auth=(username, password))
+            
+            res_status = dag.status_code
+
+            if (res_status == 404): 
+                process['airflow'] = None
+            else:
+                process['airflow'] = dag.json()
+
+            processes.append(process)
+        
+        return Response({'status': 'success', "dags": processes}, status=200)
 
 
 class RunProcess(APIView):
