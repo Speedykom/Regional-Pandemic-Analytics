@@ -8,6 +8,7 @@ from utils.minio import upload_file_to_minio
 from bs4 import BeautifulSoup
 from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
+from rest_framework.permissions import AllowAny
 from django.utils.datastructures import MultiValueDictKeyError
 
 def get_file_by_name(filename: str)-> any:
@@ -29,6 +30,7 @@ class ListHopAPIView(APIView):
     """
     This view returns the api response for the hop
     """
+    permission_classes = [AllowAny]
 
     def get_all_directory_files(self)-> List[str]:
       """Looks into the hops template, iterate over the files, append and return"""
@@ -50,6 +52,8 @@ class GetSingleHopAPIView(APIView):
     """
     Returns a single hop data in xml format
     """
+    permission_classes = [AllowAny]
+
     def get(self, request, filename: str):
       """Returns a single file"""
       result = get_file_by_name(filename)
@@ -121,6 +125,7 @@ class GetSingleHopAPIView(APIView):
       
 class NewHopAPIView(APIView):
   parser_classes = (MultiPartParser,)
+  permission_classes = [AllowAny]
 
   def validate_file_extension(self, value):
     """Receives a file and validate it extension"""
