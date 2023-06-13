@@ -11,7 +11,7 @@ export default async function handler(
 
   const accessToken = await response.json();
 
-  const dashboardUUID = req.query?.dashboardUUID;
+  const dashboardUUID = req.query?.id;
 
   try {
     const body = {
