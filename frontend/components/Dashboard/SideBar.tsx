@@ -38,7 +38,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 				<Link href="/home/">
 					<div
 						className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-							router.pathname == "/dashboard"
+							router.pathname == "/home"
 								? "bg-green-100 text-green-500"
 								: "text-gray-400 hover:bg-green-100 hover:text-green-500"
 						}`}
@@ -73,7 +73,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 					<Link href="/home/charts">
 						<div
 							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-								router.pathname == "/dashboard/charts"
+								router.pathname == "/home/charts"
 									? "bg-green-100 text-green-500"
 									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
 							}`}
@@ -109,7 +109,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 					<Link href="/home/data">
 						<div
 							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-								router.pathname == "/dashboard/data"
+								router.pathname == "/home/data"
 									? "bg-green-100 text-green-500"
 									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
 							}`}
