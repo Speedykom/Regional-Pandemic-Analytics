@@ -52,6 +52,24 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 					</div>
 				</Link>
 				{permits?.Dashboard && permits?.Dashboard?.read && (
+					<Link href="/dashboards">
+						<div
+							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+								router.pathname == "/dashboards"
+									? "bg-green-100 text-green-500"
+									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
+							}`}
+						>
+							<div className="mr-2">
+								<ChartBarSquareIcon className="h-5 w-5" />
+							</div>
+							<div>
+								<p>Superset</p>
+							</div>
+						</div>
+					</Link>
+				)}
+				{permits?.Dashboard && permits?.Dashboard?.read && (
 					<Link href="/dashboard/superset-dashboards/">
 						<div
 							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
