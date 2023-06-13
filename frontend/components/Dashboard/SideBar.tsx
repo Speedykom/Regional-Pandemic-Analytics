@@ -35,7 +35,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 			</div>
 
 			<div className="flex flex-col">
-				<Link href="/dashboard/">
+				<Link href="/home/">
 					<div
 						className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
 							router.pathname == "/dashboard"
@@ -64,32 +64,13 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 								<ChartBarSquareIcon className="h-5 w-5" />
 							</div>
 							<div>
-								<p>Superset</p>
-							</div>
-						</div>
-					</Link>
-				)}
-				{permits?.Dashboard && permits?.Dashboard?.read && (
-					<Link href="/dashboard/superset-dashboards/">
-						<div
-							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-								router.pathname == "/superset-dashboards"
-									? "bg-green-100 text-green-500"
-									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
-							}`}
-						>
-							<div className="mr-2">
-								<ChartBarSquareIcon className="h-5 w-5" />
-							</div>
-							<div>
 								<p>Dashboards</p>
 							</div>
 						</div>
 					</Link>
 				)}
-
 				{permits?.Chart && permits?.Chart?.read && (
-					<Link href="/dashboard/charts">
+					<Link href="/home/charts">
 						<div
 							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
 								router.pathname == "/dashboard/charts"
@@ -125,7 +106,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 					</Link>
 				)}
 				{permits?.Data && permits?.Data?.read && (
-					<Link href="/dashboard/data">
+					<Link href="/home/data">
 						<div
 							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
 								router.pathname == "/dashboard/data"
