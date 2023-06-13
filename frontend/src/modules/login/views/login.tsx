@@ -41,7 +41,7 @@ export default function LoginForm() {
           );
           secureLocalStorage.setItem("sua", "authenticated");
           
-          router.push("/dashboard");
+          router.push("/home");
         }
       })
       .catch((res: any) => {

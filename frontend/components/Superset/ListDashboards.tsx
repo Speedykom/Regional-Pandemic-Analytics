@@ -13,10 +13,8 @@ import {
 	Button,
 	Color,
 } from "@tremor/react";
-import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { getData } from "@/utils";
 import { api_url } from "@/utils/auth";
 
 interface IDashboardItem {
