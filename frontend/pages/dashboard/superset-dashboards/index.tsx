@@ -2,55 +2,41 @@ import DashboardFrame from "@/components/Dashboard/DashboardFrame";
 import { useEffect, useState } from "react";
 import { embedDashboard } from "@superset-ui/embedded-sdk";
 import ListDashboards, {
-  IListDashboardsProps,
+	IListDashboardsProps,
 } from "@/components/Superset/ListDashboards";
 import { getData } from "@/utils";
 import axios from "axios";
+import { api_url } from "@/utils/auth";
 
 export default function SupersetDashboard() {
-  const [data, setData] = useState<IListDashboardsProps["data"]>({
-    count: 0,
-    result: [],
-  });
+	const [data, setData] = useState<IListDashboardsProps["data"]>({
+		count: 0,
+		result: [],
+	});
 
-  const [token, setToken] = useState("");
+	const fetchDashboards = async () => {
+		try {
+			const url = `${api_url}/api/superset`;
+			const response = await axios.get(url, {
+				headers: {
+					"Content-Type": "application/json",
+				},
+			});
+			setData(response?.data?.data);
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
 
-  const fetchToken = async () => {
-    try {
-      const url = "/api/get-access-token/";
-      const response = await getData(url);
-      setToken(response?.accessToken);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+	useEffect(() => {
+		fetchDashboards();
+	}, []);
 
-  useEffect(() => {
-    fetchToken();
-  }, []);
-
-  useEffect(() => {
-    const fetchDashboards = async () => {
-      try {
-        const url = `${process.env.NEXT_PUBLIC_SUPERSET_URL}/api/v1/dashboard/`;
-        const response = await axios.get(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setData(response?.data);
-      } catch (error) {
-        console.error("Error:", error);
-      }
-    };
-    fetchDashboards();
-  }, [token]);
-
-  return (
-    <DashboardFrame title="List(s) of Dashboards">
-      <div className="mb-4">
-        <ListDashboards data={data} />
-      </div>
-    </DashboardFrame>
-  );
+	return (
+		<DashboardFrame title="List(s) of Dashboards">
+			<div className="mb-4">
+				<ListDashboards data={data} />
+			</div>
+		</DashboardFrame>
+	);
 }

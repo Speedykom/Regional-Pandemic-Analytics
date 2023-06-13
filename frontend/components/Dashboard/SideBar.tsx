@@ -7,6 +7,7 @@ import {
 	UsersIcon,
 	CircleStackIcon,
 	DocumentIcon,
+	LockClosedIcon
 } from "@heroicons/react/24/solid";
 import { useRouter } from "next/router";
 import secureLocalStorage from "react-secure-storage";
@@ -152,7 +153,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 							}`}
 						>
 							<div className="mr-2">
-								<UsersIcon className="h-5 w-5" />
+								<LockClosedIcon className="h-5 w-5" />
 							</div>
 							<div>
 								<p>App Roles</p>

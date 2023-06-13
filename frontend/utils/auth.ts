@@ -15,14 +15,14 @@ export enum appRoles {
 
 export const getUserRole = async (roles: []) => {
     const rolee = roles.find(item => item != 'default-roles-stack')
-    await axios.get(`${api_url}/api/role/${rolee}?type=name`).then((res) => {
+    return await axios.get(`${api_url}/api/role/${rolee}?type=name`).then((res) => {
         let newRole = res?.data?.role;
         let roleAttributeKeys = Object.keys(newRole?.attributes);
         roleAttributeKeys.forEach((key, _) => {
             let keyValue = JSON.parse(newRole?.attributes?.[key][0])
             newRole.attributes[key] = keyValue
         })
-        secureLocalStorage.setItem('user_role', newRole)
+        return newRole
     }).catch((err) => {
         console.log(err)
     })

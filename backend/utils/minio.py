@@ -48,16 +48,14 @@ def upload_file_to_minio(bucket_name, uploaded_file):
 
 def download_file (bucket_name: str, filename: str):
     try:
-        file_data: any
-        file_object = MinioClient.get_object(bucket_name, filename)
-        with open('my-testfile', 'wb') as file_data:
-            for d in file_object.stream(32*1024):
-                file_data.write(d)
-
-        return file_data
+        response = MinioClient.get_object(bucket_name, filename)
+        return response
     except S3Error as exc:
         print("An error occurred:", exc)
         return exc
+    finally:
+        response.close()
+        response.release_conn()
 
 def get_download_url (bucket_name: str, filename: str):
     try:

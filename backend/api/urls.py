@@ -47,6 +47,9 @@ urlpatterns = [
     
     # ---------------------- API Role Endpoints --------------------------
     path('', include('roles.urls')),
+    
+    # ---------------------- API Superset Endpoints --------------------------
+    path('', include('superset.urls')),
 
 #     path('account/verify-token', views.VerifyResetTokenAPI.as_view()),  # verify token
 #     path('account/create-password',

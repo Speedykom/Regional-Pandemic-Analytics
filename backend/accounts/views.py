@@ -18,7 +18,7 @@ from utils.filename import gen_filename
 from utils.env_configs import (
     APP_USER_BASE_URL, APP_SECRET_KEY, REST_REDIRECT_URI)
 
-from utils.minio import upload_file_to_minio, download_file
+from utils.minio import upload_file_to_minio, download_file, get_download_url
 from django.utils.datastructures import MultiValueDictKeyError
 
 from .serializers import *
@@ -615,7 +615,10 @@ class AvatarDownload(APIView):
     
     def get(self, request, **kwargs):
         filename = request.query_params['filename']
-        stream = download_file('avatars', filename)
-        file_buffer = stream.read()
+        url = download_file('avatars', filename)
+        headers = {
+            'transfer-encoding': 'chunked'
+        }
+        return Response(url.read(), content_type='binary/octet-stream')
 
 # endpoint="89.58.44.88:9001",

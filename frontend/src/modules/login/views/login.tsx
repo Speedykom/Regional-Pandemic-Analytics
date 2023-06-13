@@ -19,15 +19,16 @@ export default function LoginForm() {
     setLoading(true);
 
     axios
-      .post("/api/auth/login/", JSON.stringify(data), {
+      .post("/api/auth/login", JSON.stringify(data), {
         headers: {
           "Content-Type": "application/json",
         },
       })
-      .then((res: any) => {
+      .then(async (res: any) => {
         if (res.status == 200) {
           let payload: any = jwt_decode(res?.data?.result?.access_token);
-          getUserRole(payload?.realm_access?.roles)
+          const role = await getUserRole(payload?.realm_access?.roles)
+          secureLocalStorage.setItem("user_role", role);
           // @ts-ignore
           secureLocalStorage.setItem("username", payload?.given_name);
           // @ts-ignore
@@ -39,7 +40,8 @@ export default function LoginForm() {
             Buffer.from(data.password).toString("base64")
           );
           secureLocalStorage.setItem("sua", "authenticated");
-          router.push("/dashboard/");
+          
+          router.push("/dashboard");
         }
       })
       .catch((res: any) => {

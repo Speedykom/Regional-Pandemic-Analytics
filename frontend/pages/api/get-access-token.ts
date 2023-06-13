@@ -6,14 +6,14 @@ export default async function handler(
 ) {
   try {
     const body = {
-      username: process.env.SUPERSET_USERNAME,
-      password: process.env.SUPERSET_PASSWORD,
+      username: process.env.SUPERSET_USERNAME || 'admin',
+      password: process.env.SUPERSET_PASSWORD || 'admin',
       provider: "db",
       refresh: true,
     };
 
     const response = await fetch(
-      `${process.env.SUPERSET_URL}/api/v1/security/login`,
+      `${process.env.NEXT_PUBLIC_SUPERSET_URL}/api/v1/security/login`,
       {
         method: "POST",
         body: JSON.stringify(body),
