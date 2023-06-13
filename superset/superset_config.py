@@ -86,6 +86,9 @@ EVENT_LOGGER = DBEventLogger()
 
 SUPERSET_LOG_VIEW = True
 
+GUEST_ROLE_NAME = "Gamma"
+WTF_CSRF_ENABLED = False
+
 BASE_DIR = pkg_resources.resource_filename("superset", "")
 if "SUPERSET_HOME" in os.environ:
     DATA_DIR = os.environ["SUPERSET_HOME"]
