@@ -1,4 +1,5 @@
 import DashboardFrame from "@/components/Dashboard/DashboardFrame";
+import { api_url } from "@/utils/auth";
 import { countries } from "@/utils/countries";
 import { OpenNotification } from "@/utils/notify";
 import {
@@ -179,8 +180,9 @@ export const ProfileSettings = () => {
 		} else {
 			await axios
 				.put(
-					`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/change-password`,
+					`${api_url}/api/auth/password`,
 					{
+						id: user?.sub,
 						newPassword: values["newPassword"],
 						confirmPassword: values["confirmPassword"],
 					},

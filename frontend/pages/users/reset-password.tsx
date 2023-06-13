@@ -11,7 +11,7 @@ export const ResetPassword = () => {
 		console.log({ values });
 		await axios
 			.post(
-				`${api_url}/api/account/user/reset/password-request`,
+				`${api_url}/api/auth/request-verify`,
 				values,
 				{
 					headers: {
