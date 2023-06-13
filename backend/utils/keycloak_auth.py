@@ -79,8 +79,7 @@ def create_keycloak_user ():
 
     return serverRes
 
-# role_object: dict[str, str], headers: dict[str, str]
-def role_assign (userId: str, role_object: dict, headers: dict):
+def role_assign (userId: str, role_object: dict[str, str], headers: dict[str, str]):
     form_data = [role_object]
     requests.post(url=f"{APP_USER_BASE_URL}/{userId}/role-mappings/realm", json=form_data, headers=headers)
     return True
