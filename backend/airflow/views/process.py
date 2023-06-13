@@ -134,9 +134,11 @@ class GetProcess(APIView):
 
             return Response({'status': 'success', "dag": respose}, status=200)
 
-        route = "{}/dags".format(api)
-        client = requests.get(route, auth=(username, password))
-        return Response({'status': 'success', "dags": client.json()['dags']}, status=200)
+        # route = "{}/dags".format(api)
+        # client = requests.get(route, auth=(username, password))
+        snippets = Dag.objects.all()
+        serializer = DagSerializer(snippets, many=True)
+        return Response({'status': 'success', "dags": serializer.data}, status=200)
 
 
 class RunProcess(APIView):
