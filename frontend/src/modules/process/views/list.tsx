@@ -76,14 +76,12 @@ export default function ProcessChinList() {
   };
 
   const fetchHops = async () => {
-    // ${process.env.NEXT_PUBLIC_BASE_URL}
     try {
-      const url = `http://localhost:8000/api/hop/`;
+      const url = `${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}/api/hop/`;
       await axios
         .get(url, {
           headers: {
-            Authorization: `Token 25746e327dd2cc29ae304259574e381d9a334a39`,
-            //Bearer ${token}
+            Authorization: `Bearer ${token}`,
           },
         })
         .then((res) => {
@@ -95,7 +93,7 @@ export default function ProcessChinList() {
   };
 
   useEffect(() => {
-    // fetchToken();
+    fetchToken();
     fetchHops();
   }, []);
 
