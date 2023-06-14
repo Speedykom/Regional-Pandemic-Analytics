@@ -4,6 +4,9 @@
 /hop/pipelines/watchDirLog.txt
 /hop/pipelines/watchRuns.txt
 
+frontend/.env
+backend/.env
+
 .vscode/
 
 venv/
