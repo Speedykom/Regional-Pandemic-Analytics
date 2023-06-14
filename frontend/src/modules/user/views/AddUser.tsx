@@ -14,11 +14,10 @@ import {
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { number, string } from "zod";
-import { fetchRoles } from "../../roles/hooks";
 import { countries } from "@/common/utils/countries";
 import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
+import { api_url } from "@/common/utils/auth";
 
 interface props {
 	openDrawer: boolean;
@@ -89,7 +88,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 		values["role"] = JSON.parse(values["role"])
 
 		await axios
-			.post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user`, values, {
+			.post(`${api_url}/api/account/user`, values, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 					"Content-Type": "application/json",
@@ -133,7 +132,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const fetchRoles = async () => {
 		try {
 			setRoleLoading(true)
-			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
+			const url = `${api_url}/api/role`;
 			await axios.get(url, {
 				headers: {
 					Authorization: `Bearer ${token}`,
