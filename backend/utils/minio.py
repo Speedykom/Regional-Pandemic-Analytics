@@ -4,21 +4,20 @@ from minio.error import S3Error
 import os
 import io
 
-MinioClient = Minio(
-    os.getenv('MINIO_URL'),
-    access_key=os.getenv("MINIO_ACCESS_KEY"),
-    secret_key=os.getenv("MINIO_SECRET_KEY"),
-    secure=False
-)
-
 def upload_file_to_minio(bucket_name, uploaded_file):
     try:
         # Create a client with the MinIO server and credentials.
+        client = Minio(
+            os.getenv('MINIO_URL'),
+            access_key=os.getenv("MINIO_ACCESS_KEY"),
+            secret_key=os.getenv("MINIO_SECRET_KEY"),
+            secure=False
+        )
 
         # Make bucket if it does not exist.
-        found = MinioClient.bucket_exists(bucket_name)
+        found = client.bucket_exists(bucket_name)
         if not found:
-            MinioClient.make_bucket(bucket_name)
+            client.make_bucket(bucket_name)
         else:
             print(f"Bucket {bucket_name} already exists")
 
@@ -32,7 +31,7 @@ def upload_file_to_minio(bucket_name, uploaded_file):
         uploaded_file.seek(0)
 
         # Upload the file to the bucket.
-        file_upload = MinioClient.put_object(
+        file_upload = client.put_object(
             bucket_name,uploaded_file.name, uploaded_file, length=uploaded_file.size
         )
 
@@ -48,7 +47,14 @@ def upload_file_to_minio(bucket_name, uploaded_file):
 
 def download_file (bucket_name: str, filename: str):
     try:
-        response = MinioClient.get_object(bucket_name, filename)
+        client = Minio(
+            os.getenv('MINIO_URL'),
+            access_key=os.getenv("MINIO_ACCESS_KEY"),
+            secret_key=os.getenv("MINIO_SECRET_KEY"),
+            secure=False
+        )
+        
+        response = client.get_object(bucket_name, filename)
         return response
     except S3Error as exc:
         print("An error occurred:", exc)
@@ -59,7 +65,14 @@ def download_file (bucket_name: str, filename: str):
 
 def get_download_url (bucket_name: str, filename: str):
     try:
-        url = MinioClient.get_presigned_url(
+        client = Minio(
+            os.getenv('MINIO_URL'),
+            access_key=os.getenv("MINIO_ACCESS_KEY"),
+            secret_key=os.getenv("MINIO_SECRET_KEY"),
+            secure=False
+        )
+        
+        url = client.get_presigned_url(
             "GET",
             bucket_name,
             filename,
