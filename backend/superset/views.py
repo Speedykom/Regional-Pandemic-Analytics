@@ -57,9 +57,9 @@ class GuestTokenApi(APIView):
         
         payload = {
             "user": {
-                "username": "igad_ui_",
-                "first_name": "Igad",
-                "last_name": "Frontend"
+                "username": os.getenv("BACKEND_SUPERSET_GUEST_USERNAME"),
+                "first_name": os.getenv("BACKEND_SUPERSET_GUEST_FIRSTNAME"),
+                "last_name": os.getenv("BACKEND_SUPERSET_GUEST_LASTNAME")
             },
             "resources": [{
                 "type": "dashboard",
