@@ -191,7 +191,7 @@ MINIO_ENDPOINT = os.getenv("MINIO_URL")
 
 EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv("MAIL_HOST")
-EMAIL_PORT = int(os.getenv("MAIL_PORT"))
+EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv("MAIL_USER")
 EMAIL_HOST_PASSWORD = os.getenv("MAIL_PASSWORD")
 EMAIL_USE_TLS = True
