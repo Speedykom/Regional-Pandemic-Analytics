@@ -1453,12 +1453,16 @@ GLOBAL_ASYNC_QUERIES_WEBSOCKET_URL = "ws://127.0.0.1:8080/"
 
 # Embedded config options
 GUEST_ROLE_NAME = "Public"
-GUEST_TOKEN_JWT_SECRET = "test-guest-secret-change-me"
+GUEST_TOKEN_JWT_SECRET = "UKMzEm3yIuFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E"
 GUEST_TOKEN_JWT_ALGO = "HS256"
 GUEST_TOKEN_HEADER_NAME = "X-GuestToken"
 GUEST_TOKEN_JWT_EXP_SECONDS = 300  # 5 minutes
 # Guest token audience for the embedded superset, either string or callable
 GUEST_TOKEN_JWT_AUDIENCE: Optional[Union[Callable[[], str], str]] = None
+
+CSRF_ENABLED = False
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_HTTPONLY = False
 
 # A SQL dataset health check. Note if enabled it is strongly advised that the callable
 # be memoized to aid with performance, i.e.,
@@ -1555,12 +1559,6 @@ class ExtraRelatedQueryFilters(TypedDict, total=False):
 
 
 EXTRA_RELATED_QUERY_FILTERS: ExtraRelatedQueryFilters = {}
-
-GUEST_ROLE_NAME = "Gamma"
-CSRF_ENABLED = False
-SESSION_COOKIE_SAMESITE = "None"
-SESSION_COOKIE_HTTPONLY = False
-
 
 # -------------------------------------------------------------------
 # *                WARNING:  STOP EDITING  HERE                    *
