@@ -1,6 +1,6 @@
 from django.urls import path
 
-from roles import views
+from . import views
 
 urlpatterns = [
     path('', views.CreateViewRoles.as_view()),  # create role
