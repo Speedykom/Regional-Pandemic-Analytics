@@ -1,5 +1,5 @@
 from django.urls import path
-from superset import views
+from . import views
 
 urlpatterns = [
     path('superset/', views.ListDashboardsAPI.as_view()),  # list dashboards
