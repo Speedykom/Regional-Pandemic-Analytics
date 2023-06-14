@@ -1,21 +1,21 @@
-import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import { useEffect } from "react";
 import { embedDashboard } from "@superset-ui/embedded-sdk";
 import { useRouter } from "next/router";
+import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 
 interface RouterQuery {
-  dashboardUUID?: string;
+  id?: string;
   dashboardTitle?: string;
 }
 
 export default function SupersetDashboard() {
   const router = useRouter();
 
-  const { dashboardUUID, dashboardTitle } = router.query as RouterQuery;
+  const { id, dashboardTitle } = router.query as RouterQuery;
 
   const getGuestToken = async () => {
     const queryParams = new URLSearchParams({
-      dashboardUUID: String(dashboardUUID),
+      dashboardUUID: String(id),
     });
     const response = await fetch(`/api/get-guest-token/?${queryParams}`);
     const token = await response.json();
@@ -27,7 +27,7 @@ export default function SupersetDashboard() {
       const mountPoint = document.getElementById("igad-covid-dashboard");
       if (mountPoint) {
         await embedDashboard({
-          id: `${dashboardUUID}`,
+          id: `${id}`,
           supersetDomain: `${process.env.NEXT_PUBLIC_SUPERSET_URL}`,
           mountPoint,
           fetchGuestToken: () => getGuestToken(),
