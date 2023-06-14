@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from superset.auths import get_auth_token
+from . import auths
 import uuid
 
 class ListDashboardsAPI(APIView):
@@ -14,7 +14,7 @@ class ListDashboardsAPI(APIView):
     permission_classes = [AllowAny,]
     
     #Login to superset
-    auth_response = get_auth_token()
+    auth_response = auths.get_auth_token()
     
     def get(self, request):
         if self.auth_response['status'] != 200:
@@ -42,7 +42,7 @@ class GuestTokenApi(APIView):
     permission_classes = [AllowAny,]
     
     #Login to superset
-    auth_response = get_auth_token()
+    auth_response = auths.get_auth_token()
     
     def get(self, request):
         if self.auth_response['status'] != 200:
