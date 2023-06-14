@@ -26,26 +26,6 @@ export const DashboardList = () => {
 		}
 	};
 
-	const btnViewClick = async (
-		e: React.MouseEvent<HTMLButtonElement>,
-		id: string,
-		dashboardTitle: string
-	) => {
-		e.preventDefault();
-		try {
-			const response = await axios.get(
-				`${api_url}/api/v1/dashboard/${id}/embedded`
-			);
-			const dashboardUUID = response?.data?.result?.uuid;
-			router.push({
-				pathname: `/dashboard/superset-dashboards/${dashboardUUID}/`,
-				query: { dashboardTitle },
-			});
-		} catch (error) {
-			console.error("Error fetching item:", error);
-		}
-	};
-
 	const fetchDashboards = async () => {
 		try {
 			setLoading(true);
