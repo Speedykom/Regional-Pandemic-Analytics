@@ -35,7 +35,7 @@ urlpatterns = [
             cache_timeout=0), name='schema-redoc'),
 
     ## ---------------------- Auth Endpoints -----------------------------------
-    path('', include('auth.urls')),
+    path('auth', include('auth.urls')),
 
     # ---------------------- User Management Endpoints --------------------------
     path('account/user', views.CreateUserAPI.as_view()),  # Create User
@@ -48,10 +48,10 @@ urlpatterns = [
     path('account/user/avatar/get', views.AvatarDownload.as_view()), # download avatar
     
     # ---------------------- API Role Endpoints --------------------------
-    path('', include('roles.urls')),
+    path('role', include('roles.urls')),
     
     # ---------------------- API Superset Endpoints --------------------------
-    path('', include('superset.urls')),
+    path('superset', include('superset.urls')),
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
     path('process', CreateProcess.as_view()),
