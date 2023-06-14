@@ -1,13 +1,14 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import { Unauthorised } from "@/common/components/common/unauth";
-import { appRoles, roles } from "@/common/utils/auth";
 import { RoleList } from "@/modules/roles/views/List";
+import secureLocalStorage from "react-secure-storage";
 
 export const LoadRoles = () => {
-	const check: boolean = roles?.includes(appRoles.ADMINISTRATOR);
+	const userRole: any = secureLocalStorage.getItem("user_role");
+	const permits = userRole?.attributes;
 	return (
 		<DashboardFrame>
-			{check ? <RoleList /> : <Unauthorised />}
+			{permits?.Role && permits?.Role?.read ? <RoleList /> : <Unauthorised />}
 		</DashboardFrame>
 	);
 };
