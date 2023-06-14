@@ -8,7 +8,7 @@ def upload_file_to_minio(bucket_name, uploaded_file):
     try:
         # Create a client with the MinIO server and credentials.
         client = Minio(
-            os.getenv('MINIO_URL'),
+            endpoint=os.getenv('MINIO_URL'),
             access_key=os.getenv("MINIO_ACCESS_KEY"),
             secret_key=os.getenv("MINIO_SECRET_KEY"),
             secure=False
@@ -48,7 +48,7 @@ def upload_file_to_minio(bucket_name, uploaded_file):
 def download_file (bucket_name: str, filename: str):
     try:
         client = Minio(
-            os.getenv('MINIO_URL'),
+            endpoint=os.getenv('MINIO_URL'),
             access_key=os.getenv("MINIO_ACCESS_KEY"),
             secret_key=os.getenv("MINIO_SECRET_KEY"),
             secure=False
@@ -66,7 +66,7 @@ def download_file (bucket_name: str, filename: str):
 def get_download_url (bucket_name: str, filename: str):
     try:
         client = Minio(
-            os.getenv('MINIO_URL'),
+            endpoint=os.getenv('MINIO_URL'),
             access_key=os.getenv("MINIO_ACCESS_KEY"),
             secret_key=os.getenv("MINIO_SECRET_KEY"),
             secure=False
