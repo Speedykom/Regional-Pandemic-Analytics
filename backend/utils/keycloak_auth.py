@@ -1,7 +1,7 @@
 import requests
 import os
 
-from utils.env_configs import (
+from env_configs import (
     KEYCLOAK_ADMIN_AUTH_URL, 
     KEYCLOAK_ADMIN_CLIENT_ID, 
     KEYCLOAK_ADMIN_CLIENT_SECRET, 

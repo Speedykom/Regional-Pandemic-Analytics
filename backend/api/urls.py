@@ -52,8 +52,6 @@ urlpatterns = [
     
     # ---------------------- API Superset Endpoints --------------------------
     path('', include('superset.urls')),
-    
-    # ---------------------- End of User Management Endpoints ----------------------------
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
     path('process', CreateProcess.as_view()),
@@ -68,14 +66,10 @@ urlpatterns = [
     # endpoint for uploading data
     path('data/upload/', DataUploadAPI.as_view()),
 
-    # ---------------------- End of Data Upload Endpoints -----------------------------------
-
     # ---------------------- Hop Endpoints ------------------------------------------
 
     # endpoint for uploading data
     path('hop/', ListHopAPIView.as_view()),
     path('hop/new/', NewHopAPIView.as_view()),
     path('hop/<str:filename>/', GetSingleHopAPIView.as_view()),
-
-    # ---------------------- End of Hop Endpoints -----------------------------------
 ]
