@@ -58,6 +58,7 @@ class GuestTokenApi(APIView):
         headers = {
             'Content-Type': "application/json",
             'Authorization': f"Bearer ${self.auth_response['token']['access_token']}",
+            'X-CSRF-Token': f"{guest_token['token']}"
         }
         
         payload = {
