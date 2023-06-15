@@ -246,7 +246,7 @@ SQLALCHEMY_ENCRYPTED_FIELD_TYPE_ADAPTER = (  # pylint: disable=invalid-name
 QUERY_SEARCH_LIMIT = 1000
 
 # Flask-WTF flag for CSRF
-WTF_CSRF_ENABLED = False
+WTF_CSRF_ENABLED = True
 
 # Add endpoints that need to be exempt from CSRF protection
 WTF_CSRF_EXEMPT_LIST = [
@@ -1384,7 +1384,7 @@ RLS_FORM_QUERY_REL_FIELDS: Optional[Dict[str, List[List[Any]]]] = None
 # for details
 #
 SESSION_COOKIE_HTTPONLY = False  # Prevent cookie from being read by frontend JS?
-SESSION_COOKIE_SECURE = True  # Prevent cookie from being transmitted over non-tls?
+SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
 SESSION_COOKIE_SAMESITE: Optional[Literal["None", "Lax", "Strict"]] = "None"
 
 # Cache static resources.
