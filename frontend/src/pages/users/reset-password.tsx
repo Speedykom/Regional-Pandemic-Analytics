@@ -1,4 +1,6 @@
+import { api_url } from "@/common/utils/auth";
 import { OpenNotification } from "@/common/utils/notify";
+
 import { Button, Form, Input } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -10,7 +12,7 @@ export const ResetPassword = () => {
 		console.log({ values });
 		await axios
 			.post(
-				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/reset/password-request`,
+				`${api_url}/api/auth/request-verify`,
 				values,
 				{
 					headers: {
