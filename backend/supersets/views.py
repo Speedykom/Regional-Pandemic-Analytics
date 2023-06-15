@@ -20,7 +20,7 @@ class ListDashboardsAPI(APIView):
         if self.auth_response['status'] != 200:
             return Response({'errorMessage': self.auth_response['message']}, status=self.auth_response['status'])
         
-        url = f"{os.getenv('SUPERSET_BASE_URL')}/api/v1/dashboard/"
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/"
         
         headers = {
             'Content-Type': "application/json",
@@ -48,11 +48,19 @@ class GuestTokenApi(APIView):
         if self.auth_response['status'] != 200:
             return Response({'errorMessage': self.auth_response['message']}, status=self.auth_response['status'])
         
-        url = f"{os.getenv('SUPERSET_BASE_URL')}/api/v1/security/guest_token/"
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/security/guest_token/"
+        
+        guest_token = auths.get_csrf_token()
+        
+        if guest_token['status'] != 200:
+            return Response({'errorMessage': guest_token['message']}, status=guest_token['status'])
+            
+        print(guest_token['token'])
         
         headers = {
             'Content-Type': "application/json",
-            'Authorization': f"Bearer ${self.auth_response['token']['access_token']}"
+            'Authorization': f"Bearer ${self.auth_response['token']['access_token']}",
+            'X-CSRF-Token': f"{guest_token['token']}"
         }
         
         payload = {
