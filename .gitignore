@@ -5,7 +5,7 @@
 /hop/pipelines/watchRuns.txt
 
 frontend/.env
-backend/.env
+# backend/.env
 
 .vscode/
 
