@@ -40,7 +40,7 @@ export default async function handler(
       }
     );
     const jsonResponse = await response.json();
-    return res.status(200).json({ guestToken: jsonResponse?.token });
+    return res.status(200).json({ accessToken, guestToken: jsonResponse });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal Server Error" });
