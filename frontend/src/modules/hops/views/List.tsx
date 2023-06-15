@@ -138,7 +138,7 @@ export const HopList = () => {
         formData,
         {
           headers: {
-            Authorization: `Token 25746e327dd2cc29ae304259574e381d9a334a39`, // `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         }
       )
