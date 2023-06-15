@@ -23,7 +23,7 @@ export default function DashboardFrame({ children }: Props) {
       if (authState !== "authenticated") {
         secureLocalStorage.clear();
         axios
-          .post("/api/accounts/logout/")
+          .post("/api/auth/logout/")
           .then(() => {
             setIsAuthenticated(false); // Update isAuthenticated state
             router.push("/");
