@@ -198,6 +198,8 @@ services:
       - DB_PASSWORD=${BACKEND_DB_PASSWORD}
       - DB_HOST=${BACKEND_DB_HOST}
       - DB_PORT=${BACKEND_DB_PORT}
+      - CORS_ORIGIN_WHITELIST=${BACKEND_CORS_ORIGIN_WHITELIST}
+
 
   # =======
   #  Druid
