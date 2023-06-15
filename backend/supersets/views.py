@@ -54,8 +54,6 @@ class GuestTokenApi(APIView):
         
         if guest_token['status'] != 200:
             return Response({'errorMessage': guest_token['message']}, status=guest_token['status'])
-            
-        print(guest_token['token'])
         
         headers = {
             'Content-Type': "application/json",
