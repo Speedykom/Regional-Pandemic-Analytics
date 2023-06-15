@@ -100,23 +100,33 @@ export const useProcessChainList = ({ loadData, viewProcess }: Props) => {
       dataIndex: "schedule_interval",
       key: "schedule_interval",
       render: (schedule_interval) => {
-        return <p>{schedule_interval.value}</p>;
+        return <p>{schedule_interval}</p>;
       },
     },
     {
       title: "Next Run",
-      dataIndex: "next_dagrun",
-      key: "next_dagrun",
-      render: (date) => {
-        return <p>{new Date(date).toUTCString()}</p>;
+      dataIndex: "airflow",
+      key: "next_run",
+      render: (data) => {
+        return (
+          <p>
+            {data
+              ? new Date(data?.next_dagrun).toUTCString()
+              : "Dag creation inprogress"}
+          </p>
+        );
       },
     },
     {
       title: "Active",
-      dataIndex: "is_active",
+      dataIndex: "airflow",
       key: "is_active",
-      render: (state) => {
-        return <p>{state ? "Yes" : "No"}</p>;
+      render: (data) => {
+        return (
+          <p>
+            {data ? (data.is_active ? "Yes" : "No") : "Dag creation inprogress"}
+          </p>
+        );
       },
     },
     {
