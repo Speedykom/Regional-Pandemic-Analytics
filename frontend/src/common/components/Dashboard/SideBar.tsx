@@ -7,6 +7,7 @@ import {
 	UsersIcon,
 	CircleStackIcon,
 	DocumentIcon,
+	LockClosedIcon
 } from "@heroicons/react/24/solid";
 import { useRouter } from "next/router";
 import secureLocalStorage from "react-secure-storage";
@@ -18,6 +19,8 @@ interface props {
 const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 	const router = useRouter();
 	const user: any = secureLocalStorage.getItem("user");
+	const userRole: any = secureLocalStorage.getItem("user_role");
+	const permits = userRole?.attributes;
 
 	return (
 		<div ref={ref} className="fixed z-50 w-56 h-full bg-white shadow-lg">
@@ -32,10 +35,10 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 			</div>
 
 			<div className="flex flex-col">
-				<Link href="/dashboard/">
+				<Link href="/home/">
 					<div
 						className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-							router.pathname == "/dashboard"
+							router.pathname == "/home"
 								? "bg-green-100 text-green-500"
 								: "text-gray-400 hover:bg-green-100 hover:text-green-500"
 						}`}
@@ -48,71 +51,80 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 						</div>
 					</div>
 				</Link>
-				<Link href="/dashboard/superset-dashboards/">
-					<div
-						className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-							router.pathname == "/superset-dashboards"
-								? "bg-green-100 text-green-500"
-								: "text-gray-400 hover:bg-green-100 hover:text-green-500"
-						}`}
-					>
-						<div className="mr-2">
-							<ChartBarSquareIcon className="h-5 w-5" />
+				{permits?.Dashboard && permits?.Dashboard?.read && (
+					<Link href="/dashboards">
+						<div
+							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+								router.pathname == "/dashboards"
+									? "bg-green-100 text-green-500"
+									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
+							}`}
+						>
+							<div className="mr-2">
+								<ChartBarSquareIcon className="h-5 w-5" />
+							</div>
+							<div>
+								<p>Dashboards</p>
+							</div>
 						</div>
-						<div>
-							<p>Dashboards</p>
+					</Link>
+				)}
+				{permits?.Chart && permits?.Chart?.read && (
+					<Link href="/home/charts">
+						<div
+							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+								router.pathname == "/home/charts"
+									? "bg-green-100 text-green-500"
+									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
+							}`}
+						>
+							<div className="mr-2">
+								<ChevronDoubleRightIcon className="h-5 w-5" />
+							</div>
+							<div>
+								<p>Chart(s)</p>
+							</div>
 						</div>
-					</div>
-				</Link>
-				<Link href="/dashboard/charts">
-					<div
-						className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-							router.pathname == "/dashboard/charts"
-								? "bg-green-100 text-green-500"
-								: "text-gray-400 hover:bg-green-100 hover:text-green-500"
-						}`}
-					>
-						<div className="mr-2">
-							<ChevronDoubleRightIcon className="h-5 w-5" />
+					</Link>
+				)}
+				{permits?.ProcessChain && permits?.ProcessChain?.read && (
+					<Link href="/process-chains">
+						<div
+							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+								router.pathname == "/process-chains"
+									? "bg-green-100 text-green-500"
+									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
+							}`}
+						>
+							<div className="mr-2">
+								<ChevronDoubleRightIcon className="h-5 w-5" />
+							</div>
+							<div>
+								<p>Process Chain(s)</p>
+							</div>
 						</div>
-						<div>
-							<p>Chart(s)</p>
+					</Link>
+				)}
+				{permits?.Data && permits?.Data?.read && (
+					<Link href="/home/data">
+						<div
+							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+								router.pathname == "/home/data"
+									? "bg-green-100 text-green-500"
+									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
+							}`}
+						>
+							<div className="mr-2">
+								<CircleStackIcon className="h-5 w-5" />
+							</div>
+							<div>
+								<p>Data</p>
+							</div>
 						</div>
-					</div>
-				</Link>
-				<Link href="/process-chains">
-					<div
-						className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-							router.pathname == "/process-chains"
-								? "bg-green-100 text-green-500"
-								: "text-gray-400 hover:bg-green-100 hover:text-green-500"
-						}`}
-					>
-						<div className="mr-2">
-							<ChevronDoubleRightIcon className="h-5 w-5" />
-						</div>
-						<div>
-							<p>Process Chain(s)</p>
-						</div>
-					</div>
-				</Link>
-				<Link href="/dashboard/data">
-					<div
-						className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-							router.pathname == "/dashboard/data"
-								? "bg-green-100 text-green-500"
-								: "text-gray-400 hover:bg-green-100 hover:text-green-500"
-						}`}
-					>
-						<div className="mr-2">
-							<CircleStackIcon className="h-5 w-5" />
-						</div>
-						<div>
-							<p>Data</p>
-						</div>
-					</div>
-				</Link>
-				{user?.realm_access?.roles?.includes("Administrator") && (
+					</Link>
+				)}
+
+				{permits?.User && permits?.User?.read && (
 					<Link href="/users">
 						<div
 							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
@@ -130,7 +142,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 						</div>
 					</Link>
 				)}
-				{user?.realm_access?.roles?.includes("Administrator") && (
+				{permits?.Role && permits?.Role?.read && (
 					<Link href="/roles">
 						<div
 							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
@@ -140,7 +152,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 							}`}
 						>
 							<div className="mr-2">
-								<UsersIcon className="h-5 w-5" />
+								<LockClosedIcon className="h-5 w-5" />
 							</div>
 							<div>
 								<p>App Roles</p>

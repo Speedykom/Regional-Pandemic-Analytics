@@ -7,6 +7,7 @@ import { ShowMessage } from "@/common/components/ShowMessage";
 import jwt_decode from "jwt-decode";
 import secureLocalStorage from "react-secure-storage";
 import axios from "axios";
+import { getUserRole } from "@/common/utils/auth";
 
 export default function LoginForm() {
   const [loading, setLoading] = useState(false);
@@ -17,14 +18,16 @@ export default function LoginForm() {
     setLoading(true);
 
     axios
-      .post("/api/accounts/login/", JSON.stringify(data), {
+      .post("/api/auth/login", JSON.stringify(data), {
         headers: {
           "Content-Type": "application/json",
         },
       })
-      .then((res: any) => {
+      .then(async (res: any) => {
         if (res.status == 200) {
           let payload: any = jwt_decode(res?.data?.result?.access_token);
+          const role = await getUserRole(payload?.realm_access?.roles)
+          secureLocalStorage.setItem("user_role", role);
 
           // @ts-ignore
           secureLocalStorage.setItem("username", payload?.given_name);
@@ -37,7 +40,7 @@ export default function LoginForm() {
             Buffer.from(data.password).toString("base64")
           );
           secureLocalStorage.setItem("sua", "authenticated");
-          router.push("/dashboard/");
+          router.push("/home");
         }
       })
       .catch((res: any) => {
