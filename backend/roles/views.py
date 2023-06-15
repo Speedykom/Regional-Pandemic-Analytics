@@ -36,7 +36,9 @@ class CreateViewRoles(APIView):
         response = requests.get(f"{APP_USER_ROLES}/", headers=headers)
 
         if response.status_code != 200:
+            print(response.json())
             return Response(response.reason, status=response.status_code)
+
 
         role_data = response.json()
         return Response(role_data, status=status.HTTP_200_OK)
