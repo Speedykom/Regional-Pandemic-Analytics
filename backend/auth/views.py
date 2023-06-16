@@ -96,9 +96,6 @@ class KeyCloakLoginAPI(APIView):
         
 class PasswordAPI(APIView):
     permission_classes = [AllowAny,]
-    
-    # Login to admin
-    admin_login = keycloak_admin_login()
      
     """
     API view to create, update Keycloak user password after reset request
@@ -112,17 +109,20 @@ class PasswordAPI(APIView):
         }
     ))
     def post(self, request, *args, **kwargs):
+        # Login to admin
+        admin_login = keycloak_admin_login()
+        
         form_data = {
             "newPassword": request.data.get("newPassword", None),
             "confirmPassword": request.data.get("lastName", None),
             "token": request.data.get("token", None),
         }
 
-        if self.admin_login["status"] != 200:
-            return Response(self.admin_login["data"], status=self.admin_login["status"])
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
 
         headers = {
-            'Authorization': f"Bearer {self.admin_login['data']['access_token']}",
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
             'Content-Type': "application/json",
             'cache-control': "no-cache"
         }
@@ -156,17 +156,20 @@ class PasswordAPI(APIView):
         }
     ))
     def put(self, request, *args, **kwargs):
+        # Login to admin
+        admin_login = keycloak_admin_login()
+        
         form_data = {
             "id": request.data.get("id", None),
             "newPassword": request.data.get("newPassword", None),
             "confirmPassword": request.data.get("lastName", None),
         }
 
-        if self.admin_login["status"] != 200:
-            return Response(self.admin_login["data"], status=self.admin_login["status"])
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
 
         headers = {
-            'Authorization': f"Bearer {self.admin_login['data']['access_token']}",
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
             'Content-Type': "application/json",
             'cache-control': "no-cache"
         }
@@ -192,16 +195,16 @@ class ResetPasswordAPI(APIView):
     API view to reset users password
     """
     permission_classes = [AllowAny, ]
-    
-    # Login to admin
-    admin_login = keycloak_admin_login()
 
     def post(self, request, **kwargs):
-        if self.admin_login["status"] != 200:
-            return Response(self.admin_login["data"], status=self.admin_login["status"])
+        # Login to admin
+        admin_login = keycloak_admin_login()
+        
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
 
         headers = {
-            'Authorization': f"Bearer {self.admin_login['data']['access_token']}",
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
             'Content-Type': "application/json"
         }
 

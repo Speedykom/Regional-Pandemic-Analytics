@@ -1,40 +1,20 @@
 import { useEffect } from "react";
 import { embedDashboard } from "@superset-ui/embedded-sdk";
-import { useRouter } from "next/router";
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-
-interface RouterQuery {
-  id?: string;
-  dashboardTitle?: string;
-}
+import { getGuestToken } from "@/common/utils/auth";
 
 export default function SupersetDashboard() {
-  const router = useRouter();
-
-  const { id, dashboardTitle } = router.query as RouterQuery;
-
-  const getGuestToken = async () => {
-    const queryParams = new URLSearchParams({
-      dashboardUUID: String(id),
-    });
-    const response = await fetch(`/api/get-guest-token/?${queryParams}`);
-    const token = await response.json();
-    return token?.guestToken;
-  };
-
   useEffect(() => {
     const embed = async () => {
       const mountPoint = document.getElementById("igad-covid-dashboard");
       if (mountPoint) {
         await embedDashboard({
-          id: `${id}`,
-          supersetDomain: `${process.env.NEXT_PUBLIC_SUPERSET_URL}`,
+          id: `f3325063-a85f-46d1-88de-03f78c92d533`,
+          supersetDomain: `http://localhost:8088`,
           mountPoint,
-          fetchGuestToken: () => getGuestToken(),
+          fetchGuestToken: () => getGuestToken(`f3325063-a85f-46d1-88de-03f78c92d533`),
           dashboardUiConfig: {
             hideTitle: true,
-            hideChartControls: true,
-            hideTab: true,
           },
         });
       }
@@ -44,7 +24,7 @@ export default function SupersetDashboard() {
     }
   }, []);
   return (
-    <DashboardFrame title={dashboardTitle || ""}>
+    <DashboardFrame title={"Dashboard"}>
       <div id="igad-covid-dashboard" />
     </DashboardFrame>
   );
