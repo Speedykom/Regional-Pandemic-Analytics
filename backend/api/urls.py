@@ -61,6 +61,7 @@ urlpatterns = [
     # ---------------------- API Superset Endpoints --------------------------
     path('superset/', superset_view.ListDashboardsAPI.as_view()),  # list dashboards
     path('superset/guest/token', superset_view.GuestTokenApi.as_view()),  # get guest token
+    path('superset/csrf/token', superset_view.CsrfTokenApi.as_view()),  # get csrf token
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
     path('process', CreateProcess.as_view()),
