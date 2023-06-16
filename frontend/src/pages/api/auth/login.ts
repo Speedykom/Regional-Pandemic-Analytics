@@ -23,6 +23,7 @@ export default async function handler(
   try {
     const response = await axios.post(`${api_url}/api/auth/key-auth`, body, {
       headers: { 'Content-Type': 'application/json' },
+      withCredentials: false
     });
 
     if (response.status !== 200)
