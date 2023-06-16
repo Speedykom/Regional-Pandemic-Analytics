@@ -43,7 +43,7 @@ export const useDashboards = ({ view }: props) => {
 			),
 			className: "text-gray-700",
 			ellipsis: true,
-			width: 250,
+			width: 350,
 		},
 		{
 			title: "Created By",
@@ -58,7 +58,7 @@ export const useDashboards = ({ view }: props) => {
 			),
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
-			width: 200,
+			width: 250,
 		},
 		{
 			title: "Created",
@@ -82,7 +82,7 @@ export const useDashboards = ({ view }: props) => {
 			),
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
-			width: 200,
+			width: 250,
 		},
 		{
 			title: "Modified",
@@ -90,34 +90,6 @@ export const useDashboards = ({ view }: props) => {
 			dataIndex: "changed_on_delta_humanized",
 			render: (changed_on_delta_humanized, record) =>
 				record.changed_on_delta_humanized,
-			className: "text-gray-700 font-sans",
-			ellipsis: true,
-		},
-		{
-			title: "Managed Externally",
-			key: "is_managed_externally",
-			dataIndex: "is_managed_externally",
-			render: (is_managed_externally, record) => (
-				<div className="flex">
-					{record.is_managed_externally ? (
-						<Tag
-							className="flex items-center"
-							icon={<CheckCircleOutlined />}
-							color="processing"
-						>
-							True
-						</Tag>
-					) : (
-						<Tag
-							className="flex items-center"
-							icon={<ClockCircleOutlined />}
-							color="default"
-						>
-							False
-						</Tag>
-					)}{" "}
-				</div>
-			),
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
 		},
@@ -149,12 +121,12 @@ export const useDashboards = ({ view }: props) => {
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
 		},
-		{
-			align: "right",
-			width: 100,
-			key: "action",
-			render: (id, record) => action(record.id, record.dashboard_title),
-		},
+		// {
+		// 	align: "right",
+		// 	width: 100,
+		// 	key: "action",
+		// 	render: (id, record) => action(record.id, record.dashboard_title),
+		// },
 	];
 
 	return { columns, loading: false };
