@@ -45,6 +45,10 @@ export const DashboardList = () => {
 		}
 	};
 
+	const rowAction = (id: string) => {
+		router.push(`/dashboards/${id}`)
+	}
+
 	useEffect(() => {
 		fetchDashboards();
 	}, [])
@@ -70,6 +74,9 @@ export const DashboardList = () => {
 						loading={loading}
 						rows={data}
 						columns={columns}
+						onRow={(record: any) => ({
+							onClick: () => rowAction(record.id),
+						  })}
 					/>
 				</div>
 			</section>
