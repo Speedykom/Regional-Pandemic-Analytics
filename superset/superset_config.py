@@ -53,7 +53,7 @@ from cachelib.base import BaseCache
 from celery.schedules import crontab
 from dateutil import tz
 from flask import Blueprint
-from flask_appbuilder.security.manager import AUTH_DB
+from flask_appbuilder.security.manager import AUTH_OAUTH
 from pandas._libs.parsers import STR_NA_VALUES  # pylint: disable=no-name-in-module
 from sqlalchemy.orm.query import Query
 
@@ -69,6 +69,7 @@ from superset.utils.core import is_test, NO_TIME_RANGE, parse_boolean_string
 from superset.utils.encrypt import SQLAlchemyUtilsAdapter
 from superset.utils.log import DBEventLogger
 from superset.utils.logging_configurator import DefaultLoggingConfigurator
+from superset.security import SupersetSecurityManager
 
 logger = logging.getLogger(__name__)
 
@@ -318,7 +319,41 @@ DRUID_ANALYSIS_TYPES = ["cardinality"]
 # AUTH_DB : Is for database (username/password)
 # AUTH_LDAP : Is for LDAP
 # AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
-AUTH_TYPE = AUTH_DB
+
+PROVIDER_NAME = os.getenv("PROVIDER_NAME")
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+
+OIDC_ISSUER = os.getenv("OIDC_ISSUER")
+KEYCLOAK_BASE_URL = os.getenv("KEYCLOAK_BASE_URL")
+KEYCLOAK_TOKEN_URL = os.getenv("KEYCLOAK_TOKEN_URL")
+KEYCLOAK_AUTH_URL = os.getenv("KEYCLOAK_AUTH_URL")
+
+AUTH_TYPE = AUTH_OAUTH
+
+OAUTH_PROVIDERS = [
+    {   'name': PROVIDER_NAME,
+        'token_key':'access_token', # Name of the token in the response of access_token_url
+        'icon':'fa-key',   # Icon for the provider
+        'remote_app': {
+            'client_id': CLIENT_ID,
+            'client_secret': CLIENT_SECRET,
+            'client_kwargs':{
+                'scope': 'email profile'               # Scope for the Authorization
+            },
+            'api_base_url': KEYCLOAK_BASE_URL,
+            'request_token_url': None,
+            'access_token_url': KEYCLOAK_TOKEN_URL,
+            'authorize_url': KEYCLOAK_AUTH_URL
+        }
+    }
+]
+
+# Will allow user self registration, allowing to create Flask users from Authorized User
+AUTH_USER_REGISTRATION = True
+
+# The default user self registration role
+AUTH_USER_REGISTRATION_ROLE = "Gamma"
 
 # Uncomment to setup Full admin role name
 # AUTH_ROLE_ADMIN = 'Admin'
@@ -1589,3 +1624,14 @@ elif importlib.util.find_spec("superset_config") and not is_test():
     except Exception:
         logger.exception("Found but failed to import local superset_config")
         raise
+
+class CustomSsoSecurityManager(SupersetSecurityManager):
+
+    def oauth_user_info(self, provider, response=None):
+        logging.debug("Oauth2 provider: {0}.".format(provider))
+        if provider == PROVIDER_NAME:
+            me = self.appbuilder.sm.oauth_remotes[provider].get('userDetails').data
+            logging.debug("user_data: {0}".format(me))
+            return { 'name' : me['name'], 'email' : me['email'], 'id' : me['user_name'], 'username' : me['user_name'], 'first_name':'', 'last_name':''}
+
+CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager
