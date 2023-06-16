@@ -52,8 +52,8 @@ class GuestTokenApi(APIView):
         
         headers = {
             'Content-Type': "application/json",
-            'Authorization': f"Bearer ${guest_token['token']['access_token']}",
-            'X-CSRF-TOKEN': f"{guest_token['token']['csrf_token']}"
+            'Authorization': "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjg2OTA5MDQ1LCJqdGkiOiIxYWUyOGNjZS00YmQ3LTRlYTYtOTMxMi1jMzhiMGE2OGY2ZWYiLCJ0eXBlIjoiYWNjZXNzIiwic3ViIjoxLCJuYmYiOjE2ODY5MDkwNDUsImV4cCI6MTY4NjkwOTk0NX0.U4bLR3o8cRdubTY0ZcO8aRIe9Blv0QxQ851FM3zSeeo",
+            'X-CSRF-TOKEN': "ImRhYTk4NDFmYjczMjZkODcxY2FiMzY0MzJiNTRkMzEzMjRlYTVmOWYi.ZIwwog.eB8CRSM5aMXl6titagUZ9GOu48s"
         }
         
         payload = {
