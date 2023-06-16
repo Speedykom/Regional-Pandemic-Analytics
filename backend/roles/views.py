@@ -17,18 +17,18 @@ from utils.env_configs import (
 #Api to create and list all roles
 class CreateViewRoles(APIView):
     permission_classes = [AllowAny, ]
-
-    # Login to admin
-    admin_login = keycloak_admin_login()
     
     """_api view to get realm roles_
     """
     def get(self, request, *args, **kwargs):
-        if self.admin_login["status"] != 200:
-            return Response(self.admin_login["data"], status=self.admin_login["status"])
+        # Login to admin
+        admin_login = keycloak_admin_login()
+        
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
 
         headers = {
-            'Authorization': f"Bearer {self.admin_login['data']['access_token']}",
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
             'Content-Type': "application/json",
             'cache-control': "no-cache"
         }
@@ -50,12 +50,15 @@ class CreateViewRoles(APIView):
             "name": request.data.get("name", None),
             "description": request.data.get("description", None),
         }
+        
+        # Login to admin
+        admin_login = keycloak_admin_login()
 
-        if self.admin_login["status"] != 200:
-            return Response(self.admin_login["data"], status=self.admin_login["status"])
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
 
         headers = {
-            'Authorization': f"{self.admin_login['data']['token_type']} {self.admin_login['data']['access_token']}",
+            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
             'Content-Type': "application/json",
             'cache-control': "no-cache"
         }
@@ -72,17 +75,17 @@ class CreateViewRoles(APIView):
 class GetEditRole(APIView):
     permission_classes = [AllowAny, ]
     
-    # Login to admin
-    admin_login = keycloak_admin_login()
-    
     """_api view to delete realm roles_
     """
     def delete(self, request, *args, **kwargs):
-        if self.admin_login["status"] != 200:
-            return Response(self.admin_login["data"], status=self.admin_login["status"])
+        # Login to admin
+        admin_login = keycloak_admin_login()
+        
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
 
         headers = {
-            'Authorization': f"{self.admin_login['data']['token_type']} {self.admin_login['data']['access_token']}",
+            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
             'Content-Type': "application/json",
             'cache-control': "no-cache"
         }
@@ -165,11 +168,14 @@ class GetEditRole(APIView):
             form_data['attributes']['Data'] = [json.dumps(Data_pers)]
             form_data['attributes']['ProcessChain'] = [json.dumps(Process_chain_pers)]      
 
-        if self.admin_login["status"] != 200:
-            return Response(self.admin_login["data"], status=self.admin_login["status"])
+        # Login to admin
+        admin_login = keycloak_admin_login()
+        
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
 
         headers = {
-            'Authorization': f"{self.admin_login['data']['token_type']} {self.admin_login['data']['access_token']}",
+            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
             'Content-Type': "application/json",
             'cache-control': "no-cache"
         }
