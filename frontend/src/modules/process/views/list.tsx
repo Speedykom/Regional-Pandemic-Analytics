@@ -9,6 +9,8 @@ import { ViewDag } from "./view";
 import axios from "axios";
 import { getData } from "@/common/utils";
 import SelectHopModal from "@/common/components/SelectHopModal";
+import { useTemplate } from "@/modules/template/hooks";
+import { useFindAllQuery } from "@/modules/template/template";
 
 export default function ProcessChinList() {
   const [addProcess, setProcess] = useState(false);
@@ -16,8 +18,9 @@ export default function ProcessChinList() {
   const [view, setView] = useState(false);
   const [dag, setDag] = useState<any>();
   const [isShowHopModal, setIsShowHopModal] = useState(false);
-  const [hopData, setHopData] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState<object>({});
+
+  const {data: record} = useFindAllQuery();
 
   const closeAdd = () => {
     setProcess(false);
@@ -64,39 +67,6 @@ export default function ProcessChinList() {
     }
   };
 
-  const [token, setToken] = useState<string>("");
-  const fetchToken = async () => {
-    try {
-      const url = "/api/get-access-token/";
-      const response = await getData(url);
-      setToken(response?.accessToken);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  const fetchHops = async () => {
-    try {
-      const url = `${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}/api/hop/`;
-      await axios
-        .get(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((res) => {
-          setHopData(res?.data?.data);
-        });
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchToken();
-    fetchHops();
-  }, []);
-
   return (
     <>
       <DashboardFrame>
@@ -126,7 +96,7 @@ export default function ProcessChinList() {
         <SelectHopModal
           openModal={isShowHopModal}
           parentCallback={handleHopModalResponseData}
-          hopData={hopData}
+          hopData={record?.data}
         />
 
         <AddProcess
