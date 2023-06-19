@@ -41,15 +41,15 @@ class DashboardEmbed(APIView):
     
     def post(self, request):
         #Login to superset
-        auth_response = auths.get_local_auth_token()
+        auth_response = auths.get_auth_token()
         
         if auth_response['status'] != 200:
             return Response({'errorMessage': auth_response['message']}, status=auth_response['status'])
         
         uid = request.data.get('uid', None)
         
-        # url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{uid}/embedded"
-        url = f"http://localhost:8088/api/v1/dashboard/{uid}/embedded"
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{uid}/embedded"
+        # url = f"http://localhost:8088/api/v1/dashboard/{uid}/embedded"
         
         headers = {
             'Content-Type': "application/json",
@@ -72,13 +72,13 @@ class GetEmbeddable(APIView):
     
     def get(self, request, *args, **kwargs):
         #Login to superset
-        auth_response = auths.get_local_auth_token()
+        auth_response = auths.get_auth_token()
         
         if auth_response['status'] != 200:
             return Response({'errorMessage': auth_response['message']}, status=auth_response['status'])
         
-        # url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{uid}/embedded"
-        url = 'http://localhost:8088/api/v1/dashboard/4/embedded'
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['id']}/embedded"
+        # url = f'http://localhost:8088/api/v1/dashboard/{kwargs["id"]}/embedded'
         
         headers = {
             'Content-Type': 'application/json',
@@ -96,8 +96,8 @@ class GuestTokenApi(APIView):
     permission_classes = [AllowAny,]
     
     def post(self, request):
-        # url = f"{os.getenv('SUPERSET_BASE_URL')}/security/guest_token/"
-        url = 'http://localhost:8088/api/v1/security/guest_token/'
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/security/guest_token/"
+        # url = 'http://localhost:8088/api/v1/security/guest_token/'
         
         guest_token = auths.get_csrf_token()
         
