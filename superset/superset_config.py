@@ -246,9 +246,9 @@ SQLALCHEMY_ENCRYPTED_FIELD_TYPE_ADAPTER = (  # pylint: disable=invalid-name
 QUERY_SEARCH_LIMIT = 1000
 
 # Flask-WTF flag for CSRF
-# WTF_CSRF_ENABLED = False
+WTF_CSRF_ENABLED = True
 
-# # Add endpoints that need to be exempt from CSRF protection
+# Add endpoints that need to be exempt from CSRF protection
 WTF_CSRF_EXEMPT_LIST = [
     "superset.views.core.log",
     "superset.views.core.explore_json",
@@ -270,6 +270,8 @@ SHOW_STACKTRACE = True
 
 # Use all X-Forwarded headers when ENABLE_PROXY_FIX is True.
 # When proxying to a different port, set "x_port" to 0 to avoid downstream issues.
+ENABLE_PROXY_FIX = False
+PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 1, "x_prefix": 1}
 
 # Configuration for scheduling queries from SQL Lab.
 SCHEDULED_QUERIES: Dict[str, Any] = {}
@@ -296,41 +298,6 @@ LOGO_RIGHT_TEXT: Union[Callable[[], str], str] = ""
 # Enables SWAGGER UI for superset openapi spec
 # ex: http://localhost:8080/swagger/v1
 FAB_API_SWAGGER_UI = True
-
-# Embedded config options
-WTF_CSRF_ENABLED = False
-
-SESSION_COOKIE_SAMESITE: None
-SESSION_COOKIE_HTTPONLY = True  # Prevent cookie from being read by frontend JS?
-SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
-
-PUBLIC_ROLE_LIKE = 'Gamma'
-AUTH_ROLE_PUBLIC = 'Public'
-PUBLIC_ROLE_LIKE_GAMMA = True
-GUEST_ROLE_NAME = 'Gamma'
-
-FEATURE_FLAGS = {
-    "ALERT_REPORTS": True,
-    "EMBEDDED_SUPERSET": True
-}
-ENABLE_PROXY_FIX = True
-PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 1, "x_prefix": 1}
-HTTP_HEADERS = {'X-Frame-Options': 'ALLOWALL'}
-
-ENABLE_CORS = False
-CORS_OPTIONS: dict[Any, Any] = {}
-
-ENABLE_JAVASCRIPT_CONTROLS = True
-
-GUEST_ROLE_NAME = "Public"
-GUEST_TOKEN_JWT_SECRET = SECRET_KEY
-GUEST_TOKEN_JWT_ALGO = "HS256"
-GUEST_TOKEN_HEADER_NAME = "X-GuestToken"
-GUEST_TOKEN_JWT_EXP_SECONDS = 300  # 5 minutes
-# Guest token audience for the embedded superset, either string or callable
-GUEST_TOKEN_JWT_AUDIENCE: Callable[[], str] | str | None = None
-
-CSRF_ENABLED = False
 
 # Druid query timezone
 # tz.tzutc() : Using utc timezone
@@ -372,6 +339,14 @@ AUTH_TYPE = AUTH_DB
 # OPENID_PROVIDERS = [
 #    { 'name': 'Yahoo', 'url': 'https://open.login.yahoo.com/' },
 #    { 'name': 'Flickr', 'url': 'https://www.flickr.com/<username>' },
+
+# ---------------------------------------------------
+# Roles config
+# ---------------------------------------------------
+# Grant public role the same set of permissions as for a selected builtin role.
+# This is useful if one wants to enable anonymous users to view
+# dashboards. Explicit grant on specific datasets is still required.
+PUBLIC_ROLE_LIKE: Optional[str] = None
 
 # ---------------------------------------------------
 # Babel config for translations
@@ -438,7 +413,7 @@ DEFAULT_FEATURE_FLAGS: Dict[str, bool] = {
     # this enables programmers to customize certain charts (like the
     # geospatial ones) by inputing javascript in controls. This exposes
     # an XSS security vulnerability
-    "ENABLE_JAVASCRIPT_CONTROLS": True,
+    "ENABLE_JAVASCRIPT_CONTROLS": False,
     "KV_STORE": False,
     # When this feature is enabled, nested types in Presto will be
     # expanded into extra columns and/or arrays. This is experimental,
@@ -446,7 +421,7 @@ DEFAULT_FEATURE_FLAGS: Dict[str, bool] = {
     "PRESTO_EXPAND_DATA": False,
     # Exposes API endpoint to compute thumbnails
     "THUMBNAILS": False,
-    "DASHBOARD_CACHE": True,
+    "DASHBOARD_CACHE": False,
     "REMOVE_SLICE_LEVEL_LABEL_COLORS": False,
     "SHARE_QUERIES_VIA_KV_STORE": False,
     "TAGGING_SYSTEM": False,
@@ -457,14 +432,14 @@ DEFAULT_FEATURE_FLAGS: Dict[str, bool] = {
     # When True, this escapes HTML (rather than rendering it) in Markdown components
     "ESCAPE_MARKDOWN_HTML": False,
     "DASHBOARD_NATIVE_FILTERS": True,
-    "DASHBOARD_CROSS_FILTERS": True,
+    "DASHBOARD_CROSS_FILTERS": False,
     # Feature is under active development and breaking changes are expected
-    "DASHBOARD_NATIVE_FILTERS_SET": True,
-    "DASHBOARD_FILTERS_EXPERIMENTAL": True,
-    "DASHBOARD_VIRTUALIZATION": True,
-    "GLOBAL_ASYNC_QUERIES": True,
+    "DASHBOARD_NATIVE_FILTERS_SET": False,
+    "DASHBOARD_FILTERS_EXPERIMENTAL": False,
+    "DASHBOARD_VIRTUALIZATION": False,
+    "GLOBAL_ASYNC_QUERIES": False,
     "VERSIONED_EXPORT": True,
-    "EMBEDDED_SUPERSET": True,
+    "EMBEDDED_SUPERSET": False,
     # Enables Alerts and reports new implementation
     "ALERT_REPORTS": False,
     "DASHBOARD_RBAC": False,
@@ -540,6 +515,11 @@ DEFAULT_FEATURE_FLAGS.update(
         if re.search(r"^SUPERSET_FEATURE_\w+", k)
     }
 )
+
+# This is merely a default.
+FEATURE_FLAGS: Dict[str, bool] = {
+    "EMBEDDED_SUPERSET": True
+}
 
 # A function that receives a dict of all feature flags
 # (DEFAULT_FEATURE_FLAGS merged with FEATURE_FLAGS)
@@ -725,6 +705,10 @@ EXPLORE_FORM_DATA_CACHE_CONFIG: CacheConfig = {
 
 # store cache keys by datasource UID (via CacheKey) for custom processing/invalidation
 STORE_CACHE_KEYS_IN_METADATA_DB = False
+
+# CORS Options
+ENABLE_CORS = True
+CORS_OPTIONS: Dict[Any, Any] = {}
 
 # Sanitizes the HTML content used in markdowns to allow its rendering in a safe manner.
 # Disabling this option is not recommended for security reasons. If you wish to allow
@@ -1128,7 +1112,7 @@ FAB_ADD_SECURITY_PERMISSION_VIEWS_VIEW = False
 TROUBLESHOOTING_LINK = ""
 
 # CSRF token timeout, set to None for a token that never expires
-# WTF_CSRF_TIME_LIMIT = int(timedelta(weeks=1).total_seconds())
+WTF_CSRF_TIME_LIMIT = int(timedelta(weeks=1).total_seconds())
 
 # This link should lead to a page with instructions on how to gain access to a
 # Datasource. It will be placed at the bottom of permissions errors.
@@ -1401,8 +1385,9 @@ RLS_FORM_QUERY_REL_FIELDS: Optional[Dict[str, List[List[Any]]]] = None
 # See https://flask.palletsprojects.com/en/1.1.x/security/#set-cookie-options
 # for details
 #
-
-# SESSION_COOKIE_SAMESITE: Optional[Literal["None", "Lax", "Strict"]] = "None"
+SESSION_COOKIE_HTTPONLY = True  # Prevent cookie from being read by frontend JS?
+SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
+SESSION_COOKIE_SAMESITE: Optional[Literal["None", "Lax", "Strict"]] = "Lax"
 
 # Cache static resources.
 SEND_FILE_MAX_AGE_DEFAULT = int(timedelta(days=365).total_seconds())
@@ -1467,6 +1452,19 @@ GLOBAL_ASYNC_QUERIES_POLLING_DELAY = int(
     timedelta(milliseconds=500).total_seconds() * 1000
 )
 GLOBAL_ASYNC_QUERIES_WEBSOCKET_URL = "ws://127.0.0.1:8080/"
+
+# Embedded config options
+GUEST_ROLE_NAME = "Public"
+GUEST_TOKEN_JWT_SECRET = "UKMzEm3yIuFYEq1y3-2FxPNWSVwRASpahmQ9kQfEr8E"
+GUEST_TOKEN_JWT_ALGO = "HS256"
+GUEST_TOKEN_HEADER_NAME = "X-GuestToken"
+GUEST_TOKEN_JWT_EXP_SECONDS = 300  # 5 minutes
+# Guest token audience for the embedded superset, either string or callable
+GUEST_TOKEN_JWT_AUDIENCE: Optional[Union[Callable[[], str], str]] = None
+
+CSRF_ENABLED = False
+SESSION_COOKIE_SAMESITE = "None"
+SESSION_COOKIE_HTTPONLY = False
 
 # A SQL dataset health check. Note if enabled it is strongly advised that the callable
 # be memoized to aid with performance, i.e.,
