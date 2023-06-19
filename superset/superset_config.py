@@ -300,9 +300,9 @@ FAB_API_SWAGGER_UI = True
 # Embedded config options
 WTF_CSRF_ENABLED = False
 
-SESSION_COOKIE_SAMESITE: "None"
-# SESSION_COOKIE_HTTPONLY = False  # Prevent cookie from being read by frontend JS?
-# SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
+SESSION_COOKIE_SAMESITE: None
+SESSION_COOKIE_HTTPONLY = True  # Prevent cookie from being read by frontend JS?
+SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
 
 PUBLIC_ROLE_LIKE = 'Gamma'
 AUTH_ROLE_PUBLIC = 'Public'
@@ -314,17 +314,23 @@ FEATURE_FLAGS = {
     "EMBEDDED_SUPERSET": True
 }
 ENABLE_PROXY_FIX = True
+PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 1, "x_prefix": 1}
 HTTP_HEADERS = {'X-Frame-Options': 'ALLOWALL'}
 
-ENABLE_CORS = True
-CORS_OPTIONS = {
-    'supports_credentials': True,
-    'allow_headers': ['*'],
-    'resources':['*'],
-    'origins': ['*']
-}
+ENABLE_CORS = False
+CORS_OPTIONS: dict[Any, Any] = {}
 
 ENABLE_JAVASCRIPT_CONTROLS = True
+
+GUEST_ROLE_NAME = "Public"
+GUEST_TOKEN_JWT_SECRET = SECRET_KEY
+GUEST_TOKEN_JWT_ALGO = "HS256"
+GUEST_TOKEN_HEADER_NAME = "X-GuestToken"
+GUEST_TOKEN_JWT_EXP_SECONDS = 300  # 5 minutes
+# Guest token audience for the embedded superset, either string or callable
+GUEST_TOKEN_JWT_AUDIENCE: Callable[[], str] | str | None = None
+
+CSRF_ENABLED = False
 
 # Druid query timezone
 # tz.tzutc() : Using utc timezone
