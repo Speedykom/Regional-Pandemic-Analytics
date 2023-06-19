@@ -23,7 +23,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 	const permits = userRole?.attributes;
 
 	return (
-		<div ref={ref} className="fixed z-50 w-56 h-full bg-white shadow-lg">
+		<div ref={ref} className="fixed z-50 w-64 h-full bg-white border-r">
 			<div className="flex justify-center mt-6 mb-14">
 				<picture>
 					<img
@@ -37,13 +37,13 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 			<div className="flex flex-col">
 				<Link href="/home/">
 					<div
-						className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+						className={`px-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
 							router.pathname == "/home"
 								? "bg-green-100 text-green-500"
 								: "text-gray-400 hover:bg-green-100 hover:text-green-500"
 						}`}
 					>
-						<div className="mr-2">
+						<div className="mr-5">
 							<HomeIcon className="h-5 w-5" />
 						</div>
 						<div>
@@ -54,13 +54,13 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 				{permits?.Dashboard && permits?.Dashboard?.read && (
 					<Link href="/dashboards">
 						<div
-							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+							className={`px-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
 								router.pathname == "/dashboards"
 									? "bg-green-100 text-green-500"
 									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
 							}`}
 						>
-							<div className="mr-2">
+							<div className="mr-5">
 								<ChartBarSquareIcon className="h-5 w-5" />
 							</div>
 							<div>
@@ -70,15 +70,15 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 					</Link>
 				)}
 				{permits?.Chart && permits?.Chart?.read && (
-					<Link href="/home/charts">
+					<Link href="/charts">
 						<div
-							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-								router.pathname == "/home/charts"
+							className={`px-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+								router.pathname == "/charts"
 									? "bg-green-100 text-green-500"
 									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
 							}`}
 						>
-							<div className="mr-2">
+							<div className="mr-5">
 								<ChevronDoubleRightIcon className="h-5 w-5" />
 							</div>
 							<div>
@@ -90,13 +90,13 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 				{permits?.ProcessChain && permits?.ProcessChain?.read && (
 					<Link href="/process-chains">
 						<div
-							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+							className={`px-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
 								router.pathname == "/process-chains"
 									? "bg-green-100 text-green-500"
 									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
 							}`}
 						>
-							<div className="mr-2">
+							<div className="mr-5">
 								<ChevronDoubleRightIcon className="h-5 w-5" />
 							</div>
 							<div>
@@ -108,13 +108,13 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 				{permits?.Data && permits?.Data?.read && (
 					<Link href="/home/data">
 						<div
-							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+							className={`px-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
 								router.pathname == "/home/data"
 									? "bg-green-100 text-green-500"
 									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
 							}`}
 						>
-							<div className="mr-2">
+							<div className="mr-5">
 								<CircleStackIcon className="h-5 w-5" />
 							</div>
 							<div>
@@ -127,13 +127,13 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 				{permits?.User && permits?.User?.read && (
 					<Link href="/users">
 						<div
-							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+							className={`px-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
 								router.pathname == "/users"
 									? "bg-green-100 text-green-500"
 									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
 							}`}
 						>
-							<div className="mr-2">
+							<div className="mr-5">
 								<UsersIcon className="h-5 w-5" />
 							</div>
 							<div>
@@ -145,13 +145,13 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 				{permits?.Role && permits?.Role?.read && (
 					<Link href="/roles">
 						<div
-							className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+							className={`px-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
 								router.pathname == "/roles"
 									? "bg-green-100 text-green-500"
 									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
 							}`}
 						>
-							<div className="mr-2">
+							<div className="mr-5">
 								<LockClosedIcon className="h-5 w-5" />
 							</div>
 							<div>
@@ -162,13 +162,13 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 				)}
 				<Link href="/hops">
 					<div
-						className={`pl-2 pr-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
+						className={`px-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
 							router.pathname == "/hopes"
 								? "bg-green-100 text-green-500"
 								: "text-gray-400 hover:bg-green-100 hover:text-green-500"
 						}`}
 					>
-						<div className="mr-2">
+						<div className="mr-5">
 							<DocumentIcon className="h-5 w-5" />
 						</div>
 						<div>

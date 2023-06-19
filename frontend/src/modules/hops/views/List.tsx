@@ -1,12 +1,10 @@
 import { IGADTable } from "@/common/components/common/table";
-import {
-  DeleteColumnOutlined,
-  SaveOutlined,
-} from "@ant-design/icons";
+import { DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, message, Upload } from "antd";
 import { useHops } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useRouter } from "next/router";
 
 import { UploadOutlined } from "@ant-design/icons";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
@@ -25,6 +23,7 @@ enum OPERATION_TYPES {
 export const HopList = () => {
   const del = () => {};
   const [form] = Form.useForm();
+  const router = useRouter();
 
   const [token, setToken] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
@@ -45,14 +44,15 @@ export const HopList = () => {
   const [roleId, setRoleId] = useState<string>();
 
   const fetchHops = async () => {
+    // console.log(process.env.FRONTEND_NEXT_PUBLIC_BASE_URL);
+    // const epoint = "http://localhost:8000";
     try {
       setLoading(true);
-      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/`;
+      const url = `${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}/api/hop/`;
       await axios
         .get(url, {
           headers: {
-            Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`,
-            // `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         })
         .then((res) => {
@@ -61,7 +61,7 @@ export const HopList = () => {
           res?.data?.data?.map((data: any, index: number) => {
             const template = {
               id: index + 1,
-              name: data,
+              name: data?.name,
             };
             templates.push(template);
           });
@@ -106,29 +106,6 @@ export const HopList = () => {
     OPERATION_TYPES.NONE
   );
 
-  // const onFinish = async (values: any) => {
-  //   let url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/hop`;
-  //   url =
-  //     operationType == OPERATION_TYPES.CREATE
-  //       ? url + "/new/"
-  //       : url + `/${roleId}/update`;
-  //   await axios
-  //     .post(url, values, {
-  //       headers: {
-  //         Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`, // `Bearer ${token}`,
-  //       },
-  //     })
-  //     .then((res) => {
-  //       setOpen(false);
-  //       refetch();
-  //       OpenNotification(res.data?.message, "topRight", "success");
-  //       form.resetFields();
-  //     })
-  //     .catch((err) => {
-  //       OpenNotification(err.response?.data, "topRight", "error");
-  //     });
-  // };
-
   const handleCancel = () => {
     setOpen(false);
   };
@@ -156,11 +133,15 @@ export const HopList = () => {
     });
     setUploading(true);
     await axios
-      .post(`${process.env.NEXT_PUBLIC_BASE_URL}/api/hop/new/`, formData, {
-        headers: {
-          Authorization: `Token be8ad00b7c270fe347c109e60e7e5375c8f4cdd7`, // `Bearer ${token}`
-        },
-      })
+      .post(
+        `${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}/api/hop/new/`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then((res) => {
         setFileList([]);
         refetch();
@@ -207,11 +188,7 @@ export const HopList = () => {
             </p>
           </div>
           <div>
-            <Button
-              type="primary"
-              size="large"
-              onClick={showModal}
-            >
+            <Button type="primary" size="large" onClick={showModal}>
               Upload Template
             </Button>
           </div>
@@ -224,6 +201,13 @@ export const HopList = () => {
             loading={loading}
             rows={data}
             columns={columns}
+            // onRow={(record: any, rowIndex: number) => {
+            //   return {
+            //     onClick: () => {
+            //       router.push(`/hops/${record?.name}`);
+            //     },
+            //   };
+            // }}
           />
         </div>
       </section>

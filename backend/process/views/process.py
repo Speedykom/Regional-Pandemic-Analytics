@@ -144,10 +144,10 @@ class GetProcess(APIView):
             
             res_status = dag.status_code
 
-            if (res_status == 404): 
-                process['airflow'] = None
-            else:
+            if (res_status == 200):
                 process['airflow'] = dag.json()
+            elif(res_status == 404):
+                process['airflow'] = None
 
             processes.append(process)
         
@@ -190,7 +190,7 @@ class RequestEditProcess(APIView):
     file = "../hop/data-orch.list"
 
     def get(self, request, dag_id=None):
-        process = Dag.objects.filter(dag_id=dag_id)
+        process = ProcessChain.objects.filter(dag_id=dag_id)
         
         if (len(process) <= 0): return Response({'status': 'success', "message": "No process found for this dag_id {}".format(dag_id)}, status=404)
 
