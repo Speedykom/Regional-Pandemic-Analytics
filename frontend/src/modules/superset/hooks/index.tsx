@@ -3,33 +3,8 @@ import { IDashboard } from "../interface";
 import { Tag } from "antd";
 import { FiEye } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
-import { Action } from "@/common/components/common/action";
 
-interface props {
-	view: (id: number, dashboard_title: string) => void;
-}
-
-export const useDashboards = ({ view }: props) => {
-	const action = (id: number, dashboard_title: string) => {
-		return (
-			<Action>
-				<ul>
-					<li>
-						<button
-							onClick={(e) => {
-								e.preventDefault;
-								view(id, dashboard_title);
-							}}
-							className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
-						>
-							<FiEye className="mt-1" /> <span>Preview</span>
-						</button>
-					</li>
-				</ul>
-			</Action>
-		);
-	};
-
+export const useDashboards = () => {
 	const columns: ColumnsType<IDashboard> = [
 		{
 			// fixed: "left",
