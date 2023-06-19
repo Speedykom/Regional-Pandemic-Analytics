@@ -70,10 +70,10 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 					</Link>
 				)}
 				{permits?.Chart && permits?.Chart?.read && (
-					<Link href="/home/charts">
+					<Link href="/charts">
 						<div
 							className={`px-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-								router.pathname == "/home/charts"
+								router.pathname == "/charts"
 									? "bg-green-100 text-green-500"
 									: "text-gray-400 hover:bg-green-100 hover:text-green-500"
 							}`}
