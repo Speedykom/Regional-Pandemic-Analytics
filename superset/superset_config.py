@@ -1559,8 +1559,6 @@ ENVIRONMENT_TAG_CONFIG = {
     },
 }
 
-AUTH_ROLES_SYNC_AT_LOGIN = True
-
 # Extra related query filters make it possible to limit which objects are shown
 # in the UI. For examples, to only show "admin" or users starting with the letter "b" in
 # the "Owners" dropdowns, you could add the following in your config:
