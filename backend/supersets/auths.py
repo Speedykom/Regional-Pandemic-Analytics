@@ -7,7 +7,7 @@ def get_auth_token ():
         'username': os.getenv('SUPERSET_USER'),
         'password': os.getenv('SUPERSET_PASS'),
         'provider':os.getenv('SUPERSET_PROVIDER'),
-        'refresh': False,
+        'refresh': True,
     }
     
     url = os.getenv('SUPERSET_LOGIN')
@@ -19,7 +19,7 @@ def get_auth_token ():
     response = requests.post(f"{url}", json=request_body, headers=headers)
     
     if response.status_code != 200:
-        return {'status': response.status_code, 'message': response.json()['message']}
+        return {'status': response.status_code, 'message': response.json()}
     return {'status': response.status_code, 'message': 'Access granted', 'token': response.json()}
 
 def get_local_auth_token ():
@@ -27,7 +27,7 @@ def get_local_auth_token ():
         'username': 'admin',
         'password': 'admin',
         'provider': 'db',
-        'refresh': False,
+        'refresh': True,
     }
     
     # url = os.getenv('SUPERSET_LOGIN')
@@ -37,11 +37,13 @@ def get_local_auth_token ():
         'Content-Type': 'application/json'
     }
     
-    response = requests.post(f"{url}", json=request_body, headers=headers)
+    response = requests.post(url=url, json=request_body, headers=headers)
     
     if response.status_code != 200:
         return {'status': response.status_code, 'message': response.reason}
+    
     return {'status': response.status_code, 'message': 'Access granted', 'token': response.json()}
+
 
 def get_csrf_token ():
     
@@ -58,8 +60,6 @@ def get_csrf_token ():
     }
     
     response = requests.get(url=url, headers=headers)
-    
-    # print(response)
     
     if response.status_code != 200:
         return {'status': response.status_code, 'message': response.reason}
