@@ -186,7 +186,6 @@ services:
       - MAIL_PASSWORD=${BACKEND_MAIL_PASSWORD}
       - MAIL_ENCRYPTION=${BACKEND_MAIL_ENCRYPTION}
       - MAIL_FROM_NAME=${BACKEND_MAIL_FROM_NAME}
-      - DATABASE_URL=${BACKEND_DATABASE_URL}
       - AIRFLOW_API=${BACKEND_AIRFLOW_API}
       - AIRFLOW_USER=${BACKEND_AIRFLOW_USER}
       - AIRFLOW_PASSWORD=${BACKEND_AIRFLOW_PASSWORD}
@@ -361,9 +360,9 @@ services:
       - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
     #   - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
-    # =======
-    # Airflow
-    # =======
+  # =======
+  # Airflow
+  # =======
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg

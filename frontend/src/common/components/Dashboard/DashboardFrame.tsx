@@ -4,6 +4,7 @@ import secureLocalStorage from "react-secure-storage";
 import { useRouter } from "next/router";
 import axios from "axios";
 import Login from "@/pages/index";
+import { Loader } from "../Loader";
 
 interface Props {
   title?: string;
@@ -12,9 +13,7 @@ interface Props {
   onBackPress?: () => void;
 }
 
-export default function DashboardFrame({
-  children,
-}: Props) {
+export default function DashboardFrame({ children }: Props) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -45,11 +44,20 @@ export default function DashboardFrame({
     } else {
       setIsLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="flex justify-center flex-col space-y-5 items-center">
+          <div className="w-20 h-20">
+            <Loader />
+          </div>
+          <p>Loading . . . .</p>
+        </div>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
@@ -58,9 +66,7 @@ export default function DashboardFrame({
 
   return (
     <Layout>
-      <div className="py-10">
-      {children}
-      </div>
+      <div className="py-10">{children}</div>
     </Layout>
   );
 }
