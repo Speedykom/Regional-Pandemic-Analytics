@@ -4,6 +4,7 @@ import secureLocalStorage from "react-secure-storage";
 import { useRouter } from "next/router";
 import axios from "axios";
 import Login from "@/pages/index";
+import { Loader } from "../Loader";
 
 interface Props {
   title?: string;
@@ -43,11 +44,20 @@ export default function DashboardFrame({ children }: Props) {
     } else {
       setIsLoading(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="flex justify-center flex-col space-y-5 items-center">
+          <div className="w-20 h-20">
+            <Loader />
+          </div>
+          <p>Loading . . . .</p>
+        </div>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
