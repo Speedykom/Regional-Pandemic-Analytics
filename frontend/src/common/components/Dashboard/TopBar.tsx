@@ -31,6 +31,7 @@ export default function TopBar({ showNav, setShowNav }: props) {
 	const [myId, setMyId] = useState<string>();
 
 	const [view, setView] = useState<boolean>(false);
+
 	const viewPro = () => {
 		setView(true);
 	};
@@ -55,7 +56,7 @@ export default function TopBar({ showNav, setShowNav }: props) {
 
 	const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
 		e.preventDefault();
-		await axios.post("/api/accounts/logout/").then((response) => {
+		await axios.post("/api/auth/logout/").then((response) => {
 			if (response.status === 200) {
 				router.push("/");
 				secureLocalStorage.clear();
@@ -64,17 +65,18 @@ export default function TopBar({ showNav, setShowNav }: props) {
 	};
 	return (
 		<div
-			className={`fixed bg-white w-full h-16 z-50 flex justify-between items-center transition-all duration-[400ms] ${
+			className={`fixed bg-white w-full h-16 z-50 flex justify-between items-center transition-all duration-[400ms] border-b ${
 				showNav ? "pl-56" : ""
 			}`}
 		>
-			<div className="pl-4 md:pl-16">
+			<div className="pl-4 md:pl-16 flex items-center space-x-5">
 				<Bars3CenterLeftIcon
 					className="h-8 w-8 text-gray-700 cursor-pointer"
 					onClick={() => setShowNav(!showNav)}
 				/>
+				<p className="text-xl font-semibold">Regional Pandemic Analytics</p>
 			</div>
-			<div className="flex items-center pr-4 md:pr-16">
+			<div className="flex pr-4 md:pr-16 items-center">
 				<Popover className="relative">
 					<Popover.Button className="outline-none mr-5 md:mr-8 cursor-pointer text-gray-700">
 						<BellIcon className="h-6 w-6" />
@@ -164,9 +166,11 @@ export default function TopBar({ showNav, setShowNav }: props) {
 									alt="avat"
 								/>
 							</picture>
-							<span className="hidden md:block font-medium text-gray-700">
-								Welcome, {username}
+							<div>
+							<span className="hidden md:block font-medium text-gray-700 text-sm">
+								{username}
 							</span>
+							</div>
 							<ChevronDownIcon className="ml-2 h-4 w-4 text-gray-700" />
 						</Menu.Button>
 					</div>

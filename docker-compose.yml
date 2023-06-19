@@ -2,14 +2,12 @@ version: "3.4"
 
 x-superset-common:
   &superset
-  image: apache/superset
+  image: apache/superset:2.1.0
   environment:
-    - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
-  build: ./superset/.
-  # volumes:
-  #   - ./superset/client_secret.json:/app/superset/client_secret.json
-  #   - ./superset/security_manager.py:/app/superset/security_manager.py
-  #   - ./superset/superset_config.py:/app/superset/superset_config.py
+    - SECRET_KEY=${SUPERSET_SECRET_KEY}
+    - DATABASE_URI=${SUPERSET_DATABASE_URI}
+  volumes:
+    - ./superset/superset_config.py:/app/superset/config.py
 
 x-druid-common:
   &druid
@@ -157,6 +155,8 @@ services:
       - "8000:8000"
     volumes:
       - ./airflow/dags:/airflow/dags
+      - ./hop/pipelines/:/hop
+      - ./hop/pipelines/templates:/hop/templates
       - ./hop/data-orch.list:/hop/data-orch.list
     environment:
       - DEVELOPMENT_MODE=${BACKEND_DEVELOPMENT_MODE}
@@ -166,6 +166,11 @@ services:
       - KEYCLOAK_ADMIN_USERNAME=${BACKEND_KEYCLOAK_ADMIN_USERNAME}
       - KEYCLOAK_ADMIN_PASSWORD=${BACKEND_KEYCLOAK_ADMIN_PASSWORD}
       - APP_REALM=${BACKEND_APP_REALM}
+      - APP_CLIENT_ID=${BACKEND_APP_CLIENT_ID}
+      - APP_CLIENT_UUID=${BACKEND_APP_CLIENT_UUID}
+      - APP_CLIENT_SECRET=${BACKEND_APP_CLIENT_SECRET}
+      - HOPE_PIPELINE_PATH=${BACKEND_HOPE_PIPELINE_PATH}
+      - HOPE_TEMPLATE_PATH=${BACKEND_HOPE_TEMPLATE_PATH}
       - APP_USER_BASE_URL=${BACKEND_APP_USER_BASE_URL}
       - BASE_URL=${BACKEND_BASE_URL}
       - APP_SECRET_KEY=${BACKEND_APP_SECRET_KEY}
@@ -188,17 +193,24 @@ services:
       - MAIL_PASSWORD=${BACKEND_MAIL_PASSWORD}
       - MAIL_ENCRYPTION=${BACKEND_MAIL_ENCRYPTION}
       - MAIL_FROM_NAME=${BACKEND_MAIL_FROM_NAME}
-      - DATABASE_URL=${BACKEND_DATABASE_URL}
       - AIRFLOW_API=${BACKEND_AIRFLOW_API}
       - AIRFLOW_USER=${BACKEND_AIRFLOW_USER}
       - AIRFLOW_PASSWORD=${BACKEND_AIRFLOW_PASSWORD}
       - DB_NAME=${BACKEND_DB_NAME}
+      - DB_ENGINE=${BACKEND_DB_ENGINE}
       - DB_USER=${BACKEND_DB_USER}
       - DB_PASSWORD=${BACKEND_DB_PASSWORD}
       - DB_HOST=${BACKEND_DB_HOST}
       - DB_PORT=${BACKEND_DB_PORT}
-      - CORS_ORIGIN_WHITELIST=${BACKEND_CORS_ORIGIN_WHITELIST}
-
+      - DATABASE_URL=${BACKEND_DATABASE_URL}
+      - SUPERSET_BASE_URL=${BACKEND_SUPERSET_BASE_URL}
+      - SUPERSET_LOGIN=${BACKEND_SUPERSET_LOGIN}
+      - SUPERSET_USER=${BACKEND_SUPERSET_USER}
+      - SUPERSET_PASS=${BACKEND_SUPERSET_PASS}
+      - SUPERSET_PROVIDER=${BACKEND_SUPERSET_PROVIDER}
+      - SUPERSET_GUEST_USERNAME=${BACKEND_SUPERSET_GUEST_USERNAME}
+      - SUPERSET_GUEST_FIRSTNAME=${BACKEND_SUPERSET_GUEST_FIRSTNAME}
+      - SUPERSET_GUEST_LASTNAME=${BACKEND_SUPERSET_GUEST_LASTNAME}
 
   # =======
   #  Druid
@@ -331,11 +343,13 @@ services:
   superset-init:
     <<: *superset
     container_name: superset-init
+    depends_on:
+      - superset_db
     entrypoint: /bin/bash
     command:
       - -c
       - |
-        superset fab create-admin --username admin --firstname Superset --lastname Admin --email admin@superset.com --password admin
+        superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
         superset db upgrade
         superset superset init
 
@@ -354,9 +368,9 @@ services:
       - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
     #   - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
-    # =======
-    # Airflow
-    # =======
+  # =======
+  # Airflow
+  # =======
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg

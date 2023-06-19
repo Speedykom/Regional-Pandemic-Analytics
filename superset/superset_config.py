@@ -1,6 +1,29 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+"""The main config file for Superset
+
+All configuration in this file can be overridden by providing a superset_config
+in your PYTHONPATH as there is a ``from superset_config import *``
+at the end of this file.
+"""
+# pylint: disable=too-many-lines
 from __future__ import annotations
 
-import imp
+import imp  # pylint: disable=deprecated-module
 import importlib.util
 import json
 import logging
@@ -10,7 +33,6 @@ import sys
 from collections import OrderedDict
 from datetime import timedelta
 from email.mime.multipart import MIMEMultipart
-from tracemalloc import BaseFilter
 from typing import (
     Any,
     Callable,
@@ -31,10 +53,9 @@ from cachelib.base import BaseCache
 from celery.schedules import crontab
 from dateutil import tz
 from flask import Blueprint
-from flask_appbuilder.security.manager import AUTH_DB, AUTH_OID
+from flask_appbuilder.security.manager import AUTH_DB
 from pandas._libs.parsers import STR_NA_VALUES  # pylint: disable=no-name-in-module
 from sqlalchemy.orm.query import Query
-from .keycloak_security_manager import OIDCSecurityManager
 
 from superset.advanced_data_type.plugins.internet_address import internet_address
 from superset.advanced_data_type.plugins.internet_port import internet_port
@@ -80,26 +101,6 @@ VERSION_INFO_FILE = pkg_resources.resource_filename(
 PACKAGE_JSON_FILE = pkg_resources.resource_filename(
     "superset", "static/assets/package.json"
 )
-
-
-
-'''
----------------------------KEYCLOACK CONFIG----------------------------
-'''
-curr  =  os.path.abspath(os.getcwd())
-AUTH_TYPE = AUTH_OID
-OIDC_CLIENT_SECRETS = curr + 'app/superset/client_secret.json'
-OIDC_ID_TOKEN_COOKIE_SECURE = False
-OIDC_REQUIRE_VERIFIED_EMAIL = False
-OIDC_OPENID_REALM = 'regional-pandemic-analytics'
-OIDC_INTROSPECTION_AUTH_METHOD = 'client_secret_post'
-CUSTOM_SECURITY_MANAGER = OIDCSecurityManager
-AUTH_USER_REGISTRATION = True
-AUTH_USER_REGISTRATION_ROLE = 'Gamma'
-OIDC_VALID_ISSUERS = ['https://auth2.igad-health.eu/realms/regional-pandemic-analytics']
-'''
----------------------------END KEYCLOAK CONFIG--------------------------
-'''
 
 # Multiple favicons can be specified here. The "href" property
 # is mandatory, but "sizes," "type," and "rel" are optional.
@@ -164,8 +165,6 @@ FILTER_SELECT_ROW_LIMIT = 10000
 # values may be "Last day", "Last week", "<ISO date> : now", etc.
 DEFAULT_TIME_FILTER = NO_TIME_RANGE
 
-RLS_BASE_RELATED_FIELD_FILTERS: Dict[str, BaseFilter] = {}
-
 SUPERSET_WEBSERVER_PROTOCOL = "http"
 SUPERSET_WEBSERVER_ADDRESS = "0.0.0.0"
 SUPERSET_WEBSERVER_PORT = 8088
@@ -193,14 +192,13 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 # or use `SUPERSET_SECRET_KEY` environment variable.
 # Use a strong complex alphanumeric string and use a tool to help you generate
 # a sufficiently random sequence, ex: openssl rand -base64 42"
-SECRET_KEY = os.environ.get("SUPERSET_SECRET_KEY") or CHANGE_ME_SECRET_KEY
+SECRET_KEY = os.environ.get("SECRET_KEY") or CHANGE_ME_SECRET_KEY
 
 # The SQLAlchemy connection string.
-# SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(DATA_DIR, "superset.db")
 # SQLALCHEMY_DATABASE_URI = 'mysql://myapp@localhost/myapp'
-SQLALCHEMY_DATABASE_URI = 'postgresql://superset:superset@superset_db/superset'
+SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URI")
 
-# In order to hook up a custom password store for all SQLALCHEMY connections
+# In order to hook up a custom password store for all SQLACHEMY connections
 # implement a function that takes a single argument of type 'sqla.engine.url',
 # returns a password and set SQLALCHEMY_CUSTOM_PASSWORD_STORE.
 #
@@ -248,9 +246,9 @@ SQLALCHEMY_ENCRYPTED_FIELD_TYPE_ADAPTER = (  # pylint: disable=invalid-name
 QUERY_SEARCH_LIMIT = 1000
 
 # Flask-WTF flag for CSRF
-WTF_CSRF_ENABLED = False
+# WTF_CSRF_ENABLED = False
 
-# Add endpoints that need to be exempt from CSRF protection
+# # Add endpoints that need to be exempt from CSRF protection
 WTF_CSRF_EXEMPT_LIST = [
     "superset.views.core.log",
     "superset.views.core.explore_json",
@@ -272,8 +270,6 @@ SHOW_STACKTRACE = True
 
 # Use all X-Forwarded headers when ENABLE_PROXY_FIX is True.
 # When proxying to a different port, set "x_port" to 0 to avoid downstream issues.
-ENABLE_PROXY_FIX = True
-PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 0, "x_prefix": 1}
 
 # Configuration for scheduling queries from SQL Lab.
 SCHEDULED_QUERIES: Dict[str, Any] = {}
@@ -343,14 +339,6 @@ AUTH_TYPE = AUTH_DB
 #    { 'name': 'Flickr', 'url': 'https://www.flickr.com/<username>' },
 
 # ---------------------------------------------------
-# Roles config
-# ---------------------------------------------------
-# Grant public role the same set of permissions as for a selected builtin role.
-# This is useful if one wants to enable anonymous users to view
-# dashboards. Explicit grant on specific datasets is still required.
-PUBLIC_ROLE_LIKE: Optional[str] = 'Gamma'
-
-# ---------------------------------------------------
 # Babel config for translations
 # ---------------------------------------------------
 # Setup default language
@@ -387,6 +375,10 @@ LANGUAGES = {}
 # and FEATURE_FLAGS = { 'BAR': True, 'BAZ': True } in superset_config.py
 # will result in combined feature flags of { 'FOO': True, 'BAR': True, 'BAZ': True }
 DEFAULT_FEATURE_FLAGS: Dict[str, bool] = {
+    # allow dashboard to use sub-domains to send chart request
+    # you also need ENABLE_CORS and
+    # SUPERSET_WEBSERVER_DOMAINS for list of domains
+    "ALLOW_DASHBOARD_DOMAIN_SHARDING": True,
     # Experimental feature introducing a client (browser) cache
     "CLIENT_CACHE": False,
     "DISABLE_DATASET_SOURCE_EDIT": False,
@@ -409,37 +401,40 @@ DEFAULT_FEATURE_FLAGS: Dict[str, bool] = {
     "ENABLE_TEMPLATE_REMOVE_FILTERS": False,
     # Allow for javascript controls components
     # this enables programmers to customize certain charts (like the
-    # geospatial ones) by inputting javascript in controls. This exposes
+    # geospatial ones) by inputing javascript in controls. This exposes
     # an XSS security vulnerability
-    "ENABLE_JAVASCRIPT_CONTROLS": False,
+    "ENABLE_JAVASCRIPT_CONTROLS": True,
     "KV_STORE": False,
     # When this feature is enabled, nested types in Presto will be
     # expanded into extra columns and/or arrays. This is experimental,
     # and doesn't work with all nested types.
     "PRESTO_EXPAND_DATA": False,
     # Exposes API endpoint to compute thumbnails
-    "THUMBNAILS": True,
-    "DASHBOARD_CACHE": False,
+    "THUMBNAILS": False,
+    "DASHBOARD_CACHE": True,
     "REMOVE_SLICE_LEVEL_LABEL_COLORS": False,
     "SHARE_QUERIES_VIA_KV_STORE": False,
     "TAGGING_SYSTEM": False,
     "SQLLAB_BACKEND_PERSISTENCE": True,
     "LISTVIEWS_DEFAULT_CARD_VIEW": False,
+    # When True, this flag allows display of HTML tags in Markdown components
+    "DISPLAY_MARKDOWN_HTML": True,
     # When True, this escapes HTML (rather than rendering it) in Markdown components
     "ESCAPE_MARKDOWN_HTML": False,
     "DASHBOARD_NATIVE_FILTERS": True,
-    "DASHBOARD_CROSS_FILTERS": False,
+    "DASHBOARD_CROSS_FILTERS": True,
     # Feature is under active development and breaking changes are expected
-    "DASHBOARD_NATIVE_FILTERS_SET": False,
-    "DASHBOARD_FILTERS_EXPERIMENTAL": False,
-    "DASHBOARD_VIRTUALIZATION": False,
-    "GLOBAL_ASYNC_QUERIES": False,
+    "DASHBOARD_NATIVE_FILTERS_SET": True,
+    "DASHBOARD_FILTERS_EXPERIMENTAL": True,
+    "DASHBOARD_VIRTUALIZATION": True,
+    "GLOBAL_ASYNC_QUERIES": True,
     "VERSIONED_EXPORT": True,
     "EMBEDDED_SUPERSET": True,
     # Enables Alerts and reports new implementation
     "ALERT_REPORTS": False,
     "DASHBOARD_RBAC": False,
     "ENABLE_EXPLORE_DRAG_AND_DROP": True,
+    "ENABLE_FILTER_BOX_MIGRATION": False,
     "ENABLE_ADVANCED_DATA_TYPES": False,
     "ENABLE_DND_WITH_CLICK_UX": True,
     # Enabling ALERTS_ATTACH_REPORTS, the system sends email and slack message
@@ -449,10 +444,16 @@ DEFAULT_FEATURE_FLAGS: Dict[str, bool] = {
     # for report with type 'report' still send with email and slack message with
     # screenshot and link
     "ALERTS_ATTACH_REPORTS": True,
+    # FORCE_DATABASE_CONNECTIONS_SSL is depreciated.
+    "FORCE_DATABASE_CONNECTIONS_SSL": False,
+    # Enabling ENFORCE_DB_ENCRYPTION_UI forces all database connections to be
+    # encrypted before being saved into superset metastore.
+    "ENFORCE_DB_ENCRYPTION_UI": False,
     # Allow users to export full CSV of table viz type.
     # This could cause the server to run out of memory or compute.
     "ALLOW_FULL_CSV_EXPORT": False,
-    "GENERIC_CHART_AXES": True,
+    "UX_BETA": False,
+    "GENERIC_CHART_AXES": False,
     "ALLOW_ADHOC_SUBQUERY": False,
     "USE_ANALAGOUS_COLORS": False,
     "DASHBOARD_EDIT_CHART_IN_NEW_TAB": False,
@@ -462,12 +463,9 @@ DEFAULT_FEATURE_FLAGS: Dict[str, bool] = {
     # Enable caching per impersonation key (e.g username) in a datasource where user
     # impersonation is enabled
     "CACHE_IMPERSONATION": False,
-    # Enable caching per user key for Superset cache (not datatabase cache impersonation)
-    "CACHE_QUERY_BY_USER": False,
     # Enable sharing charts with embedding
     "EMBEDDABLE_CHARTS": True,
     "DRILL_TO_DETAIL": False,
-    "DRILL_BY": False,
     "DATAPANEL_CLOSED_BY_DEFAULT": False,
     "HORIZONTAL_FILTER_BAR": False,
     # The feature is off by default, and currently only supported in Presto and Postgres,
@@ -507,9 +505,6 @@ DEFAULT_FEATURE_FLAGS.update(
         if re.search(r"^SUPERSET_FEATURE_\w+", k)
     }
 )
-
-# This is merely a default.
-FEATURE_FLAGS: Dict[str, bool] = {}
 
 # A function that receives a dict of all feature flags
 # (DEFAULT_FEATURE_FLAGS merged with FEATURE_FLAGS)
@@ -695,15 +690,6 @@ EXPLORE_FORM_DATA_CACHE_CONFIG: CacheConfig = {
 
 # store cache keys by datasource UID (via CacheKey) for custom processing/invalidation
 STORE_CACHE_KEYS_IN_METADATA_DB = False
-
-# CORS Options
-ENABLE_CORS = True
-CORS_OPTIONS = {
-    'supports_credentials': True,
-    'allow_headers': ['*'],
-    'resources':['*'],
-    'origins': ['*']
-}
 
 # Sanitizes the HTML content used in markdowns to allow its rendering in a safe manner.
 # Disabling this option is not recommended for security reasons. If you wish to allow
@@ -1201,7 +1187,6 @@ def SQL_QUERY_MUTATOR(  # pylint: disable=invalid-name,unused-argument
 # functionality for both the SQL_Lab and Charts.
 MUTATE_AFTER_SPLIT = False
 
-
 # This allows for a user to add header data to any outgoing emails. For example,
 # if you need to include metadata in the header or you want to change the specifications
 # of the email title, header, or sender.
@@ -1244,12 +1229,12 @@ ALERT_REPORTS_WORKING_TIME_OUT_KILL = True
 # creator if either is contained within the list of owners, otherwise the first owner
 # will be used) and finally `THUMBNAIL_SELENIUM_USER`, set as follows:
 # ALERT_REPORTS_EXECUTE_AS = [
-#     ExecutorType.CREATOR_OWNER,
-#     ExecutorType.CREATOR,
-#     ExecutorType.MODIFIER_OWNER,
-#     ExecutorType.MODIFIER,
-#     ExecutorType.OWNER,
-#     ExecutorType.SELENIUM,
+#     ScheduledTaskExecutor.CREATOR_OWNER,
+#     ScheduledTaskExecutor.CREATOR,
+#     ScheduledTaskExecutor.MODIFIER_OWNER,
+#     ScheduledTaskExecutor.MODIFIER,
+#     ScheduledTaskExecutor.OWNER,
+#     ScheduledTaskExecutor.SELENIUM,
 # ]
 ALERT_REPORTS_EXECUTE_AS: List[ExecutorType] = [ExecutorType.SELENIUM]
 # if ALERT_REPORTS_WORKING_TIME_OUT_KILL is True, set a celery hard timeout
@@ -1258,10 +1243,6 @@ ALERT_REPORTS_WORKING_TIME_OUT_LAG = int(timedelta(seconds=10).total_seconds())
 # if ALERT_REPORTS_WORKING_TIME_OUT_KILL is True, set a celery hard timeout
 # Equal to working timeout + ALERT_REPORTS_WORKING_SOFT_TIME_OUT_LAG
 ALERT_REPORTS_WORKING_SOFT_TIME_OUT_LAG = int(timedelta(seconds=1).total_seconds())
-# Default values that user using when creating alert
-ALERT_REPORTS_DEFAULT_WORKING_TIMEOUT = 3600
-ALERT_REPORTS_DEFAULT_RETENTION = 90
-ALERT_REPORTS_DEFAULT_CRON_VALUE = "0 * * * *"  # every hour
 # If set to true no notification is sent, the worker will just log a message.
 # Useful for debugging
 ALERT_REPORTS_NOTIFICATION_DRY_RUN = False
@@ -1385,8 +1366,7 @@ RLS_FORM_QUERY_REL_FIELDS: Optional[Dict[str, List[List[Any]]]] = None
 # See https://flask.palletsprojects.com/en/1.1.x/security/#set-cookie-options
 # for details
 #
-SESSION_COOKIE_HTTPONLY = False  # Prevent cookie from being read by frontend JS?
-SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
+
 SESSION_COOKIE_SAMESITE: Optional[Literal["None", "Lax", "Strict"]] = "None"
 
 # Cache static resources.
@@ -1454,14 +1434,33 @@ GLOBAL_ASYNC_QUERIES_POLLING_DELAY = int(
 GLOBAL_ASYNC_QUERIES_WEBSOCKET_URL = "ws://127.0.0.1:8080/"
 
 # Embedded config options
-GUEST_ROLE_NAME = "Public"
-GUEST_TOKEN_JWT_SECRET = "test-guest-secret-change-me"
-GUEST_TOKEN_JWT_ALGO = "HS256"
-GUEST_TOKEN_HEADER_NAME = "X-GuestToken"
-GUEST_TOKEN_JWT_EXP_SECONDS = 300  # 5 minutes
-# Guest token audience for the embedded superset, either string or callable
-GUEST_TOKEN_JWT_AUDIENCE: Optional[Union[Callable[[], str], str]] = None
+WTF_CSRF_ENABLED = False
 
+SESSION_COOKIE_SAMESITE: None
+SESSION_COOKIE_HTTPONLY = True  # Prevent cookie from being read by frontend JS?
+SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
+
+PUBLIC_ROLE_LIKE = 'Gamma'
+AUTH_ROLE_PUBLIC = 'Public'
+PUBLIC_ROLE_LIKE_GAMMA = True
+GUEST_ROLE_NAME = 'Gamma'
+
+FEATURE_FLAGS = {
+    "ALERT_REPORTS": True,
+    "EMBEDDED_SUPERSET": True
+}
+ENABLE_PROXY_FIX = False
+HTTP_HEADERS = {'X-Frame-Options': 'ALLOWALL'}
+
+# ENABLE_CORS = True
+# CORS_OPTIONS = {
+#     'supports_credentials': True,
+#     'allow_headers': ['*'],
+#     'resources':['*'],
+#     'origins': ['*']
+# }
+
+ENABLE_JAVASCRIPT_CONTROLS = True
 # A SQL dataset health check. Note if enabled it is strongly advised that the callable
 # be memoized to aid with performance, i.e.,
 #
@@ -1558,7 +1557,6 @@ class ExtraRelatedQueryFilters(TypedDict, total=False):
 
 EXTRA_RELATED_QUERY_FILTERS: ExtraRelatedQueryFilters = {}
 
-
 # -------------------------------------------------------------------
 # *                WARNING:  STOP EDITING  HERE                    *
 # -------------------------------------------------------------------
@@ -1584,13 +1582,10 @@ if CONFIG_PATH_ENV_VAR in os.environ:
 elif importlib.util.find_spec("superset_config") and not is_test():
     try:
         # pylint: disable=import-error,wildcard-import,unused-wildcard-import
-        # import superset_config
+        import superset_config
         from superset_config import *  # type: ignore
 
         print(f"Loaded your LOCAL configuration at [{superset_config.__file__}]")
     except Exception:
         logger.exception("Found but failed to import local superset_config")
         raise
-
-
-# End of superset configuration
