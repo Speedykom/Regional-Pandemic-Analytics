@@ -69,13 +69,14 @@ export default function TopBar({ showNav, setShowNav }: props) {
 				showNav ? "pl-56" : ""
 			}`}
 		>
-			<div className="pl-4 md:pl-16">
+			<div className="pl-4 md:pl-16 flex items-center space-x-5">
 				<Bars3CenterLeftIcon
 					className="h-8 w-8 text-gray-700 cursor-pointer"
 					onClick={() => setShowNav(!showNav)}
 				/>
+				<p className="text-xl font-semibold">Regional Pandemic Analytics</p>
 			</div>
-			<div className="flex items-center pr-4 md:pr-16">
+			<div className="flex pr-4 md:pr-16 items-center">
 				<Popover className="relative">
 					<Popover.Button className="outline-none mr-5 md:mr-8 cursor-pointer text-gray-700">
 						<BellIcon className="h-6 w-6" />
