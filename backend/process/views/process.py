@@ -144,10 +144,10 @@ class GetProcess(APIView):
             
             res_status = dag.status_code
 
-            if (res_status == 404): 
-                process['airflow'] = None
-            else:
+            if (res_status == 200):
                 process['airflow'] = dag.json()
+            elif(res_status == 404):
+                process['airflow'] = None
 
             processes.append(process)
         
