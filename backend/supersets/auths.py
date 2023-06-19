@@ -47,10 +47,10 @@ def get_local_auth_token ():
 
 def get_csrf_token ():
     
-    # url = f"{os.getenv('SUPERSET_BASE_URL')}/security/csrf_token/"
-    url = 'http://localhost:8088/api/v1/security/csrf_token/'
+    url = f"{os.getenv('SUPERSET_BASE_URL')}/security/csrf_token/"
+    # url = 'http://localhost:8088/api/v1/security/csrf_token/'
     
-    auth_response = get_local_auth_token()
+    auth_response = get_auth_token()
     
     if auth_response['status'] != 200:
         return {'status': auth_response['status'], 'message': auth_response['message']}

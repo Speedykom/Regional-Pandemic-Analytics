@@ -297,6 +297,35 @@ LOGO_RIGHT_TEXT: Union[Callable[[], str], str] = ""
 # ex: http://localhost:8080/swagger/v1
 FAB_API_SWAGGER_UI = True
 
+# Embedded config options
+WTF_CSRF_ENABLED = False
+
+SESSION_COOKIE_SAMESITE: "None"
+# SESSION_COOKIE_HTTPONLY = False  # Prevent cookie from being read by frontend JS?
+# SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
+
+PUBLIC_ROLE_LIKE = 'Gamma'
+AUTH_ROLE_PUBLIC = 'Public'
+PUBLIC_ROLE_LIKE_GAMMA = True
+GUEST_ROLE_NAME = 'Gamma'
+
+FEATURE_FLAGS = {
+    "ALERT_REPORTS": True,
+    "EMBEDDED_SUPERSET": True
+}
+ENABLE_PROXY_FIX = True
+HTTP_HEADERS = {'X-Frame-Options': 'ALLOWALL'}
+
+ENABLE_CORS = True
+CORS_OPTIONS = {
+    'supports_credentials': True,
+    'allow_headers': ['*'],
+    'resources':['*'],
+    'origins': ['*']
+}
+
+ENABLE_JAVASCRIPT_CONTROLS = True
+
 # Druid query timezone
 # tz.tzutc() : Using utc timezone
 # tz.tzlocal() : Using local timezone
@@ -1093,7 +1122,7 @@ FAB_ADD_SECURITY_PERMISSION_VIEWS_VIEW = False
 TROUBLESHOOTING_LINK = ""
 
 # CSRF token timeout, set to None for a token that never expires
-WTF_CSRF_TIME_LIMIT = int(timedelta(weeks=1).total_seconds())
+# WTF_CSRF_TIME_LIMIT = int(timedelta(weeks=1).total_seconds())
 
 # This link should lead to a page with instructions on how to gain access to a
 # Datasource. It will be placed at the bottom of permissions errors.
@@ -1367,7 +1396,7 @@ RLS_FORM_QUERY_REL_FIELDS: Optional[Dict[str, List[List[Any]]]] = None
 # for details
 #
 
-SESSION_COOKIE_SAMESITE: Optional[Literal["None", "Lax", "Strict"]] = "None"
+# SESSION_COOKIE_SAMESITE: Optional[Literal["None", "Lax", "Strict"]] = "None"
 
 # Cache static resources.
 SEND_FILE_MAX_AGE_DEFAULT = int(timedelta(days=365).total_seconds())
@@ -1433,34 +1462,6 @@ GLOBAL_ASYNC_QUERIES_POLLING_DELAY = int(
 )
 GLOBAL_ASYNC_QUERIES_WEBSOCKET_URL = "ws://127.0.0.1:8080/"
 
-# Embedded config options
-WTF_CSRF_ENABLED = False
-
-SESSION_COOKIE_SAMESITE: None
-SESSION_COOKIE_HTTPONLY = False  # Prevent cookie from being read by frontend JS?
-# SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
-
-PUBLIC_ROLE_LIKE = 'Gamma'
-AUTH_ROLE_PUBLIC = 'Public'
-PUBLIC_ROLE_LIKE_GAMMA = True
-GUEST_ROLE_NAME = 'Gamma'
-
-FEATURE_FLAGS = {
-    "ALERT_REPORTS": True,
-    "EMBEDDED_SUPERSET": True
-}
-ENABLE_PROXY_FIX = True
-HTTP_HEADERS = {'X-Frame-Options': 'ALLOWALL'}
-
-ENABLE_CORS = True
-CORS_OPTIONS = {
-    'supports_credentials': True,
-    'allow_headers': ['*'],
-    'resources':['*'],
-    'origins': ['*']
-}
-
-ENABLE_JAVASCRIPT_CONTROLS = True
 # A SQL dataset health check. Note if enabled it is strongly advised that the callable
 # be memoized to aid with performance, i.e.,
 #
