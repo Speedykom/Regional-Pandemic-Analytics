@@ -159,6 +159,8 @@ services:
       - "8000:8000"
     volumes:
       - ./airflow/dags:/airflow/dags
+      - ./hop/pipelines/:/hop
+      - ./hop/pipelines/templates:/hop/templates
       - ./hop/data-orch.list:/hop/data-orch.list
     environment:
       - DEVELOPMENT_MODE=${BACKEND_DEVELOPMENT_MODE}
@@ -171,6 +173,8 @@ services:
       - APP_CLIENT_ID=${BACKEND_APP_CLIENT_ID}
       - APP_CLIENT_UUID=${BACKEND_APP_CLIENT_UUID}
       - APP_CLIENT_SECRET=${BACKEND_APP_CLIENT_SECRET}
+      - HOPE_PIPELINE_PATH=${BACKEND_HOPE_PIPELINE_PATH}
+      - HOPE_TEMPLATE_PATH=${BACKEND_HOPE_TEMPLATE_PATH}
       - APP_USER_BASE_URL=${BACKEND_APP_USER_BASE_URL}
       - BASE_URL=${BACKEND_BASE_URL}
       - APP_SECRET_KEY=${BACKEND_APP_SECRET_KEY}
@@ -202,6 +206,14 @@ services:
       - DB_PASSWORD=${BACKEND_DB_PASSWORD}
       - DB_HOST=${BACKEND_DB_HOST}
       - DB_PORT=${BACKEND_DB_PORT}
+      - SUPERSET_BASE_URL=${BACKEND_SUPERSET_BASE_URL}
+      - SUPERSET_LOGIN=${BACKEND_SUPERSET_LOGIN}
+      - SUPERSET_USER=${BACKEND_SUPERSET_USER}
+      - SUPERSET_PASS=${BACKEND_SUPERSET_PASS}
+      - SUPERSET_PROVIDER=${BACKEND_SUPERSET_PROVIDER}
+      - SUPERSET_GUEST_USERNAME=${BACKEND_SUPERSET_GUEST_USERNAME}
+      - SUPERSET_GUEST_FIRSTNAME=${BACKEND_SUPERSET_GUEST_FIRSTNAME}
+      - SUPERSET_GUEST_LASTNAME=${BACKEND_SUPERSET_GUEST_LASTNAME}
 
   # =======
   #  Druid
@@ -359,9 +371,9 @@ services:
       - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
     #   - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
-    # =======
-    # Airflow
-    # =======
+  # =======
+  # Airflow
+  # =======
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg

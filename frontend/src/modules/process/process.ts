@@ -11,6 +11,7 @@ export const processApi = createApi({
   endpoints: (builder) => ({
     findAll: builder.query<Process, void>({
       query: () => "/api/process/list",
+      providesTags: ["processes"],
     }),
     findOne: builder.query<Process, string>({
       query: (id) => `/api/process/one/${id}`,
@@ -26,9 +27,17 @@ export const processApi = createApi({
       }),
       invalidatesTags: ["processes"],
     }),
+    delProcess: builder.mutation<Process, string>({
+      query: (id) => ({
+        url: `/api/process/delete/${id}`,
+        method: "DELETE",
+        body: {},
+      }),
+      invalidatesTags: ["processes"],
+    }),
     createProcess: builder.mutation<Process, string>({
       query: (body) => ({
-        url: '/api/process',
+        url: "/api/process",
         method: "POST",
         body: body,
       }),
@@ -39,5 +48,11 @@ export const processApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useFindAllQuery, useFindOneQuery, useRunProcessMutation, useCreateProcessMutation, useEditAccessMutation } = processApi;
-
+export const {
+  useFindAllQuery,
+  useFindOneQuery,
+  useRunProcessMutation,
+  useCreateProcessMutation,
+  useEditAccessMutation,
+  useDelProcessMutation
+} = processApi;
