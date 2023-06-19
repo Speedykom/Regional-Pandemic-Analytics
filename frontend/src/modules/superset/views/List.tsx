@@ -11,19 +11,6 @@ export const DashboardList = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const router = useRouter()
 
-	const viewDash = async(id: string) => {
-		await axios.get(
-			`http://localhost:8088/api/v1/dashboard/4/embedded/`
-		).then((res) => {
-			const dashboardUUID = res?.data?.result?.uuid;
-			console.log(res);
-			
-			router.push(`/dashboards/${dashboardUUID}/`);
-		}).catch((err) => {
-			console.error("Error fetching item:", err);
-		}) 
-	};
-
 	const fetchDashboards = async () => {
 		try {
 			setLoading(true);
@@ -73,7 +60,7 @@ export const DashboardList = () => {
 						rows={data}
 						columns={columns}
 						onRow={(record: any) => ({
-							onClick: () => viewDash(record.id),
+							onClick: () => rowAction(record.id),
 						  })}
 					/>
 				</div>
