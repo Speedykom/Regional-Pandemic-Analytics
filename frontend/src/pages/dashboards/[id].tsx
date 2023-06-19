@@ -41,7 +41,7 @@ export default function SupersetDashboard() {
 		if (ref.current) {
 			await embedDashboard({
 				id: uuid, // given by the Superset embedding UI
-				supersetDomain: "http://superset:8088/",
+				supersetDomain: `${process.env.NEXT_PUBLIC_SUPERSET_URL}`,
 				mountPoint: ref.current, // html element in which iframe render
 				fetchGuestToken: () =>
 					getGuestToken(uuid),
