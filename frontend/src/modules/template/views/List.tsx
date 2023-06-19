@@ -1,7 +1,7 @@
 import { IGADTable } from "@/common/components/common/table";
 import { DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, message, Upload } from "antd";
-import { useHops } from "../hooks";
+import { useTemplate } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
@@ -26,55 +26,12 @@ export const HopList = () => {
   const router = useRouter();
 
   const [token, setToken] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(true);
-
-  const fetchToken = async () => {
-    try {
-      const url = "/api/get-access-token/";
-      const response = await getData(url);
-      setToken(response?.accessToken);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
 
   const [data, setData] = useState<Array<string>>([]);
 
   const [view, setView] = useState<boolean>(false);
   const [roleId, setRoleId] = useState<string>();
 
-  const fetchHops = async () => {
-    // console.log(process.env.FRONTEND_NEXT_PUBLIC_BASE_URL);
-    // const epoint = "http://localhost:8000";
-    try {
-      setLoading(true);
-      const url = `${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}/api/hop/`;
-      await axios
-        .get(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((res) => {
-          setLoading(false);
-          const templates: Array<any> = [];
-          res?.data?.data?.map((data: any, index: number) => {
-            const template = {
-              id: index + 1,
-              name: data?.name,
-            };
-            templates.push(template);
-          });
-          setData(templates);
-        });
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  const refetch = () => {
-    fetchHops();
-  };
 
   const formItemLayout = {
     labelCol: {
@@ -110,11 +67,6 @@ export const HopList = () => {
     setOpen(false);
   };
 
-  useEffect(() => {
-    fetchToken();
-    fetchHops();
-  }, []);
-
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
 
@@ -144,7 +96,6 @@ export const HopList = () => {
       )
       .then((res) => {
         setFileList([]);
-        refetch();
         message.success(res?.data?.message);
         setOpen(false);
       })
@@ -175,7 +126,8 @@ export const HopList = () => {
     fileList,
   };
 
-  const { columns } = useHops({ edit, del, refetch });
+  const { columns, rows, loading } = useTemplate({ edit, del });
+
   // @ts-ignore
   return (
     <div className="">
@@ -199,15 +151,8 @@ export const HopList = () => {
           <IGADTable
             key={"id"}
             loading={loading}
-            rows={data}
+            rows={rows}
             columns={columns}
-            // onRow={(record: any, rowIndex: number) => {
-            //   return {
-            //     onClick: () => {
-            //       router.push(`/hops/${record?.name}`);
-            //     },
-            //   };
-            // }}
           />
         </div>
       </section>
