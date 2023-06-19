@@ -160,7 +160,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 						</div>
 					</Link>
 				)}
-				<Link href="/hops">
+				<Link href="/hop-template">
 					<div
 						className={`px-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
 							router.pathname == "/hopes"
@@ -172,7 +172,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 							<DocumentIcon className="h-5 w-5" />
 						</div>
 						<div>
-							<p>Hops</p>
+							<p>Hop Template</p>
 						</div>
 					</div>
 				</Link>

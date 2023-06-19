@@ -4,14 +4,19 @@ import { FiEdit, FiTrash } from "react-icons/fi";
 import { Action } from "@/common/components/common/action";
 import axios from "axios";
 import { OpenNotification } from "@/common/utils/notify";
+import { useFindAllQuery } from "./template";
 
 interface props {
   edit: (id: string, name: string, description: string) => void;
   del: () => void;
-  refetch: () => void;
 }
 
-export const useHops = ({ edit, del, refetch }: props) => {
+export const useTemplate = ({ edit, del }: props) => {
+  const { data: res, isLoading: loading } = useFindAllQuery();
+
+  const rows = res?.data;
+  
+
   const action = (id: string, name: string, description: string) => {
     const deleteUser = async () => {
       await axios
@@ -24,7 +29,6 @@ export const useHops = ({ edit, del, refetch }: props) => {
           }
         )
         .then((res) => {
-          refetch();
           OpenNotification(res.data?.message, "topRight", "success");
         })
         .catch((err) => {
@@ -35,6 +39,7 @@ export const useHops = ({ edit, del, refetch }: props) => {
           );
         });
     };
+    
     return (
       <Action>
         <ul>
@@ -71,23 +76,12 @@ export const useHops = ({ edit, del, refetch }: props) => {
   const columns: ColumnsType<any> = [
     {
       // fixed: "left",
-      title: "#",
-      key: "id",
-      dataIndex: "id",
-      render: (id) => id,
-      className: "text-gray-700 w-20",
-      ellipsis: true,
-    },
-    {
-      // fixed: "left",
       title: "Template Name",
       key: "name",
       dataIndex: "name",
-      render: (name) => name,
-      className: "text-gray-700",
       ellipsis: true,
     },
   ];
 
-  return { columns, loading: false };
+  return { columns, loading, rows: rows };
 };
