@@ -190,7 +190,7 @@ class RequestEditProcess(APIView):
     file = "../hop/data-orch.list"
 
     def get(self, request, dag_id=None):
-        process = Dag.objects.filter(dag_id=dag_id)
+        process = ProcessChain.objects.filter(dag_id=dag_id)
         
         if (len(process) <= 0): return Response({'status': 'success', "message": "No process found for this dag_id {}".format(dag_id)}, status=404)
 
