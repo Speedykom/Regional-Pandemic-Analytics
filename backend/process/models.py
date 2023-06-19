@@ -9,6 +9,7 @@ class ProcessChain(models.Model):
     data_source_name = models.CharField(max_length=200)
     parquet_path = models.CharField(max_length=200)
     dag_id = models.CharField(max_length=200)
+    state = models.CharField(max_length=200, default='active')
     schedule_interval = models.CharField(max_length=200)
 
     def __str__(self):

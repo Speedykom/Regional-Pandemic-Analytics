@@ -1,6 +1,7 @@
-import { Button } from "antd";
+import { Button, Popover } from "antd";
 import { ColumnsType } from "antd/es/table";
 import {
+  useDelProcessMutation,
   useEditAccessMutation,
   useFindAllQuery,
   useRunProcessMutation,
@@ -40,6 +41,65 @@ const ViewButton = ({ id }: { id: string }) => {
     >
       View
     </Button>
+  );
+};
+
+const DelButton = ({ id }: { id: string }) => {
+  const [delProcess] = useDelProcessMutation();
+
+  const [loading, setLoading] = useState(false);
+  const [state, setState] = useState(false);
+
+  const del = () => {
+    setLoading(true);
+    delProcess(id)
+      .then((res: any) => {
+        if (res.error) {
+          ShowMessage("error", res.error.message);
+          return;
+        }
+
+        close();
+      })
+      .finally(() => setLoading(false));
+  };
+
+  const open = () => {
+    setState(true);
+  };
+
+  const close = () => {
+    setState(false);
+  };
+
+  return (
+    <Popover
+      content={
+        <div>
+          <p>
+            Are you sure to delete <br /> this process?
+          </p>
+          <div className="flex border-t mt-2 items-center space-x-2 pt-2">
+            <Button loading={loading} onClick={del} type="text">
+              Yes
+            </Button>
+            <p>/</p>
+            <Button onClick={close} type="text">
+              No
+            </Button>
+          </div>
+        </div>
+      }
+      trigger="click"
+      open={state}
+      onOpenChange={open}
+    >
+      <Button
+        className="dag-btn border-red-500 text-red-500 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:bg-red-500 focus:text-white"
+      >
+        Delete
+      </Button>
+    </Popover>
   );
 };
 
@@ -133,14 +193,9 @@ export const useProcessChainList = ({ loadData, viewProcess }: Props) => {
       key: "action",
       render: (dag) => (
         <div className="flex space-x-2 justify-end">
-          <RunButton id={dag.dag_id} />
-          <ViewButton id={dag.dag_id} />
-          <Button className="dag-btn border-purple-500 text-purple-500 rounded-md hover:bg-purple-500 hover:text-white focus:outline-none focus:bg-purple-500 focus:text-white">
-            Pipeline
-          </Button>
-          <Button className="dag-btn border-red-500 text-red-500 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:bg-red-500 focus:text-white">
-            Delete
-          </Button>
+          {dag.airflow ? <RunButton id={dag.dag_id} /> : null}
+          {dag.airflow ? <ViewButton id={dag.dag_id} /> : null}
+          <DelButton id={dag.dag_id} />
         </div>
       ),
     },
@@ -157,19 +212,19 @@ export const useProcessDagRuns = () => {
       title: "Execution Date",
       dataIndex: "execution_date",
       key: "execution_date",
-      render: (date) => (new Date(date).toLocaleString())
+      render: (date) => new Date(date).toLocaleString(),
     },
     {
       title: "Start Date",
       dataIndex: "start_date",
       key: "start_date",
-      render: (date) => (new Date(date).toLocaleString())
+      render: (date) => new Date(date).toLocaleString(),
     },
     {
       title: "end_date",
       dataIndex: "end_date",
       key: "end_date",
-      render: (date) => (new Date(date).toLocaleString())
+      render: (date) => new Date(date).toLocaleString(),
     },
     {
       title: "Run Type",
@@ -180,7 +235,7 @@ export const useProcessDagRuns = () => {
       title: "Last Scheduling Decision",
       dataIndex: "last_scheduling_decision",
       key: "last_scheduling_decision",
-      render: (date) => (new Date(date).toLocaleString())
+      render: (date) => new Date(date).toLocaleString(),
     },
     {
       title: "State",
