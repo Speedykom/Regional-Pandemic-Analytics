@@ -56,20 +56,10 @@ class DeleteProcess(APIView):
 
     permission_classes = [AllowAny]
 
-    # dynamic dag template
-    template = "process/gdags/template.py"
-
-    # dynamic dag output
-    output = "../airflow/dags/"
-
-    def delete(self, request, id=None):
-        result = get_object_or_404(Dag, id=id)
-        serializer = ProcessChainSerializer(result)
-
-        file_to_rem = pathlib.Path("{}{}.py".format(self.output, serializer.data['dag_id']))
-        file_to_rem.unlink()
-
-        result.delete()
+    def delete(self, request, dag_id=None):
+        process = ProcessChain.objects.get(dag_id=dag_id)
+        process.state = 'inactive'
+        process.save()
         return Response({"status": "success", "data": "Record Deleted"})
 
 
@@ -135,7 +125,7 @@ class GetProcess(APIView):
             return Response({'status': 'success', "dag": respose}, status=200)
 
         processes = []
-        snippets = ProcessChain.objects.all()
+        snippets = ProcessChain.objects.filter(state='active')
         serializer = ProcessChainSerializer(snippets, many=True)
 
         for process in serializer.data:
