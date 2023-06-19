@@ -1,35 +1,18 @@
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-"""The main config file for Superset
-
-All configuration in this file can be overridden by providing a superset_config
-in your PYTHONPATH as there is a ``from superset_config import *``
-at the end of this file.
-"""
-# pylint: disable=too-many-lines
 from __future__ import annotations
 
 import imp  # pylint: disable=deprecated-module
 import importlib.util
 import json
 import logging
+import jwt
+import requests
 import os
 import re
 import sys
+
+from base64 import b64decode
+from flask_appbuilder import expose
+from cryptography.hazmat.primitives import serialization
 from collections import OrderedDict
 from datetime import timedelta
 from email.mime.multipart import MIMEMultipart
@@ -54,7 +37,8 @@ from celery.schedules import crontab
 from dateutil import tz
 from flask import Blueprint
 from flask_appbuilder.security.manager import AUTH_OAUTH
-from pandas._libs.parsers import STR_NA_VALUES  # pylint: disable=no-name-in-module
+from flask_appbuilder.security.views import AuthOAuthView
+from pandas._libs.parsers import STR_NA_VALUES
 from sqlalchemy.orm.query import Query
 
 from superset.advanced_data_type.plugins.internet_address import internet_address
@@ -330,6 +314,14 @@ KEYCLOAK_TOKEN_URL = os.getenv("KEYCLOAK_TOKEN_URL")
 KEYCLOAK_AUTH_URL = os.getenv("KEYCLOAK_AUTH_URL")
 
 AUTH_TYPE = AUTH_OAUTH
+
+AUTH_ROLES_MAPPING = {
+  "airflow_admin": ["Admin"],
+  "airflow_op": ["Op"],
+  "airflow_user": ["User"],
+  "superset_gamma": ["Gamma"],
+  "superset_public": ["Public"],
+}
 
 OAUTH_PROVIDERS = [
     {   'name': PROVIDER_NAME,
@@ -1566,6 +1558,7 @@ ENVIRONMENT_TAG_CONFIG = {
     },
 }
 
+AUTH_ROLES_SYNC_AT_LOGIN = True
 
 # Extra related query filters make it possible to limit which objects are shown
 # in the UI. For examples, to only show "admin" or users starting with the letter "b" in
@@ -1625,13 +1618,46 @@ elif importlib.util.find_spec("superset_config") and not is_test():
         logger.exception("Found but failed to import local superset_config")
         raise
 
+
+req = requests.get(OIDC_ISSUER)
+key_der_base64 = req.json()["public_key"]
+key_der = b64decode(key_der_base64.encode())
+public_key = serialization.load_der_public_key(key_der)
+
+class CustomAuthRemoteUserView(AuthOAuthView):
+    @expose("/logout/")
+    def logout(self):
+        """Delete access token before logging out."""
+        return super().logout()
+
 class CustomSsoSecurityManager(SupersetSecurityManager):
+    authoauthview = CustomAuthRemoteUserView
 
     def oauth_user_info(self, provider, response=None):
-        logging.debug("Oauth2 provider: {0}.".format(provider))
         if provider == PROVIDER_NAME:
-            me = self.appbuilder.sm.oauth_remotes[provider].get('userDetails').data
-            logging.debug("user_data: {0}".format(me))
-            return { 'name' : me['name'], 'email' : me['email'], 'id' : me['user_name'], 'username' : me['user_name'], 'first_name':'', 'last_name':''}
+            token = response["access_token"]
+
+            me = jwt.decode(token, public_key, algorithms=['HS256', 'RS256'], audience=CLIENT_ID)
+
+            groups = me["resource_access"]["superset"]["roles"]
+
+            if len(groups) < 1:
+                groups = ["superset_gamma"]
+            else:
+                groups = [str for str in groups if "superset" in str]
+
+            userinfo = {
+                "username": me.get("preferred_username"),
+                "email": me.get("email"),
+                "first_name": me.get("given_name"),
+                "last_name": me.get("family_name"),
+                "role_keys": groups,
+            }
+
+            logger.info("user info: {0}".format(userinfo))
+
+            return userinfo
+        else:
+            return {}
 
 CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager
