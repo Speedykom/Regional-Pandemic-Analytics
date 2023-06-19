@@ -70,6 +70,7 @@ urlpatterns = [
     path('process/list', GetProcess.as_view()),
     path('process/run/<str:id>', RunProcess.as_view()),
     path('process/access/<str:dag_id>', RequestEditProcess.as_view()),
+    path('process/delete/<str:dag_id>', DeleteProcess.as_view()),
     path('process/<str:id>', EditProcess.as_view()),
     path('process/one/<str:dag_id>', GetProcess.as_view()),
 
