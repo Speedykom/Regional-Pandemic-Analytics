@@ -27,6 +27,14 @@ export const processApi = createApi({
       }),
       invalidatesTags: ["processes"],
     }),
+    delProcess: builder.mutation<Process, string>({
+      query: (id) => ({
+        url: `/api/process/delete/${id}`,
+        method: "DELETE",
+        body: {},
+      }),
+      invalidatesTags: ["processes"],
+    }),
     createProcess: builder.mutation<Process, string>({
       query: (body) => ({
         url: "/api/process",
@@ -46,4 +54,5 @@ export const {
   useRunProcessMutation,
   useCreateProcessMutation,
   useEditAccessMutation,
+  useDelProcessMutation
 } = processApi;
