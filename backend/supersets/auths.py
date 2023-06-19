@@ -19,7 +19,7 @@ def get_auth_token ():
     response = requests.post(f"{url}", json=request_body, headers=headers)
     
     if response.status_code != 200:
-        return {'status': response.status_code, 'message': response.json()}
+        return {'status': response.status_code, 'message': response.reason}
     return {'status': response.status_code, 'message': 'Access granted', 'token': response.json()}
 
 def get_local_auth_token ():
