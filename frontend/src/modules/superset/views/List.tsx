@@ -11,25 +11,23 @@ export const DashboardList = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const router = useRouter()
 
-	const viewDash = async(id: number, dashboard_title: string) => {
-		try {
-			const response = await axios.get(
-				`${api_url}/api/v1/dashboard/${id}/embedded`
-			);
-			const dashboardUUID = response?.data?.result?.uuid;
-			router.push({
-				pathname: `/dashboards/${dashboardUUID}/`,
-				query: { dashboardTitl: dashboard_title },
-			});
-		} catch (error) {
-			console.error("Error fetching item:", error);
-		}
+	const viewDash = async(id: string) => {
+		await axios.get(
+			`http://localhost:8088/api/v1/dashboard/4/embedded/`
+		).then((res) => {
+			const dashboardUUID = res?.data?.result?.uuid;
+			console.log(res);
+			
+			router.push(`/dashboards/${dashboardUUID}/`);
+		}).catch((err) => {
+			console.error("Error fetching item:", err);
+		}) 
 	};
 
 	const fetchDashboards = async () => {
 		try {
 			setLoading(true);
-			const url = `${api_url}/api/superset`;
+			const url = `${api_url}/api/superset/list`;
 			await axios
 				.get(url, {
 					headers: {
@@ -38,7 +36,7 @@ export const DashboardList = () => {
 				})
 				.then((res) => {
 					setLoading(false);
-					setData(res?.data?.data?.result);
+					setData(res?.data?.result);
 				});
 		} catch (error) {
 			console.error("Error:", error);
@@ -53,7 +51,7 @@ export const DashboardList = () => {
 		fetchDashboards();
 	}, [])
 
-	const { columns } = useDashboards({ view: viewDash });
+	const { columns } = useDashboards();
 	return (
 		<div className="">
 			<nav>
@@ -75,7 +73,7 @@ export const DashboardList = () => {
 						rows={data}
 						columns={columns}
 						onRow={(record: any) => ({
-							onClick: () => rowAction(record.id),
+							onClick: () => viewDash(record.id),
 						  })}
 					/>
 				</div>
