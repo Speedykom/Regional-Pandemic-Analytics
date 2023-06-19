@@ -152,6 +152,8 @@ services:
       - "8000:8000"
     volumes:
       - ./airflow/dags:/airflow/dags
+      - ./hop/pipelines/:/hop
+      - ./hop/pipelines/templates:/hop/templates
       - ./hop/data-orch.list:/hop/data-orch.list
     environment:
       - DEVELOPMENT_MODE=${BACKEND_DEVELOPMENT_MODE}
@@ -164,6 +166,8 @@ services:
       - APP_CLIENT_ID=${BACKEND_APP_CLIENT_ID}
       - APP_CLIENT_UUID=${BACKEND_APP_CLIENT_UUID}
       - APP_CLIENT_SECRET=${BACKEND_APP_CLIENT_SECRET}
+      - HOPE_PIPELINE_PATH=${BACKEND_HOPE_PIPELINE_PATH}
+      - HOPE_TEMPLATE_PATH=${BACKEND_HOPE_TEMPLATE_PATH}
       - APP_USER_BASE_URL=${BACKEND_APP_USER_BASE_URL}
       - BASE_URL=${BACKEND_BASE_URL}
       - APP_SECRET_KEY=${BACKEND_APP_SECRET_KEY}
