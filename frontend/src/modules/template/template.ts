@@ -8,7 +8,7 @@ export const templateApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: BASE_URL, credentials: "include" }),
   tagTypes: ["templates"],
   endpoints: (builder) => ({
-    findAll: builder.query<any, void>({
+    findAll: builder.query<void, void>({
       query: () => "/api/hop/",
       providesTags: ["templates"],
     }),
