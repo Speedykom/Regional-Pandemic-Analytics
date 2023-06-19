@@ -8,7 +8,7 @@ def upload_file_to_minio(bucket_name, uploaded_file):
     try:
         # Create a client with the MinIO server and credentials.
         client = Minio(
-            os.getenv('MINIO_URL'),
+            os.getenv('MINIO_URL').replace('http://', '').replace('https://', ''),
             access_key=os.getenv("MINIO_ACCESS_KEY"),
             secret_key=os.getenv("MINIO_SECRET_KEY"),
             secure=False
