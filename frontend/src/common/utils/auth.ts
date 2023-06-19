@@ -29,15 +29,14 @@ export const getUserRole = async (roles: []) => {
 }
 
 export const getGuestToken = async (uuid: string): Promise<string> => {
-    return await axios.post(`${api_url}/api/superset/guest/token`, {
-        id: uuid
-    }, {
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then((res) => {
-        return res.data?.token
-    }).catch((err) => {
-        console.log(err)
+    return new Promise<string>((resolve) => {
+        console.log("====> Calling token!")
+        axios.post(`${api_url}/api/superset/guest/token`, { id: uuid }).then((response) => {
+            console.log(response.status);
+            resolve(response.data?.token);
+        }).catch((err) => {
+            console.log(err)
+        });
     })
+    
 }

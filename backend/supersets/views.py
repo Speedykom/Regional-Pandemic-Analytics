@@ -5,7 +5,6 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from . import auths
-import uuid
 
 class ListDashboardsAPI(APIView):
     """
@@ -23,18 +22,73 @@ class ListDashboardsAPI(APIView):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/"
         
         headers = {
+            'Authorization': f"Bearer {auth_response['token']['access_token']}"
+        }
+        
+        response = requests.get(url=url, headers=headers)
+        
+        if response.status_code != 200:
+            return Response({'errorMessage': response.json()}, status=response.status_code)
+        
+        return Response(response.json(), status=status.HTTP_200_OK)
+    
+    
+class DashboardEmbed(APIView):
+    """
+    API view to enable superset dashboard embed
+    """
+    permission_classes = [AllowAny,]
+    
+    def post(self, request):
+        #Login to superset
+        auth_response = auths.get_local_auth_token()
+        
+        if auth_response['status'] != 200:
+            return Response({'errorMessage': auth_response['message']}, status=auth_response['status'])
+        
+        uid = request.data.get('uid', None)
+        
+        # url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{uid}/embedded"
+        url = f"http://localhost:8088/api/v1/dashboard/{uid}/embedded"
+        
+        headers = {
             'Content-Type': "application/json",
-            'Authorization': f"Bearer ${auth_response['token']['access_token']}"
+            'Authorization': f"Bearer {auth_response['token']['access_token']}"
+        }
+        
+        response = requests.post(url, json={"allowed_domains": []}, headers=headers)
+        
+        if response.status_code != 200:
+            return Response({'errorMessage': response.json()}, status=response.status_code)
+        
+        return Response(response.json(), status=status.HTTP_200_OK)    #result.uuid
+    
+    
+class GetEmbeddable(APIView):
+    """
+    API view to get embedable superset dashboard
+    """
+    permission_classes = [AllowAny,]
+    
+    def get(self, request, *args, **kwargs):
+        #Login to superset
+        auth_response = auths.get_local_auth_token()
+        
+        if auth_response['status'] != 200:
+            return Response({'errorMessage': auth_response['message']}, status=auth_response['status'])
+        
+        # url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{uid}/embedded"
+        url = 'http://localhost:8088/api/v1/dashboard/4/embedded'
+        
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {auth_response["token"]["access_token"]}'
         }
         
         response = requests.get(url, headers=headers)
-        
-        if response.status_code != 200:
-            return Response({'errorMessage': response.json()['message']}, status=response.status_code)
-        
-        return Response({'data': response.json()}, status=status.HTTP_200_OK)
-        
 
+        return Response(response.json(), status=response.status_code)    #result.uuid    
+        
 class GuestTokenApi(APIView):
     """
     API view to get superset guest token
@@ -42,7 +96,8 @@ class GuestTokenApi(APIView):
     permission_classes = [AllowAny,]
     
     def post(self, request):
-        url = f"{os.getenv('SUPERSET_BASE_URL')}/security/guest_token/"
+        # url = f"{os.getenv('SUPERSET_BASE_URL')}/security/guest_token/"
+        url = 'http://localhost:8088/api/v1/security/guest_token/'
         
         guest_token = auths.get_csrf_token()
         
@@ -51,11 +106,9 @@ class GuestTokenApi(APIView):
         
         headers = {
             'Content-Type': "application/json",
-            'Authorization': f"Bearer ${guest_token['token']['access_token']}",
-            'X-CSRF-TOKEN': f"{guest_token['token']['csrf_token']}"
+            'Authorization': f"Bearer {guest_token['token']['access_token']}",
+            'X-CSRF-TOKEN': f"csrf {guest_token['token']['csrf_token']}"
         }
-        
-        print (guest_token)
         
         payload = {
             "user": {
@@ -67,9 +120,7 @@ class GuestTokenApi(APIView):
                 "type": "dashboard",
                 "id": request.data.get('id', str)
             }],
-            "rls": [
-                { "clause": "publisher = 'Speedykom'" }
-            ]
+            "rls": []
         }
         
         response = requests.post(url, json=payload, headers=headers)
@@ -77,4 +128,30 @@ class GuestTokenApi(APIView):
         if response.status_code != 200:
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
-        return Response({'data': response.json()}, status=status.HTTP_200_OK)
+        return Response(response.json(), status=status.HTTP_200_OK)
+    
+
+class CsrfTokenApi(APIView):
+    """
+    API view to get superset csrf token
+    """
+    permission_classes = [AllowAny,]
+    
+    def get(self, request):
+        url = 'http://localhost:8088/api/v1/security/csrf_token/'
+    
+        auth_response = auths.get_local_auth_token()
+        
+        if auth_response['status'] != 200:
+            return {'status': auth_response['status'], 'message': auth_response['message']}
+        
+        headers = {
+            'Authorization': f"Bearer {auth_response['token']['access_token']}",
+        }
+        
+        response = requests.get(url=url, headers=headers)
+        
+        if response.status_code != 200:
+            return Response({'errorMessage': response.json()}, status=response.status_code)
+        
+        return Response({'data': response.json()}, status=status.HTTP_200_OK)    
