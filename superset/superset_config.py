@@ -1452,6 +1452,14 @@ FEATURE_FLAGS = {
 ENABLE_PROXY_FIX = True
 HTTP_HEADERS = {'X-Frame-Options': 'ALLOWALL'}
 
+ENABLE_CORS = True
+CORS_OPTIONS = {
+    'supports_credentials': True,
+    'allow_headers': ['*'],
+    'resources':['*'],
+    'origins': ['*']
+}
+
 ENABLE_JAVASCRIPT_CONTROLS = True
 # A SQL dataset health check. Note if enabled it is strongly advised that the callable
 # be memoized to aid with performance, i.e.,
