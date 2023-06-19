@@ -14,7 +14,6 @@ export default async function handler(
 
   const { username, password } = req.body;
 
-
   const body = JSON.stringify({
     username,
     password,
