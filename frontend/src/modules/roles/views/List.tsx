@@ -136,12 +136,8 @@ export const RoleList = () => {
 						<div>
 							<Button
 								type="primary"
-								className="flex items-center"
+                size="large"
 								icon={<PlusOutlined />}
-								style={{
-									backgroundColor: "#087757",
-									border: "1px solid #e65e01",
-								}}
 								onClick={showModal}
 							>
 								New Role

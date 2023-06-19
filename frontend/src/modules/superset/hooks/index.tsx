@@ -1,5 +1,5 @@
 import { ColumnsType } from "antd/es/table";
-import { IDashboard } from "./interface";
+import { IDashboard } from "../interface";
 import { Tag } from "antd";
 import { FiEye } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
