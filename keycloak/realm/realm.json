@@ -1281,6 +1281,22 @@
           }
         },
         {
+          "id": "e691cecf-7d49-4653-9ee4-f4ba61920016",
+          "name": "avatar",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "aggregate.attrs": "false",
+            "userinfo.token.claim": "true",
+            "multivalued": "false",
+            "user.attribute": "avatar",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "avatar"
+          }
+        },
+        {
           "id": "8dae6fc6-e6d4-4b69-b2e4-877ea6652acb",
           "name": "full name",
           "protocol": "openid-connect",
