@@ -23,6 +23,7 @@ import { PreviewUser } from "./Preview";
 import { countries } from "@/common/utils/countries";
 import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
+import { api_url } from "@/common/utils/auth";
 
 interface props {
 	viewPro: () => void;
@@ -160,7 +161,7 @@ export const UserList = () => {
 		values["role"] = JSON.parse(values["role"])
 		await axios
 			.put(
-				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${userId}/update`,
+				`${api_url}/api/account/user/${userId}/update`,
 				values,
 				{
 					headers: {
@@ -193,7 +194,7 @@ export const UserList = () => {
 	const fetchRoles = async () => {
 		try {
 			setRoleLoading(true)
-			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
+			const url = `${api_url}/api/role`;
 			await axios.get(url, {
 				headers: {
 					Authorization: `Bearer ${token}`,

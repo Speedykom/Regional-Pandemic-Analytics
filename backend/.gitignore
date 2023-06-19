@@ -3,7 +3,7 @@
 *.pot
 *.pyc
 
-.env
+# .env
 __pycache__
 db.sqlite3
 media
@@ -100,7 +100,7 @@ celerybeat-schedule.*
 
 # Environments
 .venv
-env/
+# env/
 venv/
 ENV/
 env.bak/
