@@ -1618,7 +1618,6 @@ elif importlib.util.find_spec("superset_config") and not is_test():
         logger.exception("Found but failed to import local superset_config")
         raise
 
-
 req = requests.get(OIDC_ISSUER)
 key_der_base64 = req.json()["public_key"]
 key_der = b64decode(key_der_base64.encode())
