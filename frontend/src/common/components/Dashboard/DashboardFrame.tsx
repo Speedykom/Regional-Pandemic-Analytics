@@ -12,9 +12,7 @@ interface Props {
   onBackPress?: () => void;
 }
 
-export default function DashboardFrame({
-  children,
-}: Props) {
+export default function DashboardFrame({ children }: Props) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -58,9 +56,7 @@ export default function DashboardFrame({
 
   return (
     <Layout>
-      <div className="py-10">
-      {children}
-      </div>
+      <div className="py-10">{children}</div>
     </Layout>
   );
 }
