@@ -75,9 +75,9 @@ class CreateProcess(APIView):
 
     def post(self, request):
         path = request.data['path']
-        name = request.data['dag_id'].replace(" ", "-").replace(".hpl", "")
+        name = request.data['dag_id'].replace(" ", "-").replace(".hpl", "").lower()
 
-        dag_id = request.data['dag_id']
+        dag_id = name
         process = ProcessChain.objects.filter(dag_id=dag_id)
 
         if (len(process) > 0):
@@ -95,9 +95,9 @@ class CreateProcess(APIView):
 
         request.data['path'] = pipeline_name
         request.data['parquet_path'] = parquet_path
+        request.data['dag_id'] = name
 
         serializer = ProcessChainSerializer(data=request.data)
-        dag_id = request.data['dag_id']
 
         if serializer.is_valid():
 
