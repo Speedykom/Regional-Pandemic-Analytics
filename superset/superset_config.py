@@ -1,35 +1,18 @@
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
-# "License"); you may not use this file except in compliance
-# with the License.  You may obtain a copy of the License at
-#
-#   http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing,
-# software distributed under the License is distributed on an
-# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-# KIND, either express or implied.  See the License for the
-# specific language governing permissions and limitations
-# under the License.
-"""The main config file for Superset
-
-All configuration in this file can be overridden by providing a superset_config
-in your PYTHONPATH as there is a ``from superset_config import *``
-at the end of this file.
-"""
-# pylint: disable=too-many-lines
 from __future__ import annotations
 
 import imp  # pylint: disable=deprecated-module
 import importlib.util
 import json
 import logging
+import jwt
+import requests
 import os
 import re
 import sys
+
+from base64 import b64decode
+from flask_appbuilder import expose
+from cryptography.hazmat.primitives import serialization
 from collections import OrderedDict
 from datetime import timedelta
 from email.mime.multipart import MIMEMultipart
@@ -53,8 +36,9 @@ from cachelib.base import BaseCache
 from celery.schedules import crontab
 from dateutil import tz
 from flask import Blueprint
-from flask_appbuilder.security.manager import AUTH_DB
-from pandas._libs.parsers import STR_NA_VALUES  # pylint: disable=no-name-in-module
+from flask_appbuilder.security.manager import AUTH_OAUTH
+from flask_appbuilder.security.views import AuthOAuthView
+from pandas._libs.parsers import STR_NA_VALUES
 from sqlalchemy.orm.query import Query
 
 from superset.advanced_data_type.plugins.internet_address import internet_address
@@ -69,6 +53,7 @@ from superset.utils.core import is_test, NO_TIME_RANGE, parse_boolean_string
 from superset.utils.encrypt import SQLAlchemyUtilsAdapter
 from superset.utils.log import DBEventLogger
 from superset.utils.logging_configurator import DefaultLoggingConfigurator
+from superset.security import SupersetSecurityManager
 
 logger = logging.getLogger(__name__)
 
@@ -246,9 +231,9 @@ SQLALCHEMY_ENCRYPTED_FIELD_TYPE_ADAPTER = (  # pylint: disable=invalid-name
 QUERY_SEARCH_LIMIT = 1000
 
 # Flask-WTF flag for CSRF
-# WTF_CSRF_ENABLED = False
+WTF_CSRF_ENABLED = True
 
-# # Add endpoints that need to be exempt from CSRF protection
+# Add endpoints that need to be exempt from CSRF protection
 WTF_CSRF_EXEMPT_LIST = [
     "superset.views.core.log",
     "superset.views.core.explore_json",
@@ -270,6 +255,8 @@ SHOW_STACKTRACE = True
 
 # Use all X-Forwarded headers when ENABLE_PROXY_FIX is True.
 # When proxying to a different port, set "x_port" to 0 to avoid downstream issues.
+ENABLE_PROXY_FIX = False
+PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 1, "x_prefix": 1}
 
 # Configuration for scheduling queries from SQL Lab.
 SCHEDULED_QUERIES: Dict[str, Any] = {}
@@ -316,7 +303,47 @@ DRUID_ANALYSIS_TYPES = ["cardinality"]
 # AUTH_DB : Is for database (username/password)
 # AUTH_LDAP : Is for LDAP
 # AUTH_REMOTE_USER : Is for using REMOTE_USER from web server
-AUTH_TYPE = AUTH_DB
+PROVIDER_NAME = os.getenv("PROVIDER_NAME")
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+
+OIDC_ISSUER = os.getenv("OIDC_ISSUER")
+KEYCLOAK_BASE_URL = os.getenv("KEYCLOAK_BASE_URL")
+KEYCLOAK_TOKEN_URL = os.getenv("KEYCLOAK_TOKEN_URL")
+KEYCLOAK_AUTH_URL = os.getenv("KEYCLOAK_AUTH_URL")
+
+AUTH_TYPE = AUTH_OAUTH
+
+AUTH_ROLES_MAPPING = {
+  "airflow_admin": ["Admin"],
+  "airflow_op": ["Op"],
+  "airflow_user": ["User"],
+  "superset_gamma": ["Gamma"],
+  "superset_public": ["Public"],
+}
+
+OAUTH_PROVIDERS = [
+    {   'name': PROVIDER_NAME,
+        'token_key':'access_token', # Name of the token in the response of access_token_url
+        'icon':'fa-key',   # Icon for the provider
+        'remote_app': {
+            'client_id': CLIENT_ID,
+            'client_secret': CLIENT_SECRET,
+            'client_kwargs':{
+                'scope': 'email profile'               # Scope for the Authorization
+            },
+            'api_base_url': KEYCLOAK_BASE_URL,
+            'request_token_url': None,
+            'access_token_url': KEYCLOAK_TOKEN_URL,
+            'authorize_url': KEYCLOAK_AUTH_URL
+        }
+    }
+]
+
+# Will allow user self registration, allowing to create Flask users from Authorized User
+AUTH_USER_REGISTRATION = True
+
+AUTH_USER_REGISTRATION_ROLE = 'Gamma'
 
 # Uncomment to setup Full admin role name
 # AUTH_ROLE_ADMIN = 'Admin'
@@ -337,6 +364,14 @@ AUTH_TYPE = AUTH_DB
 # OPENID_PROVIDERS = [
 #    { 'name': 'Yahoo', 'url': 'https://open.login.yahoo.com/' },
 #    { 'name': 'Flickr', 'url': 'https://www.flickr.com/<username>' },
+
+# ---------------------------------------------------
+# Roles config
+# ---------------------------------------------------
+# Grant public role the same set of permissions as for a selected builtin role.
+# This is useful if one wants to enable anonymous users to view
+# dashboards. Explicit grant on specific datasets is still required.
+PUBLIC_ROLE_LIKE: Optional[str] = None
 
 # ---------------------------------------------------
 # Babel config for translations
@@ -403,7 +438,7 @@ DEFAULT_FEATURE_FLAGS: Dict[str, bool] = {
     # this enables programmers to customize certain charts (like the
     # geospatial ones) by inputing javascript in controls. This exposes
     # an XSS security vulnerability
-    "ENABLE_JAVASCRIPT_CONTROLS": True,
+    "ENABLE_JAVASCRIPT_CONTROLS": False,
     "KV_STORE": False,
     # When this feature is enabled, nested types in Presto will be
     # expanded into extra columns and/or arrays. This is experimental,
@@ -411,7 +446,7 @@ DEFAULT_FEATURE_FLAGS: Dict[str, bool] = {
     "PRESTO_EXPAND_DATA": False,
     # Exposes API endpoint to compute thumbnails
     "THUMBNAILS": False,
-    "DASHBOARD_CACHE": True,
+    "DASHBOARD_CACHE": False,
     "REMOVE_SLICE_LEVEL_LABEL_COLORS": False,
     "SHARE_QUERIES_VIA_KV_STORE": False,
     "TAGGING_SYSTEM": False,
@@ -422,14 +457,14 @@ DEFAULT_FEATURE_FLAGS: Dict[str, bool] = {
     # When True, this escapes HTML (rather than rendering it) in Markdown components
     "ESCAPE_MARKDOWN_HTML": False,
     "DASHBOARD_NATIVE_FILTERS": True,
-    "DASHBOARD_CROSS_FILTERS": True,
+    "DASHBOARD_CROSS_FILTERS": False,
     # Feature is under active development and breaking changes are expected
-    "DASHBOARD_NATIVE_FILTERS_SET": True,
-    "DASHBOARD_FILTERS_EXPERIMENTAL": True,
-    "DASHBOARD_VIRTUALIZATION": True,
-    "GLOBAL_ASYNC_QUERIES": True,
+    "DASHBOARD_NATIVE_FILTERS_SET": False,
+    "DASHBOARD_FILTERS_EXPERIMENTAL": False,
+    "DASHBOARD_VIRTUALIZATION": False,
+    "GLOBAL_ASYNC_QUERIES": False,
     "VERSIONED_EXPORT": True,
-    "EMBEDDED_SUPERSET": True,
+    "EMBEDDED_SUPERSET": False,
     # Enables Alerts and reports new implementation
     "ALERT_REPORTS": False,
     "DASHBOARD_RBAC": False,
@@ -505,6 +540,9 @@ DEFAULT_FEATURE_FLAGS.update(
         if re.search(r"^SUPERSET_FEATURE_\w+", k)
     }
 )
+
+# This is merely a default.
+FEATURE_FLAGS: Dict[str, bool] = {}
 
 # A function that receives a dict of all feature flags
 # (DEFAULT_FEATURE_FLAGS merged with FEATURE_FLAGS)
@@ -690,6 +728,10 @@ EXPLORE_FORM_DATA_CACHE_CONFIG: CacheConfig = {
 
 # store cache keys by datasource UID (via CacheKey) for custom processing/invalidation
 STORE_CACHE_KEYS_IN_METADATA_DB = False
+
+# CORS Options
+ENABLE_CORS = True
+CORS_OPTIONS: Dict[Any, Any] = {}
 
 # Sanitizes the HTML content used in markdowns to allow its rendering in a safe manner.
 # Disabling this option is not recommended for security reasons. If you wish to allow
@@ -1366,8 +1408,9 @@ RLS_FORM_QUERY_REL_FIELDS: Optional[Dict[str, List[List[Any]]]] = None
 # See https://flask.palletsprojects.com/en/1.1.x/security/#set-cookie-options
 # for details
 #
-
-SESSION_COOKIE_SAMESITE: Optional[Literal["None", "Lax", "Strict"]] = "None"
+SESSION_COOKIE_HTTPONLY = True  # Prevent cookie from being read by frontend JS?
+SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
+SESSION_COOKIE_SAMESITE: Optional[Literal["None", "Lax", "Strict"]] = "Lax"
 
 # Cache static resources.
 SEND_FILE_MAX_AGE_DEFAULT = int(timedelta(days=365).total_seconds())
@@ -1434,33 +1477,14 @@ GLOBAL_ASYNC_QUERIES_POLLING_DELAY = int(
 GLOBAL_ASYNC_QUERIES_WEBSOCKET_URL = "ws://127.0.0.1:8080/"
 
 # Embedded config options
-WTF_CSRF_ENABLED = False
+GUEST_ROLE_NAME = "Public"
+GUEST_TOKEN_JWT_SECRET = "test-guest-secret-change-me"
+GUEST_TOKEN_JWT_ALGO = "HS256"
+GUEST_TOKEN_HEADER_NAME = "X-GuestToken"
+GUEST_TOKEN_JWT_EXP_SECONDS = 300  # 5 minutes
+# Guest token audience for the embedded superset, either string or callable
+GUEST_TOKEN_JWT_AUDIENCE: Optional[Union[Callable[[], str], str]] = None
 
-SESSION_COOKIE_SAMESITE: None
-SESSION_COOKIE_HTTPONLY = True  # Prevent cookie from being read by frontend JS?
-SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
-
-PUBLIC_ROLE_LIKE = 'Gamma'
-AUTH_ROLE_PUBLIC = 'Public'
-PUBLIC_ROLE_LIKE_GAMMA = True
-GUEST_ROLE_NAME = 'Gamma'
-
-FEATURE_FLAGS = {
-    "ALERT_REPORTS": True,
-    "EMBEDDED_SUPERSET": True
-}
-ENABLE_PROXY_FIX = False
-HTTP_HEADERS = {'X-Frame-Options': 'ALLOWALL'}
-
-ENABLE_CORS = True
-CORS_OPTIONS = {
-    'supports_credentials': True,
-    'allow_headers': ['*'],
-    'resources':['*'],
-    'origins': ['*']
-}
-
-ENABLE_JAVASCRIPT_CONTROLS = True
 # A SQL dataset health check. Note if enabled it is strongly advised that the callable
 # be memoized to aid with performance, i.e.,
 #
@@ -1532,6 +1556,7 @@ ENVIRONMENT_TAG_CONFIG = {
     },
 }
 
+AUTH_ROLES_SYNC_AT_LOGIN = True
 
 # Extra related query filters make it possible to limit which objects are shown
 # in the UI. For examples, to only show "admin" or users starting with the letter "b" in
@@ -1556,6 +1581,7 @@ class ExtraRelatedQueryFilters(TypedDict, total=False):
 
 
 EXTRA_RELATED_QUERY_FILTERS: ExtraRelatedQueryFilters = {}
+
 
 # -------------------------------------------------------------------
 # *                WARNING:  STOP EDITING  HERE                    *
@@ -1589,3 +1615,47 @@ elif importlib.util.find_spec("superset_config") and not is_test():
     except Exception:
         logger.exception("Found but failed to import local superset_config")
         raise
+
+
+req = requests.get(OIDC_ISSUER)
+key_der_base64 = req.json()["public_key"]
+key_der = b64decode(key_der_base64.encode())
+public_key = serialization.load_der_public_key(key_der)
+
+class CustomAuthRemoteUserView(AuthOAuthView):
+    @expose("/logout/")
+    def logout(self):
+        """Delete access token before logging out."""
+        return super().logout()
+
+class CustomSsoSecurityManager(SupersetSecurityManager):
+    authoauthview = CustomAuthRemoteUserView
+
+    def oauth_user_info(self, provider, response=None):
+        if provider == PROVIDER_NAME:
+            token = response["access_token"]
+
+            me = jwt.decode(token, public_key, algorithms=['HS256', 'RS256'], audience=CLIENT_ID)
+
+            groups = me["resource_access"]["superset"]["roles"]
+
+            if len(groups) < 1:
+                groups = ["superset_gamma"]
+            else:
+                groups = [str for str in groups if "superset" in str]
+
+            userinfo = {
+                "username": me.get("preferred_username"),
+                "email": me.get("email"),
+                "first_name": me.get("given_name"),
+                "last_name": me.get("family_name"),
+                "role_keys": groups,
+            }
+
+            logger.info("user info: {0}".format(userinfo))
+
+            return userinfo
+        else:
+            return {}
+
+CUSTOM_SECURITY_MANAGER = CustomSsoSecurityManager
