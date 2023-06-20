@@ -31,7 +31,9 @@ export default function DataPage() {
                 console.error("Error:", error);
             }
         };
-        fetchUploads();
+        if(username) {
+            fetchUploads();
+        }
     }, [username]);
 
     return (
