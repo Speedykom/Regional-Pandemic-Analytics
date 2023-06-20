@@ -3,12 +3,13 @@ from minio import Minio
 from minio.error import S3Error
 import os
 import io
+import re
 
 def upload_file_to_minio(bucket_name, uploaded_file):
     try:
         # Create a client with the MinIO server and credentials.
         client = Minio(
-            os.getenv('MINIO_URL').replace('http://', '').replace('https://', ''),
+            re.sub(r'https?://', "", os.getenv("MINIO_URL")),
             access_key=os.getenv("MINIO_ACCESS_KEY"),
             secret_key=os.getenv("MINIO_SECRET_KEY"),
             secure=False
