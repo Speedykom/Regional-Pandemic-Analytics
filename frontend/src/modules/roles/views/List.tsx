@@ -127,8 +127,8 @@ export const RoleList = () => {
 			<nav>
 				<div className="flex justify-between">
 					<div>
-						<h2 className="text-3xl">App Roles</h2>
-						<p className="my-2 text-gray-600">
+						<h2 className="text-xl">App Roles</h2>
+						<p className="my-2 text-gray-600 text-sm">
 							View and manage settings related to app roles.
 						</p>
 					</div>

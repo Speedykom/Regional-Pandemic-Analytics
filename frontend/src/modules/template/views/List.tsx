@@ -134,8 +134,8 @@ export const HopList = () => {
       <nav>
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl">Hop Pipelines</h2>
-            <p className="my-2 text-gray-600">
+            <h2 className="text-xl">Hop Pipelines</h2>
+            <p className="my-2 text-gray-600 text-sm">
               Upload, View and manage pipeline templates.
             </p>
           </div>

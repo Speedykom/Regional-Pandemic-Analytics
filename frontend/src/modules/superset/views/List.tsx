@@ -44,8 +44,8 @@ export const DashboardList = () => {
 			<nav>
 				<div className="flex justify-between">
 					<div>
-						<h2 className="text-3xl">Superset Dashboards</h2>
-						<p className="mt-2 text-gray-600">
+						<h2 className="text-xl">Dashboards</h2>
+						<p className="mt-2 text-gray-600 text-sm">
 							Dashboard list created on Apache Superset.
 						</p>
 					</div>

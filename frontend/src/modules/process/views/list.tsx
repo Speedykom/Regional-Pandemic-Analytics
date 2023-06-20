@@ -1,15 +1,12 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { AddProcess } from "@/modules/process/views/add";
 import { Button } from "antd";
 import LoadData from "@/common/components/TABS/upload";
 import { useProcessChainList } from "../hooks";
 import { IGADTable } from "@/common/components/common/table";
 import { ViewDag } from "./view";
-import axios from "axios";
-import { getData } from "@/common/utils";
 import SelectHopModal from "@/common/components/SelectHopModal";
-import { useTemplate } from "@/modules/template/hooks";
 import { useFindAllQuery } from "@/modules/template/template";
 
 export default function ProcessChinList() {
@@ -72,8 +69,8 @@ export default function ProcessChinList() {
       <DashboardFrame>
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl">Process Chain</h2>
-            <p className="my-2 text-gray-600">
+            <h2 className="text-xl">Process Chain</h2>
+            <p className="my-2 text-gray-600 text-sm">
               View and manage all process chains
             </p>
           </div>
