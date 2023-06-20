@@ -62,7 +62,7 @@ urlpatterns = [
     path('superset/list', superset_view.ListDashboardsAPI.as_view()),  # list dashboards
     path('superset/guest/token', superset_view.GuestTokenApi.as_view()),  # get guest token
     path('superset/csrf/token', superset_view.CsrfTokenApi.as_view()),  # get csrf token
-    path('superset/dashboard/enable-embed', superset_view.DashboardEmbed.as_view()),  # enable embed
+    path('superset/dashboard/enable-embed', superset_view.EnableEmbed.as_view()),  # enable embed
     path('superset/dashboard/embed/<str:id>', superset_view.GetEmbeddable.as_view()),  # get embedded dashboard
     
     # ---------------------- Process Chain  Endpoints ------------------------------------------
