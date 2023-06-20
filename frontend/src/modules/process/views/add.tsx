@@ -99,18 +99,6 @@ export const AddProcess = ({ state, onClose, selectedTemplate }: Props) => {
           />
         </Form.Item>
         <Form.Item
-          name="parquet_path"
-          label="Parquet path"
-          rules={[
-            {
-              required: true,
-              message: "Please input your parquet path",
-            },
-          ]}
-        >
-          <Input placeholder="Parquet path" className="w-full" />
-        </Form.Item>
-        <Form.Item
           name="schedule_interval"
           label="Schedule Interval"
           rules={[
