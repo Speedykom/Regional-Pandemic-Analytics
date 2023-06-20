@@ -1,0 +1,27 @@
+version: "3.4"
+
+## This overrides frontend on the docker-compose.yml file when running run.local.sh, this is done so the frontend local container
+## can be updated in real time while editing frontend code, it only needs to be restarted when changing the env variables
+services:
+  # ========
+  # Frontend
+  # ========
+  frontend:
+    container_name: frontend
+    volumes:
+      - ./frontend/:/frontend
+    
+    command: sh -c "npm run dev"
+
+  # =======
+  # Nginx
+  # =======
+
+  nginx:
+    image: nginx:stable
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/certificates/:/etc/nginx/certs/
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
