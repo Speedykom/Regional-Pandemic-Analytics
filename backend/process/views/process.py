@@ -74,15 +74,32 @@ class CreateProcess(APIView):
     output = "../airflow/dags/"
 
     def post(self, request):
+        path = request.data['path']
+        name = request.data['dag_id'].replace(" ", "-").replace(".hpl", "")
+
+        dag_id = request.data['dag_id']
+        process = ProcessChain.objects.filter(dag_id=dag_id)
+
+        if (len(process) > 0):
+            return Response({"status": "Fail", "message": "process already exist with this dag_id {}".format(dag_id)}, status=409)
+
+        file = open(path, "r")
+
+        pipeline_name = "../hop/pipelines/{}.hpl".format(name)
+        parquet_path = "/opt/shared/{}.parquet".format(name)
+
+        pipeline = open(pipeline_name,"w")
+        pipeline.write(file.read())
+        pipeline.close()
+        file.close()
+
+        request.data['path'] = pipeline_name
+        request.data['parquet_path'] = parquet_path
+
         serializer = ProcessChainSerializer(data=request.data)
         dag_id = request.data['dag_id']
 
         if serializer.is_valid():
-
-            process = ProcessChain.objects.filter(dag_id=dag_id)
-
-            if (len(process) > 0):
-                return Response({"status": "Fail", "message": "process already exist with this dag_id {}".format(dag_id)}, status=409)
 
             serializer.save()
 
