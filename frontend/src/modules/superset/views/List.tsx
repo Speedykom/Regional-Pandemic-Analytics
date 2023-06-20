@@ -9,34 +9,67 @@ import { IUser } from "@/modules/user/interface";
 export const DashboardList = () => {
 	const [data, setData] = useState<Array<IUser>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
-	const router = useRouter()
+	const router = useRouter();
+
+	const token = async () => {
+		return await axios
+			.post(
+				`http://localhost:8088/api/v1/security/login`,
+				{
+					username: "admin",
+					password: "admin",
+					provider: "db",
+					refresh: true,
+				},
+				{
+					headers: {
+						Accept: "application/json",
+					},
+				}
+			)
+			.then((res) => {
+				return res?.data?.access_token;
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
 
 	const fetchDashboards = async () => {
-		try {
-			setLoading(true);
-			const url = `${api_url}/api/superset/list`;
-			await axios
-				.get(url, {
-					headers: {
-						"Content-Type": "application/json",
-					},
-				})
-				.then((res) => {
-					setLoading(false);
-					setData(res?.data?.result);
-				});
-		} catch (error) {
-			console.error("Error:", error);
+		// const myToken = await token();
+		setLoading(true);
+		const url = `http://localhost:3000/api/superset/get-list`;
+		const data = await fetch(url)
+		if (data.status == 200) {
+			console.log(data)
+			data.json().then((d) => {
+				setLoading(false)
+				setData(d?.result)
+			})
+		} else {
+			console.log({error: data})
 		}
+		// await axios
+		// 	.get(url, {
+		// 		headers: {
+		// 			"Content-Type": "application/json",
+		// 			Authorization: `Bearer ${myToken}`,
+		// 		},
+		// 	})
+		// 	.then((res) => {
+		// 	console.log({res})
+		// 		setLoading(false);
+		// 		setData(res?.data?.result);
+		// 	});
 	};
 
 	const rowAction = (id: string) => {
-		router.push(`/dashboards/${id}`)
-	}
+		router.push(`/dashboards/${id}`);
+	};
 
 	useEffect(() => {
 		fetchDashboards();
-	}, [])
+	}, []);
 
 	const { columns } = useDashboards();
 	return (
@@ -49,7 +82,6 @@ export const DashboardList = () => {
 							Dashboard list created on Apache Superset.
 						</p>
 					</div>
-					
 				</div>
 			</nav>
 			<section className="mt-2">
@@ -61,7 +93,7 @@ export const DashboardList = () => {
 						columns={columns}
 						onRow={(record: any) => ({
 							onClick: () => rowAction(record.id),
-						  })}
+						})}
 					/>
 				</div>
 			</section>
