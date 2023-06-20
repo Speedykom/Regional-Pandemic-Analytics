@@ -25,10 +25,10 @@ class DataUploadAPI(APIView):
         username = request.query_params.get("username")
 
         data = FileUpload.objects.filter(username=username).order_by("-date_added")
+        serializer = FileUploadSerializer(data, many=True)
 
-        serializer = FileListSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
+    
     def post(self, request, *args, **kwargs):
         username = request.data.get('username', None)
 
