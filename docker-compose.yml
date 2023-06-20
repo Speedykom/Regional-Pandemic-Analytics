@@ -2,7 +2,7 @@ version: "3.4"
 
 x-superset-common:
   &superset
-  image: apache/superset:2.1.0
+  build: ./superset/.
   environment:
     - SECRET_KEY=${SUPERSET_SECRET_KEY}
     - DATABASE_URI=${SUPERSET_DATABASE_URI}
@@ -116,7 +116,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
+      - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
       - NEXTAUTH_SECRET=${FRONTEND_NEXTAUTH_SECRET}
       - FRONTEND_NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
     restart: always
