@@ -1,5 +1,7 @@
 version: "3.4"
 
+## This overrides frontend on the docker-compose.yml file when running run.local.sh, this is done so the frontend local container
+## can be updated in real time while editing frontend code, it only needs to be restarted when changing the env variables
 services:
   # ========
   # Frontend
@@ -14,6 +16,7 @@ services:
     volumes:
       - ./frontend/:/frontend
     environment:
+      - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
       - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
       - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
       - NEXT_PUBLIC_AIRFLOW_URL=${FRONTEND_NEXT_PUBLIC_AIRFLOW_URL}
