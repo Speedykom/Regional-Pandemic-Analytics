@@ -86,6 +86,7 @@ class CreateProcess(APIView):
         file = open(path, "r")
 
         pipeline_name = "../hop/pipelines/{}.hpl".format(name)
+        pipeline_path = "{}.hpl".format(name)
         parquet_path = "/opt/shared/{}.parquet".format(name)
 
         pipeline = open(pipeline_name,"w")
@@ -93,7 +94,7 @@ class CreateProcess(APIView):
         pipeline.close()
         file.close()
 
-        request.data['path'] = pipeline_name
+        request.data['path'] = pipeline_path
         request.data['parquet_path'] = parquet_path
         request.data['dag_id'] = name
 
