@@ -119,6 +119,7 @@ services:
       - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
       - NEXTAUTH_SECRET=${FRONTEND_NEXTAUTH_SECRET}
       - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
+      - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
     restart: always
     command: sh -c "npm run build && npm run start"
 
