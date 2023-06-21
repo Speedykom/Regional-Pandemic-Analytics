@@ -13,7 +13,7 @@ export const DashboardList = () => {
 
 	const fetchDashboards = async () => {
 		setLoading(true);
-		const url = `${BASE_URL}/api/superset/`;
+		const url = `${BASE_URL}/api/superset/list`;
 		await axios
 			.get(url, {
 				headers: {

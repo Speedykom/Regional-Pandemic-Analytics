@@ -18,10 +18,7 @@ export default async function handler(
   });
 
   try {
-    const response = await axios.put(
-      `${api_url}/api/auth/key-auth`,
-      body,
-      {
+    const response = await axios.put(`${api_url}/api/auth/key-auth`, body, {
         headers: { "Content-Type": "application/json" },
       }
     );
@@ -31,24 +28,6 @@ export default async function handler(
         .status(response.status)
         .json({ result: "Failed to get access token." });
 
-    setCookie("access", response?.data?.access_token, {
-      req,
-      res,
-      maxAge: 60 * 60 * 24,
-      sameSite: "strict",
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      path: "/",
-    });
-    setCookie("refresh", response?.data?.refresh_token, {
-      req,
-      res,
-      maxAge: 60 * 60 * 24,
-      sameSite: "strict",
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      path: "/",
-    });
     return res.status(200).json({ result: response?.data });
   } catch (error: unknown) {
     console.log(error);
