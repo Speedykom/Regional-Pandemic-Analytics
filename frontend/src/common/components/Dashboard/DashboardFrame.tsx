@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import Login from "@/pages/index";
 import { Loader } from "../Loader";
+import { Loading } from "../Loading";
 
 interface Props {
   title?: string;
@@ -48,16 +49,7 @@ export default function DashboardFrame({ children }: Props) {
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <div className="flex justify-center flex-col space-y-5 items-center">
-          <div className="w-20 h-20">
-            <Loader />
-          </div>
-          <p>Loading . . . .</p>
-        </div>
-      </div>
-    );
+    return <Loading />
   }
 
   if (!isAuthenticated) {

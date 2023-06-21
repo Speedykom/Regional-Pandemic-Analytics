@@ -1,5 +1,6 @@
 import { setCookie } from "cookies-next";
 import { NextApiRequest, NextApiResponse } from "next";
+import secureLocalStorage from "react-secure-storage";
 
 export default async function handler(
   req: NextApiRequest,
@@ -8,25 +9,6 @@ export default async function handler(
   if (req.method !== "POST")
     return res.status(405).send(`Method ${req.method} not allowed`);
 
-  setCookie("access", "", {
-    req,
-    res,
-    maxAge: 0,
-    sameSite: "strict",
-    httpOnly: true,
-    secure: process.env.NODE_ENV !== "development",
-    expires: new Date(0),
-    path: "/",
-  });
-  setCookie("refresh", "", {
-    req,
-    res,
-    maxAge: 0,
-    sameSite: "strict",
-    httpOnly: true,
-    secure: process.env.NODE_ENV !== "development",
-    expires: new Date(0),
-    path: "/",
-  });
+  secureLocalStorage.clear();
   return res.status(200).json({ status: "logout successful" });
 }
