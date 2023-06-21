@@ -10,7 +10,7 @@ def get_auth_token ():
         'refresh': True,
     }
     
-    url = os.getenv('SUPERSET_LOGIN_LOCAL')
+    url = os.getenv('SUPERSET_LOGIN')
     
     headers = {
         'Content-Type': 'application/json'
@@ -24,7 +24,7 @@ def get_auth_token ():
 
 
 def get_csrf_token ():
-    url = f"{os.getenv('SUPERSET_BASE_URL_LOCAL')}/security/csrf_token/"
+    url = f"{os.getenv('SUPERSET_BASE_URL')}/security/csrf_token/"
     
     auth_response = get_auth_token()
     
