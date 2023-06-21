@@ -88,22 +88,22 @@ volumes:
   router_var: {}
 
 services:
-  # ========
-  # Minio
-  # ========
-  storage:
-    image: quay.io/minio/minio:RELEASE.2023-03-24T21-41-23Z
-    container_name: storage
-    command: minio server /data --console-address ":9090"
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+  # # ========
+  # # Minio
+  # # ========
+  # storage:
+  #   image: quay.io/minio/minio:RELEASE.2023-03-24T21-41-23Z
+  #   container_name: storage
+  #   command: minio server /data --console-address ":9090"
+  #   environment:
+  #     - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+  #     - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
 
-    ports:
-      - "9001:9000"
-      - "8887:9090"
-    volumes:
-      - minio_data:/data
+  #   ports:
+  #     - "9001:9000"
+  #     - "8887:9090"
+  #   volumes:
+  #     - minio_data:/data
 
   # ========
   # Frontend
@@ -116,193 +116,193 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
+      - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
       - NEXTAUTH_SECRET=${FRONTEND_NEXTAUTH_SECRET}
-      - FRONTEND_NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
+      - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
     restart: always
     command: sh -c "npm run build && npm run start"
 
-  # ========
-  # Backend
-  # ========
-  backend_db:
-    image: postgres:14
-    container_name: backend_db
-    volumes:
-      - backend_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=igad
-      - POSTGRES_USER=igad
-      - POSTGRES_DB=igad
+  # # ========
+  # # Backend
+  # # ========
+  # backend_db:
+  #   image: postgres:14
+  #   container_name: backend_db
+  #   volumes:
+  #     - backend_data:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_PASSWORD=igad
+  #     - POSTGRES_USER=igad
+  #     - POSTGRES_DB=igad
 
-  backend:
-    container_name: backend
-    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    depends_on:
-      - backend_db
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./airflow/dags:/airflow/dags
-      - ./hop/pipelines/:/hop
-      - ./hop/pipelines/templates:/hop/templates
-      - ./hop/data-orch.list:/hop/data-orch.list
-    environment:
-      - DEVELOPMENT_MODE=${BACKEND_DEVELOPMENT_MODE}
-      - KEYCLOAK_ADMIN_CLIENT_ID=${BACKEND_KEYCLOAK_ADMIN_CLIENT_ID}
-      - KEYCLOAK_ADMIN_CLIENT_SECRET=${BACKEND_KEYCLOAK_ADMIN_CLIENT_SECRET}
-      - KEYCLOAK_ADMIN_AUTH_URL=${BACKEND_KEYCLOAK_ADMIN_AUTH_URL}
-      - KEYCLOAK_ADMIN_USERNAME=${BACKEND_KEYCLOAK_ADMIN_USERNAME}
-      - KEYCLOAK_ADMIN_PASSWORD=${BACKEND_KEYCLOAK_ADMIN_PASSWORD}
-      - APP_REALM=${BACKEND_APP_REALM}
-      - APP_CLIENT_ID=${BACKEND_APP_CLIENT_ID}
-      - HOPE_PIPELINE_PATH=${BACKEND_HOPE_PIPELINE_PATH}
-      - HOPE_TEMPLATE_PATH=${BACKEND_HOPE_TEMPLATE_PATH}
-      - APP_USER_BASE_URL=${BACKEND_APP_USER_BASE_URL}
-      - BASE_URL=${BACKEND_BASE_URL}
-      - APP_SECRET_KEY=${BACKEND_APP_SECRET_KEY}
-      - APP_USER_ROLES=${BACKEND_APP_USER_ROLES}
-      - CLIENT_ID=${BACKEND_CLIENT_ID}
-      - CLIENT_SECRET=${BACKEND_CLIENT_SECRET}
-      - KEYCLOAK_REALM=${BACKEND_KEYCLOAK_REALM}
-      - KEYCLOAK_SERVER_URL=${BACKEND_KEYCLOAK_SERVER_URL}
-      - REST_REDIRECT_URI=${BACKEND_REST_REDIRECT_URI}
-      - MINIO_URL=${BACKEND_MINIO_URL}
-      - MINIO_ACCESS_KEY=${BACKEND_MINIO_ACCESS_KEY}
-      - MINIO_SECRET_KEY=${BACKEND_MINIO_SECRET_KEY}
-      - MINIO_BUCKET=${BACKEND_MINIO_BUCKET}
-      - AVATAR_BASE_URL=${BACKEND_AVATAR_BASE_URL}
-      - MAIL_MAILER=${BACKEND_MAIL_MAILER}
-      - MAIL_HOST=${BACKEND_MAIL_HOST}
-      - MAIL_PORT=${BACKEND_MAIL_PORT}
-      - MAIL_SENDER=${BACKEND_MAIL_SENDER}
-      - MAIL_USER=${BACKEND_MAIL_USER}
-      - MAIL_PASSWORD=${BACKEND_MAIL_PASSWORD}
-      - MAIL_ENCRYPTION=${BACKEND_MAIL_ENCRYPTION}
-      - MAIL_FROM_NAME=${BACKEND_MAIL_FROM_NAME}
-      - AIRFLOW_API=${BACKEND_AIRFLOW_API}
-      - AIRFLOW_USER=${BACKEND_AIRFLOW_USER}
-      - AIRFLOW_PASSWORD=${BACKEND_AIRFLOW_PASSWORD}
-      - DB_NAME=${BACKEND_DB_NAME}
-      - DB_ENGINE=${BACKEND_DB_ENGINE}
-      - DB_USER=${BACKEND_DB_USER}
-      - DB_PASSWORD=${BACKEND_DB_PASSWORD}
-      - DB_HOST=${BACKEND_DB_HOST}
-      - DB_PORT=${BACKEND_DB_PORT}
-      - DATABASE_URL=${BACKEND_DATABASE_URL}
-      - SUPERSET_BASE_URL=${BACKEND_SUPERSET_BASE_URL}
-      - SUPERSET_LOGIN=${BACKEND_SUPERSET_LOGIN}
-      - SUPERSET_USER=${BACKEND_SUPERSET_USER}
-      - SUPERSET_PASS=${BACKEND_SUPERSET_PASS}
-      - SUPERSET_PROVIDER=${BACKEND_SUPERSET_PROVIDER}
-      - SUPERSET_GUEST_USERNAME=${BACKEND_SUPERSET_GUEST_USERNAME}
-      - SUPERSET_GUEST_FIRSTNAME=${BACKEND_SUPERSET_GUEST_FIRSTNAME}
-      - SUPERSET_GUEST_LASTNAME=${BACKEND_SUPERSET_GUEST_LASTNAME}
-      - CORS_ORIGIN_ALLOW_ALL=${BACKEND_CORS_ORIGIN_ALLOW_ALL}
+  # backend:
+  #   container_name: backend
+  #   command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - backend_db
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ./airflow/dags:/airflow/dags
+  #     - ./hop/pipelines/:/hop
+  #     - ./hop/pipelines/templates:/hop/templates
+  #     - ./hop/data-orch.list:/hop/data-orch.list
+  #   environment:
+  #     - DEVELOPMENT_MODE=${BACKEND_DEVELOPMENT_MODE}
+  #     - KEYCLOAK_ADMIN_CLIENT_ID=${BACKEND_KEYCLOAK_ADMIN_CLIENT_ID}
+  #     - KEYCLOAK_ADMIN_CLIENT_SECRET=${BACKEND_KEYCLOAK_ADMIN_CLIENT_SECRET}
+  #     - KEYCLOAK_ADMIN_AUTH_URL=${BACKEND_KEYCLOAK_ADMIN_AUTH_URL}
+  #     - KEYCLOAK_ADMIN_USERNAME=${BACKEND_KEYCLOAK_ADMIN_USERNAME}
+  #     - KEYCLOAK_ADMIN_PASSWORD=${BACKEND_KEYCLOAK_ADMIN_PASSWORD}
+  #     - APP_REALM=${BACKEND_APP_REALM}
+  #     - APP_CLIENT_ID=${BACKEND_APP_CLIENT_ID}
+  #     - HOPE_PIPELINE_PATH=${BACKEND_HOPE_PIPELINE_PATH}
+  #     - HOPE_TEMPLATE_PATH=${BACKEND_HOPE_TEMPLATE_PATH}
+  #     - APP_USER_BASE_URL=${BACKEND_APP_USER_BASE_URL}
+  #     - BASE_URL=${BACKEND_BASE_URL}
+  #     - APP_SECRET_KEY=${BACKEND_APP_SECRET_KEY}
+  #     - APP_USER_ROLES=${BACKEND_APP_USER_ROLES}
+  #     - CLIENT_ID=${BACKEND_CLIENT_ID}
+  #     - CLIENT_SECRET=${BACKEND_CLIENT_SECRET}
+  #     - KEYCLOAK_REALM=${BACKEND_KEYCLOAK_REALM}
+  #     - KEYCLOAK_SERVER_URL=${BACKEND_KEYCLOAK_SERVER_URL}
+  #     - REST_REDIRECT_URI=${BACKEND_REST_REDIRECT_URI}
+  #     - MINIO_URL=${BACKEND_MINIO_URL}
+  #     - MINIO_ACCESS_KEY=${BACKEND_MINIO_ACCESS_KEY}
+  #     - MINIO_SECRET_KEY=${BACKEND_MINIO_SECRET_KEY}
+  #     - MINIO_BUCKET=${BACKEND_MINIO_BUCKET}
+  #     - AVATAR_BASE_URL=${BACKEND_AVATAR_BASE_URL}
+  #     - MAIL_MAILER=${BACKEND_MAIL_MAILER}
+  #     - MAIL_HOST=${BACKEND_MAIL_HOST}
+  #     - MAIL_PORT=${BACKEND_MAIL_PORT}
+  #     - MAIL_SENDER=${BACKEND_MAIL_SENDER}
+  #     - MAIL_USER=${BACKEND_MAIL_USER}
+  #     - MAIL_PASSWORD=${BACKEND_MAIL_PASSWORD}
+  #     - MAIL_ENCRYPTION=${BACKEND_MAIL_ENCRYPTION}
+  #     - MAIL_FROM_NAME=${BACKEND_MAIL_FROM_NAME}
+  #     - AIRFLOW_API=${BACKEND_AIRFLOW_API}
+  #     - AIRFLOW_USER=${BACKEND_AIRFLOW_USER}
+  #     - AIRFLOW_PASSWORD=${BACKEND_AIRFLOW_PASSWORD}
+  #     - DB_NAME=${BACKEND_DB_NAME}
+  #     - DB_ENGINE=${BACKEND_DB_ENGINE}
+  #     - DB_USER=${BACKEND_DB_USER}
+  #     - DB_PASSWORD=${BACKEND_DB_PASSWORD}
+  #     - DB_HOST=${BACKEND_DB_HOST}
+  #     - DB_PORT=${BACKEND_DB_PORT}
+  #     - DATABASE_URL=${BACKEND_DATABASE_URL}
+  #     - SUPERSET_BASE_URL=${BACKEND_SUPERSET_BASE_URL}
+  #     - SUPERSET_LOGIN=${BACKEND_SUPERSET_LOGIN}
+  #     - SUPERSET_USER=${BACKEND_SUPERSET_USER}
+  #     - SUPERSET_PASS=${BACKEND_SUPERSET_PASS}
+  #     - SUPERSET_PROVIDER=${BACKEND_SUPERSET_PROVIDER}
+  #     - SUPERSET_GUEST_USERNAME=${BACKEND_SUPERSET_GUEST_USERNAME}
+  #     - SUPERSET_GUEST_FIRSTNAME=${BACKEND_SUPERSET_GUEST_FIRSTNAME}
+  #     - SUPERSET_GUEST_LASTNAME=${BACKEND_SUPERSET_GUEST_LASTNAME}
+  #     - CORS_ORIGIN_ALLOW_ALL=${BACKEND_CORS_ORIGIN_ALLOW_ALL}
 
-  # =======
-  #  Druid
-  # =======
-  db:
-    image: postgres:14
-    container_name: db
-    volumes:
-      - metadata_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=${DRUID_POSTGRES_PASSWORD}
-      - POSTGRES_USER=${DRUID_POSTGRES_USER}
-      - POSTGRES_DB=${DRUID_POSTGRES_DB}
+  # # =======
+  # #  Druid
+  # # =======
+  # db:
+  #   image: postgres:14
+  #   container_name: db
+  #   volumes:
+  #     - metadata_data:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_PASSWORD=${DRUID_POSTGRES_PASSWORD}
+  #     - POSTGRES_USER=${DRUID_POSTGRES_USER}
+  #     - POSTGRES_DB=${DRUID_POSTGRES_DB}
 
-  # Need 3.5 or later for container nodes
-  zookeeper:
-    container_name: zookeeper
-    image: zookeeper:3.5
-    ports:
-      - "2181:2181"
-    environment:
-      - ZOO_MY_ID=${ZOOKEEPER_ZOO_MY_ID}
+  # # Need 3.5 or later for container nodes
+  # zookeeper:
+  #   container_name: zookeeper
+  #   image: zookeeper:3.5
+  #   ports:
+  #     - "2181:2181"
+  #   environment:
+  #     - ZOO_MY_ID=${ZOOKEEPER_ZOO_MY_ID}
 
-  coordinator:
-    <<: *druid
-    image: apache/druid:25.0.0
-    container_name: coordinator
-    volumes:
-      - ./storage:/opt/shared
-      - coordinator_var:/opt/druid/var
-    depends_on:
-      - zookeeper
-      - db
-    ports:
-      - "8081:8081"
-    command:
-      - coordinator
+  # coordinator:
+  #   <<: *druid
+  #   image: apache/druid:25.0.0
+  #   container_name: coordinator
+  #   volumes:
+  #     - ./storage:/opt/shared
+  #     - coordinator_var:/opt/druid/var
+  #   depends_on:
+  #     - zookeeper
+  #     - db
+  #   ports:
+  #     - "8081:8081"
+  #   command:
+  #     - coordinator
 
-  broker:
-    <<: *druid
-    image: apache/druid:25.0.0
-    container_name: broker
-    volumes:
-      - broker_var:/opt/druid/var
-    depends_on:
-      - zookeeper
-      - db
-      - coordinator
-    ports:
-      - "8082:8082"
-    command:
-      - broker
+  # broker:
+  #   <<: *druid
+  #   image: apache/druid:25.0.0
+  #   container_name: broker
+  #   volumes:
+  #     - broker_var:/opt/druid/var
+  #   depends_on:
+  #     - zookeeper
+  #     - db
+  #     - coordinator
+  #   ports:
+  #     - "8082:8082"
+  #   command:
+  #     - broker
 
-  historical:
-    <<: *druid
-    image: apache/druid:25.0.0
-    container_name: historical
-    volumes:
-      - ./storage:/opt/shared
-      - historical_var:/opt/druid/var
-    depends_on:
-      - zookeeper
-      - db
-      - coordinator
-    ports:
-      - "8083:8083"
-    command:
-      - historical
+  # historical:
+  #   <<: *druid
+  #   image: apache/druid:25.0.0
+  #   container_name: historical
+  #   volumes:
+  #     - ./storage:/opt/shared
+  #     - historical_var:/opt/druid/var
+  #   depends_on:
+  #     - zookeeper
+  #     - db
+  #     - coordinator
+  #   ports:
+  #     - "8083:8083"
+  #   command:
+  #     - historical
 
-  middlemanager:
-    <<: *druid
-    image: apache/druid:25.0.0
-    container_name: middlemanager
-    volumes:
-      - ./storage:/opt/shared
-      - middle_var:/opt/druid/var
-    depends_on:
-      - zookeeper
-      - db
-      - coordinator
-    ports:
-      - "8091:8091"
-      - "8100-8105:8100-8105"
-    command:
-      - middleManager
+  # middlemanager:
+  #   <<: *druid
+  #   image: apache/druid:25.0.0
+  #   container_name: middlemanager
+  #   volumes:
+  #     - ./storage:/opt/shared
+  #     - middle_var:/opt/druid/var
+  #   depends_on:
+  #     - zookeeper
+  #     - db
+  #     - coordinator
+  #   ports:
+  #     - "8091:8091"
+  #     - "8100-8105:8100-8105"
+  #   command:
+  #     - middleManager
 
-  router:
-    <<: *druid
-    image: apache/druid:25.0.0
-    container_name: router
-    volumes:
-      - ./storage:/opt/shared
-      - router_var:/opt/druid/var
-    depends_on:
-      - zookeeper
-      - db
-      - coordinator
-    ports:
-      - "8884:8888"
-    command:
-      - router
+  # router:
+  #   <<: *druid
+  #   image: apache/druid:25.0.0
+  #   container_name: router
+  #   volumes:
+  #     - ./storage:/opt/shared
+  #     - router_var:/opt/druid/var
+  #   depends_on:
+  #     - zookeeper
+  #     - db
+  #     - coordinator
+  #   ports:
+  #     - "8884:8888"
+  #   command:
+  #     - router
 
   # =======
   # Superset
@@ -344,118 +344,118 @@ services:
         superset db upgrade
         superset superset init
 
-  # =====
-  #  Hop
-  # =====
-  hop:
-    build: ./hop
-    container_name: hop
-    user: "0:1000"
-    ports:
-      - "8882:8080"
-    volumes:
-      - ./hop/pipelines:/files
-      - ./storage:/home
-      - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
-    #   - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
+  # # =====
+  # #  Hop
+  # # =====
+  # hop:
+  #   build: ./hop
+  #   container_name: hop
+  #   user: "0:1000"
+  #   ports:
+  #     - "8882:8080"
+  #   volumes:
+  #     - ./hop/pipelines:/files
+  #     - ./storage:/home
+  #     - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
+  #   #   - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
-  # =======
-  # Airflow
-  # =======
-  airflow-pg:
-    image: postgres:14
-    container_name: airflow-pg
-    environment:
-      - POSTGRES_USER=${AIRFLOW_POSTGRES_USER}
-      - POSTGRES_PASSWORD=${AIRFLOW_POSTGRES_PASSWORD}
-      - POSTGRES_DB=${AIRFLOW_POSTGRES_DB}
-    ports:
-      - "6434:6432"
-    volumes:
-      - airflow_data:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "airflow" ]
-      interval: 5s
-      retries: 5
+  # # =======
+  # # Airflow
+  # # =======
+  # airflow-pg:
+  #   image: postgres:14
+  #   container_name: airflow-pg
+  #   environment:
+  #     - POSTGRES_USER=${AIRFLOW_POSTGRES_USER}
+  #     - POSTGRES_PASSWORD=${AIRFLOW_POSTGRES_PASSWORD}
+  #     - POSTGRES_DB=${AIRFLOW_POSTGRES_DB}
+  #   ports:
+  #     - "6434:6432"
+  #   volumes:
+  #     - airflow_data:/var/lib/postgresql/data
+  #   healthcheck:
+  #     test: [ "CMD", "pg_isready", "-U", "airflow" ]
+  #     interval: 5s
+  #     retries: 5
 
-  airflow-scheduler:
-    <<: *airflow
-    depends_on:
-      - airflow-pg
-    container_name: airflow-scheduler
-    command: scheduler
-    restart: on-failure
-    ports:
-      - "8793:8793"
+  # airflow-scheduler:
+  #   <<: *airflow
+  #   depends_on:
+  #     - airflow-pg
+  #   container_name: airflow-scheduler
+  #   command: scheduler
+  #   restart: on-failure
+  #   ports:
+  #     - "8793:8793"
 
-  airflow-webserver:
-    <<: *airflow
-    depends_on:
-      - airflow-pg
-    container_name: airflow-webserver
-    restart: always
-    command: webserver
-    ports:
-      - "8881:8080"
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "--fail",
-          "http://localhost:8080/health"
-        ]
-      interval: 30s
-      timeout: 30s
-      retries: 5
+  # airflow-webserver:
+  #   <<: *airflow
+  #   depends_on:
+  #     - airflow-pg
+  #   container_name: airflow-webserver
+  #   restart: always
+  #   command: webserver
+  #   ports:
+  #     - "8881:8080"
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD",
+  #         "curl",
+  #         "--fail",
+  #         "http://localhost:8080/health"
+  #       ]
+  #     interval: 30s
+  #     timeout: 30s
+  #     retries: 5
 
-  # =======
-  # keycloak
-  # =======
-  keycloak-pg:
-    container_name: keycloak-pg
-    image: postgres:14
-    command: postgres -c 'max_connections=200'
-    volumes:
-      - keyclock_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=${KEYCLOAK_POSTGRES_PASSWORD}
-      - POSTGRES_USER=${KEYCLOAK_POSTGRES_USER}
-      - POSTGRES_DB=${KEYCLOAK_POSTGRES_DB}
-    healthcheck:
-      test: "exit 0"
-    ports:
-      - "5434:5432"
+  # # =======
+  # # keycloak
+  # # =======
+  # keycloak-pg:
+  #   container_name: keycloak-pg
+  #   image: postgres:14
+  #   command: postgres -c 'max_connections=200'
+  #   volumes:
+  #     - keyclock_data:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_PASSWORD=${KEYCLOAK_POSTGRES_PASSWORD}
+  #     - POSTGRES_USER=${KEYCLOAK_POSTGRES_USER}
+  #     - POSTGRES_DB=${KEYCLOAK_POSTGRES_DB}
+  #   healthcheck:
+  #     test: "exit 0"
+  #   ports:
+  #     - "5434:5432"
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:20.0.0
-    container_name: "keycloak"
-    command:
-      - start-dev
-      - --import-realm
-    ports:
-      - "8885:8080"
-    environment:
-      - KC_DB=${KEYCLOAK_KC_DB}
-      - KC_DB_URL_DATABASE=${KEYCLOAK_KC_DB_URL_DATABASE}
-      - KC_DB_URL_HOST=${KEYCLOAK_KC_DB_URL_HOST}
-      - KC_DB_USERNAME=${KEYCLOAK_KC_DB_USERNAME}
-      - KC_DB_PASSWORD=${KEYCLOAK_KC_DB_PASSWORD}
-      - KC_DB_SCHEMA=${KEYCLOAK_KC_DB_SCHEMA}
-      - KC_PROXY=${KEYCLOAK_KC_PROXY}
-      - KEYCLOAK_ADMIN=${KEYCLOAK_KEYCLOAK_ADMIN}
-      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_KEYCLOAK_ADMIN_PASSWORD}
-      - KC_HOSTNAME_ADMIN_URL=${KEYCLOAK_KC_HOSTNAME_ADMIN_URL}
-      - KC_HOSTNAME_URL=${KEYCLOAK_KC_HOSTNAME_URL}
-      - BACKEND_CLIENT_ID=${BACKEND_CLIENT_ID}
-      - BACKEND_CLIENT_SECRET=${BACKEND_CLIENT_SECRET}
-      - BACKEND_PUBLIC_URL=${BACKEND_PUBLIC_URL}
-      # local env
-      # KC_HOSTNAME_ADMIN_URL: http://localhost:8885
-      # KC_HOSTNAME_URL: http://localhost:8885
-      # dev server env
-    restart: unless-stopped
-    volumes:
-      - ./keycloak/realm/realm.json:/opt/keycloak/data/import/realm.json
-    depends_on:
-      - keycloak-pg
+  # keycloak:
+  #   image: quay.io/keycloak/keycloak:20.0.0
+  #   container_name: "keycloak"
+  #   command:
+  #     - start-dev
+  #     - --import-realm
+  #   ports:
+  #     - "8885:8080"
+  #   environment:
+  #     - KC_DB=${KEYCLOAK_KC_DB}
+  #     - KC_DB_URL_DATABASE=${KEYCLOAK_KC_DB_URL_DATABASE}
+  #     - KC_DB_URL_HOST=${KEYCLOAK_KC_DB_URL_HOST}
+  #     - KC_DB_USERNAME=${KEYCLOAK_KC_DB_USERNAME}
+  #     - KC_DB_PASSWORD=${KEYCLOAK_KC_DB_PASSWORD}
+  #     - KC_DB_SCHEMA=${KEYCLOAK_KC_DB_SCHEMA}
+  #     - KC_PROXY=${KEYCLOAK_KC_PROXY}
+  #     - KEYCLOAK_ADMIN=${KEYCLOAK_KEYCLOAK_ADMIN}
+  #     - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_KEYCLOAK_ADMIN_PASSWORD}
+  #     - KC_HOSTNAME_ADMIN_URL=${KEYCLOAK_KC_HOSTNAME_ADMIN_URL}
+  #     - KC_HOSTNAME_URL=${KEYCLOAK_KC_HOSTNAME_URL}
+  #     - BACKEND_CLIENT_ID=${BACKEND_CLIENT_ID}
+  #     - BACKEND_CLIENT_SECRET=${BACKEND_CLIENT_SECRET}
+  #     - BACKEND_PUBLIC_URL=${BACKEND_PUBLIC_URL}
+  #     # local env
+  #     # KC_HOSTNAME_ADMIN_URL: http://localhost:8885
+  #     # KC_HOSTNAME_URL: http://localhost:8885
+  #     # dev server env
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./keycloak/realm/realm.json:/opt/keycloak/data/import/realm.json
+  #   depends_on:
+  #     - keycloak-pg
