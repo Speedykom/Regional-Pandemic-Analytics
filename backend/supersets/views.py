@@ -19,7 +19,7 @@ class ListDashboardsAPI(APIView):
         if auth_response['status'] != 200:
             return Response({'errorMessage': auth_response['message']}, status=auth_response['status'])
         
-        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/"
+        url = f"{os.getenv('SUPERSET_BASE_URL_LOCAL')}/dashboard/"
         
         headers = {
             'Authorization': f"Bearer {auth_response['token']['access_token']}"

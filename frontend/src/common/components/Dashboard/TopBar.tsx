@@ -59,7 +59,6 @@ export default function TopBar({ showNav, setShowNav }: props) {
 		await axios.post("/api/auth/logout/").then((response) => {
 			if (response.status === 200) {
 				router.push("/");
-				secureLocalStorage.clear();
 			}
 		});
 	};
