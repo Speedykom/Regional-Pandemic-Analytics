@@ -5,6 +5,7 @@ import { api_url, getGuestToken } from "@/common/utils/auth";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { Breadcrumb } from "antd";
+import { Link } from "react-router-dom";
 
 export default function SupersetDashboard() {
   let ref = useRef<HTMLDivElement>(null);
@@ -73,10 +74,10 @@ export default function SupersetDashboard() {
           <Breadcrumb
             items={[
               {
-                title: <a href="/home">Home</a>,
+                title: <Link to="/home">Home</Link>,
               },
               {
-                title: <a href="/homes">Dashboard</a>,
+                title: <Link to="/dashboards">Dashboard</Link>,
               },
               {
                 title: "View Dashboard",

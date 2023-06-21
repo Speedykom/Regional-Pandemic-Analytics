@@ -8,6 +8,7 @@ import { IGADTable } from "@/common/components/common/table";
 import { ViewDag } from "./view";
 import SelectHopModal from "@/common/components/SelectHopModal";
 import { useFindAllQuery } from "@/modules/template/template";
+import { Link } from "react-router-dom";
 
 export default function ProcessChinList() {
   const [addProcess, setProcess] = useState(false);
@@ -73,7 +74,7 @@ export default function ProcessChinList() {
             <Breadcrumb
               items={[
                 {
-                  title: <a href="/home">Home</a>,
+                  title: <Link to="/home">Home</Link>,
                 },
                 {
                   title: "Process Chain",

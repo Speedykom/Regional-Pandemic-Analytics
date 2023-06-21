@@ -22,6 +22,7 @@ import { countries } from "@/common/utils/countries";
 import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
 import { api_url } from "@/common/utils/auth";
+import { Link } from "react-router-dom";
 
 interface props {
   viewPro: () => void;
@@ -218,7 +219,7 @@ export const UserList = () => {
           <Breadcrumb
             items={[
               {
-                title: <a href="/home">Home</a>,
+                title: <Link to="/home">Home</Link>,
               },
               {
                 title: "Accounts",

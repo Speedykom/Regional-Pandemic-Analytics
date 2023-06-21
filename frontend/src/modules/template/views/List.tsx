@@ -9,6 +9,7 @@ import { useRouter } from "next/router";
 import { UploadOutlined } from "@ant-design/icons";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { getData } from "@/common/utils";
+import { Link } from "react-router-dom";
 
 interface props {
   viewPro: () => void;
@@ -138,7 +139,7 @@ export const HopList = () => {
             <Breadcrumb
               items={[
                 {
-                  title: <a href="/home">Home</a>,
+                  title: <Link to="/home">Home</Link>,
                 },
                 {
                   title: "Hop Templates",

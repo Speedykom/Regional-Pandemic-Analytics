@@ -11,6 +11,7 @@ export default function CreatePasswordLayout() {
     const [valid, setValid] = useState(true)
     const [email, setEmail] = useState("")
 	const { tok } = router.query;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const getToken = async () => {
 		await axios
 			.patch(
@@ -34,7 +35,7 @@ export default function CreatePasswordLayout() {
 	};
 	useEffect(() => {
 		getToken();
-	}, []);
+	}, [getToken]);
     return (
         <div>{tok && valid ? <CreatePassword mail={email} token={String(tok)} /> : <LinkExpired />}</div>
     );

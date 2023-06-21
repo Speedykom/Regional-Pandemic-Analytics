@@ -21,6 +21,7 @@ import { EditHopProcess } from "./hop";
 import { EditDruidProcess } from "./druid";
 import { EditSupersetProcess } from "./superset";
 import Router, { useRouter } from "next/router";
+import { Link } from "react-router-dom";
 
 export const EditProcess = () => {
   const [current, setCurrent] = useState(0);
@@ -79,10 +80,10 @@ export const EditProcess = () => {
         <Breadcrumb
           items={[
             {
-              title: <a href="/home">Home</a>,
+              title: <Link to="/home">Home</Link>,
             },
             {
-              title: <a href="/process-chains">Process Chain</a>,
+              title: <Link to="/process-chains">Process Chain</Link>,
             },
             {
               title: "View Process Chain",

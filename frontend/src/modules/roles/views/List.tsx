@@ -12,6 +12,7 @@ import {
   DeleteColumnOutlined,
   SaveOutlined,
 } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
 interface props {
   viewPro: () => void;
@@ -134,7 +135,7 @@ export const RoleList = () => {
           <Breadcrumb
             items={[
               {
-                title: <a href="/home">Home</a>,
+                title: <Link to="/home">Home</Link>,
               },
               {
                 title: "Roles",
