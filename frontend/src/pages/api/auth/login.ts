@@ -1,6 +1,7 @@
 import { BASE_URL } from '@/common/config';
 import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import secureLocalStorage from 'react-secure-storage';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -21,7 +22,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (response.status !== 200)
       return res.status(response.status).json({ result: 'error logging in' });
-
+    
+    secureLocalStorage.setItem("tokens", {
+      accessToken: response?.data?.access_token,
+      refreshToken: response?.data?.refresh_token
+    })
     return res.status(200).json({ result: response.data });
   } catch (error: unknown) {
     return res.status(500).json({ result: 'Internal server error' });
