@@ -1,7 +1,7 @@
+import { BASE_URL } from "@/common/config";
 import { OpenNotification } from "@/common/utils/notify";
 import { Button, Form, Input } from "antd";
 import axios from "axios";
-import jwtDecode, { JwtDecodeOptions } from "jwt-decode";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -19,7 +19,6 @@ export const CreatePassword = ({ mail, token }: props) => {
 	const router = useRouter();
 	const [form] = Form.useForm();
 	const { tok } = router.query;
-	const [email, setEmail] = useState<string>();
 	const [password, setPassword] = useState<string>("");
 	const [uppercase, setUppercase] = useState<boolean>(false);
 	const [num, setNumber] = useState<boolean>(false);
@@ -63,7 +62,7 @@ export const CreatePassword = ({ mail, token }: props) => {
 		} else {
 			await axios
 				.put(
-					`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/create-password`,
+					`${BASE_URL}/api/account/create-password`,
 					{
 						newPassword: values["password"],
 						confirmPassword: values["confirmPassword"],

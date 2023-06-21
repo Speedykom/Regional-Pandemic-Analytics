@@ -17,7 +17,7 @@ import { useEffect, useState } from "react";
 import { countries } from "@/common/utils/countries";
 import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
-import { api_url } from "@/common/utils/auth";
+import { BASE_URL } from "@/common/config";
 
 interface props {
 	openDrawer: boolean;
@@ -67,19 +67,6 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	);
 
 	const [form] = Form.useForm();
-	const router = useRouter();
-
-	const [token, setToken] = useState<string>("");
-
-	const fetchToken = async () => {
-		try {
-			const url = "/api/get-access-token/";
-			const response = await getData(url);
-			setToken(response?.accessToken);
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
 
 	const onFinish = async (values: any) => {
 		values["enabled"] = enabled;
@@ -88,9 +75,8 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 		values["role"] = JSON.parse(values["role"])
 
 		await axios
-			.post(`${api_url}/api/account/user`, values, {
+			.post(`${BASE_URL}/api/account/user`, values, {
 				headers: {
-					Authorization: `Bearer ${token}`,
 					"Content-Type": "application/json",
 				},
 			})
@@ -132,10 +118,10 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const fetchRoles = async () => {
 		try {
 			setRoleLoading(true)
-			const url = `${api_url}/api/role`;
+			const url = `${BASE_URL}/api/role`;
 			await axios.get(url, {
 				headers: {
-					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json',
 				},
 			}).then((res) => {
 				setRoleLoading(false)
@@ -148,7 +134,6 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	};
 
 	useEffect(() => {
-		fetchToken();
 		fetchRoles();
 	}, []);
 

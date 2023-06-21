@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
-import { setCookie, getCookie } from "cookies-next";
-import { api_url } from "@/common/utils/auth";
+import { BASE_URL } from "@/common/config";
+import secureLocalStorage from "react-secure-storage";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -11,16 +11,16 @@ export default async function handler(
     return res.status(405).send(`Method ${req.method} not allowed`);
   }
 
-  const refresh_token = getCookie("refresh_token", { req, res });
+  const tokens: any = secureLocalStorage.getItem("tokens");
 
   const body = JSON.stringify({
-    refresh_token,
+    refresh_token: tokens?.refreshToken,
   });
 
   try {
-    const response = await axios.put(`${api_url}/api/auth/key-auth`, body, {
-        headers: { "Content-Type": "application/json" },
-      }
+    const response = await axios.put(`${BASE_URL}/api/auth/key-auth`, body, {
+      headers: { "Content-Type": "application/json" },
+    }
     );
 
     if (response.status !== 200)
