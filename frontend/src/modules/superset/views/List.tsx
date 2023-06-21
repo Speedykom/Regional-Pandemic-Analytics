@@ -11,59 +11,23 @@ export const DashboardList = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const router = useRouter();
 
-	const token = async () => {
-		return await axios
-			.post(
-				`http://localhost:8088/api/v1/security/login`,
-				{
-					username: "admin",
-					password: "admin",
-					provider: "db",
-					refresh: true,
+	const fetchDashboards = async () => {
+		setLoading(true);
+		const url = `${api_url}/api/superset/`;
+		await axios
+			.get(url, {
+				headers: {
+					"Content-Type": "application/json",
+					'Accept': "application/json",
 				},
-				{
-					headers: {
-						Accept: "application/json",
-					},
-				}
-			)
-			.then((res) => {
-				return res?.data?.access_token;
 			})
-			.catch((err) => {
-				console.log(err);
+			.then((res) => {
+				setLoading(false);
+				setData(res?.data?.result);
 			});
 	};
 
-	const fetchDashboards = async () => {
-		// const myToken = await token();
-		setLoading(true);
-		const url = `http://localhost:3000/api/superset/get-list`;
-		const data = await fetch(url)
-		if (data.status == 200) {
-			console.log(data)
-			data.json().then((d) => {
-				setLoading(false)
-				setData(d?.result)
-			})
-		} else {
-			console.log({error: data})
-		}
-		// await axios
-		// 	.get(url, {
-		// 		headers: {
-		// 			"Content-Type": "application/json",
-		// 			Authorization: `Bearer ${myToken}`,
-		// 		},
-		// 	})
-		// 	.then((res) => {
-		// 	console.log({res})
-		// 		setLoading(false);
-		// 		setData(res?.data?.result);
-		// 	});
-	};
-
-	const rowAction = (id: string) => {
+	const embedDashboard = (id: string) => {
 		router.push(`/dashboards/${id}`);
 	};
 
@@ -92,7 +56,7 @@ export const DashboardList = () => {
 						rows={data}
 						columns={columns}
 						onRow={(record: any) => ({
-							onClick: () => rowAction(record.id),
+							onClick: () => embedDashboard(record.id),
 						})}
 					/>
 				</div>
