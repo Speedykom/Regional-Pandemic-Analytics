@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { IRoles } from "../interface";
 import secureLocalStorage from "react-secure-storage";
-import { api_url } from "@/common/utils/auth";
 import { OpenNotification } from "@/common/utils/notify";
 import { PlusOutlined, DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
+import { BASE_URL } from "@/common/config";
 
 interface props {
 	viewPro: () => void;
@@ -34,7 +34,7 @@ export const RoleList = () => {
 	const fetchRoles = async () => {
 		try {
 			setLoading(true);
-			const url = `${api_url}/api/role`;
+			const url = `${BASE_URL}/api/role`;
 			await axios
 				.get(url, {
 					headers: {
@@ -85,7 +85,7 @@ export const RoleList = () => {
 	);
 
 	const onFinish = async (values: any) => {
-		let url = `${api_url}/api/role`;
+		let url = `${BASE_URL}/api/role`;
 		url = operationType == OPERATION_TYPES.CREATE ? url : url + `/${roleId}`;
 		let method = operationType == OPERATION_TYPES.CREATE ? "POST" : "PUT";
 
