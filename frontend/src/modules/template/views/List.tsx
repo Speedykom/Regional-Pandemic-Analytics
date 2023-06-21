@@ -1,6 +1,6 @@
 import { IGADTable } from "@/common/components/common/table";
 import { DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Modal, message, Upload } from "antd";
+import { Button, Form, Input, Modal, message, Upload, Breadcrumb } from "antd";
 import { useTemplate } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -134,10 +134,17 @@ export const HopList = () => {
       <nav>
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-xl">Hop Pipelines</h2>
-            <p className="my-2 text-gray-600 text-sm">
-              Upload, View and manage pipeline templates.
-            </p>
+            <h2 className="text-xl mb-2">Hop Templates</h2>
+            <Breadcrumb
+              items={[
+                {
+                  title: <a href="/home">Home</a>,
+                },
+                {
+                  title: "Hop Templates",
+                },
+              ]}
+            />
           </div>
           <div>
             <Button type="primary" size="large" onClick={showModal}>
@@ -146,7 +153,7 @@ export const HopList = () => {
           </div>
         </div>
       </nav>
-      <section className="mt-5">
+      <section className="mt-2">
         <div className="py-2">
           <IGADTable
             key={"id"}

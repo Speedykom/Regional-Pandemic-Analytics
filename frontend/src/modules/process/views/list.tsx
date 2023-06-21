@@ -1,7 +1,7 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import React, { useState } from "react";
 import { AddProcess } from "@/modules/process/views/add";
-import { Button } from "antd";
+import { Breadcrumb, Button } from "antd";
 import LoadData from "@/common/components/TABS/upload";
 import { useProcessChainList } from "../hooks";
 import { IGADTable } from "@/common/components/common/table";
@@ -17,7 +17,7 @@ export default function ProcessChinList() {
   const [isShowHopModal, setIsShowHopModal] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<object>({});
 
-  const {data: record} = useFindAllQuery();
+  const { data: record } = useFindAllQuery();
 
   const closeAdd = () => {
     setProcess(false);
@@ -68,11 +68,18 @@ export default function ProcessChinList() {
     <>
       <DashboardFrame>
         <div className="flex justify-between items-center">
-          <div>
-            <h2 className="text-xl">Process Chain</h2>
-            <p className="my-2 text-gray-600 text-sm">
-              View and manage all process chains
-            </p>
+          <div className="mb-2">
+            <h2 className="text-xl mb-2">Process Chain</h2>
+            <Breadcrumb
+              items={[
+                {
+                  title: <a href="/home">Home</a>,
+                },
+                {
+                  title: "Process Chain",
+                },
+              ]}
+            />
           </div>
           <div>
             <Button onClick={() => openAdd()} type="primary" size="large">

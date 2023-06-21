@@ -5,7 +5,16 @@ import {
   useCreateProcessMutation,
   useFindOneQuery,
 } from "@/modules/process/process";
-import { Button, Form, Input, Select, Steps, message, theme } from "antd";
+import {
+  Breadcrumb,
+  Button,
+  Form,
+  Input,
+  Select,
+  Steps,
+  message,
+  theme,
+} from "antd";
 import { useState } from "react";
 import { EditAirflowProcess } from "./airflow";
 import { EditHopProcess } from "./hop";
@@ -38,13 +47,13 @@ export const EditProcess = () => {
       title: "Orchestration",
     },
     {
-      title: "Integration"
+      title: "Integration",
     },
     {
-      title: "Data Source"
+      title: "Data Source",
     },
     {
-      title: "Analytics"
+      title: "Analytics",
     },
   ];
 
@@ -64,40 +73,58 @@ export const EditProcess = () => {
   const items = steps.map((item) => ({ ...item, key: item.title }));
 
   return (
-    <div className="mt-2 bg-white rounded-md border p-5">
-      <div className="border-b pb-5 pt-5">
-        <Steps progressDot current={current} items={items} />
+    <div>
+      <div>
+        <h2 className="text-xl mb-2">View Process Chain</h2>
+        <Breadcrumb
+          items={[
+            {
+              title: <a href="/home">Home</a>,
+            },
+            {
+              title: <a href="/process-chains">Process Chain</a>,
+            },
+            {
+              title: "View Process Chain",
+            },
+          ]}
+        />
       </div>
-      <div className="p-5 w-full">{viewState()}</div>
-      <div className="border-t pt-5">
-        {current > 0 && (
-          <Button
-            size="large"
-            style={{ margin: "0 8px" }}
-            onClick={() => prev()}
-          >
-            Previous
-          </Button>
-        )}
-        {current == 0 && (
-          <Button
-            size="large"
-            style={{ margin: "0 8px" }}
-            onClick={() => back()}
-          >
-            Back
-          </Button>
-        )}
-        {current < steps.length - 1 && (
-          <Button size="large" type="primary" onClick={() => next()}>
-            Next
-          </Button>
-        )}
-        {current === steps.length - 1 && (
-          <Button size="large" onClick={() => back()}>
-            Close
-          </Button>
-        )}
+      <div className="mt-8 bg-white rounded-md border p-5">
+        <div className="border-b pb-5 pt-5">
+          <Steps progressDot current={current} items={items} />
+        </div>
+        <div className="p-5 w-full">{viewState()}</div>
+        <div className="border-t pt-5">
+          {current > 0 && (
+            <Button
+              size="large"
+              style={{ margin: "0 8px" }}
+              onClick={() => prev()}
+            >
+              Previous
+            </Button>
+          )}
+          {current == 0 && (
+            <Button
+              size="large"
+              style={{ margin: "0 8px" }}
+              onClick={() => back()}
+            >
+              Back
+            </Button>
+          )}
+          {current < steps.length - 1 && (
+            <Button size="large" type="primary" onClick={() => next()}>
+              Next
+            </Button>
+          )}
+          {current === steps.length - 1 && (
+            <Button size="large" onClick={() => back()}>
+              Close
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
