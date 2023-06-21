@@ -1,10 +1,10 @@
 import { useDashboards } from "../hooks";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/router";
-import { api_url } from "@/common/utils/auth";
 import { IGADTable } from "@/common/components/common/table";
 import { IUser } from "@/modules/user/interface";
+import { BASE_URL } from "@/common/config";
+import axios from "axios";
 
 export const DashboardList = () => {
 	const [data, setData] = useState<Array<IUser>>([]);
@@ -13,7 +13,7 @@ export const DashboardList = () => {
 
 	const fetchDashboards = async () => {
 		setLoading(true);
-		const url = `${api_url}/api/superset/`;
+		const url = `${BASE_URL}/api/superset/`;
 		await axios
 			.get(url, {
 				headers: {

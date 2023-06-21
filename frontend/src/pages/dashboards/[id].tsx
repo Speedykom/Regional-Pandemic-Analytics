@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { embedDashboard } from "@superset-ui/embedded-sdk";
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-import { api_url, getGuestToken } from "@/common/utils/auth";
+import { getGuestToken } from "@/common/utils/auth";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { BASE_URL, SUPERSET_URL } from "@/common/config";
 
 export default function SupersetDashboard() {
 	let ref = useRef(null);
@@ -12,7 +13,7 @@ export default function SupersetDashboard() {
 
 	const viewDash = async () => {
 		const response = await axios.get(
-			`${api_url}/api/superset/dashboard/embed/${router.query?.id}`, {
+			`${BASE_URL}/api/superset/dashboard/embed/${router.query?.id}`, {
 				headers: {
 					'Content-Type': 'application/json',
 					'Accept': 'application/json'
@@ -21,7 +22,7 @@ export default function SupersetDashboard() {
 		)
 		if (response.status !== 200) {
 			await axios.post(
-				`${api_url}/api/superset/dashboard/enable-embed`, {
+				`${BASE_URL}/api/superset/dashboard/enable-embed`, {
 					uid: router.query?.id
 				}, {
 					headers: {
@@ -43,7 +44,7 @@ export default function SupersetDashboard() {
 		if (ref.current) {
 			await embedDashboard({
 				id: uuid, // given by the Superset embedding UI
-				supersetDomain: `http://localhost:8088/`,
+				supersetDomain: `${SUPERSET_URL}`,
 				mountPoint: ref.current, // html element in which iframe render
 				fetchGuestToken: () =>
 					getGuestToken(uuid),
