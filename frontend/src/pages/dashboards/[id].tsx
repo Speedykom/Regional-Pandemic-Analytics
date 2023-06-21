@@ -9,34 +9,38 @@ import { BASE_URL, SUPERSET_URL } from "@/common/config";
 export default function SupersetDashboard() {
 	let ref = useRef(null);
 	const router = useRouter();
-	const [uuid, setUUID] = useState('')
+	const [uuid, setUUID] = useState("");
 
 	const viewDash = async () => {
 		const response = await axios.get(
-			`${BASE_URL}/api/superset/dashboard/embed/${router.query?.id}`, {
+			`${BASE_URL}/api/superset/dashboard/embed/${router.query?.id}`,
+			{
 				headers: {
-					'Content-Type': 'application/json',
-					'Accept': 'application/json'
-				}
+					"Content-Type": "application/json",
+					Accept: "application/json",
+				},
 			}
-		)
+		);
 		if (response.status !== 200) {
-			await axios.post(
-				`${BASE_URL}/api/superset/dashboard/enable-embed`, {
-					uid: router.query?.id
-				}, {
-					headers: {
-						'Content-Type': 'application/json',
-						'Accept': 'application/json'
+			await axios
+				.post(
+					`${BASE_URL}/api/superset/dashboard/enable-embed`,
+					{
+						uid: router.query?.id,
+					},
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Accept: "application/json",
+						},
 					}
-				}
-			).then((res) => {
-				const dashboardUUID = res?.data?.result?.uuid;
-				setUUID(dashboardUUID)
-				
-			})
+				)
+				.then((res) => {
+					const dashboardUUID = res?.data?.result?.uuid;
+					setUUID(dashboardUUID);
+				});
 		} else {
-			setUUID(response.data?.result?.uuid)
+			setUUID(response.data?.result?.uuid);
 		}
 	};
 
@@ -46,8 +50,7 @@ export default function SupersetDashboard() {
 				id: uuid, // given by the Superset embedding UI
 				supersetDomain: `${SUPERSET_URL}`,
 				mountPoint: ref.current, // html element in which iframe render
-				fetchGuestToken: () =>
-					getGuestToken(uuid),
+				fetchGuestToken: () => getGuestToken(uuid),
 				dashboardUiConfig: {
 					hideTitle: true,
 					hideTab: true,
