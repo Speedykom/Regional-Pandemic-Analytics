@@ -1,9 +1,9 @@
-import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import ListData from "@/common/components/Data/ListData";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {IData} from "@/common/components/Data/ListData";
 import secureLocalStorage from "react-secure-storage";
+import Layout from "@/common/components/layout";
 
 export default function DataPage() {
     const [data, setData] = useState<IData[]>([]); // Specify the type as an array of IData objects
@@ -37,8 +37,8 @@ export default function DataPage() {
     }, [username]);
 
     return (
-        <DashboardFrame title="List(s) of Uploaded files">
+        <Layout title="List(s) of Uploaded files">
             {data && <ListData data={data} />}
-        </DashboardFrame>
+        </Layout>
     );
 }

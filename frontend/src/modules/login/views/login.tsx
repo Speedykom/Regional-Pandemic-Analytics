@@ -40,7 +40,7 @@ export default function LoginForm() {
             Buffer.from(data.password).toString("base64")
           );
           secureLocalStorage.setItem("sua", "authenticated");
-          router.push("/home");
+          router.push("/");
         }
       })
       .catch((res: any) => {

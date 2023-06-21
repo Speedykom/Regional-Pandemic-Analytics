@@ -151,7 +151,7 @@ export const useProcessChainList = ({ loadData, viewProcess }: Props) => {
       width: 100,
     },
     {
-      title: "Dag",
+      title: "Process Name",
       dataIndex: "dag_id",
       key: "dag_id",
     },

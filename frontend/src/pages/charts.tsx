@@ -1,12 +1,12 @@
-import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
+import Layout from "@/common/components/layout";
 import { ChartList } from "@/modules/superset/views/ListChart";
 
 export default function Charts() {
 
   
   return (
-    <DashboardFrame title="List of Chart(s)">
+    <Layout title="List of Chart(s)">
       <ChartList />
-    </DashboardFrame>
+    </Layout>
   );
 }

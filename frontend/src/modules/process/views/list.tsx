@@ -1,4 +1,3 @@
-import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import React, { useState } from "react";
 import { AddProcess } from "@/modules/process/views/add";
 import { Breadcrumb, Button } from "antd";
@@ -8,7 +7,7 @@ import { IGADTable } from "@/common/components/common/table";
 import { ViewDag } from "./view";
 import SelectHopModal from "@/common/components/SelectHopModal";
 import { useFindAllQuery } from "@/modules/template/template";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 export default function ProcessChinList() {
   const [addProcess, setProcess] = useState(false);
@@ -67,14 +66,13 @@ export default function ProcessChinList() {
 
   return (
     <>
-      <DashboardFrame>
         <div className="flex justify-between items-center">
           <div className="mb-2">
             <h2 className="text-xl mb-2">Process Chain</h2>
             <Breadcrumb
               items={[
                 {
-                  title: <Link to="/home">Home</Link>,
+                  title: <Link href="/home">Home</Link>,
                 },
                 {
                   title: "Process Chain",
@@ -109,7 +107,6 @@ export default function ProcessChinList() {
           state={addProcess}
           selectedTemplate={selectedTemplate}
         />
-      </DashboardFrame>
     </>
   );
 }

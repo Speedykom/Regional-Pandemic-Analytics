@@ -1,14 +1,11 @@
-import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import React from "react";
-import Router from "next/router";
 import { EditProcess } from "@/modules/process/views/edit";
+import Layout from "@/common/components/layout";
 
 export default function EditProcessChain() {
   return (
-    <DashboardFrame title="Edit Process Chain" back onBackPress={() => {
-      Router.back()
-    }}>
+    <Layout title="View Process Chain">
       <EditProcess />
-    </DashboardFrame>
+    </Layout>
   );
 }

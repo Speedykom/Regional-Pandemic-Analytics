@@ -1,11 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from "react";
 import { embedDashboard } from "@superset-ui/embedded-sdk";
-import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import { api_url, getGuestToken } from "@/common/utils/auth";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { Breadcrumb } from "antd";
-import { Link } from "react-router-dom";
+import Link from "next/link";
+import Layout from "@/common/components/layout";
 
 export default function SupersetDashboard() {
   let ref = useRef<HTMLDivElement>(null);
@@ -64,20 +65,20 @@ export default function SupersetDashboard() {
 
   useEffect(() => {
     embedDash();
-  }, []);
+  }, [embedDash]);
 
   return (
-    <DashboardFrame title={"Dashboard"}>
+    <Layout title="View Dashboard">
       <div className="flex justify-between">
         <div>
           <h2 className="text-xl mb-2">View Dashboard</h2>
           <Breadcrumb
             items={[
               {
-                title: <Link to="/home">Home</Link>,
+                title: <Link href="/home">Home</Link>,
               },
               {
-                title: <Link to="/dashboards">Dashboard</Link>,
+                title: <Link href="/dashboards">Dashboard</Link>,
               },
               {
                 title: "View Dashboard",
@@ -87,6 +88,6 @@ export default function SupersetDashboard() {
         </div>
       </div>
       <div ref={ref} className="h-screen embed-iframe-container mb-8" />
-    </DashboardFrame>
+    </Layout>
   );
 }

@@ -1,7 +1,7 @@
 import { Button, Collapse, Form, Input } from "antd";
-import { AppDrawer } from "../../../common/components/AppDrawer";
+import { AppDrawer } from "../../../common/components/app-drawer";
 import { useFindOneQuery } from "@/modules/process/process";
-import { Loader } from "../../../common/components/Loader";
+import { Loader } from "../../../common/components/loader";
 import axios from "axios";
 import { ShowMessage } from "@/common/components/ShowMessage";
 import { useEffect, useState } from "react";

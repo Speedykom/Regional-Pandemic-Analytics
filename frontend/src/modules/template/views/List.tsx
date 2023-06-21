@@ -2,14 +2,13 @@ import { IGADTable } from "@/common/components/common/table";
 import { DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, message, Upload, Breadcrumb } from "antd";
 import { useTemplate } from "../hooks";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 
 import { UploadOutlined } from "@ant-design/icons";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
-import { getData } from "@/common/utils";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 interface props {
   viewPro: () => void;
@@ -132,14 +131,13 @@ export const HopList = () => {
   // @ts-ignore
   return (
     <div className="">
-      <nav>
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-xl mb-2">Hop Templates</h2>
             <Breadcrumb
               items={[
                 {
-                  title: <Link to="/home">Home</Link>,
+                  title: <Link href="/">Home</Link>,
                 },
                 {
                   title: "Hop Templates",
@@ -153,7 +151,6 @@ export const HopList = () => {
             </Button>
           </div>
         </div>
-      </nav>
       <section className="mt-2">
         <div className="py-2">
           <IGADTable

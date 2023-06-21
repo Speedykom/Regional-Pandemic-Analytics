@@ -36,7 +36,7 @@ class CreateUserAPI(APIView):
     """
     API view to create Keycloak user
     """
-    permission_classes = [AllowAny,]
+    permission_classes = [AllowAny]
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,

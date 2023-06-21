@@ -1,10 +1,7 @@
 import { Ref, forwardRef } from "react";
-import Link from "next/link";
-import { UsersIcon, LockClosedIcon } from "@heroicons/react/24/solid";
 import { LuFolderGit2 } from "react-icons/lu";
-import { useRouter } from "next/router";
 import secureLocalStorage from "react-secure-storage";
-import { NavLink } from "../link";
+import { NavLink } from "./link";
 import {
   BiData,
   BiHomeCircle,
@@ -15,17 +12,16 @@ import {
 } from "react-icons/bi";
 
 interface props {
-  showNav?: boolean;
+  menu: boolean;
 }
 
-const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
-  const router = useRouter();
+const Menu = ({ menu }: props) => {
   const user: any = secureLocalStorage.getItem("user");
   const userRole: any = secureLocalStorage.getItem("user_role");
   const permits = userRole?.attributes;
 
   return (
-    <div ref={ref} className="fixed z-50 w-64 h-full bg-white border-r">
+    <div className={`z-50 w-64 ${menu ? 'visible' : 'hidden'} bg-white border-r overflow-y-auto`}>
       <div className="flex justify-center mt-12 mb-5">
         <picture>
           <img
@@ -38,7 +34,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 
       <div className="flex flex-col p-5">
         <NavLink
-          href="/home"
+          href="/"
           activeClassName="bg-green-800 text-white"
           className="py-3 px-4 flex items-center space-x-3 text-gray-600 rounded-lg mb-4"
         >
@@ -62,7 +58,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
             className="py-3 px-4 flex items-center space-x-3 text-gray-600 rounded-lg mb-4"
           >
             <BiSitemap className="text-xl" />
-            <p>Process Chain</p>
+            <p className="whitespace-nowrap">Process Chain</p>
           </NavLink>
         )}
         {permits?.Data && permits?.Data?.read && (
@@ -102,13 +98,11 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
           className="py-3 px-4 flex items-center space-x-3 text-gray-600 rounded-lg"
         >
           <LuFolderGit2 className="text-xl" />
-          <p>Pipeline Templates</p>
+          <p className="whitespace-nowrap">Pipeline Templates</p>
         </NavLink>
       </div>
     </div>
   );
-});
+};
 
-SideBar.displayName = "SideBar";
-
-export default SideBar;
+export default Menu;

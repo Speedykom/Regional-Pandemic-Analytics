@@ -6,7 +6,7 @@ import { api_url } from "@/common/utils/auth";
 import { IGADTable } from "@/common/components/common/table";
 import { IUser } from "@/modules/user/interface";
 import { Breadcrumb } from "antd";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 export const DashboardList = () => {
   const [data, setData] = useState<Array<IUser>>([]);
@@ -49,7 +49,7 @@ export const DashboardList = () => {
           <Breadcrumb
             items={[
               {
-                title: <Link to="/home">Home</Link>,
+                title: <Link href="/home">Home</Link>,
               },
               {
                 title: "Dashboard",

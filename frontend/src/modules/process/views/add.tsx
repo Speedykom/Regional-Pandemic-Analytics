@@ -1,4 +1,4 @@
-import { AppDrawer } from "@/common/components/AppDrawer";
+import { AppDrawer } from "@/common/components/app-drawer";
 import { ShowMessage } from "@/common/components/ShowMessage";
 import { schedule_intervals } from "@/common/utils/processs";
 import { useCreateProcessMutation } from "@/modules/process/process";

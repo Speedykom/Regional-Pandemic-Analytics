@@ -1,11 +1,11 @@
-import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
+import Layout from "@/common/components/layout";
 import { HopList } from "@/modules/template/views/List";
 
 export const LoadHops = () => {
   return (
-    <DashboardFrame title="List(s) of Hops">
+    <Layout title="List(s) of Hops">
       <HopList />
-    </DashboardFrame>
+    </Layout>
   );
 };
 

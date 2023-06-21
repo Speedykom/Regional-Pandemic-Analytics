@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { IGADTable } from "@/common/components/common/table";
 import { DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
 import {
@@ -22,7 +23,7 @@ import { countries } from "@/common/utils/countries";
 import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
 import { api_url } from "@/common/utils/auth";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 interface props {
   viewPro: () => void;
@@ -208,7 +209,7 @@ export const UserList = () => {
   useEffect(() => {
     fetchRoles();
     fetchUsers();
-  }, []);
+  }, [fetchRoles, fetchUsers]);
 
   const { columns } = useUsers({ edit, viewPro, refetch });
   return (
@@ -219,7 +220,7 @@ export const UserList = () => {
           <Breadcrumb
             items={[
               {
-                title: <Link to="/home">Home</Link>,
+                title: <Link href="/home">Home</Link>,
               },
               {
                 title: "Accounts",

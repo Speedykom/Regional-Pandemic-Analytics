@@ -1,4 +1,4 @@
-import { AppDrawer } from "@/common/components/AppDrawer";
+import { AppDrawer } from "@/common/components/app-drawer";
 import { ShowMessage } from "@/common/components/ShowMessage";
 import { schedule_intervals } from "@/common/utils/processs";
 import {
@@ -21,7 +21,7 @@ import { EditHopProcess } from "./hop";
 import { EditDruidProcess } from "./druid";
 import { EditSupersetProcess } from "./superset";
 import Router, { useRouter } from "next/router";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 export const EditProcess = () => {
   const [current, setCurrent] = useState(0);
@@ -80,10 +80,10 @@ export const EditProcess = () => {
         <Breadcrumb
           items={[
             {
-              title: <Link to="/home">Home</Link>,
+              title: <Link href="/home">Home</Link>,
             },
             {
-              title: <Link to="/process-chains">Process Chain</Link>,
+              title: <Link href="/process-chains">Process Chain</Link>,
             },
             {
               title: "View Process Chain",

@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-import { getData } from "@/common/utils";
 import { CovertFromTimestampToDate, ToMonthDayYear } from "@/common/utils/date-converter";
 import { Drawer } from "antd";
 import axios from "axios";
