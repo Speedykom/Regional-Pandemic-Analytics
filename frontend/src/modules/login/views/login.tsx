@@ -54,19 +54,24 @@ export default function LoginForm() {
       <Head>
         <title>Regional Pandemic Analytics Tool | Welcome</title>
       </Head>
-      <div className="flex min-h-screen bg-gray-50 items-center justify-center">
-        <div className="bg-white flex w-3/5 shadow-lg rounded-xl overflow-hidden">
-          <div className="w-1/2 p-10 pt-5">
-            <div className="text-center mb-2">
-              <Image
-                className="mx-auto w-72"
-                src="/images/igad_logo.jpg"
-                alt="logo"
-                width={500}
-                height={200}
-              />
-            </div>
-            <Form
+      <section className="gradient-form md:h-screen">
+          <div className="container mx-auto px-6" style={{marginTop:"10vh"}}>
+            <div className="flex justify-center items-center flex-wrap g-6 text-gray-800">
+              <div className="xl:w-10/12">
+                <div className="block bg-white shadow-lg rounded-lg">
+                  <div className="lg:flex lg:flex-wrap g-0">
+                    <div className="lg:w-6/12 px-4 md:px-0">
+                      <div className="md:p-12 md:mx-6">
+                        <div className="text-center">
+                          <Image
+                            className="mx-auto w-72"
+                            src="/images/igad_logo.jpg"
+                            alt="logo"
+                            width={500}
+                            height={200}
+                          />
+                        </div>
+                        <Form
               form={form}
               name="login-user"
               onFinish={onFinish}
@@ -80,7 +85,7 @@ export default function LoginForm() {
                   rules={[
                     {
                       required: true,
-                      message: "Please input your dag name",
+                      message: "Please input your username",
                     },
                   ]}
                 >
@@ -132,17 +137,25 @@ export default function LoginForm() {
                 </Button>
               </div>
             </Form>
+                      </div>
+                    </div>
+                    <div className="bg-emerald-700 lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none">
+                      <div className="text-white px-4 py-6 md:p-12 md:mx-6">
+                        <h4 className="text-2xl font-semibold mb-4">
+                          Welcome back!
+                        </h4>
+                        <p className="text-sm">
+                          Simply login to access the IGAD regional pandemic analytics tool to collect, analyze,
+                          and report granular and aggregated data from multiple sources for informed decision-making.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="w-1/2 bg-prim flex justify-center flex-col p-10 text-white">
-            <h4 className="text-3xl font-semibold mb-4">Welcome back!</h4>
-            <p className="text-base">
-              Simply login to access the IGAD regional pandemic analytics tool
-              to collect, analyze, and report granular and aggregated data from
-              multiple sources for informed decision-making.
-            </p>
-          </div>
-        </div>
-      </div>
+        </section>
     </>
   );
 }
