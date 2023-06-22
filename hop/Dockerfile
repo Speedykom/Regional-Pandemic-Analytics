@@ -17,8 +17,8 @@ RUN chmod +x /usr/local/tomcat/watchFiles.sh
 COPY plugins/transforms/googlesheets /usr/local/tomcat/plugins/transforms/googlesheets
 COPY hop-config.json /usr/local/tomcat/webapps/ROOT/config/hop-config.json
 
-# COPY keycloak/lib/*.jar /usr/local/tomcat/lib/
-# COPY keycloak/tomcat-users.xml /usr/local/tomcat/conf
-# COPY keycloak/context.xml /usr/local/tomcat/webapps/ROOT/META-INF
-# COPY keycloak/web.xml /usr/local/tomcat/webapps/ROOT/WEB-INF
-# COPY keycloak/keycloak.json /usr/local/tomcat/webapps/ROOT/WEB-INF
+COPY keycloak/lib/*.jar /usr/local/tomcat/lib/
+COPY keycloak/tomcat-users.xml /usr/local/tomcat/conf
+COPY keycloak/context.xml /usr/local/tomcat/webapps/ROOT/META-INF
+COPY keycloak/web.xml /usr/local/tomcat/webapps/ROOT/WEB-INF
+COPY keycloak/keycloak.json /usr/local/tomcat/webapps/ROOT/WEB-INF
