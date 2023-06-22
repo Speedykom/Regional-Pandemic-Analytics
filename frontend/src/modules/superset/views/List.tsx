@@ -9,6 +9,7 @@ import axios from "axios";
 export const DashboardList = () => {
 	const [data, setData] = useState<Array<IUser>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
+	const [error, setError] = useState("")
 	const router = useRouter();
 
 	const fetchDashboards = async () => {
@@ -24,6 +25,10 @@ export const DashboardList = () => {
 			.then((res) => {
 				setLoading(false);
 				setData(res?.data?.result);
+			}).catch((err) => {
+				setLoading(false);
+				setData([]);
+				setError(err?.response?.data?.errorMessage)
 			});
 	};
 
@@ -59,6 +64,7 @@ export const DashboardList = () => {
 							onClick: () => embedDashboard(record.id),
 						})}
 					/>
+					{error && <p className="mt-3 text-sm text-gray-400">error fetching data, {error}</p>}
 				</div>
 			</section>
 		</div>
