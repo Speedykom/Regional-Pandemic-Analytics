@@ -8,16 +8,15 @@ import { BASE_URL, SUPERSET_URL } from "@/common/config";
 
 export default function SupersetDashboard() {
 	let ref = useRef(null);
-	const router = useRouter();
 	const [uuid, setUUID] = useState("");
 
 	const viewDash = async () => {
+		const dashId = location.href.substring(location.href.lastIndexOf('/') + 1);
 		const response = await axios.get(
-			`${BASE_URL}/api/superset/dashboard/embed/${router.query?.id}`,
+			`${BASE_URL}/api/superset/dashboard/embed/${dashId}`,
 			{
 				headers: {
 					"Content-Type": "application/json",
-					Accept: "application/json",
 				},
 			}
 		);
@@ -26,7 +25,7 @@ export default function SupersetDashboard() {
 				.post(
 					`${BASE_URL}/api/superset/dashboard/enable-embed`,
 					{
-						uid: router.query?.id,
+						uid: dashId,
 					},
 					{
 						headers: {
@@ -36,10 +35,12 @@ export default function SupersetDashboard() {
 					}
 				)
 				.then((res) => {
+					console.log({data: res.data})
 					const dashboardUUID = res?.data?.result?.uuid;
 					setUUID(dashboardUUID);
 				});
 		} else {
+			console.log({data: response.data})
 			setUUID(response.data?.result?.uuid);
 		}
 	};
@@ -47,10 +48,10 @@ export default function SupersetDashboard() {
 	const embedDash = async () => {
 		if (ref.current) {
 			await embedDashboard({
-				id: uuid, // given by the Superset embedding UI
+				id: `bcca3d9-4e94-49b9-89e7-adc7ae7a4a7b`, // given by the Superset embedding UI
 				supersetDomain: `${SUPERSET_URL}`,
 				mountPoint: ref.current, // html element in which iframe render
-				fetchGuestToken: () => getGuestToken(uuid),
+				fetchGuestToken: () => getGuestToken(`bcca3d9-4e94-49b9-89e7-adc7ae7a4a7b`),
 				dashboardUiConfig: {
 					hideTitle: true,
 					hideTab: true,

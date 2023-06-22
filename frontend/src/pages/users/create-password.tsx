@@ -37,7 +37,7 @@ export default function CreatePasswordLayout() {
 	}, []);
 	return (
 		<div>
-			{typeof window != undefined && tok && valid ? (
+			{tok && valid ? (
 				<CreatePassword mail={email} token={String(tok)} />
 			) : (
 				<LinkExpired />
