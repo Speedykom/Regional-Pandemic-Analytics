@@ -1,39 +1,46 @@
 import { useEffect, useRef, useState } from "react";
 import { embedDashboard } from "@superset-ui/embedded-sdk";
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-import { api_url, getGuestToken } from "@/common/utils/auth";
+import { getGuestToken } from "@/common/utils/auth";
 import axios from "axios";
 import { useRouter } from "next/router";
+import { BASE_URL, SUPERSET_URL } from "@/common/config";
 
 export default function SupersetDashboard() {
-	let ref = useRef<HTMLDivElement>(null);
-	const [uuid, setUuid] = useState('')
-	const router = useRouter()
+	let ref = useRef(null);
+	const router = useRouter();
+	const [uuid, setUUID] = useState("");
 
-	const viewDash = async(id: string) => {
+	const viewDash = async () => {
 		const response = await axios.get(
-			`${api_url}/api/superset/dashboard/embed/${router.query?.id}`, {
+			`${BASE_URL}/api/superset/dashboard/embed/${router.query?.id}`,
+			{
 				headers: {
-					'Content-Type': 'application/json'
-				}
+					"Content-Type": "application/json",
+					Accept: "application/json",
+				},
 			}
-		)
-		if (response.status === 404) {
-			await axios.post(
-				`${api_url}/api/superset/dashboard/enable-embed`, {
-					uid: router.query?.id
-				}, {
-					headers: {
-						'Content-Type': 'application/json'
+		);
+		if (response.status !== 200) {
+			await axios
+				.post(
+					`${BASE_URL}/api/superset/dashboard/enable-embed`,
+					{
+						uid: router.query?.id,
+					},
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Accept: "application/json",
+						},
 					}
-				}
-			).then((res) => {
-				const dashboardUUID = res?.data?.result?.uuid;
-				setUuid(dashboardUUID)
-				
-			})
+				)
+				.then((res) => {
+					const dashboardUUID = res?.data?.result?.uuid;
+					setUUID(dashboardUUID);
+				});
 		} else {
-			setUuid(response.data?.result?.uuid)
+			setUUID(response.data?.result?.uuid);
 		}
 	};
 
@@ -41,10 +48,9 @@ export default function SupersetDashboard() {
 		if (ref.current) {
 			await embedDashboard({
 				id: uuid, // given by the Superset embedding UI
-				supersetDomain: `${process.env.NEXT_PUBLIC_SUPERSET_URL}`,
+				supersetDomain: `${SUPERSET_URL}`,
 				mountPoint: ref.current, // html element in which iframe render
-				fetchGuestToken: () =>
-					getGuestToken(uuid),
+				fetchGuestToken: () => getGuestToken(uuid),
 				dashboardUiConfig: {
 					hideTitle: true,
 					hideTab: true,
@@ -58,6 +64,7 @@ export default function SupersetDashboard() {
 	};
 
 	useEffect(() => {
+		viewDash();
 		embedDash();
 	}, []);
 
