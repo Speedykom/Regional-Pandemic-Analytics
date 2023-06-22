@@ -2,10 +2,17 @@ version: "3.4"
 
 x-superset-common:
   &superset
-  image: apache/superset:2.1.0
+  build: ./superset/.
   environment:
     - SECRET_KEY=${SUPERSET_SECRET_KEY}
     - DATABASE_URI=${SUPERSET_DATABASE_URI}
+    - PROVIDER_NAME=${SUPERSET_PROVIDER_NAME}
+    - CLIENT_ID=${SUPERSET_CLIENT_ID}
+    - CLIENT_SECRET=${SUPERSET_CLIENT_SECRET}
+    - OIDC_ISSUER=${SUPERSET_OIDC_ISSUER}
+    - KEYCLOAK_BASE_URL=${SUPERSET_KEYCLOAK_BASE_URL}
+    - KEYCLOAK_TOKEN_URL=${SUPERSET_KEYCLOAK_TOKEN_URL}
+    - KEYCLOAK_AUTH_URL=${SUPERSET_KEYCLOAK_AUTH_URL}
   volumes:
     - ./superset/superset_config.py:/app/superset/config.py
 
