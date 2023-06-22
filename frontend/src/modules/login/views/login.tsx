@@ -111,7 +111,7 @@ export default function LoginForm() {
 														},
 													]}
 												>
-													<Input
+													<Input.Password
 														size="large"
 														type="password"
 														placeholder="Password"
