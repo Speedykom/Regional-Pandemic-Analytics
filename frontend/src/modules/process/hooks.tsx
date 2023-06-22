@@ -97,7 +97,7 @@ const DelButton = ({ id }: { id: string }) => {
       <Button
         className="dag-btn border-red-500 text-red-500 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:bg-red-500 focus:text-white"
       >
-        Delete
+        Disable
       </Button>
     </Popover>
   );
