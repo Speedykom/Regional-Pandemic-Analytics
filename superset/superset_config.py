@@ -234,11 +234,11 @@ QUERY_SEARCH_LIMIT = 1000
 WTF_CSRF_ENABLED = False
 
 # Add endpoints that need to be exempt from CSRF protection
-WTF_CSRF_EXEMPT_LIST = [
-    "superset.views.core.log",
-    "superset.views.core.explore_json",
-    "superset.charts.data.api.data",
-]
+# WTF_CSRF_EXEMPT_LIST = [
+#     "superset.views.core.log",
+#     "superset.views.core.explore_json",
+#     "superset.charts.data.api.data",
+# ]
 
 # Whether to run the web server in debug mode or not
 DEBUG = os.environ.get("FLASK_ENV") == "development"
@@ -256,7 +256,8 @@ SHOW_STACKTRACE = True
 # Use all X-Forwarded headers when ENABLE_PROXY_FIX is True.
 # When proxying to a different port, set "x_port" to 0 to avoid downstream issues.
 ENABLE_PROXY_FIX = True
-PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 1, "x_prefix": 1}
+HTTP_HEADERS = {'X-Frame-Options': 'ALLOWALL'}
+# PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 1, "x_prefix": 1}
 
 # Configuration for scheduling queries from SQL Lab.
 SCHEDULED_QUERIES: Dict[str, Any] = {}
@@ -349,12 +350,7 @@ AUTH_USER_REGISTRATION_ROLE = 'Gamma'
 # AUTH_ROLE_ADMIN = 'Admin'
 
 # Uncomment to setup Public role name, no authentication needed
-AUTH_ROLE_PUBLIC = 'Public'
-
-PUBLIC_ROLE_LIKE_GAMMA = True
-
-GUEST_ROLE_NAME = 'Gamma'
-
+# AUTH_ROLE_PUBLIC = 'Public'
 
 # Will allow user self registration
 # AUTH_USER_REGISTRATION = True
@@ -376,7 +372,8 @@ GUEST_ROLE_NAME = 'Gamma'
 # Grant public role the same set of permissions as for a selected builtin role.
 # This is useful if one wants to enable anonymous users to view
 # dashboards. Explicit grant on specific datasets is still required.
-PUBLIC_ROLE_LIKE: Optional[str] = 'Gamma'
+PUBLIC_ROLE_LIKE: Optional[str] = "Gamma"
+PUBLIC_ROLE_LIKE_GAMMA = True
 
 # ---------------------------------------------------
 # Babel config for translations
@@ -443,7 +440,7 @@ DEFAULT_FEATURE_FLAGS: Dict[str, bool] = {
     # this enables programmers to customize certain charts (like the
     # geospatial ones) by inputing javascript in controls. This exposes
     # an XSS security vulnerability
-    "ENABLE_JAVASCRIPT_CONTROLS": True,
+    "ENABLE_JAVASCRIPT_CONTROLS": False,
     "KV_STORE": False,
     # When this feature is enabled, nested types in Presto will be
     # expanded into extra columns and/or arrays. This is experimental,
@@ -547,11 +544,9 @@ DEFAULT_FEATURE_FLAGS.update(
 )
 
 # This is merely a default.
-FEATURE_FLAGS = {
-    "ALERT_REPORTS": True,
+FEATURE_FLAGS: Dict[str, bool] = {
     "EMBEDDED_SUPERSET": True
 }
-
 
 # A function that receives a dict of all feature flags
 # (DEFAULT_FEATURE_FLAGS merged with FEATURE_FLAGS)
@@ -740,12 +735,7 @@ STORE_CACHE_KEYS_IN_METADATA_DB = False
 
 # CORS Options
 ENABLE_CORS = True
-CORS_OPTIONS: Dict[Any, Any] = {
-    'supports_credentials': True,
-    'allow_headers': ['*'],
-    'resources': ['*'],
-    'origins': ['*']
-}
+CORS_OPTIONS: Dict[Any, Any] = {}
 
 # Sanitizes the HTML content used in markdowns to allow its rendering in a safe manner.
 # Disabling this option is not recommended for security reasons. If you wish to allow
@@ -959,7 +949,7 @@ CELERY_CONFIG = CeleryConfig  # pylint: disable=invalid-name
 # override anything set within the app
 DEFAULT_HTTP_HEADERS: Dict[str, Any] = {}
 OVERRIDE_HTTP_HEADERS: Dict[str, Any] = {}
-HTTP_HEADERS: Dict[str, Any] = {'X-Frame-Options': 'ALLOWALL'}
+HTTP_HEADERS: Dict[str, Any] = {}
 
 # The db id here results in selecting this one as a default in SQL Lab
 DEFAULT_DB_ID = None
@@ -1424,7 +1414,7 @@ RLS_FORM_QUERY_REL_FIELDS: Optional[Dict[str, List[List[Any]]]] = None
 #
 SESSION_COOKIE_HTTPONLY = True  # Prevent cookie from being read by frontend JS?
 SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
-SESSION_COOKIE_SAMESITE: Optional[Literal["None", "Lax", "Strict"]] = "None"
+SESSION_COOKIE_SAMESITE: Optional[Literal["None", "Lax", "Strict"]] = "Lax"
 
 # Cache static resources.
 SEND_FILE_MAX_AGE_DEFAULT = int(timedelta(days=365).total_seconds())
