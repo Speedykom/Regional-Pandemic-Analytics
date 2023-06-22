@@ -14,7 +14,7 @@ export default function CreatePasswordLayout() {
 	const getToken = async () => {
 		await axios
 			.patch(
-				`${BASE_URL}/api/auth/reset-verify`,
+				`${BASE_URL}/api/auth/request-verify`,
 				{
 					token: String(tok),
 				},
@@ -37,7 +37,7 @@ export default function CreatePasswordLayout() {
 	}, []);
 	return (
 		<div>
-			{tok && valid ? (
+			{typeof window != undefined && tok && valid ? (
 				<CreatePassword mail={email} token={String(tok)} />
 			) : (
 				<LinkExpired />
