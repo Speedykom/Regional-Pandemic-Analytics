@@ -10,25 +10,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { username, password } = req.body;
 
-  const body = JSON.stringify({
+  const body = {
     username,
     password,
+  };
+  
+  const response = await axios.post(`${BASE_URL}/api/auth/key-auth`, body, {
+    headers: { 'Content-Type': 'application/json' }
   });
 
-  try {
-    const response = await axios.post(`${BASE_URL}/api/auth/key-auth`, body, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+  if (response.status !== 200)
+    return res.status(response.status).json({ result: 'error logging in' });
 
-    if (response.status !== 200)
-      return res.status(response.status).json({ result: 'error logging in' });
-    
-    secureLocalStorage.setItem("tokens", {
-      accessToken: response?.data?.access_token,
-      refreshToken: response?.data?.refresh_token
-    })
-    return res.status(200).json({ result: response.data });
-  } catch (error: unknown) {
-    return res.status(500).json({ result: 'Internal server error' });
-  }
+  return res.status(200).json({ result: response.data });
 }
