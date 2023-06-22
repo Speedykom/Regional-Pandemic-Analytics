@@ -3,7 +3,7 @@ import axios from "axios";
 
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse){
-    const server_url = process.env.NEXT_PUBLIC_BASE_URL;
+    const server_url = process.env.FRONTEND_NEXT_PRIVATE_BASE_URL;
 
     const {username} = req?.query
 
