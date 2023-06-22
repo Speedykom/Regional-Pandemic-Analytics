@@ -346,6 +346,7 @@ services:
     depends_on:
       - superset_db
       - superset_cache
+    restart: always
 
   superset-init:
     <<: *superset
