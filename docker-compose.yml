@@ -373,7 +373,7 @@ services:
       - ./hop/pipelines:/files
       - ./storage:/home
       - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
-    #   - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
+      - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
   # =======
   # Airflow
