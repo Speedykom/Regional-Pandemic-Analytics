@@ -10,14 +10,14 @@ export default async function handler(
   if (req.method !== "POST")
     return res.status(405).send(`Method ${req.method} not allowed`);
 
-  const tokens: any = secureLocalStorage.getItem("tokens") as object
+  const { refreshToken } = req.body;
 
-  return await axios.get(`${BASE_URL}/api/auth/logout`, {
-    headers: { 'Authorization': `Bearer ${tokens?.refreshToken}` }
-  }).then((data) => {
-    secureLocalStorage.clear();
-    return res.status(200).json({ status: "logout successful" });
-  }).catch((err) => {
-    return res.status(err.response.status).send(err.response?.data)
+  const response = await axios.get(`${BASE_URL}/api/auth/logout`, {
+    headers: { 'Authorization': `Bearer ${refreshToken}` }
   });
+
+  if (response.status !== 200)
+    return res.status(response.status).json({ result: response.data });
+
+  return res.status(200).json(response.data);
 }
