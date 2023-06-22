@@ -48,10 +48,10 @@ export default function SupersetDashboard() {
 	const embedDash = async () => {
 		if (ref.current) {
 			await embedDashboard({
-				id: `bcca3d9-4e94-49b9-89e7-adc7ae7a4a7b`, // given by the Superset embedding UI
-				supersetDomain: `${SUPERSET_URL}`,
-				mountPoint: ref.current, // html element in which iframe render
-				fetchGuestToken: () => getGuestToken(`bcca3d9-4e94-49b9-89e7-adc7ae7a4a7b`),
+				id: uuid, // given by the Superset embedding UI
+				supersetDomain: `https://analytics2.igad-health.eu/`,
+				mountPoint: ref.current, // html element in which iframe renders
+				fetchGuestToken: () => getGuestToken(uuid),
 				dashboardUiConfig: {
 					hideTitle: true,
 					hideTab: true,
