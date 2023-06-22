@@ -18,14 +18,20 @@ export default function LoginForm() {
 		setLoading(true);
 
 		axios
-			.post("/api/auth/login", JSON.stringify(data), {
+			.post("/api/auth/login", data, {
 				headers: {
 					"Content-Type": "application/json",
 				},
 			})
 			.then(async (res: any) => {
-				if (res.status == 200) {
-					let payload: any = jwt_decode(res?.data?.result?.access_token);
+        if (res.status == 200) {
+          let payload: any = jwt_decode(res?.data?.result?.access_token);
+          
+          secureLocalStorage.setItem("tokens", {
+            accessToken: res?.data?.result?.access_token,
+            refreshToken: res?.data?.result?.refresh_token
+          }); 
+
 					const role = await getUserRole(payload?.realm_access?.roles);
 					secureLocalStorage.setItem("user_role", role);
 
