@@ -1,7 +1,7 @@
+import { BASE_URL } from "@/common/config";
 import { OpenNotification } from "@/common/utils/notify";
 import { Button, Form, Input } from "antd";
 import axios from "axios";
-import jwtDecode, { JwtDecodeOptions } from "jwt-decode";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -18,13 +18,12 @@ interface props {
 export const CreatePassword = ({ mail, token }: props) => {
 	const router = useRouter();
 	const [form] = Form.useForm();
-	const { tok } = router.query;
-	const [email, setEmail] = useState<string>();
 	const [password, setPassword] = useState<string>("");
 	const [uppercase, setUppercase] = useState<boolean>(false);
 	const [num, setNumber] = useState<boolean>(false);
 	const [lowercase, setLowercase] = useState<boolean>(false);
 	const [specialChar, setSpecialChar] = useState<boolean>(false);
+	const [load, setLoad] = useState<boolean>(false)
 
 	const onChange = (e?: string) => {
 		setPassword(String(e));
@@ -54,6 +53,7 @@ export const CreatePassword = ({ mail, token }: props) => {
 	};
 
 	const onFinish = async (values: any) => {
+		setLoad(true)
 		if (!lowercase || !uppercase || !specialChar || !num) {
 			OpenNotification(
 				"Validation error, please fix the errors and continue",
@@ -62,8 +62,8 @@ export const CreatePassword = ({ mail, token }: props) => {
 			);
 		} else {
 			await axios
-				.put(
-					`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/create-password`,
+				.post(
+					`${BASE_URL}/api/auth/password`,
 					{
 						newPassword: values["password"],
 						confirmPassword: values["confirmPassword"],
@@ -76,6 +76,7 @@ export const CreatePassword = ({ mail, token }: props) => {
 					}
 				)
 				.then((res) => {
+					setLoad(false)
 					OpenNotification(res.data?.message, "topRight", "success");
 					form.resetFields();
 					router.push("/");
@@ -380,11 +381,16 @@ export const CreatePassword = ({ mail, token }: props) => {
 							</div>
 							<Form.Item>
 								<Button
+									loading={load}
 									htmlType="submit"
 									size="large"
-									className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+									className="w-full text-white"
+									style={{
+										backgroundColor: "#087757",
+										border: "1px solid #e65e01",
+									}}
 								>
-									Reset passwod
+									Continue
 								</Button>
 							</Form.Item>
 						</Form>

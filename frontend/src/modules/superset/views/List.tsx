@@ -1,42 +1,44 @@
 import { useDashboards } from "../hooks";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useRouter } from "next/router";
-import { api_url } from "@/common/utils/auth";
 import { IGADTable } from "@/common/components/common/table";
 import { IUser } from "@/modules/user/interface";
+import { BASE_URL } from "@/common/config";
+import axios from "axios";
 
 export const DashboardList = () => {
 	const [data, setData] = useState<Array<IUser>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
-	const router = useRouter()
+	const [error, setError] = useState("")
+	const router = useRouter();
 
 	const fetchDashboards = async () => {
-		try {
-			setLoading(true);
-			const url = `${api_url}/api/superset/list`;
-			await axios
-				.get(url, {
-					headers: {
-						"Content-Type": "application/json",
-					},
-				})
-				.then((res) => {
-					setLoading(false);
-					setData(res?.data?.result);
-				});
-		} catch (error) {
-			console.error("Error:", error);
-		}
+		setLoading(true);
+		const url = `${BASE_URL}/api/superset/list`;
+		await axios
+			.get(url, {
+				headers: {
+					"Content-Type": "application/json",
+					'Accept': "application/json",
+				},
+			})
+			.then((res) => {
+				setLoading(false);
+				setData(res?.data?.result);
+			}).catch((err) => {
+				setLoading(false);
+				setData([]);
+				setError(err?.response?.data?.errorMessage)
+			});
 	};
 
-	const rowAction = (id: string) => {
-		router.push(`/dashboards/${id}`)
-	}
+	const embedDashboard = (id: string) => {
+		router.push(`/dashboards/${id}`);
+	};
 
 	useEffect(() => {
 		fetchDashboards();
-	}, [])
+	}, []);
 
 	const { columns } = useDashboards();
 	return (
@@ -49,7 +51,6 @@ export const DashboardList = () => {
 							Dashboard list created on Apache Superset.
 						</p>
 					</div>
-					
 				</div>
 			</nav>
 			<section className="mt-2">
@@ -60,9 +61,10 @@ export const DashboardList = () => {
 						rows={data}
 						columns={columns}
 						onRow={(record: any) => ({
-							onClick: () => rowAction(record.id),
-						  })}
+							onClick: () => embedDashboard(record.id),
+						})}
 					/>
+					{error && <p className="mt-3 text-sm text-gray-400">error fetching data, {error}</p>}
 				</div>
 			</section>
 		</div>
