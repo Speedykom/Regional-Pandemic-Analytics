@@ -75,7 +75,7 @@ class CreateProcess(APIView):
 
     def post(self, request):
         path = request.data['path']
-        name = request.data['dag_id'].replace(" ", "-").replace(".hpl", "").lower()
+        name = request.data['dag_id'].strip().replace(" ", "-").replace(".hpl", "").lower()
 
         dag_id = name
         process = ProcessChain.objects.filter(dag_id=dag_id)

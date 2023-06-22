@@ -3,6 +3,8 @@ import os
 import shutil
 import fileinput
 
+RUN_ENV = os.getenv("RUN_ENV")
+
 class DynamicDag:
     def __init__(self, output, template):
         self.output = output
@@ -22,5 +24,6 @@ class DynamicDag:
                         .replace("data_source_name", "'{}'".format(data_source_name))
                         .replace("scheduleinterval", "'{}'".format(schedule_interval))
                         .replace("pipeline_path", "'{}'".format(path))
+                        .replace("run_env", "'{}'".format(RUN_ENV))
                 )
                 print(new_line, end="")

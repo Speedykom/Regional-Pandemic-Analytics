@@ -7,7 +7,7 @@ from airflow.operators.python_operator import PythonOperator
 from docker.types import Mount
 import requests
 
-pwd = "/home/igad/Regional-Pandemic-Analytics/staging"
+pwd = run_env
 
 pipelines = "{}/hop/pipelines".format(pwd)
 storage = "{}/storage".format(pwd)
