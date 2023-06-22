@@ -1,12 +1,12 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Process } from "../../common/redux/interface/process";
-import { api_url } from "@/common/utils/auth";
+import { BASE_URL } from "@/common/config";
 
 // Define a service using a base URL and expected endpoints
 export const AuthApi = createApi({
   reducerPath: "AuthApi",
-  baseQuery: fetchBaseQuery({ baseUrl: api_url }),
+  baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
   endpoints: (builder) => ({
     login: builder.mutation<Process, string>({
       query: (body) => ({

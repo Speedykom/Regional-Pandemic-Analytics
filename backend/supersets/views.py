@@ -33,7 +33,7 @@ class ListDashboardsAPI(APIView):
         return Response(response.json(), status=status.HTTP_200_OK)
     
     
-class DashboardEmbed(APIView):
+class EnableEmbed(APIView):
     """
     API view to enable superset dashboard embed
     """
@@ -49,7 +49,6 @@ class DashboardEmbed(APIView):
         uid = request.data.get('uid', None)
         
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{uid}/embedded"
-        # url = f"http://localhost:8088/api/v1/dashboard/{uid}/embedded"
         
         headers = {
             'Content-Type': "application/json",
@@ -78,7 +77,6 @@ class GetEmbeddable(APIView):
             return Response({'errorMessage': auth_response['message']}, status=auth_response['status'])
         
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['id']}/embedded"
-        # url = f'http://localhost:8088/api/v1/dashboard/{kwargs["id"]}/embedded'
         
         headers = {
             'Content-Type': 'application/json',
@@ -97,7 +95,6 @@ class GuestTokenApi(APIView):
     
     def post(self, request):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/security/guest_token/"
-        # url = 'http://localhost:8088/api/v1/security/guest_token/'
         
         guest_token = auths.get_csrf_token()
         
@@ -107,7 +104,7 @@ class GuestTokenApi(APIView):
         headers = {
             'Content-Type': "application/json",
             'Authorization': f"Bearer {guest_token['token']['access_token']}",
-            'X-CSRF-TOKEN': f"csrf {guest_token['token']['csrf_token']}"
+            'X-CSRF-TOKEN': f"{guest_token['token']['csrf_token']}"
         }
         
         payload = {
@@ -138,9 +135,9 @@ class CsrfTokenApi(APIView):
     permission_classes = [AllowAny,]
     
     def get(self, request):
-        url = 'http://localhost:8088/api/v1/security/csrf_token/'
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/security/csrf_token/"
     
-        auth_response = auths.get_local_auth_token()
+        auth_response = auths.get_auth_token()
         
         if auth_response['status'] != 200:
             return {'status': auth_response['status'], 'message': auth_response['message']}
