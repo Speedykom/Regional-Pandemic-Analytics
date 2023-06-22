@@ -18,7 +18,6 @@ export const getUserRole = async (roles: []) => {
 
 export const getGuestToken = async (uuid: string): Promise<string> => {
     return new Promise<string>((resolve) => {
-        console.log("====> Calling token!")
         axios.post(`${BASE_URL}/api/superset/guest/token`, { id: uuid }).then((response) => {
             console.log(response.status);
             resolve(response.data?.token);
