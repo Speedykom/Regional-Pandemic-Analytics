@@ -51,5 +51,5 @@ export const Permission = ({ children }: props) => {
 
   if (!access) window.location.pathname = "/";
 
-  return access ? <>children</> : null;
+  return access ? <>{children}</> : null;
 };

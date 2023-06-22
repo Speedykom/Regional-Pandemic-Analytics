@@ -17,12 +17,12 @@ export const AuthProvider = ({ children }: any) => {
   useEffect(() => {
     setLoading(true);
 
-    async function loadUserFromCookies() {
+    async function loadUserFromLocalStorage() {
       const data: any = secureLocalStorage.getItem("user");
       if (data) setUser(data);
       setLoading(false);
     }
-    loadUserFromCookies();
+    loadUserFromLocalStorage();
   }, []);
 
   return (

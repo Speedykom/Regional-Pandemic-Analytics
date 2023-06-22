@@ -51,7 +51,7 @@ export const EditProcess = () => {
       title: "Integration",
     },
     {
-      title: "Data Source",
+      title: "Injection",
     },
     {
       title: "Analytics",
