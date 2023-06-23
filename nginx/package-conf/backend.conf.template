@@ -1,0 +1,23 @@
+# IGAD backend config
+server {
+    listen          80;
+    server_name     $NGINX_BACKEND_DOMAIN_NAME;
+
+    location / {
+        return      301 https://$host$request_uri;
+    }
+    
+#    location / {
+#        proxy_pass        http://$NGINX_UPSTREAM_BACKEND:8000;
+#    }
+}
+server {
+	listen 443 ssl;
+	server_name $NGINX_BACKEND_DOMAIN_NAME;
+	ssl_certificate /etc/nginx/certs/backend.crt;
+	ssl_certificate_key /etc/nginx/certs/backend.key;
+	location / {
+		proxy_pass http://$NGINX_UPSTREAM_BACKEND:8000/;
+		error_log /var/log/back_end_errors.log;
+	}
+}
