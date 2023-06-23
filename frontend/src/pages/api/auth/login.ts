@@ -6,7 +6,7 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-  const server_url = process.env.FRONTEND_NEXT_PRIVATE_BASE_URL;
+  const server_url = process.env.NEXT_PRIVATE_BASE_URL;
 
   if (req.method !== 'POST') {
     return res.status(405).send(`Method ${req.method} not allowed`);
@@ -24,6 +24,7 @@ export default async function handler(
       headers: { 'Content-Type': 'application/json' },
       withCredentials: false
     });
+    
 
     if (response.status !== 200)
       return res.status(response.status).json({ result: 'error logging in' });
@@ -49,6 +50,7 @@ export default async function handler(
     });
     return res.status(200).json({ result: response.data });
   } catch (error: unknown) {
+    console.log(error)
     return res.status(500).json({ result: 'Internal server error' });
   }
 }

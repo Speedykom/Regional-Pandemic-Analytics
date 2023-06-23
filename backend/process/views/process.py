@@ -14,6 +14,7 @@ from ..gdags.hop import EditAccessProcess
 api = os.getenv("AIRFLOW_API")
 username = os.getenv("AIRFLOW_USER")
 password = os.getenv("AIRFLOW_PASSWORD")
+PIPELINE_PATH = os.getenv("HOPE_PIPELINE_PATH")
 
 class EditProcess(APIView):
 
@@ -85,7 +86,7 @@ class CreateProcess(APIView):
 
         file = open(path, "r")
 
-        pipeline_name = "../hop/pipelines/{}.hpl".format(name)
+        pipeline_name = "{}/{}.hpl".format(PIPELINE_PATH, name)
         pipeline_path = "{}.hpl".format(name)
         parquet_path = "/opt/shared/{}.parquet".format(name)
 
