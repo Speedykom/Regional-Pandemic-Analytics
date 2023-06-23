@@ -1,0 +1,19 @@
+# IGAD keycloak config
+server {
+    listen          80;
+    server_name     $NGINX_KEYCLOAK_DOMAIN_NAME;
+
+    location / {
+        proxy_pass        http://$NGINX_UPSTREAM_KEYCLOAK:8080;
+    }
+}
+server {
+	listen 443 ssl;
+	server_name $NGINX_KEYCLOAK_DOMAIN_NAME;
+	ssl_certificate /etc/nginx/certs/keycloak.crt;
+	ssl_certificate_key /etc/nginx/certs/keycloak.key;
+	location / {
+		proxy_pass http://$NGINX_UPSTREAM_KEYCLOAK:8080/;
+		error_log /var/log/keycloak_errors.log;
+	}
+}
