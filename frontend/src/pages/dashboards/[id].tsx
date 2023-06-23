@@ -35,12 +35,10 @@ export default function SupersetDashboard() {
 					}
 				)
 				.then((res) => {
-					console.log({data: res.data})
 					const dashboardUUID = res?.data?.result?.uuid;
 					setUUID(dashboardUUID);
 				});
 		} else {
-			console.log({data: response.data})
 			setUUID(response.data?.result?.uuid);
 		}
 	};
@@ -49,9 +47,9 @@ export default function SupersetDashboard() {
 		if (ref.current) {
 			await embedDashboard({
 				id: uuid, // given by the Superset embedding UI
-				supersetDomain: `https://analytics2.igad-health.eu`,
+				supersetDomain: `${SUPERSET_URL}`,
 				mountPoint: ref.current, // html element in which iframe render
-				fetchGuestToken: async () => getGuestToken(uuid),
+				fetchGuestToken: () => getGuestToken(uuid),
 				dashboardUiConfig: {
 					hideTitle: true,
 					hideTab: true,
