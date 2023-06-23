@@ -234,11 +234,11 @@ QUERY_SEARCH_LIMIT = 1000
 WTF_CSRF_ENABLED = False
 
 # Add endpoints that need to be exempt from CSRF protection
-WTF_CSRF_EXEMPT_LIST = [
-    "superset.views.core.log",
-    "superset.views.core.explore_json",
-    "superset.charts.data.api.data",
-]
+# WTF_CSRF_EXEMPT_LIST = [
+#     "superset.views.core.log",
+#     "superset.views.core.explore_json",
+#     "superset.charts.data.api.data",
+# ]
 
 # Whether to run the web server in debug mode or not
 DEBUG = os.environ.get("FLASK_ENV") == "development"
@@ -256,7 +256,7 @@ SHOW_STACKTRACE = True
 # Use all X-Forwarded headers when ENABLE_PROXY_FIX is True.
 # When proxying to a different port, set "x_port" to 0 to avoid downstream issues.
 ENABLE_PROXY_FIX = True
-PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 1, "x_prefix": 1}
+# PROXY_FIX_CONFIG = {"x_for": 1, "x_proto": 1, "x_host": 1, "x_port": 1, "x_prefix": 1}
 
 # Configuration for scheduling queries from SQL Lab.
 SCHEDULED_QUERIES: Dict[str, Any] = {}
@@ -371,7 +371,7 @@ AUTH_USER_REGISTRATION_ROLE = 'Gamma'
 # Grant public role the same set of permissions as for a selected builtin role.
 # This is useful if one wants to enable anonymous users to view
 # dashboards. Explicit grant on specific datasets is still required.
-PUBLIC_ROLE_LIKE: Optional[str] = "Gamma"
+PUBLIC_ROLE_LIKE = "Gamma"
 PUBLIC_ROLE_LIKE_GAMMA = True
 
 # ---------------------------------------------------
@@ -543,7 +543,8 @@ DEFAULT_FEATURE_FLAGS.update(
 )
 
 # This is merely a default.
-FEATURE_FLAGS: Dict[str, bool] = {
+FEATURE_FLAGS = {
+    "ALERT_REPORTS": True,
     "EMBEDDED_SUPERSET": True
 }
 
@@ -1416,8 +1417,8 @@ RLS_FORM_QUERY_REL_FIELDS: Optional[Dict[str, List[List[Any]]]] = None
 # See https://flask.palletsprojects.com/en/1.1.x/security/#set-cookie-options
 # for details
 #
-SESSION_COOKIE_HTTPONLY = False  # Prevent cookie from being read by frontend JS?
-SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
+# SESSION_COOKIE_HTTPONLY = False  # Prevent cookie from being read by frontend JS?
+# SESSION_COOKIE_SECURE = False  # Prevent cookie from being transmitted over non-tls?
 SESSION_COOKIE_SAMESITE: Optional[Literal["None", "Lax", "Strict"]] = "None"
 
 # Cache static resources.
@@ -1485,7 +1486,6 @@ GLOBAL_ASYNC_QUERIES_POLLING_DELAY = int(
 GLOBAL_ASYNC_QUERIES_WEBSOCKET_URL = "ws://127.0.0.1:8080/"
 
 # Embedded config options
-AUTH_ROLE_PUBLIC = 'Public'
 GUEST_ROLE_NAME = "Gamma"
 GUEST_TOKEN_JWT_SECRET = "test-guest-secret-change-me"
 GUEST_TOKEN_JWT_ALGO = "HS256"
