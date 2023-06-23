@@ -51,7 +51,7 @@ export default function SupersetDashboard() {
 				id: uuid, // given by the Superset embedding UI
 				supersetDomain: `https://analytics2.igad-health.eu`,
 				mountPoint: ref.current, // html element in which iframe render
-				fetchGuestToken: () => getGuestToken(uuid),
+				fetchGuestToken: async () => getGuestToken(uuid),
 				dashboardUiConfig: {
 					hideTitle: true,
 					hideTab: true,
@@ -67,7 +67,7 @@ export default function SupersetDashboard() {
 	useEffect(() => {
 		viewDash();
 		embedDash();
-	}, []);
+	});
 
 	return (
 		<DashboardFrame title={"Dashboard"}>
