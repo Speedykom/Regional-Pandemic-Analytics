@@ -82,6 +82,8 @@ services:
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_SERVER_URL=${MINIO_SERVER_URL}
+      - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL}
 
     ports:
       - "9001:9000"
@@ -361,9 +363,9 @@ services:
       - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
       - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
-  # =======
-  # Airflow
-  # =======
+    # =======
+    # Airflow
+    # =======
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg

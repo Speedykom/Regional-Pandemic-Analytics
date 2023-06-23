@@ -1,0 +1,19 @@
+# IGAD airflow config
+server {
+    listen          80;
+    server_name     $NGINX_AIRFLOW_DOMAIN_NAME;
+
+    location / {
+        proxy_pass        http://$NGINX_UPSTREAM_AIRFLOW:8080;
+    }
+}
+server {
+	listen 443 ssl;
+	server_name $NGINX_AIRFLOW_DOMAIN_NAME;
+	ssl_certificate /etc/nginx/certs/airflow.crt;
+	ssl_certificate_key /etc/nginx/certs/airflow.key;
+	location / {
+		proxy_pass http://$NGINX_UPSTREAM_AIRFLOW:8080/;
+		error_log /var/log/airflow_end_errors.log;
+	}
+}
