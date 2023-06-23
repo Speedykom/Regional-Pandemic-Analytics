@@ -1,0 +1,19 @@
+# IGAD druid config
+server {
+    listen          80;
+    server_name     $NGINX_DRUID_DOMAIN_NAME;
+
+    location / {
+        proxy_pass        http://$NGINX_UPSTREAM_DRUID:8888;
+    }
+}
+server {
+	listen 443 ssl;
+	server_name $NGINX_DRUID_DOMAIN_NAME;
+	ssl_certificate /etc/nginx/certs/druid.crt;
+	ssl_certificate_key /etc/nginx/certs/druid.key;
+	location / {
+		proxy_pass http://$NGINX_UPSTREAM_DRUID:8888/;
+		error_log /var/log/druid_errors.log;
+	}
+}

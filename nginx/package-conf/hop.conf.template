@@ -1,0 +1,19 @@
+# IGAD hop config
+server {
+    listen          80;
+    server_name     $NGINX_HOP_DOMAIN_NAME;
+
+    location / {
+        proxy_pass        http://$NGINX_UPSTREAM_HOP:8080;
+    }
+}
+server {
+	listen 443 ssl;
+	server_name $NGINX_HOP_DOMAIN_NAME;
+	ssl_certificate /etc/nginx/certs/hop.crt;
+	ssl_certificate_key /etc/nginx/certs/hop.key;
+	location / {
+		proxy_pass http://$NGINX_UPSTREAM_HOP:8080/;
+		error_log /var/log/hop_errors.log;
+	}
+}
