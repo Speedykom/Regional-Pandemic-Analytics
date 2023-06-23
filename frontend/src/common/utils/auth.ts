@@ -16,9 +16,25 @@ export const getUserRole = async (roles: []) => {
     })
 }
 
+const getToken = async (uuid: string) => {
+    return await axios.get(`${BASE_URL}/api/superset/auth/token/${uuid}`).then((res) => {
+        return res.data
+    }).catch((err) => {
+        console.log(err)
+    })
+}
+
 export const getGuestToken = async (uuid: string): Promise<string> => {
+    const token = await getToken(uuid);
     return new Promise<string>((resolve) => {
-        axios.post(`${BASE_URL}/api/superset/guest/token`, { id: uuid }).then((response) => {
+        axios.post(`https://analytics2.igad-health.eu/api/v1/security/guest_token/`,
+            token?.payload,
+            {
+                headers: {
+                    Authorization: `Bearer ${token?.tokens?.access_token}`
+                }
+            }
+        ).then((response) => {
             console.log(response.status);
             resolve(response.data?.token);
         }).catch((err) => {
