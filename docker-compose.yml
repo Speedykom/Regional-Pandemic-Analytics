@@ -336,14 +336,15 @@ services:
   #     - POSTGRES_USER=${SUPERSET_POSTGRES_USER}
   #     - POSTGRES_DB=${SUPERSET_POSTGRES_DB}
 
-  # superset:
-  #   <<: *superset
-  #   container_name: superset
-  #   ports:
-  #     - 8883:8088
-  #   depends_on:
-  #     - superset_db
-  #     - superset_cache
+  superset:
+    <<: *superset
+    container_name: superset
+    ports:
+      - 8883:8088
+    depends_on:
+      - superset_db
+      - superset_cache
+    restart: always
 
   # superset-init:
   #   <<: *superset

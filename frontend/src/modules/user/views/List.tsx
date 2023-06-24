@@ -22,7 +22,7 @@ import { PreviewUser } from "./Preview";
 import { countries } from "@/common/utils/countries";
 import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
-import { api_url } from "@/common/utils/auth";
+import { BASE_URL } from "@/common/config";
 import Link from "next/link";
 
 interface props {
@@ -53,26 +53,13 @@ countries.forEach((item, index) => {
 export const UserList = () => {
   const [form] = Form.useForm();
 
-  const [token, setToken] = useState<string>("");
-
-  const fetchToken = async () => {
-    try {
-      const url = "/api/get-access-token/";
-      const response = await getData(url);
-      setToken(response?.accessToken);
-      console.log(response?.accessToken);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  const [open, setOpen] = useState<boolean>(false);
-  const [data, setData] = useState<Array<IUser>>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [code, setCode] = useState<string>("");
-  const [roles, setRoles] = useState([]);
-  const [role, setRole] = useState<string>("");
-  const [roleLoading, setRoleLoading] = useState(true);
+	const [open, setOpen] = useState<boolean>(false);
+	const [data, setData] = useState<Array<IUser>>([]);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [code, setCode] = useState<string>("");
+	const [roles, setRoles] = useState([]);
+	const [role, setRole] = useState<string>("")
+	const [roleLoading, setRoleLoading] = useState(true)
 
   const [view, setView] = useState<boolean>(false);
   const [userId, setUserId] = useState<string>();
@@ -88,29 +75,28 @@ export const UserList = () => {
     setOpen(false);
   };
 
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/users`;
-      await axios
-        .get(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((res) => {
-          setLoading(false);
-          setData(res?.data);
-        });
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+	const fetchUsers = async () => {
+		try {
+			setLoading(true);
+			const url = `${BASE_URL}/api/account/users`;
+			await axios
+				.get(url, {
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				})
+				.then((res) => {
+					setLoading(false);
+					setData(res?.data);
+				});
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
 
-  const refetch = () => {
-    fetchToken();
-    fetchUsers();
-  };
+	const refetch = () => {
+		fetchUsers();
+	};
 
   const [openModal, setOpenModal] = useState<boolean>(false);
 
@@ -156,25 +142,29 @@ export const UserList = () => {
     },
   };
 
-  const onFinish = async (values: any) => {
-    values["code"] = code;
-    values["role"] = JSON.parse(values["role"]);
-    await axios
-      .put(`${api_url}/api/account/user/${userId}/update`, values, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        OpenNotification(res?.data?.message, "topRight", "success");
-        setOpenModal(false);
-        refetch();
-        form.resetFields();
-      })
-      .catch((err) => {
-        OpenNotification(err.response?.data?.error, "topRight", "error");
-      });
-  };
+	const onFinish = async (values: any) => {
+		values["code"] = code;
+		values["role"] = JSON.parse(values["role"])
+		await axios
+			.put(
+				`${BASE_URL}/api/account/user/${userId}/update`,
+				values,
+				{
+					headers: {
+						"Content-Type": "application/json",
+					},
+				}
+			)
+			.then((res) => {
+				OpenNotification(res?.data?.message, "topRight", "success");
+				setOpenModal(false);
+				refetch();
+				form.resetFields();
+			})
+			.catch((err) => {
+				OpenNotification(err.response?.data?.error, "topRight", "error");
+			});
+	};
 
   const selectBefore = (
     <Select
@@ -187,24 +177,23 @@ export const UserList = () => {
     />
   );
 
-  const fetchRoles = async () => {
-    try {
-      setRoleLoading(true);
-      const url = `${api_url}/api/role`;
-      await axios
-        .get(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
-        .then((res) => {
-          setRoleLoading(false);
-          setRoles(res?.data);
-        });
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
+	const fetchRoles = async () => {
+		try {
+			setRoleLoading(true)
+			const url = `${BASE_URL}/api/role`;
+			await axios.get(url, {
+				headers: {
+					"Content-Type": "application/json",
+				},
+			}).then((res) => {
+				setRoleLoading(false)
+				setRoles(res?.data);
+			})
+			
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
 
   useEffect(() => {
     fetchRoles();
@@ -220,7 +209,7 @@ export const UserList = () => {
           <Breadcrumb
             items={[
               {
-                title: <Link href="/home">Home</Link>,
+                title: <Link href="/">Home</Link>,
               },
               {
                 title: "Accounts",

@@ -1,4 +1,4 @@
-import { api_url } from "@/common/utils/auth";
+import { BASE_URL } from "@/common/config";
 import { OpenNotification } from "@/common/utils/notify";
 
 import { Button, Form, Input } from "antd";
@@ -11,15 +11,11 @@ export const ResetPassword = () => {
 	const onFinish = async (values: any) => {
 		console.log({ values });
 		await axios
-			.post(
-				`${api_url}/api/auth/request-verify`,
-				values,
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			)
+			.post(`${BASE_URL}/api/auth/request-verify`, values, {
+				headers: {
+					"Content-Type": "application/json",
+				},
+			})
 			.then((res) => {
 				OpenNotification(res.data?.message, "topRight", "success");
 				router.push("/");
