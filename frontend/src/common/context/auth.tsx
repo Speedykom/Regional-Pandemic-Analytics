@@ -7,6 +7,9 @@ import React, {
 } from "react";
 import secureLocalStorage from "react-secure-storage";
 import GlobalLoad from "../components/global-loader";
+import axios from "axios";
+import { BASE_URL } from "../config";
+import Router from "next/router";
 
 const AuthContext = createContext({});
 
@@ -17,12 +20,21 @@ export const AuthProvider = ({ children }: any) => {
   useEffect(() => {
     setLoading(true);
 
-    async function loadUserFromLocalStorage() {
-      const data: any = secureLocalStorage.getItem("user");
-      if (data) setUser(data);
-      setLoading(false);
+    async function verifiedUser() {
+      axios
+        .get(`${BASE_URL}/api/auth/me`)
+        .then((res) => {
+          const data: any = secureLocalStorage.getItem("tokens");
+          if (data) setUser(data);
+        })
+        .catch(handleError)
+        .catch(({status }) => {
+          if (status === 401 && Router.pathname !== "/login")
+            Router.push("/login");
+        })
+        .finally(() => setLoading(false));
     }
-    loadUserFromLocalStorage();
+    verifiedUser();
   }, []);
 
   return (
@@ -52,6 +64,23 @@ export const NoNetwork = {
     permanent: false,
     destination: `/network`,
   },
+};
+
+
+export const handleError = (err: any) => {
+  const { response, code } = err;
+
+  if (code === "ERR_NETWORK") throw { status: 307, data: "Network issue" };
+
+  if (!response) throw err;
+
+  const { status, data, statusText } = response;
+
+  throw {
+    status,
+    data,
+    statusText,
+  };
 };
 
 export const ProtectRoute = ({ children }: props) => {
