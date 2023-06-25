@@ -337,6 +337,7 @@ services:
       - KEYCLOAK_APP_REALM=${KEYCLOAK_APP_REALM}
       - SUPERSET_ROOT_URL=${SUPERSET_ROOT_URL}
       - KEYCLOAK_INTERNAL=${KEYCLOAK_INTERNAL}
+      - APP_REALM=${APP_REALM}
     volumes:
       - ./superset/superset_config.py:/app/pythonpath/superset_config.py
       - ./superset/keycloack_security_manager.py:/app/pythonpath/keycloack_security_manager.py
