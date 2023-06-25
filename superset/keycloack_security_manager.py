@@ -69,7 +69,8 @@ class AuthOIDCView(AuthOIDView):
                 
                 if(oidc.get_access_token()):
                     token = oidc.get_access_token()
-                    decodedToken = jwt.decode(token, public_key, algorithms=['RS256'], audience="realm-management", issuer=KEYCLOAK_KC_HOSTNAME_URL+"/realms/"+APP_REALM)
+                    decodedToken = jwt.decode(token, public_key, algorithms=['RS256'],options = {"verify_aud": False}, 
+                                              issuer=KEYCLOAK_KC_HOSTNAME_URL+"/realms/"+APP_REALM)
                     superset_roles = decodedToken["resource_access"]["superset"]["roles"]
                     roles=get_roles(superset_roles)
 
