@@ -7,10 +7,10 @@ KC_SUPERSET_SSO_ENABLED = os.getenv('KC_SUPERSET_SSO_ENABLED', 'true')
 WTF_CSRF_ENABLED = False
 
 if KC_SUPERSET_SSO_ENABLED == "true":
-    SECRET_KEY = os.getenv('SECRET_KEY') #client secretkey?
-    OIDC_OPENID_REALM = os.getenv('KEYCLOAK_APP_REALM', 'regional-pandemic-analytics') #regional-pandemic-analytics
-    AUTH_USER_REGISTRATION_ROLE = os.getenv('AUTH_USER_REGISTRATION_ROLE','Gamma') #admin
-    KC_REALM_NAME = os.getenv('KEYCLOAK_APP_REALM','regional-pandemic-analytics') #regional-pandemic-analytics
+    SECRET_KEY = os.getenv('SECRET_KEY')
+    OIDC_OPENID_REALM = os.getenv('APP_REALM', 'regional-pandemic-analytics')
+    AUTH_USER_REGISTRATION_ROLE = os.getenv('AUTH_USER_REGISTRATION_ROLE','Gamma')
+    KC_REALM_NAME = os.getenv('APP_REALM','regional-pandemic-analytics')
     KC_FRONTEND_URL = os.getenv('KEYCLOAK_HOSTNAME_URL')
 
     from keycloack_security_manager  import  OIDCSecurityManager
