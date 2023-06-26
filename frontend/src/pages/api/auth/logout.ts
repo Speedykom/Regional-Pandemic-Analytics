@@ -1,4 +1,3 @@
-import { BASE_URL } from "@/common/config";
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import secureLocalStorage from "react-secure-storage";
@@ -9,10 +8,11 @@ export default async function handler(
 ) {
   if (req.method !== "POST")
     return res.status(405).send(`Method ${req.method} not allowed`);
+  const server_url = process.env.NEXT_PRIVATE_BASE_URL;
 
   const { refreshToken } = req.body;
 
-  const response = await axios.get(`${BASE_URL}/api/auth/logout`, {
+  const response = await axios.get(`${server_url}/api/auth/logout`, {
     headers: { 'Authorization': `Bearer ${refreshToken}` }
   });
 
