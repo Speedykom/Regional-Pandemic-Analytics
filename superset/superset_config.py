@@ -11,7 +11,7 @@ if KC_SUPERSET_SSO_ENABLED == "true":
     OIDC_OPENID_REALM = os.getenv('KEYCLOAK_APP_REALM', 'regional-pandemic-analytics') #regional-pandemic-analytics
     AUTH_USER_REGISTRATION_ROLE = os.getenv('AUTH_USER_REGISTRATION_ROLE','Gamma') #admin
     KC_REALM_NAME = os.getenv('KEYCLOAK_APP_REALM','regional-pandemic-analytics') #regional-pandemic-analytics
-    KC_FRONTEND_URL = os.getenv('KEYCLOAK_KC_HOSTNAME_URL')
+    KC_FRONTEND_URL = os.getenv('KEYCLOAK_HOSTNAME_URL')
 
     from keycloack_security_manager  import  OIDCSecurityManager
     from flask_appbuilder.security.manager import AUTH_OID, AUTH_REMOTE_USER, AUTH_DB, AUTH_LDAP, AUTH_OAUTH
