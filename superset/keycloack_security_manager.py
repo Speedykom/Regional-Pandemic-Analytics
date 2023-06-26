@@ -16,7 +16,7 @@ from cryptography.hazmat.primitives import serialization
 
 CLIENT_ID = os.getenv("SUPERSET_CLIENT_ID",'superset')
 CLIENT_SECRET = os.getenv("SUPERSET_CLIENT_SECRET")
-KEYCLOAK_KC_HOSTNAME_URL=os.getenv("KEYCLOAK_KC_HOSTNAME_URL")
+KEYCLOAK_HOSTNAME_URL=os.getenv("KEYCLOAK_HOSTNAME_URL")
 OIDC_ISSUER = os.getenv("OIDC_ISSUER")
 APP_REALM = os.getenv("APP_REALM", "regional-pandemic-analytics")
 
@@ -70,7 +70,7 @@ class AuthOIDCView(AuthOIDView):
                 if(oidc.get_access_token()):
                     token = oidc.get_access_token()
                     decodedToken = jwt.decode(token, public_key, algorithms=['RS256'],options = {"verify_aud": False}, 
-                                              issuer=KEYCLOAK_KC_HOSTNAME_URL+"/realms/"+APP_REALM)
+                                              issuer=KEYCLOAK_HOSTNAME_URL+"/realms/"+APP_REALM)
                     superset_roles = decodedToken["resource_access"]["superset"]["roles"]
                     roles=get_roles(superset_roles)
 
