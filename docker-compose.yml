@@ -1,21 +1,5 @@
 version: "3.4"
 
-x-superset-common:
-  &superset
-  build: ./superset/.
-  environment:
-    - SECRET_KEY=${SUPERSET_SECRET_KEY}
-    - DATABASE_URI=${SUPERSET_DATABASE_URI}
-    - PROVIDER_NAME=${SUPERSET_PROVIDER_NAME}
-    - CLIENT_ID=${SUPERSET_CLIENT_ID}
-    - CLIENT_SECRET=${SUPERSET_CLIENT_SECRET}
-    - OIDC_ISSUER=${SUPERSET_OIDC_ISSUER}
-    - KEYCLOAK_BASE_URL=${SUPERSET_KEYCLOAK_BASE_URL}
-    - KEYCLOAK_TOKEN_URL=${SUPERSET_KEYCLOAK_TOKEN_URL}
-    - KEYCLOAK_AUTH_URL=${SUPERSET_KEYCLOAK_AUTH_URL}
-  volumes:
-    - ./superset/superset_config.py:/app/superset/config.py
-
 x-druid-common:
   &druid
   environment:
@@ -337,27 +321,43 @@ services:
       - POSTGRES_DB=${SUPERSET_POSTGRES_DB}
 
   superset:
-    <<: *superset
     container_name: superset
+    build: ./superset/.
+    environment:
+      - SECRET_KEY=${SUPERSET_SECRET_KEY}
+      - DATABASE_URI=${SUPERSET_DATABASE_URI}
+      - PROVIDER_NAME=${SUPERSET_PROVIDER_NAME}
+      - SUPERSET_CLIENT_ID=${SUPERSET_CLIENT_ID}
+      - SUPERSET_CLIENT_SECRET=${SUPERSET_CLIENT_SECRET}
+      - OIDC_ISSUER=${SUPERSET_OIDC_ISSUER}
+      - KEYCLOAK_BASE_URL=${SUPERSET_KEYCLOAK_BASE_URL}
+      - KEYCLOAK_TOKEN_URL=${SUPERSET_KEYCLOAK_TOKEN_URL}
+      - KEYCLOAK_AUTH_URL=${SUPERSET_KEYCLOAK_AUTH_URL}
+      - KEYCLOAK_HOSTNAME_URL=${KEYCLOAK_HOSTNAME_URL}
+      - SUPERSET_ROOT_URL=${SUPERSET_ROOT_URL}
+      - KEYCLOAK_INTERNAL=${KEYCLOAK_INTERNAL}
+      - APP_REALM=${APP_REALM}
+    volumes:
+      - ./superset/superset_config.py:/app/pythonpath/superset_config.py
+      - ./superset/keycloack_security_manager.py:/app/pythonpath/keycloack_security_manager.py
+      - ./superset/client_secret_env.json:/usr/bin/pythonpath/client_secret_env.json
+
     ports:
       - 8883:8088
     depends_on:
       - superset_db
       - superset_cache
     restart: always
-
-  superset-init:
-    <<: *superset
-    container_name: superset-init
-    depends_on:
-      - superset_db
     entrypoint: /bin/bash
     command:
       - -c
       - |
+        envsubst <"/usr/bin/pythonpath/client_secret_env.json" > "/usr/bin/pythonpath/client_secret.json"
+        envsubst <"/usr/bin/pythonpath/client_secret_env.json" > "/app/pythonpath/client_secret.json"
         superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
         superset db upgrade
         superset superset init
+        cd /usr/bin && ./run-server.sh
 
   # =====
   #  Hop
@@ -451,17 +451,17 @@ services:
     ports:
       - "8885:8080"
     environment:
-      - KC_DB=${KEYCLOAK_KC_DB}
-      - KC_DB_URL_DATABASE=${KEYCLOAK_KC_DB_URL_DATABASE}
-      - KC_DB_URL_HOST=${KEYCLOAK_KC_DB_URL_HOST}
-      - KC_DB_USERNAME=${KEYCLOAK_KC_DB_USERNAME}
-      - KC_DB_PASSWORD=${KEYCLOAK_KC_DB_PASSWORD}
-      - KC_DB_SCHEMA=${KEYCLOAK_KC_DB_SCHEMA}
-      - KC_PROXY=${KEYCLOAK_KC_PROXY}
+      - KC_DB=${KEYCLOAK_DB}
+      - KC_DB_URL_DATABASE=${KEYCLOAK_DB_URL_DATABASE}
+      - KC_DB_URL_HOST=${KEYCLOAK_DB_URL_HOST}
+      - KC_DB_USERNAME=${KEYCLOAK_DB_USERNAME}
+      - KC_DB_PASSWORD=${KEYCLOAK_DB_PASSWORD}
+      - KC_DB_SCHEMA=${KEYCLOAK_DB_SCHEMA}
+      - KC_PROXY=${KEYCLOAK_PROXY}
       - KEYCLOAK_ADMIN=${KEYCLOAK_KEYCLOAK_ADMIN}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_KEYCLOAK_ADMIN_PASSWORD}
-      - KC_HOSTNAME_ADMIN_URL=${KEYCLOAK_KC_HOSTNAME_ADMIN_URL}
-      - KC_HOSTNAME_URL=${KEYCLOAK_KC_HOSTNAME_URL}
+      - KC_HOSTNAME_ADMIN_URL=${KEYCLOAK_HOSTNAME_ADMIN_URL}
+      - KC_HOSTNAME_URL=${KEYCLOAK_HOSTNAME_URL}
       - BACKEND_CLIENT_ID=${BACKEND_CLIENT_ID}
       - BACKEND_CLIENT_SECRET=${BACKEND_CLIENT_SECRET}
       - BACKEND_PUBLIC_URL=${BACKEND_PUBLIC_URL}
