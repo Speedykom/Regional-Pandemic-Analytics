@@ -1100,6 +1100,66 @@
         "configure": true,
         "manage": true
       }
+    },
+    {
+      "clientId": "${SUPERSET_CLIENT_ID}",
+      "name": "superset",
+      "description": "",
+      "rootUrl": "${SUPERSET_ROOT_URL}",
+      "adminUrl": "${SUPERSET_ROOT_URL}",
+      "baseUrl": "${SUPERSET_ROOT_URL}",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${SUPERSET_CLIENT_SECRET}",
+      "redirectUris": [
+        "${SUPERSET_ROOT_URL}/oidc_callback"
+      ],
+      "webOrigins": [
+        "${SUPERSET_ROOT_URL}"
+      ],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "oidc.ciba.grant.enabled": "false",
+        "client.secret.creation.time": "1674028783",
+        "backchannel.logout.session.required": "true",
+        "post.logout.redirect.uris": "${SUPERSET_ROOT_URL}/login/",
+        "display.on.consent.screen": "false",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "backchannel.logout.revoke.offline.tokens": "false",
+        "frontchannel.logout.url": "${SUPERSET_ROOT_URL}/backchannel-logout/"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "roles",
+        "profile",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ],
+      "access": {
+        "view": true,
+        "configure": true,
+        "manage": true
+      }
     }
   ],
   "clientScopes": [
