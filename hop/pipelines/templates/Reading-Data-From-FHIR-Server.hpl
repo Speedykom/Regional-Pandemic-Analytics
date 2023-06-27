@@ -279,8 +279,8 @@ specefic characters</note>
     <filename_ext>parquet</filename_ext>
     <filename_include_copy>N</filename_include_copy>
     <filename_include_date>N</filename_include_date>
-    <filename_include_datetime>Y</filename_include_datetime>
-    <filename_include_split>Y</filename_include_split>
+    <filename_include_datetime>N</filename_include_datetime>
+    <filename_include_split>N</filename_include_split>
     <filename_include_time>N</filename_include_time>
     <row_group_size>20000</row_group_size>
     <version>1.0</version>
