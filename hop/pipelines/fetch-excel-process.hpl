@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pipeline>
+  <info>
+    <name>Reading-Data-From-Excel-File</name>
+    <name_sync_with_filename>Y</name_sync_with_filename>
+    <description/>
+    <extended_description/>
+    <pipeline_version/>
+    <pipeline_type>Normal</pipeline_type>
+    <parameters>
+    </parameters>
+    <capture_transform_performance>N</capture_transform_performance>
+    <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
+    <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
+    <created_user>Speedykom</created_user>
+    <created_date>2022/03/09 08:35:58.984</created_date>
+    <modified_user>-</modified_user>
+    <modified_date>2022/03/09 08:35:58.984</modified_date>
+    <key_for_session_key>H4sIAAAAAAAA/wMAAAAAAAAAAAA=</key_for_session_key>
+    <is_key_private>N</is_key_private>
+  </info>
+  <notepads>
+    <notepad>
+      <note>Please open this transform and ensure that the 
+selected excel file path is valid
+
+Please fill up in addition the !Sheets tab to select the 
+sheet to read data from and the !Fields tab to select the column</note>
+      <xloc>48</xloc>
+      <yloc>320</yloc>
+      <width>395</width>
+      <heigth>90</heigth>
+      <fontname>.AppleSystemUIFont</fontname>
+      <fontsize>13</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>200</fontcolorred>
+      <fontcolorgreen>231</fontcolorgreen>
+      <fontcolorblue>250</fontcolorblue>
+      <backgroundcolorred>15</backgroundcolorred>
+      <backgroundcolorgreen>136</backgroundcolorgreen>
+      <backgroundcolorblue>210</backgroundcolorblue>
+      <bordercolorred>200</bordercolorred>
+      <bordercolorgreen>231</bordercolorgreen>
+      <bordercolorblue>250</bordercolorblue>
+    </notepad>
+    <notepad>
+      <note>Use these helper transformation if you have a 
+date format different than MMM/dd/yyyy</note>
+      <xloc>240</xloc>
+      <yloc>80</yloc>
+      <width>289</width>
+      <heigth>42</heigth>
+      <fontname>.AppleSystemUIFont</fontname>
+      <fontsize>13</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>200</fontcolorred>
+      <fontcolorgreen>231</fontcolorgreen>
+      <fontcolorblue>250</fontcolorblue>
+      <backgroundcolorred>15</backgroundcolorred>
+      <backgroundcolorgreen>136</backgroundcolorgreen>
+      <backgroundcolorblue>210</backgroundcolorblue>
+      <bordercolorred>200</bordercolorred>
+      <bordercolorgreen>231</bordercolorgreen>
+      <bordercolorblue>250</bordercolorblue>
+    </notepad>
+    <notepad>
+      <note>Use the remove nulls transform if you want to clean up your data 
+and remove nulls from a specific column
+An example of removing nulls from the Date column is provided</note>
+      <xloc>624</xloc>
+      <yloc>48</yloc>
+      <width>404</width>
+      <heigth>58</heigth>
+      <fontname>.AppleSystemUIFont</fontname>
+      <fontsize>13</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>14</fontcolorred>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorblue>90</fontcolorblue>
+      <backgroundcolorred>201</backgroundcolorred>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <bordercolorred>14</bordercolorred>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorblue>90</bordercolorblue>
+    </notepad>
+    <notepad>
+      <note>Use this transform to sort data ascending or descending. 
+This transform is mandatory when trying to merge join 
+different data from different sources</note>
+      <xloc>608</xloc>
+      <yloc>304</yloc>
+      <width>359</width>
+      <heigth>58</heigth>
+      <fontname>.AppleSystemUIFont</fontname>
+      <fontsize>13</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>14</fontcolorred>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorblue>90</fontcolorblue>
+      <backgroundcolorred>201</backgroundcolorred>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <bordercolorred>14</bordercolorred>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorblue>90</bordercolorblue>
+    </notepad>
+    <notepad>
+      <note>This is a mandatory transform! Please do not remove.
+Only add the fields you want to process.
+
+See the example fields provided for you when 
+click on edit transform
+
+Target fields don't accept white spaces or 
+specefic characters</note>
+      <xloc>1120</xloc>
+      <yloc>304</yloc>
+      <width>333</width>
+      <heigth>138</heigth>
+      <fontname>.AppleSystemUIFont</fontname>
+      <fontsize>13</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>14</fontcolorred>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorblue>90</fontcolorblue>
+      <backgroundcolorred>188</backgroundcolorred>
+      <backgroundcolorgreen>98</backgroundcolorgreen>
+      <backgroundcolorblue>90</backgroundcolorblue>
+      <bordercolorred>14</bordercolorred>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorblue>90</bordercolorblue>
+    </notepad>
+  </notepads>
+  <order>
+    <hop>
+      <from>Change Date</from>
+      <to>Remove nulls</to>
+      <enabled>N</enabled>
+    </hop>
+    <hop>
+      <from>Remove nulls</from>
+      <to>Sort by value descending</to>
+      <enabled>N</enabled>
+    </hop>
+    <hop>
+      <from>Sort by value descending</from>
+      <to>Write data to parquet file</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Microsoft Excel input</from>
+      <to>Sort by value descending</to>
+      <enabled>Y</enabled>
+    </hop>
+  </order>
+  <transform>
+    <name>Change Date</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>Date</name>
+        <rename>Date</rename>
+        <type>Date</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask>MMM/dd/yyyy</conversion_mask>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>512</xloc>
+      <yloc>112</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Remove nulls</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <send_true_to/>
+    <send_false_to/>
+    <compare>
+      <condition>
+        <negated>N</negated>
+        <leftvalue>Date</leftvalue>
+        <function>IS NOT NULL</function>
+        <rightvalue/>
+      </condition>
+    </compare>
+    <attributes/>
+    <GUI>
+      <xloc>800</xloc>
+      <yloc>112</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Sort by value descending</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <directory>${java.io.tmpdir}</directory>
+    <prefix>out</prefix>
+    <sort_size>1000000</sort_size>
+    <free_memory/>
+    <compress>N</compress>
+    <compress_variable/>
+    <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>MEMBER STATE</name>
+        <ascending>N</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>736</xloc>
+      <yloc>240</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Write data to parquet file</name>
+    <type>ParquetFileOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <compression_codec>UNCOMPRESSED</compression_codec>
+    <data_page_size>1048576</data_page_size>
+    <dictionary_page_size>1048576</dictionary_page_size>
+    <fields>
+      <field>
+        <source_field>MEMBER STATE</source_field>
+        <target_field>STATE</target_field>
+      </field>
+      <field>
+        <source_field>Administrative Level Name</source_field>
+        <target_field>AdministrativeLevelName</target_field>
+      </field>
+      <field>
+        <source_field>Date</source_field>
+        <target_field>Date</target_field>
+      </field>
+      <field>
+        <source_field>New Cases</source_field>
+        <target_field>NewCases</target_field>
+      </field>
+    </fields>
+    <filename_split_size>1000000</filename_split_size>
+    <filename_base>${pipeline_source}/${Internal.Pipeline.Name}</filename_base>
+    <filename_create_parent_folders>Y</filename_create_parent_folders>
+    <filename_datetime_format>yyyyMMdd-HHmmss</filename_datetime_format>
+    <filename_ext>parquet</filename_ext>
+    <filename_include_copy>N</filename_include_copy>
+    <filename_include_date>N</filename_include_date>
+    <filename_include_datetime>N</filename_include_datetime>
+    <filename_include_split>N</filename_include_split>
+    <filename_include_time>N</filename_include_time>
+    <row_group_size>20000</row_group_size>
+    <version>1.0</version>
+    <attributes/>
+    <GUI>
+      <xloc>1248</xloc>
+      <yloc>240</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Microsoft Excel input</name>
+    <type>ExcelInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <header>Y</header>
+    <noempty>Y</noempty>
+    <stoponempty>N</stoponempty>
+    <filefield/>
+    <sheetfield/>
+    <sheetrownumfield/>
+    <rownumfield/>
+    <sheetfield/>
+    <filefield/>
+    <limit>0</limit>
+    <encoding/>
+    <add_to_result_filenames>Y</add_to_result_filenames>
+    <accept_filenames>N</accept_filenames>
+    <accept_field/>
+    <accept_transform_name/>
+    <file>
+    </file>
+    <fields>
+    </fields>
+    <sheets>
+    </sheets>
+    <strict_types>N</strict_types>
+    <error_ignored>N</error_ignored>
+    <error_line_skipped>N</error_line_skipped>
+    <bad_line_files_destination_directory/>
+    <bad_line_files_extension>warning</bad_line_files_extension>
+    <error_line_files_destination_directory/>
+    <error_line_files_extension>error</error_line_files_extension>
+    <line_number_files_destination_directory/>
+    <line_number_files_extension>line</line_number_files_extension>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
+    <spreadsheet_type>SAX_POI</spreadsheet_type>
+    <attributes/>
+    <GUI>
+      <xloc>192</xloc>
+      <yloc>240</yloc>
+    </GUI>
+  </transform>
+  <transform_error_handling>
+  </transform_error_handling>
+  <attributes/>
+</pipeline>
