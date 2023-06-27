@@ -135,7 +135,7 @@ class CsrfTokenApi(APIView):
     permission_classes = [AllowAny,]
     
     def get(self, request):
-        url = 'http://localhost:8088/api/v1/security/csrf_token/'
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/security/csrf_token/"
     
         auth_response = auths.get_auth_token()
         

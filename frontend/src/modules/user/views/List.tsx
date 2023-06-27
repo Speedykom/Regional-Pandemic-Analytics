@@ -23,7 +23,7 @@ import { PreviewUser } from "./Preview";
 import { countries } from "@/common/utils/countries";
 import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
-import { api_url } from "@/common/utils/auth";
+import { BASE_URL } from "@/common/config";
 
 interface props {
 	viewPro: () => void;
@@ -53,19 +53,6 @@ countries.forEach((item, index) => {
 export const UserList = () => {
 	const [form] = Form.useForm();
 
-	const [token, setToken] = useState<string>("");
-
-	const fetchToken = async () => {
-		try {
-			const url = "/api/get-access-token/";
-			const response = await getData(url);
-			setToken(response?.accessToken);
-			console.log(response?.accessToken);
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
-
 	const [open, setOpen] = useState<boolean>(false);
 	const [data, setData] = useState<Array<IUser>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
@@ -91,11 +78,11 @@ export const UserList = () => {
 	const fetchUsers = async () => {
 		try {
 			setLoading(true);
-			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/users`;
+			const url = `${BASE_URL}/api/account/users`;
 			await axios
 				.get(url, {
 					headers: {
-						Authorization: `Bearer ${token}`,
+						'Content-Type': 'application/json',
 					},
 				})
 				.then((res) => {
@@ -108,7 +95,6 @@ export const UserList = () => {
 	};
 
 	const refetch = () => {
-		fetchToken();
 		fetchUsers();
 	};
 
@@ -161,7 +147,7 @@ export const UserList = () => {
 		values["role"] = JSON.parse(values["role"])
 		await axios
 			.put(
-				`${api_url}/api/account/user/${userId}/update`,
+				`${BASE_URL}/api/account/user/${userId}/update`,
 				values,
 				{
 					headers: {
@@ -194,10 +180,10 @@ export const UserList = () => {
 	const fetchRoles = async () => {
 		try {
 			setRoleLoading(true)
-			const url = `${api_url}/api/role`;
+			const url = `${BASE_URL}/api/role`;
 			await axios.get(url, {
 				headers: {
-					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
 				},
 			}).then((res) => {
 				setRoleLoading(false)

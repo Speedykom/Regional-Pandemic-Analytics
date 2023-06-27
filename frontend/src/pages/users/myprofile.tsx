@@ -1,5 +1,5 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-import { api_url } from "@/common/utils/auth";
+import { BASE_URL } from "@/common/config";
 import { countries } from "@/common/utils/countries";
 import { OpenNotification } from "@/common/utils/notify";
 
@@ -149,23 +149,23 @@ export const ProfileSettings = () => {
 				}
 			)
 			.then((res) => {
-				let newUserData = user
-				secureLocalStorage.removeItem('user')
-				newUserData.given_name = values['firstName']
-				newUserData.family_name = values['lastName']
-				newUserData.phone = values['phone']
-				newUserData.code = values['code']
-				newUserData.country = values['country']
-				newUserData.gender = values['gender']
-				newUserData.name = `${values['firstName']} ${values['lastName']}`
-				secureLocalStorage.setItem('user', newUserData)
+				let newUserData = user;
+				secureLocalStorage.removeItem("user");
+				newUserData.given_name = values["firstName"];
+				newUserData.family_name = values["lastName"];
+				newUserData.phone = values["phone"];
+				newUserData.code = values["code"];
+				newUserData.country = values["country"];
+				newUserData.gender = values["gender"];
+				newUserData.name = `${values["firstName"]} ${values["lastName"]}`;
+				secureLocalStorage.setItem("user", newUserData);
 				OpenNotification(res?.data?.message, "topRight", "success");
 				form.resetFields();
 			})
 			.catch((err) => {
 				OpenNotification(err.response?.data?.errorMessage, "topRight", "error");
 			});
-	}
+	};
 
 	const password: string = secureLocalStorage.getItem("passcode") as string;
 
@@ -180,7 +180,7 @@ export const ProfileSettings = () => {
 		} else {
 			await axios
 				.put(
-					`${api_url}/api/auth/password`,
+					`${BASE_URL}/api/auth/password`,
 					{
 						id: user?.sub,
 						newPassword: values["newPassword"],
@@ -193,8 +193,11 @@ export const ProfileSettings = () => {
 					}
 				)
 				.then((res) => {
-					secureLocalStorage.removeItem('passcode')
-					secureLocalStorage.setItem("passcode", Buffer.from(values["newPassword"]).toString("base64"));
+					secureLocalStorage.removeItem("passcode");
+					secureLocalStorage.setItem(
+						"passcode",
+						Buffer.from(values["newPassword"]).toString("base64")
+					);
 					OpenNotification(res.data?.message, "topRight", "success");
 					passwordForm.resetFields();
 				})
@@ -238,10 +241,10 @@ export const ProfileSettings = () => {
 											axios
 												.post(options.action, data, config)
 												.then((resp) => {
-													let newUserData = user
-													newUserData.avatar = resp?.data?.avatarUrl
-													secureLocalStorage.removeItem('user')
-													secureLocalStorage.setItem('user', newUserData)
+													let newUserData = user;
+													newUserData.avatar = resp?.data?.avatarUrl;
+													secureLocalStorage.removeItem("user");
+													secureLocalStorage.setItem("user", newUserData);
 													const newList: UploadFile[] = [
 														{
 															uid: "0",
@@ -251,15 +254,16 @@ export const ProfileSettings = () => {
 														},
 													];
 
-													setFileList(newList)
+													setFileList(newList);
 												})
 												.catch((err: Error) => {
-													message.error('error')
+													message.error("error");
 												});
 										}}
-										
 									>
-										<Button type="link" className="flex items-center px-2"><UploadOutlined /> Upload Avatar</Button>
+										<Button type="link" className="flex items-center px-2">
+											<UploadOutlined /> Upload Avatar
+										</Button>
 									</Upload>
 								</ImgCrop>
 								{/* <img
@@ -379,7 +383,12 @@ export const ProfileSettings = () => {
 									<span>Update Details</span>
 								</Button>
 							</div>
-							<Form form={form} name="edit" onFinish={handleDetailsEdit} scrollToFirstError>
+							<Form
+								form={form}
+								name="edit"
+								onFinish={handleDetailsEdit}
+								scrollToFirstError
+							>
 								<div className="lg:col-span-2">
 									<div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
 										<div className="md:col-span-5">
@@ -577,9 +586,7 @@ export const ProfileSettings = () => {
 							</div>
 							{changePassword && (
 								<div className="border border-1 p-5 flex flex-col ">
-									<Divider
-										type="horizontal"
-									>
+									<Divider type="horizontal">
 										<p className="text-lg mb-5">Create New Password</p>
 									</Divider>
 									<Form form={passwordForm} onFinish={handlePasswordChange}>
