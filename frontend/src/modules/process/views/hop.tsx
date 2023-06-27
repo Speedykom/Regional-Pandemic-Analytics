@@ -36,7 +36,7 @@ export const EditHopProcess = () => {
 
   return (
     <div>
-      <iframe src={process.env.NEXT_PUBLIC_HOP_UI} />
+      <iframe style={{height: "700px", width: "100%"}} src={process.env.NEXT_PUBLIC_HOP_UI} />
     </div>
   );
 };

@@ -35,6 +35,56 @@ class LoginAPI(ObtainAuthToken):
         })
 
 
+class Authorization (APIView):
+    permission_classes = [AllowAny]
+     
+    """
+    API to get details of current logged in user
+    """
+    def get(self, request, *args, **kwargs):
+        reqToken: str = request.META.get('HTTP_AUTHORIZATION')
+        if reqToken is None:
+            return Response({'error': 'Authorization header was not provider or invalid'})
+        
+        serialToken = reqToken.replace("Bearer ", "")
+        form_data = {
+            "client_id": os.getenv("CLIENT_ID"),
+            "client_secret": os.getenv("CLIENT_SECRET"),
+            "token": serialToken
+        }
+        response = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/token/introspect",
+                            data=form_data)
+        
+        if response.status_code != 200:
+            return Response({'status': response.json()['active'], 'error': 'Authorization token is invalid or expired'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        return Response(response.json(), status=status.HTTP_200_OK)
+    
+class Logout (APIView):
+    permission_classes = [AllowAny]
+     
+    """
+    API to logout user
+    """
+    def get(self, request, *args, **kwargs):
+        reqToken: str = request.META.get('HTTP_AUTHORIZATION')
+        if reqToken is None:
+            return Response({'error': 'Refresh token was not set in authorization header'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        serialToken = reqToken.replace("Bearer ", "")
+        form_data = {
+            "client_id": os.getenv("CLIENT_ID"),
+            "client_secret": os.getenv("CLIENT_SECRET"),
+            "refresh_token": serialToken
+        }
+        response = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/logout",
+                            data=form_data)
+        
+        if response.status_code != 204:
+            return Response(response.json(), status=response.status_code)
+        
+        return Response({'message': 'Logout was successful', 'success': True}, status=status.HTTP_200_OK)    
+
 class KeyCloakLoginAPI(APIView):
     permission_classes = [AllowAny]
     
