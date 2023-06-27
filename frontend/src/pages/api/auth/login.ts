@@ -1,4 +1,3 @@
-import { BASE_URL } from '@/common/config';
 import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import secureLocalStorage from 'react-secure-storage';
@@ -7,7 +6,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method !== 'POST') {
     return res.status(405).send(`Method ${req.method} not allowed`);
   }
-
+  const server_url = process.env.NEXT_PRIVATE_BASE_URL;
   const { username, password } = req.body;
 
   const body = {
@@ -15,7 +14,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     password,
   };
   
-  const response = await axios.post(`${BASE_URL}/api/auth/key-auth`, body, {
+  const response = await axios.post(`${server_url}/api/auth/key-auth`, body, {
     headers: { 'Content-Type': 'application/json' }
   });
 
