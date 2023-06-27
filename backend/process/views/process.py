@@ -196,7 +196,7 @@ class RequestEditProcess(APIView):
     permission_classes = [AllowAny]
 
     # dynamic dag output
-    file = "../hop/data-orch.list"
+    file = "{}/data-orch.list".format(PIPELINE_PATH)
 
     def get(self, request, dag_id=None):
         process = ProcessChain.objects.filter(dag_id=dag_id)

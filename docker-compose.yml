@@ -139,83 +139,83 @@ services:
   # ========
   # Backend
   # ========
-  backend_db:
-    image: postgres:14
-    container_name: backend_db
-    volumes:
-      - backend_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=igad
-      - POSTGRES_USER=igad
-      - POSTGRES_DB=igad
+  # backend_db:
+  #   image: postgres:14
+  #   container_name: backend_db
+  #   volumes:
+  #     - backend_data:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_PASSWORD=igad
+  #     - POSTGRES_USER=igad
+  #     - POSTGRES_DB=igad
 
-  backend:
-    container_name: backend
-    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    depends_on:
-      - backend_db
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./airflow/dags:/airflow/dags
-      - ./hop/pipelines/:/hop
-      - ./hop/pipelines/templates:/hop/templates
-      - ./hop/pipelines/data-orch.list:/hop/data-orch.list
-    environment:
-      - DEVELOPMENT_MODE=${BACKEND_DEVELOPMENT_MODE}
-      - KEYCLOAK_ADMIN_CLIENT_ID=${BACKEND_KEYCLOAK_ADMIN_CLIENT_ID}
-      - KEYCLOAK_ADMIN_CLIENT_SECRET=${BACKEND_KEYCLOAK_ADMIN_CLIENT_SECRET}
-      - KEYCLOAK_ADMIN_AUTH_URL=${BACKEND_KEYCLOAK_ADMIN_AUTH_URL}
-      - KEYCLOAK_ADMIN_USERNAME=${BACKEND_KEYCLOAK_ADMIN_USERNAME}
-      - KEYCLOAK_ADMIN_PASSWORD=${BACKEND_KEYCLOAK_ADMIN_PASSWORD}
-      - APP_REALM=${BACKEND_APP_REALM}
-      - APP_CLIENT_ID=${BACKEND_APP_CLIENT_ID}
-      - HOPE_PIPELINE_PATH=${BACKEND_HOPE_PIPELINE_PATH}
-      - HOPE_TEMPLATE_PATH=${BACKEND_HOPE_TEMPLATE_PATH}
-      - APP_USER_BASE_URL=${BACKEND_APP_USER_BASE_URL}
-      - BASE_URL=${BACKEND_BASE_URL}
-      - APP_SECRET_KEY=${BACKEND_APP_SECRET_KEY}
-      - APP_USER_ROLES=${BACKEND_APP_USER_ROLES}
-      - CLIENT_ID=${BACKEND_CLIENT_ID}
-      - CLIENT_SECRET=${BACKEND_CLIENT_SECRET}
-      - KEYCLOAK_REALM=${BACKEND_KEYCLOAK_REALM}
-      - KEYCLOAK_SERVER_URL=${BACKEND_KEYCLOAK_SERVER_URL}
-      - REST_REDIRECT_URI=${BACKEND_REST_REDIRECT_URI}
-      - MINIO_URL=${BACKEND_MINIO_URL}
-      - MINIO_ACCESS_KEY=${BACKEND_MINIO_ACCESS_KEY}
-      - MINIO_SECRET_KEY=${BACKEND_MINIO_SECRET_KEY}
-      - MINIO_BUCKET=${BACKEND_MINIO_BUCKET}
-      - AVATAR_BASE_URL=${BACKEND_AVATAR_BASE_URL}
-      - MAIL_MAILER=${BACKEND_MAIL_MAILER}
-      - MAIL_HOST=${BACKEND_MAIL_HOST}
-      - MAIL_PORT=${BACKEND_MAIL_PORT}
-      - MAIL_SENDER=${BACKEND_MAIL_SENDER}
-      - MAIL_USER=${BACKEND_MAIL_USER}
-      - MAIL_PASSWORD=${BACKEND_MAIL_PASSWORD}
-      - MAIL_ENCRYPTION=${BACKEND_MAIL_ENCRYPTION}
-      - MAIL_FROM_NAME=${BACKEND_MAIL_FROM_NAME}
-      - AIRFLOW_API=${BACKEND_AIRFLOW_API}
-      - AIRFLOW_USER=${BACKEND_AIRFLOW_USER}
-      - AIRFLOW_PASSWORD=${BACKEND_AIRFLOW_PASSWORD}
-      - DB_NAME=${BACKEND_DB_NAME}
-      - DB_ENGINE=${BACKEND_DB_ENGINE}
-      - DB_USER=${BACKEND_DB_USER}
-      - DB_PASSWORD=${BACKEND_DB_PASSWORD}
-      - DB_HOST=${BACKEND_DB_HOST}
-      - DB_PORT=${BACKEND_DB_PORT}
-      - DATABASE_URL=${BACKEND_DATABASE_URL}
-      - SUPERSET_BASE_URL=${BACKEND_SUPERSET_BASE_URL}
-      - SUPERSET_LOGIN=${BACKEND_SUPERSET_LOGIN}
-      - SUPERSET_USER=${BACKEND_SUPERSET_USER}
-      - SUPERSET_PASS=${BACKEND_SUPERSET_PASS}
-      - SUPERSET_PROVIDER=${BACKEND_SUPERSET_PROVIDER}
-      - SUPERSET_GUEST_USERNAME=${BACKEND_SUPERSET_GUEST_USERNAME}
-      - SUPERSET_GUEST_FIRSTNAME=${BACKEND_SUPERSET_GUEST_FIRSTNAME}
-      - SUPERSET_GUEST_LASTNAME=${BACKEND_SUPERSET_GUEST_LASTNAME}
-      - CORS_ORIGIN_ALLOW_ALL=${BACKEND_CORS_ORIGIN_ALLOW_ALL}
+  # backend:
+  #   container_name: backend
+  #   command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - backend_db
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ./airflow/dags:/airflow/dags
+  #     - ./hop/pipelines/:/hop
+  #     - ./hop/pipelines/templates:/hop/templates
+  #     - ./hop/pipelines/data-orch.list:/hop/data-orch.list
+  #   environment:
+  #     - DEVELOPMENT_MODE=${BACKEND_DEVELOPMENT_MODE}
+  #     - KEYCLOAK_ADMIN_CLIENT_ID=${BACKEND_KEYCLOAK_ADMIN_CLIENT_ID}
+  #     - KEYCLOAK_ADMIN_CLIENT_SECRET=${BACKEND_KEYCLOAK_ADMIN_CLIENT_SECRET}
+  #     - KEYCLOAK_ADMIN_AUTH_URL=${BACKEND_KEYCLOAK_ADMIN_AUTH_URL}
+  #     - KEYCLOAK_ADMIN_USERNAME=${BACKEND_KEYCLOAK_ADMIN_USERNAME}
+  #     - KEYCLOAK_ADMIN_PASSWORD=${BACKEND_KEYCLOAK_ADMIN_PASSWORD}
+  #     - APP_REALM=${BACKEND_APP_REALM}
+  #     - APP_CLIENT_ID=${BACKEND_APP_CLIENT_ID}
+  #     - HOPE_PIPELINE_PATH=${BACKEND_HOPE_PIPELINE_PATH}
+  #     - HOPE_TEMPLATE_PATH=${BACKEND_HOPE_TEMPLATE_PATH}
+  #     - APP_USER_BASE_URL=${BACKEND_APP_USER_BASE_URL}
+  #     - BASE_URL=${BACKEND_BASE_URL}
+  #     - APP_SECRET_KEY=${BACKEND_APP_SECRET_KEY}
+  #     - APP_USER_ROLES=${BACKEND_APP_USER_ROLES}
+  #     - CLIENT_ID=${BACKEND_CLIENT_ID}
+  #     - CLIENT_SECRET=${BACKEND_CLIENT_SECRET}
+  #     - KEYCLOAK_REALM=${BACKEND_KEYCLOAK_REALM}
+  #     - KEYCLOAK_SERVER_URL=${BACKEND_KEYCLOAK_SERVER_URL}
+  #     - REST_REDIRECT_URI=${BACKEND_REST_REDIRECT_URI}
+  #     - MINIO_URL=${BACKEND_MINIO_URL}
+  #     - MINIO_ACCESS_KEY=${BACKEND_MINIO_ACCESS_KEY}
+  #     - MINIO_SECRET_KEY=${BACKEND_MINIO_SECRET_KEY}
+  #     - MINIO_BUCKET=${BACKEND_MINIO_BUCKET}
+  #     - AVATAR_BASE_URL=${BACKEND_AVATAR_BASE_URL}
+  #     - MAIL_MAILER=${BACKEND_MAIL_MAILER}
+  #     - MAIL_HOST=${BACKEND_MAIL_HOST}
+  #     - MAIL_PORT=${BACKEND_MAIL_PORT}
+  #     - MAIL_SENDER=${BACKEND_MAIL_SENDER}
+  #     - MAIL_USER=${BACKEND_MAIL_USER}
+  #     - MAIL_PASSWORD=${BACKEND_MAIL_PASSWORD}
+  #     - MAIL_ENCRYPTION=${BACKEND_MAIL_ENCRYPTION}
+  #     - MAIL_FROM_NAME=${BACKEND_MAIL_FROM_NAME}
+  #     - AIRFLOW_API=${BACKEND_AIRFLOW_API}
+  #     - AIRFLOW_USER=${BACKEND_AIRFLOW_USER}
+  #     - AIRFLOW_PASSWORD=${BACKEND_AIRFLOW_PASSWORD}
+  #     - DB_NAME=${BACKEND_DB_NAME}
+  #     - DB_ENGINE=${BACKEND_DB_ENGINE}
+  #     - DB_USER=${BACKEND_DB_USER}
+  #     - DB_PASSWORD=${BACKEND_DB_PASSWORD}
+  #     - DB_HOST=${BACKEND_DB_HOST}
+  #     - DB_PORT=${BACKEND_DB_PORT}
+  #     - DATABASE_URL=${BACKEND_DATABASE_URL}
+  #     - SUPERSET_BASE_URL=${BACKEND_SUPERSET_BASE_URL}
+  #     - SUPERSET_LOGIN=${BACKEND_SUPERSET_LOGIN}
+  #     - SUPERSET_USER=${BACKEND_SUPERSET_USER}
+  #     - SUPERSET_PASS=${BACKEND_SUPERSET_PASS}
+  #     - SUPERSET_PROVIDER=${BACKEND_SUPERSET_PROVIDER}
+  #     - SUPERSET_GUEST_USERNAME=${BACKEND_SUPERSET_GUEST_USERNAME}
+  #     - SUPERSET_GUEST_FIRSTNAME=${BACKEND_SUPERSET_GUEST_FIRSTNAME}
+  #     - SUPERSET_GUEST_LASTNAME=${BACKEND_SUPERSET_GUEST_LASTNAME}
+  #     - CORS_ORIGIN_ALLOW_ALL=${BACKEND_CORS_ORIGIN_ALLOW_ALL}
 
   # # =======
   # #  Druid
@@ -318,23 +318,23 @@ services:
   #   command:
   #     - router
 
-  # # =======
-  # # Superset
-  # # =======
-  # superset_cache:
-  #   container_name: superset_cache
-  #   image: redis:5
-  #   restart: always
+  # =======
+  # Superset
+  # =======
+  superset_cache:
+    container_name: superset_cache
+    image: redis:5
+    restart: always
 
-  # superset_db:
-  #   container_name: superset_db
-  #   image: postgres:14
-  #   volumes:
-  #     - superset_data:/var/lib/postgresql/data
-  #   environment:
-  #     - POSTGRES_PASSWORD=${SUPERSET_POSTGRES_PASSWORD}
-  #     - POSTGRES_USER=${SUPERSET_POSTGRES_USER}
-  #     - POSTGRES_DB=${SUPERSET_POSTGRES_DB}
+  superset_db:
+    container_name: superset_db
+    image: postgres:14
+    volumes:
+      - superset_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${SUPERSET_POSTGRES_PASSWORD}
+      - POSTGRES_USER=${SUPERSET_POSTGRES_USER}
+      - POSTGRES_DB=${SUPERSET_POSTGRES_DB}
 
   superset:
     <<: *superset
@@ -346,83 +346,83 @@ services:
       - superset_cache
     restart: always
 
-  # superset-init:
-  #   <<: *superset
-  #   container_name: superset-init
-  #   depends_on:
-  #     - superset_db
-  #   entrypoint: /bin/bash
-  #   command:
-  #     - -c
-  #     - |
-  #       superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
-  #       superset db upgrade
-  #       superset superset init
+  superset-init:
+    <<: *superset
+    container_name: superset-init
+    depends_on:
+      - superset_db
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
+        superset db upgrade
+        superset superset init
 
-  # # =====
-  # #  Hop
-  # # =====
-  # hop:
-  #   build: ./hop
-  #   container_name: hop
-  #   user: "0:1000"
-  #   ports:
-  #     - "8882:8080"
-  #   volumes:
-  #     - ./hop/pipelines:/files
-  #     - ./storage:/home
-  #     - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
-  #   #   - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
+  # =====
+  #  Hop
+  # =====
+  hop:
+    build: ./hop
+    container_name: hop
+    user: "0:1000"
+    ports:
+      - "8882:8080"
+    volumes:
+      - ./hop/pipelines:/files
+      - ./storage:/home
+      - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
+    #   - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
-  # # =======
-  # # Airflow
-  # # =======
-  # airflow-pg:
-  #   image: postgres:14
-  #   container_name: airflow-pg
-  #   environment:
-  #     - POSTGRES_USER=${AIRFLOW_POSTGRES_USER}
-  #     - POSTGRES_PASSWORD=${AIRFLOW_POSTGRES_PASSWORD}
-  #     - POSTGRES_DB=${AIRFLOW_POSTGRES_DB}
-  #   ports:
-  #     - "6434:6432"
-  #   volumes:
-  #     - airflow_data:/var/lib/postgresql/data
-  #   healthcheck:
-  #     test: [ "CMD", "pg_isready", "-U", "airflow" ]
-  #     interval: 5s
-  #     retries: 5
+  # =======
+  # Airflow
+  # =======
+  airflow-pg:
+    image: postgres:14
+    container_name: airflow-pg
+    environment:
+      - POSTGRES_USER=${AIRFLOW_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${AIRFLOW_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${AIRFLOW_POSTGRES_DB}
+    ports:
+      - "6434:6432"
+    volumes:
+      - airflow_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "airflow" ]
+      interval: 5s
+      retries: 5
 
-  # airflow-scheduler:
-  #   <<: *airflow
-  #   depends_on:
-  #     - airflow-pg
-  #   container_name: airflow-scheduler
-  #   command: scheduler
-  #   restart: on-failure
-  #   ports:
-  #     - "8793:8793"
+  airflow-scheduler:
+    <<: *airflow
+    depends_on:
+      - airflow-pg
+    container_name: airflow-scheduler
+    command: scheduler
+    restart: on-failure
+    ports:
+      - "8793:8793"
 
-  # airflow-webserver:
-  #   <<: *airflow
-  #   depends_on:
-  #     - airflow-pg
-  #   container_name: airflow-webserver
-  #   restart: always
-  #   command: webserver
-  #   ports:
-  #     - "8881:8080"
-  #   healthcheck:
-  #     test:
-  #       [
-  #         "CMD",
-  #         "curl",
-  #         "--fail",
-  #         "http://localhost:8080/health"
-  #       ]
-  #     interval: 30s
-  #     timeout: 30s
-  #     retries: 5
+  airflow-webserver:
+    <<: *airflow
+    depends_on:
+      - airflow-pg
+    container_name: airflow-webserver
+    restart: always
+    command: webserver
+    ports:
+      - "8881:8080"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "--fail",
+          "http://localhost:8080/health"
+        ]
+      interval: 30s
+      timeout: 30s
+      retries: 5
 
   # # =======
   # # keycloak

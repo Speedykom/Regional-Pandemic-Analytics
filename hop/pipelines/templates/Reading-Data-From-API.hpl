@@ -327,7 +327,7 @@ specefic characters</note>
       </field>
     </fields>
     <filename_split_size>1000000</filename_split_size>
-    <filename_base>${output_source}/${Internal.Pipeline.Name}</filename_base>
+    <filename_base>${pipeline_source}/${Internal.Pipeline.Name}</filename_base>
     <filename_create_parent_folders>Y</filename_create_parent_folders>
     <filename_datetime_format>yyyyMMdd-HHmmss</filename_datetime_format>
     <filename_ext>parquet</filename_ext>

@@ -194,7 +194,7 @@ https://play.dhis2.org/40.0.0/api/dataSets</note>
         <target_field>DisplayName</target_field>
       </field>
     </fields>
-    <filename_base>DHIS2</filename_base>
+    <filename_base>${pipeline_source}/${Internal.Pipeline.Name}</filename_base>
     <filename_create_parent_folders>N</filename_create_parent_folders>
     <filename_datetime_format>yyyyMMdd-HHmmss</filename_datetime_format>
     <filename_ext>parquet</filename_ext>
