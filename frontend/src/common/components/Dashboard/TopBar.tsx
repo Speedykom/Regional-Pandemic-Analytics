@@ -19,6 +19,7 @@ import secureLocalStorage from "react-secure-storage";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { PreviewUser } from "@/modules/user/views/Preview";
+import { OpenNotification } from "@/common/utils/notify";
 
 interface props {
 	showNav: boolean;
@@ -39,9 +40,7 @@ export default function TopBar({ showNav, setShowNav }: props) {
 		setView(false);
 	};
 
-	const profile: any = secureLocalStorage.getItem(
-		"user"
-	) as object;
+	const profile: any = secureLocalStorage.getItem("user") as object;
 
 	useEffect(() => {
 		if (typeof window !== undefined && window.localStorage) {
@@ -56,13 +55,20 @@ export default function TopBar({ showNav, setShowNav }: props) {
 
 	const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
 		e.preventDefault();
-		await axios.post("/api/auth/logout/").then((response) => {
-			if (response.status === 200) {
-				router.push("/");
+		const tokens: any = secureLocalStorage.getItem("tokens") as object;
+		
+		await axios
+			.post("/api/auth/logout", {
+				refreshToken: tokens?.refreshToken,
+			})
+			.then(() => {
 				secureLocalStorage.clear();
-			}
-		});
+				router.push("/");
+			}).catch((err) => {
+				OpenNotification("Something went wrong, please check your internet connection", "bottomRight", "error")
+			});
 	};
+	
 	return (
 		<div
 			className={`fixed bg-white w-full h-16 z-50 flex justify-between items-center transition-all duration-[400ms] border-b ${
@@ -161,15 +167,17 @@ export default function TopBar({ showNav, setShowNav }: props) {
 						<Menu.Button className="inline-flex w-full justify-center items-center">
 							<picture>
 								<img
-									src={profile && profile?.avatar ? profile?.avatar : '/avater.png'}
+									src={
+										profile && profile?.avatar ? profile?.avatar : "/avater.png"
+									}
 									className="rounded-full h-8 md:mr-4 border-2 border-white shadow-sm"
 									alt="avat"
 								/>
 							</picture>
 							<div>
-							<span className="hidden md:block font-medium text-gray-700 text-sm">
-								{username}
-							</span>
+								<span className="hidden md:block font-medium text-gray-700 text-sm">
+									{username}
+								</span>
 							</div>
 							<ChevronDownIcon className="ml-2 h-4 w-4 text-gray-700" />
 						</Menu.Button>

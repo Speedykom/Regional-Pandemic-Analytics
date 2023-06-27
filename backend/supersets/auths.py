@@ -6,7 +6,7 @@ def get_auth_token ():
     request_body = {
         'username': os.getenv('SUPERSET_USER'),
         'password': os.getenv('SUPERSET_PASS'),
-        'provider':os.getenv('SUPERSET_PROVIDER'),
+        'provider': os.getenv('SUPERSET_PROVIDER'),
         'refresh': True,
     }
     

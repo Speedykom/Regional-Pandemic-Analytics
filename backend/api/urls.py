@@ -43,6 +43,8 @@ urlpatterns = [
     path('auth/key-auth', auth_view.KeyCloakLoginAPI.as_view()),  # Keycloak login and refresh token
     path('auth/password', auth_view.PasswordAPI.as_view()), # create and change password
     path('auth/request-verify', auth_view.ResetPasswordAPI.as_view()), # Reset password and verify reset password token
+    path('auth/me', auth_view.Authorization.as_view()), # get my details
+    path('auth/logout', auth_view.Logout.as_view()), # logout
 
     # ---------------------- User Management Endpoints --------------------------
     path('account/user', views.CreateUserAPI.as_view()),  # Create User
