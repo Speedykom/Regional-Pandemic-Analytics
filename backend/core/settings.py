@@ -24,7 +24,9 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+CORS_ORIGIN_ALLOW_ALL=os.getenv("CORS_ORIGIN_ALLOW_ALL","False")
+CORS_ALLOW_CREDENTIALS=True
+CORS_ORIGIN_WHITELIST=os.getenv("CORS_ORIGIN_WHITELIST", 'http://localhost:3000,http://localhost:8000').split(',')
 # Application definition
 
 INSTALLED_APPS = [
@@ -91,7 +93,7 @@ if DEVELOPMENT_MODE is True:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': os.environ.get('DB_ENGINE','django.db.backends.postgresql'),
+            'ENGINE': os.getenv('DB_ENGINE','django.db.backends.postgresql'),
             'USER': os.environ.get('DB_USER'),
             'PASSWORD':os.environ.get('DB_PASSWORD'),
             'NAME': os.environ.get('DB_NAME'),

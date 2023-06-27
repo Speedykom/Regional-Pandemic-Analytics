@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
-import { setCookie, getCookie } from "cookies-next";
-import { api_url } from "@/common/utils/auth";
+import { BASE_URL } from "@/common/config";
+import secureLocalStorage from "react-secure-storage";
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -11,19 +11,16 @@ export default async function handler(
     return res.status(405).send(`Method ${req.method} not allowed`);
   }
 
-  const refresh_token = getCookie("refresh_token", { req, res });
+  const tokens: any = secureLocalStorage.getItem("tokens");
 
   const body = JSON.stringify({
-    refresh_token,
+    refresh_token: tokens?.refreshToken,
   });
 
   try {
-    const response = await axios.put(
-      `${api_url}/api/auth/key-auth`,
-      body,
-      {
-        headers: { "Content-Type": "application/json" },
-      }
+    const response = await axios.put(`${BASE_URL}/api/auth/key-auth`, body, {
+      headers: { "Content-Type": "application/json" },
+    }
     );
 
     if (response.status !== 200)
@@ -31,24 +28,6 @@ export default async function handler(
         .status(response.status)
         .json({ result: "Failed to get access token." });
 
-    setCookie("access", response?.data?.access_token, {
-      req,
-      res,
-      maxAge: 60 * 60 * 24,
-      sameSite: "strict",
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      path: "/",
-    });
-    setCookie("refresh", response?.data?.refresh_token, {
-      req,
-      res,
-      maxAge: 60 * 60 * 24,
-      sameSite: "strict",
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      path: "/",
-    });
     return res.status(200).json({ result: response?.data });
   } catch (error: unknown) {
     console.log(error);
