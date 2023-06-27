@@ -136,9 +136,9 @@ services:
     restart: always
     command: sh -c "npm run build && npm run start"
 
-  ========
-  Backend
-  ========
+  # ========
+  # Backend
+  # ========
   backend_db:
     image: postgres:14
     container_name: backend_db
