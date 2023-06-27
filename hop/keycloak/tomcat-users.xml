@@ -54,7 +54,7 @@
   <user username="role1" password="<must-be-changed>" roles="role1"/>
 -->
 
-<role rolename="hop-access-role"/>
-<user username="hopuser"  roles="hop-access-role"/>
+<role rolename="Adminstrator"/>
+<user username="hopuser"  roles="Adminstrator"/>
 
 </tomcat-users>

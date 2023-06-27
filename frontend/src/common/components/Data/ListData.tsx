@@ -29,6 +29,8 @@ interface ListDataProps {
 }
 
 export default function ListData({ data }: ListDataProps) {
+    const file_server = process.env.NEXT_PUBLIC_MINIO_URL;
+
     return (
         <Card>
             <Flex justifyContent="start" className="space-x-2">
@@ -54,7 +56,7 @@ export default function ListData({ data }: ListDataProps) {
                             <TableCell>{item?.file_name}</TableCell>
                             <TableCell>{item?.file_type}</TableCell>
                             <TableCell>
-                                <Button size="xs" variant="secondary" color="gray" icon={LinkIcon} onClick={() => {window.open(item?.file, "_blank")}}>
+                                <Button size="xs" variant="secondary" color="gray" icon={LinkIcon} onClick={() => {window.open(`${file_server}${item?.file}`, "_blank")}}>
                                     View
                                 </Button>
                             </TableCell>
