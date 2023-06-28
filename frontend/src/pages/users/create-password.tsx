@@ -1,4 +1,5 @@
-import { api_url } from "@/common/utils/auth";
+import { Loading } from "@/common/components/Loading";
+import { BASE_URL } from "@/common/config";
 import { CreatePassword } from "@/modules/user/views/create-password";
 import { LinkExpired } from "@/modules/user/views/link-expired";
 
@@ -7,14 +8,16 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 export default function CreatePasswordLayout() {
-    const router = useRouter();
-    const [valid, setValid] = useState(true)
-    const [email, setEmail] = useState("")
+	const router = useRouter();
+	const [valid, setValid] = useState(false);
+	const [email, setEmail] = useState("");
+	const [isLoading, setIsLoading] = useState(true);
 	const { tok } = router.query;
-    const getToken = async () => {
+	const getToken = async () => {
+		setIsLoading(true)
 		await axios
 			.patch(
-				`${api_url}/api/auth/reset-verify`,
+				`${BASE_URL}/api/auth/request-verify`,
 				{
 					token: String(tok),
 				},
@@ -24,18 +27,28 @@ export default function CreatePasswordLayout() {
 					},
 				}
 			)
-            .then((res) => {
-                setValid(true)
-                setEmail(res?.data?.email)
+			.then((res) => {
+				setIsLoading(false)
+				setValid(true);
+				setEmail(res?.data?.email);
 			})
-            .catch((err) => {
-                setValid(false)
-			});
+			.catch((err) => {
+				setIsLoading(false)
+				setValid(false);
+			})
 	};
+
 	useEffect(() => {
 		getToken();
-	}, []);
-    return (
-        <div>{tok && valid ? <CreatePassword mail={email} token={String(tok)} /> : <LinkExpired />}</div>
-    );
+	});
+
+	if (isLoading) {
+		return <Loading />;
+	}
+
+	if (!valid) {
+		return <LinkExpired />;
+	}
+
+	return <CreatePassword mail={email} token={String(tok)} />; 
 }

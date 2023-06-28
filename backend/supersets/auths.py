@@ -6,7 +6,7 @@ def get_auth_token ():
     request_body = {
         'username': os.getenv('SUPERSET_USER'),
         'password': os.getenv('SUPERSET_PASS'),
-        'provider':os.getenv('SUPERSET_PROVIDER'),
+        'provider': os.getenv('SUPERSET_PROVIDER'),
         'refresh': True,
     }
     
@@ -22,33 +22,9 @@ def get_auth_token ():
         return {'status': response.status_code, 'message': response.reason}
     return {'status': response.status_code, 'message': 'Access granted', 'token': response.json()}
 
-def get_local_auth_token ():
-    request_body = {
-        'username': 'admin',
-        'password': 'admin',
-        'provider': 'db',
-        'refresh': True,
-    }
-    
-    # url = os.getenv('SUPERSET_LOGIN')
-    url = 'http://localhost:8088/api/v1/security/login'
-    
-    headers = {
-        'Content-Type': 'application/json'
-    }
-    
-    response = requests.post(url=url, json=request_body, headers=headers)
-    
-    if response.status_code != 200:
-        return {'status': response.status_code, 'message': response.reason}
-    
-    return {'status': response.status_code, 'message': 'Access granted', 'token': response.json()}
-
 
 def get_csrf_token ():
-    
     url = f"{os.getenv('SUPERSET_BASE_URL')}/security/csrf_token/"
-    # url = 'http://localhost:8088/api/v1/security/csrf_token/'
     
     auth_response = get_auth_token()
     
