@@ -41,13 +41,7 @@ class KeyCloakLoginAPI(APIView):
     """
     API for authenticating with Keycloak
     """
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'username': openapi.Schema(type=openapi.TYPE_STRING),
-            'password': openapi.Schema(type=openapi.TYPE_STRING),
-        }
-    ))
+
     def post(self, request, *args, **kwargs):
         form_data = {
             "username": request.data.get("username", None),
@@ -68,12 +62,7 @@ class KeyCloakLoginAPI(APIView):
     
     """API to refresh and update keycloak access token
     """
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'refresh_token': openapi.Schema(type=openapi.TYPE_STRING),
-        }
-    ))
+
     def put(self, request, *args, **kwargs):
         refresh_token = request.data.get("refresh_token", None)
         form_data = {
@@ -100,14 +89,6 @@ class PasswordAPI(APIView):
     """
     API view to create, update Keycloak user password after reset request
     """
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'newPassword': openapi.Schema(type=openapi.TYPE_STRING),
-            'confirmPassword': openapi.Schema(type=openapi.TYPE_STRING),
-            'token': openapi.Schema(type=openapi.TYPE_STRING),
-        }
-    ))
     def post(self, request, *args, **kwargs):
         # Login to admin
         admin_login = keycloak_admin_login()
@@ -147,14 +128,6 @@ class PasswordAPI(APIView):
     """
     API view to change Keycloak user password
     """
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'id': openapi.Schema(type=openapi.TYPE_STRING),
-            'newPassword': openapi.Schema(type=openapi.TYPE_STRING),
-            'confirmPassword': openapi.Schema(type=openapi.TYPE_STRING),
-        }
-    ))
     def put(self, request, *args, **kwargs):
         # Login to admin
         admin_login = keycloak_admin_login()
