@@ -96,7 +96,7 @@ services:
     container_name: frontend
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      target: production-build-stage
     ports:
       - "3000:3000"
     environment:
@@ -113,12 +113,8 @@ services:
       - SUPERSET_GUEST_USERNAME=${FRONTEND_SUPERSET_GUEST_USERNAME}
       - SUPERSET_GUEST_FIRSTNAME=${FRONTEND_SUPERSET_GUEST_FIRSTNAME}
       - SUPERSET_GUEST_LASTNAME=${FRONTEND_SUPERSET_GUEST_LASTNAME}
-      - NEXT_PUBLIC_KEYCLOACK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOACK_CLIENT_ID}
-      - NEXT_PUBLIC_KEYCLOACK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOACK_REALM}
-      - NEXT_PUBLIC_KEYCLOACK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOACK_URL}
       - NEXT_HOP_UI=${FRONTEND_NEXT_HOP_UI}
     restart: always
-    command: sh -c "npm run build && npm run start"
 
   # ========
   # Backend
@@ -324,24 +320,15 @@ services:
     container_name: superset
     build: ./superset/.
     environment:
-      - SECRET_KEY=${SUPERSET_SECRET_KEY}
+      - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
       - DATABASE_URI=${SUPERSET_DATABASE_URI}
-      - PROVIDER_NAME=${SUPERSET_PROVIDER_NAME}
-      - SUPERSET_CLIENT_ID=${SUPERSET_CLIENT_ID}
-      - SUPERSET_CLIENT_SECRET=${SUPERSET_CLIENT_SECRET}
-      - OIDC_ISSUER=${SUPERSET_OIDC_ISSUER}
-      - KEYCLOAK_BASE_URL=${SUPERSET_KEYCLOAK_BASE_URL}
-      - KEYCLOAK_TOKEN_URL=${SUPERSET_KEYCLOAK_TOKEN_URL}
-      - KEYCLOAK_AUTH_URL=${SUPERSET_KEYCLOAK_AUTH_URL}
-      - KEYCLOAK_HOSTNAME_URL=${KEYCLOAK_HOSTNAME_URL}
-      - SUPERSET_ROOT_URL=${SUPERSET_ROOT_URL}
-      - KEYCLOAK_INTERNAL=${KEYCLOAK_INTERNAL}
-      - APP_REALM=${APP_REALM}
+      - SUPERSET_KEYCLOAK_APP_REALM=${SUPERSET_KEYCLOAK_APP_REALM}
+      - SUPERSET_KEYCLOAK_CLIENT_ID=${SUPERSET_KEYCLOAK_CLIENT_ID}
+      - SUPERSET_KEYCLOAK_CLIENT_SECRET=${SUPERSET_KEYCLOAK_CLIENT_SECRET}
+      - SUPERSET_KEYCLOAK_EXTERNAL_URL=${SUPERSET_KEYCLOAK_EXTERNAL_URL}
+      - SUPERSET_KEYCLOAK_INTERNAL_URL=${SUPERSET_KEYCLOAK_INTERNAL_URL}
     volumes:
       - ./superset/superset_config.py:/app/pythonpath/superset_config.py
-      - ./superset/keycloack_security_manager.py:/app/pythonpath/keycloack_security_manager.py
-      - ./superset/client_secret_env.json:/usr/bin/pythonpath/client_secret_env.json
-
     ports:
       - 8883:8088
     depends_on:
@@ -352,8 +339,6 @@ services:
     command:
       - -c
       - |
-        envsubst <"/usr/bin/pythonpath/client_secret_env.json" > "/usr/bin/pythonpath/client_secret.json"
-        envsubst <"/usr/bin/pythonpath/client_secret_env.json" > "/app/pythonpath/client_secret.json"
         superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
         superset db upgrade
         superset superset init
@@ -465,10 +450,9 @@ services:
       - BACKEND_CLIENT_ID=${BACKEND_CLIENT_ID}
       - BACKEND_CLIENT_SECRET=${BACKEND_CLIENT_SECRET}
       - BACKEND_PUBLIC_URL=${BACKEND_PUBLIC_URL}
-      # local env
-      # KC_HOSTNAME_ADMIN_URL: http://localhost:8885
-      # KC_HOSTNAME_URL: http://localhost:8885
-      # dev server env
+      - SUPERSET_ROOT_URL=${SUPERSET_ROOT_URL}
+      - SUPERSET_KEYCLOAK_CLIENT_ID=${SUPERSET_KEYCLOAK_CLIENT_ID}
+      - SUPERSET_KEYCLOAK_CLIENT_SECRET=${SUPERSET_KEYCLOAK_CLIENT_SECRET}
     restart: unless-stopped
     volumes:
       - ./keycloak/realm/realm.json:/opt/keycloak/data/import/realm.json
