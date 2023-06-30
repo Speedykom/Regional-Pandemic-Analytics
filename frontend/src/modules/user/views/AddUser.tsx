@@ -4,20 +4,16 @@ import {
 	Drawer,
 	Form,
 	Input,
-	InputNumber,
 	Radio,
 	RadioChangeEvent,
 	Select,
 	SelectProps,
 	Switch,
 } from "antd";
-import axios from "axios";
-import { useRouter } from "next/router";
+import axios from '@/common/utils/axios';
 import { useEffect, useState } from "react";
 import { countries } from "@/common/utils/countries";
-import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
-import { BASE_URL } from "@/common/config";
 
 interface props {
 	openDrawer: boolean;
@@ -75,11 +71,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 		values["role"] = JSON.parse(values["role"])
 
 		await axios
-			.post(`${BASE_URL}/api/account/user`, values, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			})
+			.post(`/api/account/user`, values)
 			.then((res) => {
 				closeDrawer();
 				refetch();
@@ -118,12 +110,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const fetchRoles = async () => {
 		try {
 			setRoleLoading(true)
-			const url = `${BASE_URL}/api/role`;
-			await axios.get(url, {
-				headers: {
-					'Content-Type': 'application/json',
-				},
-			}).then((res) => {
+			await axios.get(`/api/role`).then((res) => {
 				setRoleLoading(false)
 				setRoles(res?.data);
 			})

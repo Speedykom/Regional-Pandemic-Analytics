@@ -1,7 +1,6 @@
-import { getData } from "@/common/utils";
 import { CovertFromTimestampToDate, ToMonthDayYear } from "@/common/utils/date-converter";
 import { Drawer } from "antd";
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import { useEffect, useState } from "react";
 
 interface props {
@@ -12,25 +11,10 @@ interface props {
 
 export const PreviewUser = ({ openDrawer, closeDrawer, userId }: props) => {
 	const [data, setData] = useState<any>();
-	const [token, setToken] = useState<string>("");
-	const fetchToken = async () => {
-		try {
-			const url = "/api/get-access-token/";
-			const response = await getData(url);
-			setToken(response?.accessToken);
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
 
 	const fetchUser = async () => {
 		try {
-			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${userId}`;
-			const response = await axios.get(url, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
+			const response = await axios.get(`/api/account/user/${userId}`);
 			setData(response?.data);
 		} catch (error) {
 			console.error("Error:", error);

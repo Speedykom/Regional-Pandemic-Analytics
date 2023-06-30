@@ -1,9 +1,8 @@
-import axios from "axios";
-import { BASE_URL } from "../config";
+import axios from '@/common/utils/axios';
 
 export const getUserRole = async (roles: []) => {
     const rolee = roles.find(item => item != 'default-roles-stack')
-    return await axios.get(`${BASE_URL}/api/role/${rolee}?type=name`).then((res) => {
+    return await axios.get(`/api/role/${rolee}?type=name`).then((res) => {
         let newRole = res?.data?.role;
         let roleAttributeKeys = Object.keys(newRole?.attributes);
         roleAttributeKeys.forEach((key, _) => {
@@ -18,7 +17,7 @@ export const getUserRole = async (roles: []) => {
 
 export const getGuestToken = async (uuid: string): Promise<string> => {
     return new Promise<string>((resolve) => {
-        axios.post(`${BASE_URL}/api/superset/guest/token`, { id: uuid }).then((response) => {
+        axios.post(`/api/superset/guest/token`, { id: uuid }).then((response) => {
             console.log(response.status);
             resolve(response.data?.token);
         }).catch((err) => {

@@ -1,9 +1,8 @@
 import { Loading } from "@/common/components/Loading";
-import { BASE_URL } from "@/common/config";
 import { CreatePassword } from "@/modules/user/views/create-password";
 import { LinkExpired } from "@/modules/user/views/link-expired";
 
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -17,14 +16,9 @@ export default function CreatePasswordLayout() {
 		setIsLoading(true)
 		await axios
 			.patch(
-				`${BASE_URL}/api/auth/request-verify`,
+				`/api/auth/request-verify`,
 				{
 					token: String(tok),
-				},
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
 				}
 			)
 			.then((res) => {

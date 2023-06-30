@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import MetricsCards from "@/common/components/Cards/MetricsCard";
 import { embedDashboard } from "@superset-ui/embedded-sdk";
 import useSWR from "swr";
+import { BASE_URL } from "@/common/config";
 
 interface IBarData {
   country: string;
@@ -11,10 +12,10 @@ interface IBarData {
 
 export default function Dashboard() {
   const { data: metrics, error: metricsError } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/global-data/`
+    `${BASE_URL}/api/global-data/`
   );
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/covid-data/`
+    `${BASE_URL}/api/covid-data/`
   );
   const filteredData = data
     ? data.map((item: IBarData) => ({

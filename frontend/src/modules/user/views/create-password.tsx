@@ -1,7 +1,6 @@
-import { BASE_URL } from "@/common/config";
 import { OpenNotification } from "@/common/utils/notify";
 import { Button, Form, Input } from "antd";
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -63,16 +62,11 @@ export const CreatePassword = ({ mail, token }: props) => {
 		} else {
 			await axios
 				.post(
-					`${BASE_URL}/api/auth/password`,
+					`/api/auth/password`,
 					{
 						newPassword: values["password"],
 						confirmPassword: values["confirmPassword"],
 						token: token,
-					},
-					{
-						headers: {
-							"Content-Type": "application/json",
-						},
 					}
 				)
 				.then((res) => {

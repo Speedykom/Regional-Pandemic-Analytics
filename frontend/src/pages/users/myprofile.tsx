@@ -1,5 +1,4 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-import { BASE_URL } from "@/common/config";
 import { countries } from "@/common/utils/countries";
 import { OpenNotification } from "@/common/utils/notify";
 
@@ -27,7 +26,7 @@ import ImgCrop from "antd-img-crop";
 import { RcFile } from "antd/es/upload";
 import type { UploadFile, UploadProps } from "antd/es/upload/interface";
 
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import { useState } from "react";
 import secureLocalStorage from "react-secure-storage";
 
@@ -140,13 +139,8 @@ export const ProfileSettings = () => {
 	const handleDetailsEdit = async (values: any) => {
 		await axios
 			.put(
-				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/update`,
+				`/api/account/user/${user?.sub}/update`,
 				values,
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
 			)
 			.then((res) => {
 				let newUserData = user;
@@ -180,16 +174,11 @@ export const ProfileSettings = () => {
 		} else {
 			await axios
 				.put(
-					`${BASE_URL}/api/auth/password`,
+					`/api/auth/password`,
 					{
 						id: user?.sub,
 						newPassword: values["newPassword"],
 						confirmPassword: values["confirmPassword"],
-					},
-					{
-						headers: {
-							"Content-Type": "application/json",
-						},
 					}
 				)
 				.then((res) => {
@@ -229,7 +218,7 @@ export const ProfileSettings = () => {
 										onPreview={handlePreview}
 										showUploadList={{ showRemoveIcon: false }}
 										maxCount={1}
-										action={`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/avatar-upload1`}
+										action={`/api/account/user/${user?.sub}/avatar-upload1`}
 										customRequest={(options) => {
 											const data = new FormData();
 											data.append("file", options.file);

@@ -11,16 +11,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({result:"No username specified"})
     }
 
-    console.log(username)
-
     if(req.method != "GET"){
         return res.status(405).send(`Method ${req.method} not allowed`);
     }
 
     try {
-        const response = await axios.get(`${server_url}/api/data/upload/`,{
+        const response = await axios.get(`${server_url}/api/data/upload/`, {
             params:{
                 username
+            },
+            headers: {
+                'Authorization': req.headers['authorization']
             }
         })
         return res.status(200).json({result: response.data});
