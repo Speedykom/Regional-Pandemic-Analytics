@@ -116,10 +116,8 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
             token_info = keycloak_openid.introspect(access_token)
             logger.info("Keycloak Introspect", token_info)
             if (token_info['active']):
-                print(type(User))
-                #user = User.query.filter_by(email=token_info['email']).one_or_none()
                 user = self.find_user(email=token_info['email'])
-                logger.info("Keycloak auth success", user)
+                logger.info("Keycloak auth success")
                 return user
 
         # finally, return None if both methods did not login the user
@@ -127,3 +125,4 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
 
 
 CUSTOM_SECURITY_MANAGER = CustomSupersetSecurityManager
+SUPERSET_LOAD_EXAMPLES="yes"
