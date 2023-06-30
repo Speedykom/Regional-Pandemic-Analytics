@@ -4,7 +4,7 @@ import { Popconfirm, Tag } from "antd";
 import { FiEdit, FiEye, FiTrash } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Action } from "@/common/components/common/action";
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import { OpenNotification } from "@/common/utils/notify";
 
 interface props {
@@ -42,7 +42,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 		const deleteUser = async () => {
 			await axios
 				.delete(
-					`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${id}/delete`,
+					`/api/account/user/${id}/delete`,
 					{
 						headers: {
 							"Content-Type": "application/json",

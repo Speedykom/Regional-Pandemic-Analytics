@@ -2,7 +2,7 @@ import { ColumnsType } from "antd/es/table";
 import { Popconfirm } from "antd";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import { Action } from "@/common/components/common/action";
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import { OpenNotification } from "@/common/utils/notify";
 import { useFindAllQuery } from "./template";
 
@@ -21,7 +21,7 @@ export const useTemplate = ({ edit, del }: props) => {
     const deleteUser = async () => {
       await axios
         .delete(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles/${id}/delete`,
+          `/api/account/roles/${id}/delete`,
           {
             headers: {
               "Content-Type": "application/json",

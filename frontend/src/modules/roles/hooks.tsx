@@ -4,7 +4,7 @@ import { Popconfirm, Tag } from "antd";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Action } from "@/common/components/common/action";
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import { OpenNotification } from "@/common/utils/notify";
 
 interface props {
@@ -18,7 +18,7 @@ export const 	useRoles = ({ edit, del, refetch }: props) => {
 		const deleteUser = async () => {
 			await axios
 				.delete(
-					`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles/${id}/delete`,
+					`/api/account/roles/${id}/delete`,
 					{
 						headers: {
 							"Content-Type": "application/json",
@@ -156,8 +156,7 @@ export const 	useRoles = ({ edit, del, refetch }: props) => {
 };
 
 export const fetchRoles = async () => {
-	const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
-	return await axios.get(url).then((res) => {
+	return await axios.get(`/api/account/roles`).then((res) => {
 		return res.data;
 	}).catch((err) => {
 		console.log(err?.response)

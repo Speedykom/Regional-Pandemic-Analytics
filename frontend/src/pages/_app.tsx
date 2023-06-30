@@ -1,6 +1,6 @@
 import { ToastContainer } from "react-toastify";
 import { SWRConfig } from "swr";
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import { AppProps } from "next/app";
 import "@/common/styles/globals.css";
 import "react-toastify/dist/ReactToastify.css";

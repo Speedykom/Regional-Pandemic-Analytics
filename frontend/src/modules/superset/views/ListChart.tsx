@@ -1,6 +1,5 @@
-import { useDashboards } from "../hooks";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import { IGADTable } from "@/common/components/common/table";
 import { getData } from "@/common/utils";
 import { useCharts } from "../hooks/chart";

@@ -18,12 +18,10 @@ import { useUsers } from "../hooks";
 import { IUser } from "../interface";
 import { useEffect, useState } from "react";
 import { AddUser123 } from "./AddUser";
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import { PreviewUser } from "./Preview";
 import { countries } from "@/common/utils/countries";
-import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
-import { BASE_URL } from "@/common/config";
 
 interface props {
 	viewPro: () => void;
@@ -78,13 +76,8 @@ export const UserList = () => {
 	const fetchUsers = async () => {
 		try {
 			setLoading(true);
-			const url = `${BASE_URL}/api/account/users`;
 			await axios
-				.get(url, {
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				})
+				.get(`/api/account/users`)
 				.then((res) => {
 					setLoading(false);
 					setData(res?.data);
@@ -147,13 +140,8 @@ export const UserList = () => {
 		values["role"] = JSON.parse(values["role"])
 		await axios
 			.put(
-				`${BASE_URL}/api/account/user/${userId}/update`,
+				`/api/account/user/${userId}/update`,
 				values,
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
 			)
 			.then((res) => {
 				OpenNotification(res?.data?.message, "topRight", "success");
@@ -180,12 +168,7 @@ export const UserList = () => {
 	const fetchRoles = async () => {
 		try {
 			setRoleLoading(true)
-			const url = `${BASE_URL}/api/role`;
-			await axios.get(url, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}).then((res) => {
+			await axios.get(`/api/role`).then((res) => {
 				setRoleLoading(false)
 				setRoles(res?.data);
 			})

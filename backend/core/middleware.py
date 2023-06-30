@@ -9,7 +9,8 @@ from rest_framework.exceptions import PermissionDenied, AuthenticationFailed, No
 class KeycloakMiddleware:
 
     def __init__(self, get_response):
-        
+        print("????????")
+
         # Set configurations from the settings file
         self.config = settings.KEYCLOAK_CONFIG
         
@@ -44,10 +45,11 @@ class KeycloakMiddleware:
                                         client_secret_key=self.client_secret_key)
 
     def __call__(self, request):
+        print("????????", request.META)
         return self.get_response(request)
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-
+        print("????????", request.META)
         # for now there is no role assigned yet
         request.roles = []
 

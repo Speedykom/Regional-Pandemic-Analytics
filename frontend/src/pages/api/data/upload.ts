@@ -3,7 +3,6 @@ import axios from "axios";
 import fs from 'fs'
 // @ts-ignore
 import formidable from 'formidable'
-import {Form} from "antd";
 import FormData from "form-data";
 
 export const config = {
@@ -49,7 +48,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             try {
                 const response = await axios.post(`${server_url}/api/data/upload/`, formData, {
                     headers: {
-                        "Content-Type": "multipart/form-data"
+                        "Content-Type": "multipart/form-data",
+                        'Authorization': req.headers['authorization']
                     }
                 })
                 return res.status(201).json({result: 'File uploaded successfully'});

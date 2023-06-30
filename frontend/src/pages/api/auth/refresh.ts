@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
-import { BASE_URL } from "@/common/config";
 import secureLocalStorage from "react-secure-storage";
 export default async function handler(
   req: NextApiRequest,
@@ -18,7 +17,8 @@ export default async function handler(
   });
 
   try {
-    const response = await axios.put(`${BASE_URL}/api/auth/key-auth`, body, {
+    const server_url = process.env.NEXT_PRIVATE_BASE_URL;
+    const response = await axios.put(`${server_url}/api/auth/key-auth`, body, {
       headers: { "Content-Type": "application/json" },
     }
     );

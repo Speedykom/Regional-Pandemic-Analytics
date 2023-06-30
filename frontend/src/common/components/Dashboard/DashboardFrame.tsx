@@ -2,9 +2,8 @@ import Layout from "@/common/components/Dashboard/Layout";
 import { ReactNode, useEffect, useState } from "react";
 import secureLocalStorage from "react-secure-storage";
 import { useRouter } from "next/router";
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import Login from "@/pages/index";
-import { Loader } from "../Loader";
 import { Loading } from "../Loading";
 
 interface Props {

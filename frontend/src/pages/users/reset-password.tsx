@@ -1,8 +1,7 @@
-import { BASE_URL } from "@/common/config";
 import { OpenNotification } from "@/common/utils/notify";
 
 import { Button, Form, Input } from "antd";
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import { useRouter } from "next/router";
 
 export const ResetPassword = () => {
@@ -11,11 +10,7 @@ export const ResetPassword = () => {
 	const onFinish = async (values: any) => {
 		console.log({ values });
 		await axios
-			.post(`${BASE_URL}/api/auth/request-verify`, values, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			})
+			.post(`/api/auth/request-verify`, values)
 			.then((res) => {
 				OpenNotification(res.data?.message, "topRight", "success");
 				router.push("/");

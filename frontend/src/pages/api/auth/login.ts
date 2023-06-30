@@ -1,6 +1,5 @@
 import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import secureLocalStorage from 'react-secure-storage';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -15,7 +14,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   };
   
   const response = await axios.post(`${server_url}/api/auth/key-auth`, body, {
-    headers: { 'Content-Type': 'application/json' }
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': req.headers['authorization']
+    }
   });
 
   if (response.status !== 200)

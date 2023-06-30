@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ShowMessage } from "@/common/components/ShowMessage";
 import jwt_decode from "jwt-decode";
 import secureLocalStorage from "react-secure-storage";
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import { getUserRole } from "@/common/utils/auth";
 
 export default function LoginForm() {

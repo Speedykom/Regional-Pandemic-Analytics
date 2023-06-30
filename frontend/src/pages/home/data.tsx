@@ -1,7 +1,7 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import ListData from "@/common/components/Data/ListData";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios from '@/common/utils/axios';
 import {IData} from "@/common/components/Data/ListData";
 import secureLocalStorage from "react-secure-storage";
 
@@ -19,8 +19,7 @@ export default function DataPage() {
     useEffect(() => {
         const fetchUploads = async () => {
             try {
-                const url = "/api/data/get-list-of-uploads/";
-                const response = await axios.get<IData[]>(url, {
+                const response = await axios.get<IData[]>("/api/data/get-list-of-uploads/", {
                     params:{
                         username,
                     }

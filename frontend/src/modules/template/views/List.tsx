@@ -2,17 +2,11 @@ import { IGADTable } from "@/common/components/common/table";
 import { DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal, message, Upload } from "antd";
 import { useTemplate } from "../hooks";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useRouter } from "next/router";
+import { useState } from "react";
+import axios from '@/common/utils/axios';
 
 import { UploadOutlined } from "@ant-design/icons";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
-import { getData } from "@/common/utils";
-
-interface props {
-  viewPro: () => void;
-}
 
 enum OPERATION_TYPES {
   CREATE,
@@ -23,13 +17,6 @@ enum OPERATION_TYPES {
 export const HopList = () => {
   const del = () => {};
   const [form] = Form.useForm();
-  const router = useRouter();
-
-  const [token, setToken] = useState<string>("");
-
-  const [data, setData] = useState<Array<string>>([]);
-
-  const [view, setView] = useState<boolean>(false);
   const [roleId, setRoleId] = useState<string>();
 
 
@@ -86,13 +73,8 @@ export const HopList = () => {
     setUploading(true);
     await axios
       .post(
-        `${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}/api/hop/new/`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        `/api/hop/new/`,
+        formData
       )
       .then((res) => {
         setFileList([]);
