@@ -60,13 +60,9 @@ AUTH_ROLES_MAPPING = {
     "superset_sql_lab": ["sql_lab"],#
 }
 # The default user self registration role
-#AUTH_USER_REGISTRATION_ROLE = os.getenv('AUTH_USER_REGISTRATION_ROLE','Public')
-
-FLASK_ENV="development"
-SUPERSET_ENV="development"
+AUTH_USER_REGISTRATION_ROLE = os.getenv('AUTH_USER_REGISTRATION_ROLE','Public')
 
 logger = logging.getLogger(__name__)
-
 
 # Configure client
 keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_INTERNAL_URL,
