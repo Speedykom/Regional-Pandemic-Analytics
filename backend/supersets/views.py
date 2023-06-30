@@ -13,16 +13,11 @@ class ListDashboardsAPI(APIView):
     permission_classes = [AllowAny,]
     
     def get(self, request):
-        #Login to superset
-        auth_response = auths.get_auth_token()
-        
-        if auth_response['status'] != 200:
-            return Response({'errorMessage': auth_response['message']}, status=auth_response['status'])
-        
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/"
         
         headers = {
-            'Authorization': f"Bearer {auth_response['token']['access_token']}"
+            'Content-Type': "application/json",
+            'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', '')
         }
         
         response = requests.get(url=url, headers=headers)
@@ -40,19 +35,13 @@ class EnableEmbed(APIView):
     permission_classes = [AllowAny,]
     
     def post(self, request):
-        #Login to superset
-        auth_response = auths.get_auth_token()
-        
-        if auth_response['status'] != 200:
-            return Response({'errorMessage': auth_response['message']}, status=auth_response['status'])
-        
         uid = request.data.get('uid', None)
         
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{uid}/embedded"
         
         headers = {
             'Content-Type': "application/json",
-            'Authorization': f"Bearer {auth_response['token']['access_token']}"
+            'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', '')
         }
         
         response = requests.post(url, json={"allowed_domains": []}, headers=headers)
@@ -70,17 +59,11 @@ class GetEmbeddable(APIView):
     permission_classes = [AllowAny,]
     
     def get(self, request, *args, **kwargs):
-        #Login to superset
-        auth_response = auths.get_auth_token()
-        
-        if auth_response['status'] != 200:
-            return Response({'errorMessage': auth_response['message']}, status=auth_response['status'])
-        
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['id']}/embedded"
         
         headers = {
-            'Content-Type': 'application/json',
-            'Authorization': f'Bearer {auth_response["token"]["access_token"]}'
+            'Content-Type': "application/json",
+            'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', '')
         }
         
         response = requests.get(url, headers=headers)
