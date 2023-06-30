@@ -1,0 +1,46 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table Role {
+  role_id integer [primary key]
+  role_name varchar
+}
+Table Users{
+  id integer [primary key]
+  username varchar
+  email varchar
+  password varchar
+}
+
+Table RoleMapping{
+role_id integer
+user_id integer
+}
+
+Table FileUpload{
+  id integer [primary key]
+  username varchar
+  file_name varchar
+  file_type varchar
+  file file
+  date_added date
+}
+
+Table ProcessChain{
+  id uuid
+  username varchar
+  dag_name varchar
+  path varchar
+  data_source_name varchar
+  parquet_path varchar
+  dag_id varchar
+  state varchar
+  schedule_interval varchar
+}
+
+
+Ref: FileUpload.username > Users.username // many-to-one
+
+Ref: RoleMapping.user_id > Users.id
+Ref: RoleMapping.role_id > Role.role_id
+Ref: ProcessChain.username > Users.username
