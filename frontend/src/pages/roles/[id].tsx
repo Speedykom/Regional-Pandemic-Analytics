@@ -31,10 +31,12 @@ export const ViewRole = () => {
 				const attribs: any = Object.entries(res.data.role.attributes).map(
 					([key, value]) => {
 						// console.log({key, value})
-						return {
-							key,
-							value: JSON.parse(value[0]),
-						};
+						if (value instanceof Array) {
+							return {
+								key,
+								value: JSON.parse(value[0]),
+							};
+						}
 					}
 				);
 				setAttributes(attribs);
