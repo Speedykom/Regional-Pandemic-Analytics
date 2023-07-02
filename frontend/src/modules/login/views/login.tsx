@@ -147,7 +147,7 @@ export default function LoginForm() {
 											</Form>
 										</div>
 									</div>
-									<div className="bg-emerald-700 lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none">
+									<div className="bg-prim lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none">
 										<div className="text-white px-4 py-6 md:p-12 md:mx-6">
 											<h4 className="text-2xl font-semibold mb-4">
 												Welcome back!
