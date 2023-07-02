@@ -216,7 +216,7 @@ class GetUserAPI(APIView):
     """
     API view to get user profile
     """
-    permission_classes = [AllowAny, ]
+    permission_classes = [AllowAny]
 
     def get(self, request, **kwargs):
         # Login to admin
@@ -244,7 +244,7 @@ class DeleteUserAPI(APIView):
     """
     API view to delete user from keycloak
     """
-    permission_classes = [AllowAny, ]
+    permission_classes = [AllowAny]
 
     def delete(self, request, **kwargs):
         # Login to admin
@@ -291,7 +291,7 @@ class AssignRolesAPI(APIView):
     """
     API view to assign roles to users
     """
-    permission_classes = [AllowAny, ]
+    permission_classes = [AllowAny]
 
     roleObject = {
         'id': str,
@@ -331,7 +331,7 @@ class ResetPasswordRequestAPI(APIView):
     """
     API view to reset users password
     """
-    permission_classes = [AllowAny, ]
+    permission_classes = [AllowAny]
 
     def post(self, request, **kwargs):
         # Login to admin
