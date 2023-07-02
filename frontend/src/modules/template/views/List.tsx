@@ -32,7 +32,6 @@ export const HopList = () => {
   const [view, setView] = useState<boolean>(false);
   const [roleId, setRoleId] = useState<string>();
 
-
   const formItemLayout = {
     labelCol: {
       xs: { span: 24 },
@@ -134,14 +133,14 @@ export const HopList = () => {
       <nav>
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl">Hop Pipelines</h2>
+            <h2 className="text-3xl">My Pipeline</h2>
             <p className="my-2 text-gray-600">
-              Upload, View and manage pipeline templates.
+              Create your hop pipeline
             </p>
           </div>
           <div>
             <Button type="primary" size="large" onClick={showModal}>
-              Upload Template
+              Create Pipeline
             </Button>
           </div>
         </div>
