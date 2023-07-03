@@ -5,6 +5,7 @@ import { IGADTable } from "@/common/components/common/table";
 import { IUser } from "@/modules/user/interface";
 import { BASE_URL } from "@/common/config";
 import axios from "axios";
+import secureLocalStorage from "react-secure-storage";
 
 export const DashboardList = () => {
 	const [data, setData] = useState<Array<IUser>>([]);
@@ -13,6 +14,7 @@ export const DashboardList = () => {
 	const router = useRouter();
 
 	const fetchDashboards = async () => {
+		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		setLoading(true);
 		const url = `${BASE_URL}/api/superset/list`;
 		await axios
@@ -20,6 +22,7 @@ export const DashboardList = () => {
 				headers: {
 					"Content-Type": "application/json",
 					'Accept': "application/json",
+					"Authorization": `Bearer ${tokens?.accessToken}`
 				},
 			})
 			.then((res) => {

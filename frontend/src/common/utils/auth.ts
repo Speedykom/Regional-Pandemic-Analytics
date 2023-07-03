@@ -1,9 +1,13 @@
 import axios from "axios";
 import { BASE_URL } from "../config";
 
-export const getUserRole = async (roles: []) => {
+export const getUserRole = async (roles: [], accessToken: string) => {
     const rolee = roles.find(item => item != 'default-roles-stack')
-    return await axios.get(`${BASE_URL}/api/role/${rolee}?type=name`).then((res) => {
+    return await axios.get(`${BASE_URL}/api/role/${rolee}?type=name`, {
+        headers: {
+            "Authorization": `Bearer ${accessToken}`
+        }
+    }).then((res) => {
         let newRole = res?.data?.role;
         let roleAttributeKeys = Object.keys(newRole?.attributes);
         roleAttributeKeys.forEach((key, _) => {

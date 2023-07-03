@@ -24,6 +24,7 @@ import { countries } from "@/common/utils/countries";
 import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
 import { BASE_URL } from "@/common/config";
+import secureLocalStorage from "react-secure-storage";
 
 interface props {
 	viewPro: () => void;
@@ -76,6 +77,7 @@ export const UserList = () => {
 	};
 
 	const fetchUsers = async () => {
+		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		try {
 			setLoading(true);
 			const url = `${BASE_URL}/api/account/users`;
@@ -83,6 +85,7 @@ export const UserList = () => {
 				.get(url, {
 					headers: {
 						'Content-Type': 'application/json',
+						"Authorization": `Bearer ${tokens?.accessToken}`
 					},
 				})
 				.then((res) => {
@@ -145,6 +148,7 @@ export const UserList = () => {
 	const onFinish = async (values: any) => {
 		values["code"] = code;
 		values["role"] = JSON.parse(values["role"])
+		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		await axios
 			.put(
 				`${BASE_URL}/api/account/user/${userId}/update`,
@@ -152,6 +156,7 @@ export const UserList = () => {
 				{
 					headers: {
 						"Content-Type": "application/json",
+						"Authorization": `Bearer ${tokens?.accessToken}`
 					},
 				}
 			)
@@ -178,12 +183,14 @@ export const UserList = () => {
 	);
 
 	const fetchRoles = async () => {
+		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		try {
 			setRoleLoading(true)
 			const url = `${BASE_URL}/api/role`;
 			await axios.get(url, {
 				headers: {
 					"Content-Type": "application/json",
+					"Authorization": `Bearer ${tokens?.accessToken}`
 				},
 			}).then((res) => {
 				setRoleLoading(false)

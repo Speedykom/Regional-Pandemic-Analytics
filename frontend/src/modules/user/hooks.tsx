@@ -6,6 +6,7 @@ import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Action } from "@/common/components/common/action";
 import axios from "axios";
 import { OpenNotification } from "@/common/utils/notify";
+import secureLocalStorage from "react-secure-storage";
 
 interface props {
 	edit: (
@@ -40,12 +41,14 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 		avatar: string
 	) => {
 		const deleteUser = async () => {
+			const tokens: any = secureLocalStorage.getItem("tokens") as object;
 			await axios
 				.delete(
 					`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${id}/delete`,
 					{
 						headers: {
 							"Content-Type": "application/json",
+							"Authorization": `Bearer ${tokens?.accessToken}`
 						},
 					}
 				)

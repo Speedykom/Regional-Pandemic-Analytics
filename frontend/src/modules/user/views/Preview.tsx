@@ -4,6 +4,7 @@ import { CovertFromTimestampToDate, ToMonthDayYear } from "@/common/utils/date-c
 import { Drawer } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import secureLocalStorage from "react-secure-storage";
 
 interface props {
 	openDrawer: boolean;
@@ -15,12 +16,14 @@ export const PreviewUser = ({ openDrawer, closeDrawer, userId }: props) => {
 	const [data, setData] = useState<any>();
 
 	const fetchUser = async () => {
+		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		try {
 			const url = `${BASE_URL}/api/account/user/${userId}`;
 			console.log({userId})
 			const response = await axios.get(url, {
 				headers: {
 					"Content-Type": "application/json",
+					"Authorization": `Bearer ${tokens?.accessToken}`
 				},
 			});
 			setData(response?.data);

@@ -18,8 +18,7 @@ from utils.filename import gen_filename
 from utils.env_configs import (
     BASE_URL, APP_USER_BASE_URL, APP_SECRET_KEY, APP_REALM, APP_USER_ROLES, REST_REDIRECT_URI)
 
-from utils.generators import get_random_secret
-from utils.keycloak_auth import keycloak_admin_login, current_user, role_assign
+from utils.keycloak_auth import keycloak_admin_login
 
 class LoginAPI(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
@@ -112,7 +111,7 @@ class KeyCloakLoginAPI(APIView):
 
         if res.status_code == 200:
             data = res.json()
-            return Response({'data': data}, status=status.HTTP_200_OK)
+            return Response(data, status=status.HTTP_200_OK)
 
         return Response({"result": "Login Failed"}, status=res.status_code)
     

@@ -18,6 +18,7 @@ import { countries } from "@/common/utils/countries";
 import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
 import { BASE_URL } from "@/common/config";
+import secureLocalStorage from "react-secure-storage";
 
 interface props {
 	openDrawer: boolean;
@@ -69,6 +70,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const [form] = Form.useForm();
 
 	const onFinish = async (values: any) => {
+		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		values["enabled"] = enabled;
 		values["emailVerified"] = emailVerified;
 		values["code"] = code;
@@ -78,6 +80,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 			.post(`${BASE_URL}/api/account/user`, values, {
 				headers: {
 					"Content-Type": "application/json",
+					"Authorization": `Bearer ${tokens?.accessToken}`
 				},
 			})
 			.then((res) => {
@@ -116,12 +119,14 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	};
 
 	const fetchRoles = async () => {
+		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		try {
 			setRoleLoading(true)
 			const url = `${BASE_URL}/api/role`;
 			await axios.get(url, {
 				headers: {
 					'Content-Type': 'application/json',
+					Authorization: `Bearer ${tokens?.accessToken}`
 				},
 			}).then((res) => {
 				setRoleLoading(false)
