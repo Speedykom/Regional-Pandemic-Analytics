@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import AllowAny
+
+from utils.keycloak_auth import current_user
 from . import auths
 
 class ListDashboardsAPI(APIView):
@@ -13,6 +15,11 @@ class ListDashboardsAPI(APIView):
     permission_classes = [AllowAny,]
     
     def get(self, request):
+        cur_user = current_user(request)
+        
+        if (cur_user['is_authenticated'] == False):
+            return Response(cur_user, status=cur_user["status"])
+        
         #Login to superset
         auth_response = auths.get_auth_token()
         
