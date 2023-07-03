@@ -3,14 +3,11 @@ import React, { useState } from "react";
 import { AddProcess } from "@/modules/process/views/add";
 import { Button } from "antd";
 import { useProcessChainList } from "../hooks";
-import { IGADTable } from "@/common/components/common/table";
 import { ProcessCard } from "../components/process-card";
+import { Loader } from "@/common/components/Loader";
 
 export default function ProcessChinList() {
   const [addProcess, setProcess] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [view, setView] = useState(false);
-  const [dag, setDag] = useState<any>();
 
   const closeAdd = () => {
     setProcess(false);
@@ -20,30 +17,7 @@ export default function ProcessChinList() {
     setProcess(true);
   };
 
-  const closeLoad = () => {
-    setOpen(false);
-    setDag(null);
-  };
-
-  const closeView = () => {
-    setView(false);
-    setDag(null);
-  };
-
-  const viewProcess = (dag_id: any) => {
-    setView(true);
-    setDag(dag_id);
-  };
-
-  const loadData = (dag: any) => {
-    setOpen(true);
-    setDag(dag);
-  };
-
-  const { columns, rows, loading } = useProcessChainList({
-    loadData,
-    viewProcess,
-  });
+  const { columns, rows, loading } = useProcessChainList();
 
   return (
     <>
@@ -61,11 +35,20 @@ export default function ProcessChinList() {
             </Button>
           </div>
         </div>
-        {/* <IGADTable columns={columns} rows={rows || []} loading={loading} /> */}
         <div className="mt-5">
-          {rows.map((process) => (
-            <ProcessCard process={process} key={process.id} />
-          ))}
+          {loading ? (
+            <div className="flex h-96 bg-white shadow-md border rounded-md items-center justify-center">
+              <div className="w-24 h-24">
+                <Loader />
+              </div>
+            </div>
+          ) : (
+            <>
+              {rows.map((process) => (
+                <ProcessCard process={process} key={process.id} />
+              ))}
+            </>
+          )}
         </div>
 
         <AddProcess onClose={closeAdd} state={addProcess} />
