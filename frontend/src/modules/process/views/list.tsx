@@ -6,7 +6,6 @@ import LoadData from "@/common/components/TABS/upload";
 import { useProcessChainList } from "../hooks";
 import { IGADTable } from "@/common/components/common/table";
 import { ViewDag } from "./view";
-import SelectHopModal from "@/modules/pipeline/views/templates";
 import { useFindAllQuery } from "@/modules/pipeline/pipeline";
 
 export default function ProcessChinList() {
@@ -14,17 +13,13 @@ export default function ProcessChinList() {
   const [open, setOpen] = useState(false);
   const [view, setView] = useState(false);
   const [dag, setDag] = useState<any>();
-  const [isShowHopModal, setIsShowHopModal] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<object>({});
-
-  const {data: record} = useFindAllQuery();
 
   const closeAdd = () => {
     setProcess(false);
   };
 
   const openAdd = () => {
-    setIsShowHopModal(true);
+    setProcess(true);
   };
 
   const closeLoad = () => {
@@ -52,17 +47,6 @@ export default function ProcessChinList() {
     viewProcess,
   });
 
-  // handle hop modal callback and hold the value returned
-  const handleHopModalResponseData = (value: any) => {
-    if (typeof value === "object" && value !== null) {
-      setSelectedTemplate(value);
-      setIsShowHopModal(false);
-      setProcess(true);
-    } else {
-      setIsShowHopModal(value);
-    }
-  };
-
   return (
     <>
       <DashboardFrame>
@@ -87,18 +71,9 @@ export default function ProcessChinList() {
           onClose={closeView}
           key="view-dag"
         />
-
-        {/* hop modal */}
-        {/* <SelectHopModal
-          openModal={isShowHopModal}
-          parentCallback={handleHopModalResponseData}
-          hopData={record?.data}
-        /> */}
-
         <AddProcess
           onClose={closeAdd}
           state={addProcess}
-          selectedTemplate={selectedTemplate}
         />
       </DashboardFrame>
     </>
