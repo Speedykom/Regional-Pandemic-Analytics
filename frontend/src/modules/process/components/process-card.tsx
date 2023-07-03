@@ -1,6 +1,6 @@
 import { ShowMessage } from "@/common/components/ShowMessage";
 import { Button, Popover, Steps } from "antd";
-import { BiChevronDown, BiChevronUp } from "react-icons/bi";
+import { BiChart, BiChevronDown, BiChevronUp, BiGitMerge, BiTable } from "react-icons/bi";
 import {
   useDelProcessMutation,
   useEditAccessMutation,
@@ -8,10 +8,41 @@ import {
 } from "../process";
 import { useState } from "react";
 import Router from "next/router";
+import { UserOutlined } from "@ant-design/icons";
+import {AiOutlineSchedule} from "react-icons/ai"
 
 interface props {
   process: any;
 }
+
+const LoadButton = ({ id }: { id: string }) => {
+  const [editAccess] = useEditAccessMutation();
+
+  const [loading, setLoading] = useState(false);
+
+  const edit = () => {
+    setLoading(true);
+    editAccess(id).then((res: any) => {
+      if (res.error) {
+        ShowMessage("error", res.error.message);
+        setLoading(false);
+        return;
+      }
+
+      Router.push(`/process-chains/${id}`);
+    });
+  };
+
+  return (
+    <Button
+      loading={loading}
+      onClick={() => edit()}
+      className="dag-btn border-gray-500 text-gray-500 rounded-md hover:bg-gray-500 hover:text-white focus:outline-none focus:bg-gray-500 focus:text-white"
+    >
+      Load Data
+    </Button>
+  );
+};
 
 const ViewButton = ({ id }: { id: string }) => {
   const [editAccess] = useEditAccessMutation();
@@ -138,15 +169,19 @@ export const ProcessCard = ({ process }: props) => {
   const steps = [
     {
       title: "Data Source Selection",
+      icon: <BiGitMerge />,
     },
     {
       title: "Orchestration",
+      icon: <AiOutlineSchedule />,
     },
     {
       title: "Analytics Data Model",
+      icon: <BiTable />,
     },
     {
       title: "Charts",
+      icon: <BiChart />,
     },
   ];
 
@@ -181,6 +216,7 @@ export const ProcessCard = ({ process }: props) => {
             </div>
           </div>
           <div className="flex space-x-2 justify-end">
+            <LoadButton id={process.dag_id} />
             {process.airflow ? <RunButton id={process.dag_id} /> : null}
             {process.airflow ? <ViewButton id={process.dag_id} /> : null}
             <DelButton id={process.dag_id} />
@@ -201,7 +237,7 @@ export const ProcessCard = ({ process }: props) => {
       {state ? (
         <div className="pt-14 pb-5 flex justify-center">
           <div className="w-2/3">
-          <Steps progressDot current={current} items={items} />
+          <Steps current={current} items={items} />
           </div>
         </div>
       ) : null}
