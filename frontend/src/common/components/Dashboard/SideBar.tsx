@@ -126,7 +126,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
           </Link>
         )}
         <NavLink
-          href="/hop-template"
+          href="/my-pipeline"
           activeClassName="bg-prim text-white"
           className="p-3 mx-5 rounded space-x-3 text-center cursor-pointer mb-3 flex items-center transition-colors"
         >
