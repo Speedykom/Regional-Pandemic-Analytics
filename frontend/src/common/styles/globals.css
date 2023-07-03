@@ -11,6 +11,10 @@ body {
   background: #007b38;
 }
 
+.text-prim {
+  color: #007b38;
+}
+
 .embed-iframe-container {
   position: relative; 
   width: 100%; 
