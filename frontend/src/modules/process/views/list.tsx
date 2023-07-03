@@ -2,11 +2,9 @@ import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import React, { useState } from "react";
 import { AddProcess } from "@/modules/process/views/add";
 import { Button } from "antd";
-import LoadData from "@/common/components/TABS/upload";
 import { useProcessChainList } from "../hooks";
 import { IGADTable } from "@/common/components/common/table";
-import { ViewDag } from "./view";
-import { useFindAllQuery } from "@/modules/pipeline/pipeline";
+import { ProcessCard } from "../components/process-card";
 
 export default function ProcessChinList() {
   const [addProcess, setProcess] = useState(false);
@@ -63,18 +61,14 @@ export default function ProcessChinList() {
             </Button>
           </div>
         </div>
-        <IGADTable columns={columns} rows={rows || []} loading={loading} />
-        <LoadData onClose={closeLoad} state={open} dag={dag} />
-        <ViewDag
-          id={dag || ""}
-          state={view}
-          onClose={closeView}
-          key="view-dag"
-        />
-        <AddProcess
-          onClose={closeAdd}
-          state={addProcess}
-        />
+        {/* <IGADTable columns={columns} rows={rows || []} loading={loading} /> */}
+        <div className="mt-5">
+          {rows.map((process) => (
+            <ProcessCard process={process} key={process.id} />
+          ))}
+        </div>
+
+        <AddProcess onClose={closeAdd} state={addProcess} />
       </DashboardFrame>
     </>
   );
