@@ -4,7 +4,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import include, re_path, path
 from process.views.pipeline import CreatePipeline, GetPipeline, RequestEditPipeline
-from process.views.process import GetProcess, RunProcess, RequestEditProcess, CreateProcess, EditProcess, DeleteProcess
+from process.views.process import GetProcess, RunProcess, CreateProcess, DeleteProcess
 from data.views import DataUploadAPI
 from accounts import views
 
@@ -78,7 +78,6 @@ urlpatterns = [
     path('process/list', GetProcess.as_view()),
     path('process/run/<str:id>', RunProcess.as_view()),
     path('process/delete/<str:dag_id>', DeleteProcess.as_view()),
-    path('process/<str:id>', EditProcess.as_view()),
     path('process/one/<str:dag_id>', GetProcess.as_view()),
 
     # ---------------------- Data upload Endpoints ------------------------------------------
