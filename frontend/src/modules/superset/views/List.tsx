@@ -28,11 +28,11 @@ export const DashboardList = () => {
 			})
 			.then((res) => {
 				setLoading(false);
-				setData(res?.data?.result);
+				setData(res?.data?.result || null);
 			}).catch((err) => {
 				setLoading(false);
 				setData([]);
-				setError(err?.response?.data?.errorMessage)
+				setError("error fetcing dashboards found")
 			});
 	};
 
