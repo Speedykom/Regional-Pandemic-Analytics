@@ -10,20 +10,10 @@ export default function SupersetDashboard() {
 	let ref = useRef(null);
 	const [uuid, setUUID] = useState("");
 
+	const tokens: any = secureLocalStorage.getItem("tokens");
+	const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
 	const viewDash = async () => {
-		const tokens: any = secureLocalStorage.getItem("tokens");
-		const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
 		const dashId = location.href.substring(location.href.lastIndexOf('/') + 1);
-		const response = await axios.get(
-			`${BASE_URL}/api/superset/dashboard/embed/${dashId}`,
-			{
-				headers: {
-					"Content-Type": "application/json",
-					'Authorization': `Bearer ${accessToken}`
-				},
-			}
-		);
-		if (response.status !== 200) {
 			await axios
 				.post(
 					`${BASE_URL}/api/superset/dashboard/enable-embed`,
@@ -42,9 +32,7 @@ export default function SupersetDashboard() {
 					const dashboardUUID = res?.data?.result?.uuid;
 					setUUID(dashboardUUID);
 				});
-		} else {
-			setUUID(response.data?.result?.uuid);
-		}
+		
 	};
 
 	const embedDash = async () => {
@@ -58,8 +46,8 @@ export default function SupersetDashboard() {
 					hideTitle: true,
 					hideTab: true,
 					filters: {
-						expanded: false,
-						visible: false,
+						expanded: true,
+						visible: true,
 					},
 				},
 			});

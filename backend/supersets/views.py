@@ -14,14 +14,12 @@ class ListDashboardsAPI(APIView):
     
     def get(self, request):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/"
-        
         headers = {
             'Content-Type': "application/json",
             'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', '')
         }
         
         response = requests.get(url=url, headers=headers)
-        
         if response.status_code != 200:
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
@@ -44,7 +42,7 @@ class EnableEmbed(APIView):
             'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', '')
         }
         
-        response = requests.post(url, json={"allowed_domains": []}, headers=headers)
+        response = requests.post(url, json={"allowed_domains": [os.getenv("SUPERSET_ALLOWED_DOMAINS")]}, headers=headers)
         
         if response.status_code != 200:
             return Response({'errorMessage': response.json()}, status=response.status_code)
@@ -57,7 +55,6 @@ class GetEmbeddable(APIView):
     API view to get embedable superset dashboard
     """
     permission_classes = [AllowAny,]
-    
     def get(self, request, *args, **kwargs):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['id']}/embedded"
         
@@ -78,16 +75,9 @@ class GuestTokenApi(APIView):
     
     def post(self, request):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/security/guest_token/"
-        
-        guest_token = auths.get_csrf_token()
-        
-        if guest_token['status'] != 200:
-            return Response({'errorMessage': guest_token['message']}, status=guest_token['status'])
-        
         headers = {
             'Content-Type': "application/json",
-            'Authorization': f"Bearer {guest_token['token']['access_token']}",
-            'X-CSRF-TOKEN': f"{guest_token['token']['csrf_token']}"
+            'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', ''),
         }
         
         payload = {
