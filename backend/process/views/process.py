@@ -10,6 +10,7 @@ from ..models import ProcessChain
 from ..serializers import ProcessChainSerializer
 from ..gdags.dynamic import DynamicDag
 from ..gdags.hop import EditAccessProcess
+from utils.keycloak_auth import current_user
 
 api = os.getenv("AIRFLOW_API")
 username = os.getenv("AIRFLOW_USER")
@@ -74,6 +75,64 @@ class CreateProcess(APIView):
     output = "../airflow/dags/"
 
     def post(self, request):
+        path = request.data['path']
+        name = request.data['dag_id'].replace(" ", "-").replace(".hpl", "").lower()
+
+        dag_id = name
+        process = ProcessChain.objects.filter(dag_id=dag_id)
+
+        if (len(process) > 0):
+            return Response({"status": "Fail", "message": "process already exist with this dag_id {}".format(dag_id)}, status=409)
+
+        file = open(path, "r")
+
+        pipeline_name = "../hop/pipelines/{}.hpl".format(name)
+        pipeline_path = "{}.hpl".format(name)
+        parquet_path = "/opt/shared/{}.parquet".format(name)
+
+        pipeline = open(pipeline_name,"w")
+        pipeline.write(file.read())
+        pipeline.close()
+        file.close()
+
+        request.data['path'] = pipeline_path
+        request.data['parquet_path'] = parquet_path
+        request.data['dag_id'] = name
+
+        serializer = ProcessChainSerializer(data=request.data)
+
+        if serializer.is_valid():
+
+            serializer.save()
+
+            # init dynamic dag class
+            dynamic_dag = DynamicDag(output=self.output, template=self.template)
+
+            # create dag
+            dynamic_dag.new_dag(request.data['dag_id'], request.data['dag_id'], request.data['parquet_path'],
+                                request.data['data_source_name'], request.data['schedule_interval'],
+                                request.data['path'])
+
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+class CreatePipeline(APIView):
+
+    permission_classes = [AllowAny]
+
+    # dynamic dag template
+    template = "process/gdags/template.py"
+
+    # dynamic dag output
+    output = "../airflow/dags/"
+
+    def post(self, request):
+        cur_user = current_user(request)
+
+        if (cur_user['is_authenticated'] == False):
+            return Response(cur_user, status=cur_user["status"])
+
         path = request.data['path']
         name = request.data['dag_id'].replace(" ", "-").replace(".hpl", "").lower()
 
