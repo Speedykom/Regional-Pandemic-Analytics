@@ -1,24 +1,13 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL } from "@/common/config";
-import secureLocalStorage from "react-secure-storage";
+import { BASE_URL, prepareHeaders } from "@/common/config";
 
 // Define a service using a base URL and expected endpoints
 export const pipelineApi = createApi({
   reducerPath: "pipelineApi",
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
-    prepareHeaders: (headers, { getState, endpoint }) => {
-      const tokens = secureLocalStorage.getItem("tokens");
-
-      if (!tokens) headers;
-
-      const { accessToken } = (tokens as any);
-
-      headers.set("AUTHORIZATION", `Bearer ${accessToken}`);
-
-      return headers;
-    },
+    prepareHeaders,
     credentials: "include",
   }),
   tagTypes: ["pipelines"],
