@@ -18,7 +18,7 @@ SUPERSET_KEYCLOAK_CLIENT_ID=os.getenv('SUPERSET_KEYCLOAK_CLIENT_ID')
 SUPERSET_KEYCLOAK_CLIENT_SECRET=os.getenv('SUPERSET_KEYCLOAK_CLIENT_SECRET')
 SUPERSET_KEYCLOAK_EXTERNAL_URL = os.getenv('SUPERSET_KEYCLOAK_EXTERNAL_URL')
 SUPERSET_KEYCLOAK_INTERNAL_URL=os.getenv('SUPERSET_KEYCLOAK_INTERNAL_URL')
-
+SUPERSET_DATABASE_URI=os.getenv('SUPERSET_DATABASE_URI')
 SECRET_KEY = os.getenv('SUPERSET_SECRET_KEY')
 
 # Set the authentication type to OAuth
@@ -107,9 +107,6 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
         # pylint: disable=import-outside-toplevel
         from superset.extensions import feature_flag_manager
 
-        if feature_flag_manager.is_feature_enabled("EMBEDDED_SUPERSET"):
-            return self.get_guest_user_from_request(request)
-        
         # next, try to login using Basic Auth
         access_token = request.headers.get('X-KeycloakToken')
         if access_token:
@@ -119,10 +116,17 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
                 user = self.find_user(email=token_info['email'])
                 logger.info("Keycloak auth success")
                 return user
-
+        
+        if feature_flag_manager.is_feature_enabled("EMBEDDED_SUPERSET"):
+            return self.get_guest_user_from_request(request)
+        
         # finally, return None if both methods did not login the user
         return None
 
-
+GUEST_ROLE_NAME = "Alpha"
 CUSTOM_SECURITY_MANAGER = CustomSupersetSecurityManager
-SUPERSET_LOAD_EXAMPLES="yes"
+SUPERSET_LOAD_EXAMPLES = "yes"
+ENABLE_PROXY_FIX = True
+WTF_CSRF_ENABLED = False
+SQLALCHEMY_DATABASE_URI = SUPERSET_DATABASE_URI
+ENABLE_PROXY_FIX = True
