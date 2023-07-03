@@ -29,6 +29,8 @@ class DeleteProcess(APIView):
 class CreateProcess(APIView):
 
     permission_classes = [AllowAny]
+    
+    template = "process/gdags/template.py"
 
     # dynamic dag output
     output = "../airflow/dags/"
