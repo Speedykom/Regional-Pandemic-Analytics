@@ -16,9 +16,6 @@ class CreatePipeline(APIView):
 
     permission_classes = [AllowAny]
 
-    # dynamic dag template
-    template = "process/gdags/template.py"
-
     def post(self, request):
         cur_user = me(request)
 
