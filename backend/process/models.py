@@ -1,11 +1,21 @@
 import uuid
 from django.db import models
 
+class Pipeline(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=200)
+    path = models.CharField(max_length=200)
+    user_name = models.CharField(max_length=200)
+    user_id = models.CharField(max_length=200)
+    parquet_path = models.CharField(max_length=200)
+
+    def __str__(self):
+        return "Pipeline(id={}, name={}, parquet_path={}, path={}, path={}, path={})".format(self.id, self.name, self.parquet_path, self.path)
+
 
 class ProcessChain(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     dag_name = models.CharField(max_length=200)
-    path = models.CharField(max_length=200)
     data_source_name = models.CharField(max_length=200)
     parquet_path = models.CharField(max_length=200)
     dag_id = models.CharField(max_length=200)

@@ -58,10 +58,12 @@ def decode_auth_token (token: str):
 
 def current_user (request):
     token: str = request.META.get('HTTP_AUTHORIZATION')
+
     if token is None:
         return {'is_authenticated': False, 'message': 'auth header is required', 'payload': None, 'status': status.HTTP_400_BAD_REQUEST}
     
     serialToken = token.replace("Bearer ", "")
+
     form_data = {
         "client_id": APP_CLIENT_ID,
         "client_secret": APP_CLIENT_SECRET,
@@ -72,6 +74,7 @@ def current_user (request):
                             data=form_data)
         
     data = response.json()
+    
     if data['active'] == False:
         return {'is_authenticated': False, 'message': 'Unauthorized', 'payload': None, 'status': status.HTTP_401_UNAUTHORIZED}
     
