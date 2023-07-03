@@ -1,5 +1,5 @@
 import { ShowMessage } from "@/common/components/ShowMessage";
-import { Button, Popover } from "antd";
+import { Button, Popover, Steps } from "antd";
 import { BiChevronDown, BiChevronUp } from "react-icons/bi";
 import {
   useDelProcessMutation,
@@ -135,7 +135,26 @@ const RunButton = ({ id }: { id: string }) => {
 };
 
 export const ProcessCard = ({ process }: props) => {
+  const steps = [
+    {
+      title: "Data Source Selection",
+    },
+    {
+      title: "Orchestration",
+    },
+    {
+      title: "Analytics Data Model",
+    },
+    {
+      title: "Charts",
+    },
+  ];
+
+  const items = steps.map((item: any) => ({ ...item, key: item.title }));
+
   const [state, setState] = useState(false);
+
+  const [current, setCurrent] = useState(0);
 
   return (
     <div className="bg-white mb-5 shadow border rounded-3xl p-5 px-8">
@@ -143,25 +162,21 @@ export const ProcessCard = ({ process }: props) => {
         <div className="flex justify-between flex-1 items-center">
           <div className="flex justify-between space-x-10">
             <div className="text-sm flex flex-col items-center">
-              <p className="mb-2">Process Name</p>
+              <p className="mb-2 text-xs font-bold">Process Name</p>
               <p className="bg-gray-100 text-prim rounded-full p-1 px-3">
                 {process.name}
               </p>
             </div>
             <div className="text-sm flex flex-col items-center">
-              <p className="mb-2">Schedule</p>
+              <p className="mb-2 text-xs font-bold">Schedule</p>
               <p className="bg-gray-100 text-prim rounded-full p-1 px-3">
                 {process.schedule_interval}
               </p>
             </div>
             <div className="text-sm flex flex-col items-center">
-              <p className="mb-2">State</p>
+              <p className="mb-2 text-xs font-bold">State</p>
               <p className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                {process.airflow
-                  ? process.airflow.is_active
-                    ? "Active"
-                    : "Inactive"
-                  : "Orchestration in progress"}
+                {process.state === "active" ? "Active" : "Inactive"}
               </p>
             </div>
           </div>
@@ -174,21 +189,20 @@ export const ProcessCard = ({ process }: props) => {
         <div className="w-1/3 flex justify-end">
           {state ? (
             <button onClick={() => setState(false)}>
-              <BiChevronUp className="text-3xl text-prim" />
+              <BiChevronUp className="text-4xl text-prim" />
             </button>
           ) : (
             <button onClick={() => setState(true)}>
-              <BiChevronDown className="text-3xl" />
+              <BiChevronDown className="text-4xl text-prim" />
             </button>
           )}
         </div>
       </div>
       {state ? (
-        <div className="py-8">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui, mollitia
-          accusamus rem sequi exercitationem dolorem cupiditate, magnam odit
-          consectetur necessitatibus voluptates perferendis reprehenderit
-          consequatur quisquam rerum commodi sit nemo tenetur?
+        <div className="pt-14 pb-5 flex justify-center">
+          <div className="w-2/3">
+          <Steps progressDot current={current} items={items} />
+          </div>
         </div>
       ) : null}
     </div>
