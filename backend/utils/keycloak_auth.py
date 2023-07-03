@@ -57,7 +57,31 @@ def decode_auth_token (token: str):
         return {'message': 'invalid', 'payload': None, 'status': 498}
 
 def current_user (request):
-    token: str = request.META.get('HTTP_AUTHORIZATION')
+    token: str = request.META.get('AUTHORIZATION')
+
+    if token is None:
+        return {'is_authenticated': False, 'message': 'auth header is required', 'payload': None, 'status': status.HTTP_400_BAD_REQUEST}
+    
+    serialToken = token.replace("Bearer ", "")
+
+    form_data = {
+        "client_id": APP_CLIENT_ID,
+        "client_secret": APP_CLIENT_SECRET,
+        "token": serialToken
+    }
+    
+    response = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/token/introspect",
+                            data=form_data)
+        
+    data = response.json()
+    
+    if data['active'] == False:
+        return {'is_authenticated': False, 'message': 'Unauthorized', 'payload': None, 'status': status.HTTP_401_UNAUTHORIZED}
+    
+    return {'is_authenticated': True, 'message': 'Success', 'payload': response.json(), 'status': status.HTTP_200_OK}
+
+def me (request):
+    token: str = request.headers['AUTHORIZATION']
 
     if token is None:
         return {'is_authenticated': False, 'message': 'auth header is required', 'payload': None, 'status': status.HTTP_400_BAD_REQUEST}
