@@ -39,23 +39,6 @@ def keycloak_admin_login():
 
     return serverResponse
 
-pub_key = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5MnLb2R/mU/QWcy2hYxVRZ082obB0tMLObTSaIkETwlo9wuO4Icie53IVZzltnH1Monu11H2dH9+Fdzt/T6BP6mTtynZ6a3+busBhbrUCx9lQDKEpjAyOo3YzJ/AieJyfR6HPlLapYJ5u0cKUqo+QYCLx1n052aGvu+RZwLbmSqiiZF/BdQ2n+UEkfr32CetjxhGNPJjVNMB2jaCh5pFaYRfDI0VYxcz++vZge+6qVXzadgftfF5353B4Zt/CzPe04lGCwkNFhvCtwE95cvcbgObKsyIiFedgAuQTGH3BDoVPsU1G8FguyKyxOHINQiO+dzyiT7jJqnSuFEnvjozTwIDAQAB\n-----END PUBLIC KEY-----"
-
-def decode_auth_token (token: str):
-    try:
-        if not token:
-            return{'message': 'empty', 'payload': None, 'status': 400}
-        
-        token = token.replace("Bearer ", "")
-        
-        payload = jwt.decode(token, APP_CLIENT_SECRET)
-        
-        return {'message': 'success', 'payload': payload, 'status': 200}
-    except jwt.ExpiredSignatureError:
-        return {'message': 'expired', 'payload': None, 'status': 401}
-    except jwt.InvalidTokenError:
-        return {'message': 'invalid', 'payload': None, 'status': 498}
-
 def current_user (request):
     token: str = request.META.get('HTTP_AUTHORIZATION')
     if token is None:

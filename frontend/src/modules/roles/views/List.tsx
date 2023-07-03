@@ -36,6 +36,8 @@ export const RoleList = () => {
 
 	const [roleId, setRoleId] = useState<string>();
 
+	const tokens: any = secureLocalStorage.getItem("tokens") as object;
+
 	const fetchRoles = async () => {
 		try {
 			setLoading(true);
@@ -44,6 +46,7 @@ export const RoleList = () => {
 				.get(url, {
 					headers: {
 						"Content-Type": `application/json`,
+						"Authorization": `Bearer ${tokens?.accessToken}`
 					},
 				})
 				.then((res) => {
@@ -104,6 +107,7 @@ export const RoleList = () => {
 			data: values,
 			headers: {
 				"Content-Type": "application/json",
+				"Authorization": `Bearer ${tokens?.accessToken}`
 			},
 		})
 			.then((res) => {

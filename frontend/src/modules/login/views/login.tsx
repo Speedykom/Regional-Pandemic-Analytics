@@ -14,10 +14,10 @@ export default function LoginForm() {
 	const [form] = Form.useForm();
 	const router = useRouter();
 
-	const onFinish = (data: any) => {
+	const onFinish = async(data: any) => {
 		setLoading(true);
 
-		axios
+		await axios
 			.post("/api/auth/login", data, {
 				headers: {
 					"Content-Type": "application/json",
@@ -32,7 +32,7 @@ export default function LoginForm() {
 						refreshToken: res?.data?.result?.refresh_token,
 					});
 
-					const role = await getUserRole(payload?.realm_access?.roles);
+					const role = await getUserRole(payload?.realm_access?.roles, res?.data?.result?.access_token);
 					secureLocalStorage.setItem("user_role", role);
 
 					// @ts-ignore
@@ -49,7 +49,7 @@ export default function LoginForm() {
 					router.push("/home");
 				}
 			})
-			.catch((res: any) => {
+			.catch((err: any) => {
 				setLoading(false);
 				ShowMessage("error", "Wrong username or password!");
 			});

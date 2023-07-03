@@ -1,11 +1,12 @@
 import { ColumnsType } from "antd/es/table";
-import { IRole } from "./interface";
-import { Popconfirm, Tag } from "antd";
+import { IAttribute, IRole } from "./interface";
+import { Button, Popconfirm, Tag } from "antd";
 import { FiEdit, FiEye, FiTrash } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Action } from "@/common/components/common/action";
 import axios from "axios";
 import { OpenNotification } from "@/common/utils/notify";
+import secureLocalStorage from "react-secure-storage";
 
 interface props {
 	edit: (id: string, name: string, description: string) => void;
@@ -17,12 +18,14 @@ interface props {
 export const useRoles = ({ edit, view, del, refetch }: props) => {
 	const action = (id: string, name: string, description: string) => {
 		const deleteUser = async () => {
+			const tokens: any = secureLocalStorage.getItem("tokens") as object;
 			await axios
 				.delete(
 					`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles/${id}/delete`,
 					{
 						headers: {
 							"Content-Type": "application/json",
+							"Authorization": `Bearer ${tokens?.accessToken}`
 						},
 					}
 				)
@@ -167,7 +170,11 @@ export const fetchRoles = async () => {
 		});
 };
 
-export const useAttributes = () => {
+interface editProps {
+	edit: (attribute: IAttribute) => void;
+}
+
+export const useAttributes = ({edit}: editProps) => {
 	const columns: ColumnsType<any> = [
 		{
 			title: "Permissions",
@@ -257,12 +264,30 @@ export const useAttributes = () => {
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
 		},
+		{
+			title: "",
+			key: "action",
+			dataIndex: "action",
+			render: (_, record) => (
+				<div>
+					<Button
+						type="link"
+						onClick={(e) => {
+							e.preventDefault();
+							edit({key: record.key, value: record.value});
+						}}
+					>Edit</Button>
+				</div>
+			),
+			className: "text-gray-700 font-sans",
+			ellipsis: true,
+		},
 	]
 
 	return { columns }
 }
 
-export const useAttributeForEdit = () => {
+export const useAttributeForEdit = ({edit}: editProps) => {
 	const columns: ColumnsType<any> = [
 		{
 			title: "Permissions",
