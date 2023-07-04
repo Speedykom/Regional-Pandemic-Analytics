@@ -32,7 +32,7 @@ export const DashboardList = () => {
 			}).catch((err) => {
 				setLoading(false);
 				setData([]);
-				setError("error fetcing dashboards found")
+				setError("error fetching dashboards found")
 			});
 	};
 
