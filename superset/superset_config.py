@@ -125,8 +125,6 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
 
 GUEST_ROLE_NAME = "Alpha"
 CUSTOM_SECURITY_MANAGER = CustomSupersetSecurityManager
-SUPERSET_LOAD_EXAMPLES = "yes"
 ENABLE_PROXY_FIX = True
 WTF_CSRF_ENABLED = False
 SQLALCHEMY_DATABASE_URI = SUPERSET_DATABASE_URI
-ENABLE_PROXY_FIX = True
