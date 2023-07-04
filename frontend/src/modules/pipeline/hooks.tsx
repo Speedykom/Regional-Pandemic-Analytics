@@ -17,7 +17,7 @@ const ViewButton = ({ id }: { id: string }) => {
         return;
       }
 
-      window.open("http://localhost:8882", "_blank");
+      window.open(process.env.NEXT_PUBLIC_HOP_UI, "_blank");
       setLoading(false);
     });
   };
