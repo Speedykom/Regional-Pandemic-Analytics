@@ -1,67 +1,36 @@
-# IGAD MinIO conosole interface config
 server {
-    listen          80;
-    server_name     $NGINX_STORAGE_DOMAIN_NAME;
-
-	# Docs : https://min.io/docs/minio/linux/integrations/setup-nginx-proxy-with-minio.html
-	# Allow special characters in headers
-	ignore_invalid_headers off;
-	# Allow any size file to be uploaded.
-	# Set to a value such as 1000m; to restrict file size to a specific value
-	client_max_body_size 0;
-	# Disable buffering
-	proxy_buffering off;
-	proxy_request_buffering off;
-
-    location / {
-		proxy_set_header Host $http_host;
-		proxy_set_header X-Real-IP $remote_addr;
-		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-		proxy_set_header X-Forwarded-Proto $scheme;
-
-		proxy_connect_timeout 300;
-		# Default is HTTP/1, keepalive is only enabled in HTTP/1.1
-		proxy_http_version 1.1;
-		proxy_set_header Connection "";
-		chunked_transfer_encoding off;
-            
-        proxy_pass        http://$NGINX_UPSTREAM_STORAGE:9000/;
-    }
-
-	location /minio {
-      proxy_set_header Host $http_host;
-      proxy_set_header X-Real-IP $remote_addr;
-      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-      proxy_set_header X-Forwarded-Proto $scheme;
-      proxy_set_header X-NginX-Proxy true;
-
-      # This is necessary to pass the correct IP to be hashed
-      real_ip_header X-Real-IP;
-
-      proxy_connect_timeout 300;
-
-      # To support websockets in MinIO versions released after January 2023
-      proxy_http_version 1.1;
-      proxy_set_header Upgrade $http_upgrade;
-      proxy_set_header Connection "upgrade";
-
-      chunked_transfer_encoding off;
-
-      proxy_pass http://$NGINX_UPSTREAM_STORAGE:9090/; # This uses the upstream directive definition to load balance and assumes a static Console port of 9001
-   }
-}
-server {
-	listen 443 ssl;
-	server_name $NGINX_STORAGE_DOMAIN_NAME;
-	ssl_certificate /etc/nginx/certs/storage.crt;
-	ssl_certificate_key /etc/nginx/certs/storage.key;
-	location / {
-		proxy_pass http://$NGINX_UPSTREAM_STORAGE:9000/;
-		error_log /var/log/storage_errors.log;
-	}
-		location /minio {
-		proxy_pass http://$NGINX_UPSTREAM_STORAGE:9090/;
-		error_log /var/log/storage_errors.log;
-	}
+  listen 80;
+  server_name $NGINX_STORAGE_DOMAIN_NAME;
+  return 301 https://$host$request_uri;
 }
 
+server {
+  listen 443 ssl;
+  server_name $NGINX_STORAGE_DOMAIN_NAME;
+  ssl_certificate /etc/nginx/certs/storage.crt;
+  ssl_certificate_key /etc/nginx/certs/storage.key;
+  #location / {
+  #  proxy_pass http://$NGINX_UPSTREAM_STORAGE:9000;
+	#  error_log /var/log/storage_errors.log;
+  #  proxy_set_header X-Real-IP $remote_addr;
+  #  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  #  proxy_set_header X-Forwarded-Proto $scheme;
+  #  proxy_set_header Host $http_host;
+  #  proxy_set_header Upgrade $http_upgrade;
+  #  proxy_set_header Connection "Upgrade";
+  #  proxy_http_version 1.1;
+  #  chunked_transfer_encoding off;
+  #}
+  location / {
+    proxy_pass http://$NGINX_UPSTREAM_STORAGE:9090;
+	  error_log /var/log/storage_errors.log;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Host $http_host;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+    proxy_http_version 1.1;
+    chunked_transfer_encoding off;
+  }
+}
