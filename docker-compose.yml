@@ -396,6 +396,7 @@ services:
     <<: *airflow
     depends_on:
       - airflow-pg
+      - keycloak
     container_name: airflow-webserver
     restart: always
     command: webserver
