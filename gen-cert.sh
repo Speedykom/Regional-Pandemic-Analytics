@@ -6,8 +6,6 @@ state=TN
 locality=TN
 organization=Speedykom
 organizationalunit=IT
-email=ala-hmz@outlook.com
-password=dummypassword
 
 #Where the certs would be generated
 cd nginx/certificates
@@ -19,7 +17,7 @@ if test -f "$CA"; then
 else 
     openssl genrsa -out myCA.key 2048
     openssl req -x509 -new -nodes -key myCA.key -sha256 -days 1825 -out myCA.pem \
-         -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
+         -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/"
     echo files generated!
 
 fi
