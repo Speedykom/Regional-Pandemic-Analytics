@@ -1,6 +1,12 @@
 import { ShowMessage } from "@/common/components/ShowMessage";
 import { Button, Popover, Steps } from "antd";
-import { BiChart, BiChevronDown, BiChevronUp, BiGitMerge, BiTable } from "react-icons/bi";
+import {
+  BiChart,
+  BiChevronDown,
+  BiChevronUp,
+  BiGitMerge,
+  BiTable,
+} from "react-icons/bi";
 import {
   useDelProcessMutation,
   useEditAccessMutation,
@@ -8,35 +14,17 @@ import {
 } from "../process";
 import { useState } from "react";
 import Router from "next/router";
-import { UserOutlined } from "@ant-design/icons";
-import {AiOutlineSchedule} from "react-icons/ai"
+import { AiOutlineSchedule } from "react-icons/ai";
 
 interface props {
   process: any;
+  onLoad: (process: any) => void;
 }
 
-const LoadButton = ({ id }: { id: string }) => {
-  const [editAccess] = useEditAccessMutation();
-
-  const [loading, setLoading] = useState(false);
-
-  const edit = () => {
-    setLoading(true);
-    editAccess(id).then((res: any) => {
-      if (res.error) {
-        ShowMessage("error", res.error.message);
-        setLoading(false);
-        return;
-      }
-
-      Router.push(`/process-chains/${id}`);
-    });
-  };
-
+const LoadButton = ({ id, onClick }: { id: string; onClick: () => void }) => {
   return (
     <Button
-      loading={loading}
-      onClick={() => edit()}
+      onClick={() => onClick()}
       className="dag-btn border-gray-500 text-gray-500 rounded-md hover:bg-gray-500 hover:text-white focus:outline-none focus:bg-gray-500 focus:text-white"
     >
       Load Data
@@ -81,16 +69,14 @@ const DelButton = ({ id }: { id: string }) => {
 
   const del = () => {
     setLoading(true);
-    delProcess(id)
-      .then((res: any) => {
-        if (res.error) {
-          ShowMessage("error", res.error.message);
-          return;
-        }
+    delProcess(id).then((res: any) => {
+      if (res.error) {
+        ShowMessage("error", res.error.message);
+        return;
+      }
 
-        close();
-      })
-      .finally(() => setLoading(false));
+      close();
+    });
   };
 
   const open = () => {
@@ -165,7 +151,7 @@ const RunButton = ({ id }: { id: string }) => {
   );
 };
 
-export const ProcessCard = ({ process }: props) => {
+export const ProcessCard = ({ process, onLoad }: props) => {
   const steps = [
     {
       title: "Data Source Selection",
@@ -210,16 +196,20 @@ export const ProcessCard = ({ process }: props) => {
             </div>
             <div className="text-sm flex flex-col items-center">
               <p className="mb-2 text-xs font-bold">State</p>
-              <p className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                {process.state === "active" ? "Active" : "Inactive"}
-              </p>
+              {process.state === "active" ? (
+                <p className="bg-gray-100 text-prim rounded-full p-1 px-3">Active</p>
+              ) : (
+                <p className="bg-red-100 text-red-500 rounded-full p-1 px-3">Inactive</p>
+              )}
             </div>
           </div>
           <div className="flex space-x-2 justify-end">
-            <LoadButton id={process.dag_id} />
+            <LoadButton onClick={() => onLoad(process)} id={process.dag_id} />
             {process.airflow ? <RunButton id={process.dag_id} /> : null}
             {process.airflow ? <ViewButton id={process.dag_id} /> : null}
-            <DelButton id={process.dag_id} />
+            {process.state === "active" ? (
+              <DelButton id={process.dag_id} />
+            ) : null}
           </div>
         </div>
         <div className="w-1/3 flex justify-end">
@@ -237,7 +227,7 @@ export const ProcessCard = ({ process }: props) => {
       {state ? (
         <div className="pt-14 pb-5 flex justify-center">
           <div className="w-2/3">
-          <Steps current={current} items={items} />
+            <Steps current={current} items={items} />
           </div>
         </div>
       ) : null}
