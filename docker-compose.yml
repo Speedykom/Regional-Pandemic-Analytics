@@ -40,6 +40,7 @@ x-airflow-common:
     - _AIRFLOW_WWW_USER_USERNAME=${AIRFLOW__AIRFLOW_WWW_USER_USERNAME}
     - _AIRFLOW_WWW_USER_PASSWORD=${AIRFLOW__AIRFLOW_WWW_USER_PASSWORD}
     - PROVIDER_NAME=${AIRFLOW_PROVIDER_NAME}
+    - ENVIRONMENT=${AIRFLOW_ENVIRONMENT}
     - CLIENT_ID=${AIRFLOW_CLIENT_ID}
     - CLIENT_SECRET=${AIRFLOW_CLIENT_SECRET}
     - OIDC_ISSUER=${AIRFLOW_OIDC_ISSUER}
@@ -359,7 +360,7 @@ services:
       - ./hop/pipelines:/files
       - ./storage:/home
       - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
-      # - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
+      - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
 
   # =======
   # Airflow
