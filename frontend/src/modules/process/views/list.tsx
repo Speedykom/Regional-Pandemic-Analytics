@@ -51,7 +51,7 @@ export default function ProcessChinList() {
         <div className="mt-5">
           {loading ? (
             <div className="flex h-96 bg-white shadow-md border rounded-md items-center justify-center">
-              <div className="w-18 h-18">
+              <div className="w-16 h-16">
                 <Loader />
               </div>
             </div>
