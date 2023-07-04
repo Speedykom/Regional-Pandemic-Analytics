@@ -63,3 +63,5 @@ services:
       - ./nginx/certificates/:/etc/nginx/certs/
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/package-conf/:/etc/nginx/templates/package-conf/
+    depends_on:
+      - airflow-webserver
