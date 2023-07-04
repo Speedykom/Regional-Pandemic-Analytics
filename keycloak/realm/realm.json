@@ -7,7 +7,7 @@
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
   "refreshTokenMaxReuse": 0,
-  "accessTokenLifespan": 300,
+  "accessTokenLifespan": 1800,
   "accessTokenLifespanForImplicitFlow": 900,
   "ssoSessionIdleTimeout": 1800,
   "ssoSessionMaxLifespan": 36000,
@@ -1102,7 +1102,7 @@
       }
     },
     {
-      "clientId": "${SUPERSET_CLIENT_ID}",
+      "clientId": "${SUPERSET_KEYCLOAK_CLIENT_ID}",
       "name": "superset",
       "description": "",
       "rootUrl": "${SUPERSET_ROOT_URL}",
@@ -1112,9 +1112,9 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "${SUPERSET_CLIENT_SECRET}",
+      "secret": "${SUPERSET_KEYCLOAK_CLIENT_SECRET}",
       "redirectUris": [
-        "${SUPERSET_ROOT_URL}/oidc_callback"
+        "${SUPERSET_ROOT_URL}/oauth-authorized/keycloak"
       ],
       "webOrigins": [
         "${SUPERSET_ROOT_URL}"
