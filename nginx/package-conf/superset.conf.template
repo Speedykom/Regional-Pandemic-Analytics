@@ -4,17 +4,16 @@ server {
     server_name     $NGINX_SUPERSET_DOMAIN_NAME;
 
     location / {
-        set               $upstream_superset superset;
-        proxy_pass        http://$upstream_superset:8088;
+        proxy_pass        http://$NGINX_UPSTREAM_SUPERSET:8088;
     }
 }
-    # server {
-    # 	listen 443 ssl;
-    # 	server_name $NGINX_SUPERSET_DOMAIN_NAME;
-    # 	ssl_certificate /etc/nginx/certs/superset.crt;
-    # 	ssl_certificate_key /etc/nginx/certs/superset.key;
-    # 	location / {
-    # 		proxy_pass http://$NGINX_UPSTREAM_SUPERSET:8088/;
-    # 		error_log /var/log/front_end_errors.log;
-    # 	}
-    # }
+server {
+	listen 443 ssl;
+	server_name $NGINX_SUPERSET_DOMAIN_NAME;
+	ssl_certificate /etc/nginx/certs/superset.crt;
+	ssl_certificate_key /etc/nginx/certs/superset.key;
+	location / {
+		proxy_pass http://$NGINX_UPSTREAM_SUPERSET:8088/;
+		error_log /var/log/superset_errors.log;
+	}
+}
