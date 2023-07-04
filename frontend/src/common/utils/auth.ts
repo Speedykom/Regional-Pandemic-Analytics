@@ -12,26 +12,19 @@ export const getUserRole = async (roles: []) => {
             newRole.attributes[key] = keyValue
         })
         return newRole
-    }).catch((err) => {
-        console.log(err)
     })
 }
 const tokens: any = secureLocalStorage.getItem("tokens");
 const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
 export const getGuestToken = async (uuid: string): Promise<string> => {
-    return new Promise<string>((resolve) => {
-        axios.post(`${BASE_URL}/api/superset/guest/token`, { id: uuid },{
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-                Authorization: `Bearer ${accessToken}`
-            },
-        }).then((response) => {
-            console.log(response.status);
-            resolve(response.data?.token);
-        }).catch((err) => {
-            console.log(err)
-        });
+    return axios.post(`${BASE_URL}/api/superset/guest/token`, { id: uuid },{
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${accessToken}`
+        },
+    }).then((response) => {
+        return response.data?.token;
     })
     
 }
