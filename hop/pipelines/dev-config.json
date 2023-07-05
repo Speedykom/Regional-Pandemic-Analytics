@@ -26,11 +26,6 @@
       "description": ""
     },
     {
-      "name": "output_source",
-      "value": "/home",
-      "description": ""
-    },
-    {
       "name": "monkeypox_output_source",
       "value": "${PROJECT_HOME}/pipeline/output/monkeypox",
       "description": ""

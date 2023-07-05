@@ -16,11 +16,6 @@
       "description": ""
     },
     {
-      "name": "output_source",
-      "value": "/home",
-      "description": ""
-    },
-    {
       "name": "covid_output_source",
       "value": "/home/covid",
       "description": ""
