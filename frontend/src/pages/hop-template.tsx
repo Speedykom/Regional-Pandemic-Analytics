@@ -1,10 +1,10 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-import { MyPipelineList } from "@/modules/pipeline/views/list";
+import { HopList } from "@/modules/template/views/List";
 
 export const LoadHops = () => {
   return (
-    <DashboardFrame title="My Pipeline">
-      <MyPipelineList />
+    <DashboardFrame title="List(s) of Hops">
+      <HopList />
     </DashboardFrame>
   );
 };
