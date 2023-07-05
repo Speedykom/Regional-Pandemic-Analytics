@@ -2,10 +2,7 @@
 server {
     listen          80;
     server_name     $NGINX_AIRFLOW_DOMAIN_NAME;
-
-    location / {
-        proxy_pass        http://$NGINX_UPSTREAM_AIRFLOW:8080;
-    }
+  	return 301 https://$host$request_uri;
 }
 server {
 	listen 443 ssl;
