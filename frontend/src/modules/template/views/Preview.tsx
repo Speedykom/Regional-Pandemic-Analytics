@@ -1,5 +1,3 @@
-
-import { BASE_URL } from "@/common/config";
 import { getData } from "@/common/utils";
 import { CovertFromTimestampToDate, ToMonthDayYear } from "@/common/utils/date-converter";
 import { Drawer } from "antd";
@@ -14,14 +12,23 @@ interface props {
 
 export const PreviewUser = ({ openDrawer, closeDrawer, userId }: props) => {
 	const [data, setData] = useState<any>();
+	const [token, setToken] = useState<string>("");
+	const fetchToken = async () => {
+		try {
+			const url = "/api/get-access-token/";
+			const response = await getData(url);
+			setToken(response?.accessToken);
+		} catch (error) {
+			console.error("Error:", error);
+		}
+	};
 
 	const fetchUser = async () => {
 		try {
-			const url = `${BASE_URL}/api/account/user/${userId}`;
-			console.log({userId})
+			const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${userId}`;
 			const response = await axios.get(url, {
 				headers: {
-					"Content-Type": "application/json",
+					Authorization: `Bearer ${token}`,
 				},
 			});
 			setData(response?.data);
@@ -43,16 +50,15 @@ export const PreviewUser = ({ openDrawer, closeDrawer, userId }: props) => {
 			destroyOnClose={true}
 			open={openDrawer}
 			onClose={closeDrawer}
-			width={1300}
 		>
 			<div className="container mx-auto my-5 p-5">
-				<div className="md:flex no-wrap md:-mx-2">
+				<div className="md:flex no-wrap md:-mx-2 ">
 					{/* <!-- Left Side --> */}
 					<div className="w-full md:w-3/12 md:mx-2">
 						{/* <!-- Profile Card --> */}
 						<div className="bg-white p-3 border-t-4 border-green-400">
 							<img
-								className="h-32 w-32 rounded-md"
+								className="h-16 w-16 rounded-full mx-auto"
 								src="/avater.png"
 								alt=""
 							/>
@@ -162,7 +168,7 @@ export const PreviewUser = ({ openDrawer, closeDrawer, userId }: props) => {
 
 						{/* <!-- Experience and education --> */}
 						<div className="bg-white p-3 shadow-sm rounded-sm">
-							<div className="grid">
+							<div className="grid grid-cols-2">
 								<div>
 									<div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8 mb-3">
 										<span className="text-green-500">

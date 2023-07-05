@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import secureLocalStorage from 'react-secure-storage';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -20,5 +21,5 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (response.status !== 200)
     return res.status(response.status).json({ result: 'error logging in' });
 
-  return res.status(200).json({ result: response.data.data });
+  return res.status(200).json({ result: response.data });
 }
