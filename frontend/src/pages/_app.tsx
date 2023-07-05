@@ -22,7 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
           theme={{
             components: {},
             token: {
-              colorPrimary: "#007b38",
+              colorPrimary: "#31713b",
               fontSize: 14,
             },
           }}

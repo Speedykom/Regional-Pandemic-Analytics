@@ -7,14 +7,6 @@ body {
   font-size: 15px;
 }
 
-.bg-prim {
-  background: #007b38;
-}
-
-.text-prim {
-  color: #007b38;
-}
-
 .embed-iframe-container {
   position: relative; 
   width: 100%; 
