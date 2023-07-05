@@ -17,7 +17,9 @@ import { useEffect, useState } from "react";
 import { countries } from "@/common/utils/countries";
 import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
-import { BASE_URL } from "@/common/config";
+import getConfig from 'next/config'
+ 
+const { publicRuntimeConfig } = getConfig()
 
 interface props {
 	openDrawer: boolean;
@@ -75,7 +77,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 		values["role"] = JSON.parse(values["role"])
 
 		await axios
-			.post(`${BASE_URL}/api/account/user`, values, {
+			.post(`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user`, values, {
 				headers: {
 					"Content-Type": "application/json",
 				},
@@ -118,7 +120,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const fetchRoles = async () => {
 		try {
 			setRoleLoading(true)
-			const url = `${BASE_URL}/api/role`;
+			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/role`;
 			await axios.get(url, {
 				headers: {
 					'Content-Type': 'application/json',

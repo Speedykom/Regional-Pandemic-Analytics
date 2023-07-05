@@ -23,7 +23,9 @@ import { PreviewUser } from "./Preview";
 import { countries } from "@/common/utils/countries";
 import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
-import { BASE_URL } from "@/common/config";
+import getConfig from "next/config"
+ 
+const { publicRuntimeConfig } = getConfig()
 
 interface props {
 	viewPro: () => void;
@@ -78,7 +80,7 @@ export const UserList = () => {
 	const fetchUsers = async () => {
 		try {
 			setLoading(true);
-			const url = `${BASE_URL}/api/account/users`;
+			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/users`;
 			await axios
 				.get(url, {
 					headers: {
@@ -147,7 +149,7 @@ export const UserList = () => {
 		values["role"] = JSON.parse(values["role"])
 		await axios
 			.put(
-				`${BASE_URL}/api/account/user/${userId}/update`,
+				`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${userId}/update`,
 				values,
 				{
 					headers: {
@@ -180,7 +182,7 @@ export const UserList = () => {
 	const fetchRoles = async () => {
 		try {
 			setRoleLoading(true)
-			const url = `${BASE_URL}/api/role`;
+			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/role`;
 			await axios.get(url, {
 				headers: {
 					"Content-Type": "application/json",
