@@ -25,7 +25,7 @@ from .serializers import *
 from .models import *
 
 from utils.generators import get_random_secret
-from utils.keycloak_auth import keycloak_admin_login, current_user, role_assign
+from utils.keycloak_auth import keycloak_admin_login, create_keycloak_user, role_assign
 
 
 def homepage(request):
@@ -53,11 +53,6 @@ class CreateUserAPI(APIView):
         }
     ))
     def post(self, request, *args, **kwargs):
-        cur_user = current_user(request)
-        
-        if (cur_user['is_authenticated'] == False):
-            return Response(cur_user, status=cur_user["status"])
-        
         generate_password = get_random_secret(10)
         form_data = {
             "firstName": request.data.get("firstName", None),
@@ -136,11 +131,6 @@ class UpdateUserAPI(APIView):
         }
     ))
     def put(self, request, *args, **kwargs):
-        cur_user = current_user(request)
-        
-        if (cur_user['is_authenticated'] == False):
-            return Response(cur_user, status=cur_user["status"])
-        
         form_data = {
             "firstName": request.data.get("firstName", None),
             "lastName": request.data.get("lastName", None),
@@ -202,11 +192,6 @@ class ListUsersAPI(APIView):
     permission_classes = [AllowAny, ]
 
     def get(self, request, *args, **kwargs):
-        cur_user = current_user(request)
-        
-        if (cur_user['is_authenticated'] == False):
-            return Response(cur_user, status=cur_user["status"])
-        
         # Login to admin
         admin_login = keycloak_admin_login()
 
@@ -231,14 +216,9 @@ class GetUserAPI(APIView):
     """
     API view to get user profile
     """
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny, ]
 
     def get(self, request, **kwargs):
-        cur_user = current_user(request)
-        
-        if (cur_user['is_authenticated'] == False):
-            return Response(cur_user, status=cur_user["status"])
-        
         # Login to admin
         admin_login = keycloak_admin_login()
 
@@ -264,14 +244,9 @@ class DeleteUserAPI(APIView):
     """
     API view to delete user from keycloak
     """
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny, ]
 
     def delete(self, request, **kwargs):
-        cur_user = current_user(request)
-        
-        if (cur_user['is_authenticated'] == False):
-            return Response(cur_user, status=cur_user["status"])
-        
         # Login to admin
         admin_login = keycloak_admin_login()
 
@@ -316,7 +291,7 @@ class AssignRolesAPI(APIView):
     """
     API view to assign roles to users
     """
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny, ]
 
     roleObject = {
         'id': str,
@@ -356,14 +331,9 @@ class ResetPasswordRequestAPI(APIView):
     """
     API view to reset users password
     """
-    permission_classes = [AllowAny]
+    permission_classes = [AllowAny, ]
 
     def post(self, request, **kwargs):
-        cur_user = current_user(request)
-        
-        if (cur_user['is_authenticated'] == False):
-            return Response(cur_user, status=cur_user["status"])
-        
         # Login to admin
         admin_login = keycloak_admin_login()
 
@@ -415,11 +385,6 @@ class VerifyResetTokenAPI(APIView):
     permission_classes = [AllowAny,]
 
     def post(self, request, *args, **kwargs):
-        cur_user = current_user(request)
-        
-        if (cur_user['is_authenticated'] == False):
-            return Response(cur_user, status=cur_user["status"])
-        
         form_data = {
             "token": request.data.get("token", None),
         }
@@ -491,11 +456,6 @@ class AvatarUploadApI(APIView):
     parser_classes = (MultiPartParser,)
 
     def post(self, request, **kwargs):
-        cur_user = current_user(request)
-        
-        if (cur_user['is_authenticated'] == False):
-            return Response(cur_user, status=cur_user["status"])
-        
         """Receives a request to upload a file and sends it to filesystem for now. Later the file will be uploaded to minio server."""
         try:
             file_obj = request.data['file']
