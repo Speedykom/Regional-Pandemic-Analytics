@@ -1,6 +1,5 @@
 
 import { BASE_URL } from "@/common/config";
-import { getData } from "@/common/utils";
 import { CovertFromTimestampToDate, ToMonthDayYear } from "@/common/utils/date-converter";
 import { Drawer } from "antd";
 import axios from "axios";

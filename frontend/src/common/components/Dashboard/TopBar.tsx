@@ -80,7 +80,7 @@ export default function TopBar({ showNav, setShowNav }: props) {
 					className="h-8 w-8 text-gray-700 cursor-pointer"
 					onClick={() => setShowNav(!showNav)}
 				/>
-				<p className="text-xl font-semibold">Regional Pandemic Analytics</p>
+				<p className="text-xl">Regional Pandemic Analytics</p>
 			</div>
 			<div className="flex pr-4 md:pr-16 items-center">
 				<Popover className="relative">
