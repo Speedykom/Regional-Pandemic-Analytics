@@ -1,29 +1,26 @@
 import { AppDrawer } from "@/common/components/AppDrawer";
 import { ShowMessage } from "@/common/components/ShowMessage";
 import { schedule_intervals } from "@/common/utils/processs";
-import { useFindAllQuery as usePipelinesQuery } from "@/modules/pipeline/pipeline";
 import { useCreateProcessMutation } from "@/modules/process/process";
 import { Button, Form, Input, Select } from "antd";
 import { useState } from "react";
+import { useCreatePipelineMutation } from "../pipeline";
 
 interface Props {
   state: boolean;
   onClose: () => void;
+  template: any;
 }
 
-export const AddProcess = ({ state, onClose }: Props) => {
+export const AddPipeline = ({ state, onClose, template }: Props) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [addProcess] = useCreateProcessMutation();
-
-  const { data: res } = usePipelinesQuery();
-
-  const pipelines = res?.data || [];
+  const [addPipeline] = useCreatePipelineMutation();
 
   const onFinish = (value: any) => {
     setLoading(true);
 
-    addProcess({ ...value })
+    addPipeline({ ...value, path: template?.path })
       .then((res: any) => {
         if (res.error) {
           const { data } = res.error;
@@ -57,14 +54,14 @@ export const AddProcess = ({ state, onClose }: Props) => {
 
   return (
     <AppDrawer
-      title={"Add Process Chain"}
+      title={"Add Pipeline"}
       state={state}
       onClose={cancel}
       footer={footer}
     >
       <Form
         form={form}
-        name="add-process"
+        name="add-pipeline"
         onFinish={onFinish}
         layout="vertical"
         scrollToFirstError
@@ -72,45 +69,37 @@ export const AddProcess = ({ state, onClose }: Props) => {
         <Form.Item
           name="name"
           label="Name"
-          tooltip="Process Name"
+          tooltip="Pipeline Name"
           rules={[
             {
               required: true,
-              message: "Please enter process name",
+              message: "Please input your pipeline name",
             },
           ]}
         >
-          <Input placeholder="Enter Dag Name" className="w-full" />
+          <Input placeholder="Enter Name" className="w-full" />
         </Form.Item>
-        <Form.Item name="pipeline" label="Pipeline" className="w-full">
-          <Select
-            showSearch
-            placeholder="Select Pipeline"
-            options={pipelines.map((pipeline: any, i: number) => ({
-              key: i + 353,
-              label: pipeline.name,
-              value: pipeline.id,
-            }))}
+        <Form.Item name="path" label="Template" className="w-full">
+          <Input
+            disabled
+            placeholder={template?.name}
+            className="w-full"
           />
         </Form.Item>
         <Form.Item
-          name="schedule_interval"
-          label="Schedule Interval"
+          name="description"
+          label="Description"
+          tooltip="Pipeline Description"
           rules={[
             {
               required: true,
-              message: "Please select schedule interval",
+              message: "Please enter your description",
             },
           ]}
         >
-          <Select
-            showSearch
-            placeholder="Select Schedule Interval"
-            options={schedule_intervals.map((time: string, i: number) => ({
-              key: i,
-              label: time,
-              value: time,
-            }))}
+          <Input.TextArea
+            className="w-full"
+            placeholder="Enter Description"
           />
         </Form.Item>
       </Form>
