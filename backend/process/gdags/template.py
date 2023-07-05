@@ -6,14 +6,13 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
 from docker.types import Mount
 import requests
-import os
 
-ENVIRONMENT = os.getenv("ENVIRONMENT")
+pwd = "/home/igad/Regional-Pandemic-Analytics/staging"
 
-pipelines = "{}/hop/pipelines".format(ENVIRONMENT)
-storage = "{}/storage".format(ENVIRONMENT)
-config = "{}/hop/hop-config.json".format(ENVIRONMENT)
-plugins = "{}/hop/plugins/transforms/googlesheets".format(ENVIRONMENT)
+pipelines = "{}/hop/pipelines".format(pwd)
+storage = "{}/storage".format(pwd)
+config = "{}/hop/hop-config.json".format(pwd)
+plugins = "{}/hop/plugins/transforms/googlesheets".format(pwd)
 
 default_args = {
     'owner': 'airflow',
