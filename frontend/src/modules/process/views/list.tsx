@@ -1,36 +1,71 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AddProcess } from "@/modules/process/views/add";
 import { Button } from "antd";
-import { useProcessChainList } from "../hooks";
-import { ProcessCard } from "../components/process-card";
-import { Loader } from "@/common/components/Loader";
 import LoadData from "@/common/components/TABS/upload";
+import { useProcessChainList } from "../hooks";
+import { IGADTable } from "@/common/components/common/table";
+import { ViewDag } from "./view";
+import axios from "axios";
+import { getData } from "@/common/utils";
+import SelectHopModal from "@/common/components/SelectHopModal";
+import { useTemplate } from "@/modules/template/hooks";
+import { useFindAllQuery } from "@/modules/template/template";
 
 export default function ProcessChinList() {
-  const [addProcess, setProcessAdd] = useState(false);
-  const [process, setProcess] = useState<any>(null);
-  const [load, setLoad] = useState(false);
+  const [addProcess, setProcess] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [view, setView] = useState(false);
+  const [dag, setDag] = useState<any>();
+  const [isShowHopModal, setIsShowHopModal] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<object>({});
+
+  const {data: record} = useFindAllQuery();
 
   const closeAdd = () => {
-    setProcessAdd(false);
+    setProcess(false);
   };
 
   const openAdd = () => {
-    setProcessAdd(true);
-  };
-
-  const openLoad = (process: any) => {
-    setLoad(true);
-    setProcess(process);
+    setIsShowHopModal(true);
   };
 
   const closeLoad = () => {
-    setLoad(false);
-    setProcess(null);
+    setOpen(false);
+    setDag(null);
   };
 
-  const { rows, loading } = useProcessChainList();
+  const closeView = () => {
+    setView(false);
+    setDag(null);
+  };
+
+  const viewProcess = (dag_id: any) => {
+    setView(true);
+    setDag(dag_id);
+  };
+
+  const loadData = (dag: any) => {
+    setOpen(true);
+    setDag(dag);
+  };
+
+  const { columns, rows, loading } = useProcessChainList({
+    loadData,
+    viewProcess,
+  });
+
+  // handle hop modal callback and hold the value returned
+  const handleHopModalResponseData = (value: any) => {
+    // if the value is an object that means it's a selected template
+    if (typeof value === "object" && value !== null) {
+      setSelectedTemplate(value);
+      setIsShowHopModal(false);
+      setProcess(true);
+    } else {
+      setIsShowHopModal(value);
+    }
+  };
 
   return (
     <>
@@ -48,28 +83,27 @@ export default function ProcessChinList() {
             </Button>
           </div>
         </div>
-        <div className="mt-5">
-          {loading ? (
-            <div className="flex h-96 bg-white shadow-md border rounded-md items-center justify-center">
-              <div className="w-16 h-16">
-                <Loader />
-              </div>
-            </div>
-          ) : (
-            <>
-              {rows.map((process) => (
-                <ProcessCard
-                  onLoad={(process) => openLoad(process)}
-                  process={process}
-                  key={process.id}
-                />
-              ))}
-            </>
-          )}
-        </div>
+        <IGADTable columns={columns} rows={rows || []} loading={loading} />
+        <LoadData onClose={closeLoad} state={open} dag={dag} />
+        <ViewDag
+          id={dag || ""}
+          state={view}
+          onClose={closeView}
+          key="view-dag"
+        />
 
-        <AddProcess onClose={closeAdd} state={addProcess} />
-        <LoadData onClose={closeLoad} state={load} dag={process} />
+        {/* hop modal */}
+        <SelectHopModal
+          openModal={isShowHopModal}
+          parentCallback={handleHopModalResponseData}
+          hopData={record?.data}
+        />
+
+        <AddProcess
+          onClose={closeAdd}
+          state={addProcess}
+          selectedTemplate={selectedTemplate}
+        />
       </DashboardFrame>
     </>
   );
