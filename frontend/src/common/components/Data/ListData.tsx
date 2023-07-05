@@ -27,9 +27,12 @@ export interface IData {
 interface ListDataProps {
     data: IData[];
 }
+import getConfig from 'next/config'
+const { publicRuntimeConfig } = getConfig()
+
 
 export default function ListData({ data }: ListDataProps) {
-    const file_server = process.env.NEXT_PUBLIC_MINIO_URL;
+    const file_server = publicRuntimeConfig.NEXT_PUBLIC_MINIO_URL;
 
     return (
         <Card>
