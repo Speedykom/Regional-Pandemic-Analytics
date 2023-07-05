@@ -11,7 +11,6 @@ import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import TemplateModal from "./templates";
 import { AddPipeline } from "./add";
 
-
 enum OPERATION_TYPES {
   CREATE,
   UPDATE,
@@ -28,17 +27,17 @@ export const MyPipelineList = () => {
   const close = () => {
     setDrawer(false);
     setTemplate(null);
-  }
+  };
 
-  const open = () => {    
+  const open = () => {
     setDrawer(true);
-  }
+  };
 
   const onSelect = (res: any) => {
+    if (res) open();
     setTemplate(res);
     setTemp(false);
-    open();
-  }
+  };
 
   // @ts-ignore
   return (
@@ -47,9 +46,7 @@ export const MyPipelineList = () => {
         <div className="flex justify-between items-center">
           <div>
             <h2 className="text-3xl">My Pipeline</h2>
-            <p className="my-2 text-gray-600">
-              Create your hop pipeline
-            </p>
+            <p className="my-2 text-gray-600">Create your hop pipeline</p>
           </div>
           <div>
             <Button type="primary" size="large" onClick={() => setTemp(true)}>
