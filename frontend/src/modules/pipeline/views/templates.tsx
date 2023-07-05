@@ -10,20 +10,17 @@ type Props = {
 const TemplateModal = ({ state, onSelect }: Props) => {
   const { data: res } = useTemplatesQuery();
 
-  const [open, setOpen] = useState(true);
   const [selected, setSelected] = useState<any>(null);
 
   const handleOk = () => {
     // only continue if the select exist
     if (selected != null) {
       onSelect(selected); // return the select template to the process chain
-      setOpen(false);
       setSelected(null); // clear the state and ready for incoming data
     }
   };
 
   const handleCancel = () => {
-    setOpen(false);
     onSelect(false); // send false to the parent to close the modal
   };
 
@@ -43,7 +40,7 @@ const TemplateModal = ({ state, onSelect }: Props) => {
           <Button key="back" onClick={handleCancel}>
             Cancel
           </Button>,
-          <Button key="submit" type="primary" onClick={handleOk}>
+          <Button disabled={!selected} key="submit" type="primary" onClick={handleOk}>
             Continue
           </Button>,
         ]}
