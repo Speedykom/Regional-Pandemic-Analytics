@@ -9,7 +9,13 @@ server {
 	server_name $NGINX_AIRFLOW_DOMAIN_NAME;
 	ssl_certificate /etc/nginx/certs/airflow.crt;
 	ssl_certificate_key /etc/nginx/certs/airflow.key;
+	
 	location / {
+		proxy_set_header Host                    $host;
+    	proxy_set_header X-Real-IP               $remote_addr;
+    	proxy_set_header X-Scheme                $scheme;
+    	proxy_set_header X-Auth-Request-Redirect $request_uri;
+		proxy_set_header X-Auth-Request-Redirect $scheme://$host$request_uri;
 		proxy_pass http://$NGINX_UPSTREAM_AIRFLOW:8080/;
 		error_log /var/log/airflow_end_errors.log;
 	}
