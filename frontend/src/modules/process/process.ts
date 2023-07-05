@@ -1,12 +1,16 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Process } from "../../common/redux/interface/process";
-import { BASE_URL } from "@/common/config";
+import { BASE_URL, prepareHeaders } from "@/common/config";
 
 // Define a service using a base URL and expected endpoints
 export const processApi = createApi({
   reducerPath: "processApi",
-  baseQuery: fetchBaseQuery({ baseUrl: BASE_URL, credentials: "include" }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: BASE_URL,
+    prepareHeaders,
+    credentials: "include",
+  }),
   tagTypes: ["processes"],
   endpoints: (builder) => ({
     findAll: builder.query<Process, void>({
@@ -54,5 +58,5 @@ export const {
   useRunProcessMutation,
   useCreateProcessMutation,
   useEditAccessMutation,
-  useDelProcessMutation
+  useDelProcessMutation,
 } = processApi;
