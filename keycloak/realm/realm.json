@@ -327,6 +327,71 @@
           "containerId": "3891279e-4580-4d63-9234-06b05c2e59dc",
           "attributes": {}
         }
+      ], "superset": [
+        {
+          "id": "b209766b-e17c-4d58-bc1b-0e09be89e1f9",
+          "name": "uma_protection",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
+          "attributes": {}
+        },
+        {
+          "id": "4ec7b1ed-00ee-4807-9afa-6c8adbfd9716",
+          "name": "superset_alpha",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
+          "attributes": {}
+        },
+        {
+          "id": "46bc5ee3-b1be-4ce4-b804-e53572f33129",
+          "name": "Gamma",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
+          "attributes": {}
+        },
+        {
+          "id": "9886d5b5-cd5d-4b1d-9dad-c5a011875de8",
+          "name": "superset_granter",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
+          "attributes": {}
+        },
+        {
+          "id": "c77d07b2-9177-49a6-8d49-9d697106eac9",
+          "name": "superset_sql_lab",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
+          "attributes": {}
+        },
+        {
+          "id": "ec9abdc5-b954-4b46-84bb-a2642699caa5",
+          "name": "superset_gamma",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
+          "attributes": {}
+        },
+        {
+          "id": "265837f2-0d33-4b99-ac25-d3368e7e3c0f",
+          "name": "superset_public",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
+          "attributes": {}
+        },
+        {
+          "id": "fcc23677-9672-4d0a-9dad-db1ce6954555",
+          "name": "superset_admin",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
+          "attributes": {}
+        }
       ],
       "security-admin-console": [],
       "airflow": [
@@ -569,6 +634,70 @@
       "clientRoles": {
         "airflow": [
           "airflow_viewer"
+        ]
+      },
+      "subGroups": []
+    },{
+      "id": "a690674f-a4e9-4051-a6bd-f3d06c669e83",
+      "name": "superset_admin",
+      "path": "/superset_admin",
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {
+        "superset": [
+          "superset_admin"
+        ]
+      },
+      "subGroups": []
+    },
+    {
+      "id": "39632599-9ade-437f-bdde-85b4ad598323",
+      "name": "superset_alpha",
+      "path": "/superset_alpha",
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {
+        "superset": [
+          "superset_alpha"
+        ]
+      },
+      "subGroups": []
+    },
+    {
+      "id": "d16567a7-0ad3-4e29-b517-52f7a7e00e32",
+      "name": "superset_gamma",
+      "path": "/superset_gamma",
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {
+        "superset": [
+          "superset_gamma"
+        ]
+      },
+      "subGroups": []
+    },
+    {
+      "id": "93d99f2f-ae8c-4d71-89ad-8454e01ce105",
+      "name": "superset_public",
+      "path": "/superset_public",
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {
+        "superset": [
+          "superset_public"
+        ]
+      },
+      "subGroups": []
+    },
+    {
+      "id": "1262f8e5-1b83-4a46-a0a3-1e75e3b3b5b8",
+      "name": "superset_sql_lab",
+      "path": "/superset_sql_lab",
+      "attributes": {},
+      "realmRoles": [],
+      "clientRoles": {
+        "superset": [
+          "superset_sql_lab"
         ]
       },
       "subGroups": []

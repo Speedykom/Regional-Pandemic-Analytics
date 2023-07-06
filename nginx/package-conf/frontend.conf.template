@@ -2,10 +2,7 @@
 server {
     listen          80;
     server_name     $NGINX_FRONTEND_DOMAIN_NAME;
-
-    location / {
-        proxy_pass          http://$NGINX_UPSTREAM_FRONTEND:3000;
-    }
+	return 301 https://$host$request_uri;
 }
 server {
 	listen 443 ssl;
