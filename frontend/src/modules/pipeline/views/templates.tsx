@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState } from "react";
 import { Button, Modal, Card, Col, Row } from "antd";
 import { useTemplatesQuery } from "../pipeline";
@@ -8,6 +9,44 @@ type Props = {
 };
 
 const TemplateModal = ({ state, onSelect }: Props) => {
+  const getIcon = (name: string) => {
+    const icons = [
+      "dhis2",
+      "csv",
+      "excel",
+      "fhir",
+      "json",
+      "api",
+      "postgresql",
+      "sheet",
+    ];
+
+    const checkIcon = icons.find((e) => name.toLowerCase().indexOf(e) != -1);
+
+    console.log(checkIcon, name.toLowerCase());
+
+    const icon = checkIcon;
+
+    switch (icon) {
+      case "dhis2":
+        return "./images/dhis2.png";
+      case "csv":
+        return "./images/csv.png";
+      case "excel":
+        return "./images/excel.png";
+      case "fhir":
+        return "./images/fhir.webp";
+      case "json":
+        return "./images/json.png";
+      case "api":
+        return "./images/api.png";
+      case "postgresql":
+        return "./images/postgresql.png";
+      case "sheet":
+        return "./images/sheet.png";
+    }
+  };
+
   const { data: res } = useTemplatesQuery();
 
   const [selected, setSelected] = useState<any>(null);
@@ -40,13 +79,21 @@ const TemplateModal = ({ state, onSelect }: Props) => {
           <Button key="back" onClick={handleCancel}>
             Cancel
           </Button>,
-          <Button disabled={!selected} key="submit" type="primary" onClick={handleOk}>
+          <Button
+            disabled={!selected}
+            key="submit"
+            type="primary"
+            onClick={handleOk}
+          >
             Continue
           </Button>,
         ]}
       >
         <div className="border-t border-b">
-          <p className="bg-yellow-200 px-3 py-2 rounded-md mt-3 text-gray-500">Note: select your template you want to create from and press continue</p>
+          <p className="bg-yellow-200 px-3 py-2 rounded-md mt-3 text-gray-500">
+            Note: select your template you want to create from and press
+            continue
+          </p>
           <Row gutter={[16, 16]} className="my-3">
             {res?.data?.map((data: any, index: number) => (
               <Col key={index} span={8}>
@@ -63,7 +110,13 @@ const TemplateModal = ({ state, onSelect }: Props) => {
                       : `border-gray-300 hover:border-green-800`
                   } cursor-pointer`}
                 >
-                  <p>{data?.name}</p>
+                  <div className="flex justify-center p-3">
+                    <img
+                      className="h-16"
+                      src={getIcon(data?.name)}
+                      alt="icon"
+                    />
+                  </div>
                 </Card>
               </Col>
             ))}
