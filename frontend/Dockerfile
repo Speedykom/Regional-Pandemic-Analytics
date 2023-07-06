@@ -17,6 +17,18 @@ WORKDIR /frontend
 COPY . .
 COPY --from=deps /frontend/node_modules ./node_modules
 
+ARG NEXT_PUBLIC_MINIO_URL
+ARG NEXT_PUBLIC_BASE_URL
+ARG NEXT_PUBLIC_SUPERSET_URL
+ARG NEXT_HOP_UI
+ARG NEXT_PRIVATE_BASE_URL
+
+ENV NEXT_PRIVATE_BASE_URL=${NEXT_PRIVATE_BASE_URL}
+ENV NEXT_PUBLIC_MINIO_URL=${NEXT_PUBLIC_MINIO_URL}
+ENV NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+ENV NEXT_PUBLIC_SUPERSET_URL=${NEXT_PUBLIC_SUPERSET_URL}
+ENV NEXT_HOP_UI=${NEXT_HOP_UI}
+
 RUN npm run build
 
 # Production image, copy all the files and run next
@@ -33,7 +45,8 @@ COPY --from=builder /frontend/.next ./.next
 COPY --from=builder /frontend/node_modules ./node_modules
 COPY --from=builder /frontend/package.json ./package.json
 COPY --from=builder /frontend/entrypoint.sh ./entrypoint.sh
-COPY --from=builder /frontend/next.config.template.js ./next.config.template.js
+COPY --from=builder /frontend/next.config.js ./next.config.js
+#COPY --from=builder /frontend/config.template.json ./config.template.json
 
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
@@ -42,13 +55,7 @@ RUN chmod +x /frontend/entrypoint.sh
 
 EXPOSE 3000
 
-RUN npx next telemetry disable
-
-ENTRYPOINT ["/bin/sh","/frontend/entrypoint.sh"]
-
 CMD npm run start
-
-
 
 # Dev image, copy all the files and run next
 FROM node:18-alpine AS dev
@@ -63,9 +70,5 @@ COPY --from=builder /frontend ./
 RUN chmod +x /frontend/entrypoint.sh
 
 EXPOSE 3000
-
-RUN npx next telemetry disable
-
-ENTRYPOINT ["/bin/sh","/frontend/entrypoint.sh"]
 
 CMD npm run dev
