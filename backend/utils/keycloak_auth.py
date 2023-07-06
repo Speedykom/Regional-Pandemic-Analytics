@@ -79,6 +79,33 @@ def create_keycloak_user ():
 
     return serverRes
 
+def me(request):
+    try:
+        token: str = request.headers['AUTHORIZATION']
+
+        if token is None:
+            return {'is_authenticated': False, 'message': 'auth header is required', 'payload': None, 'status': status.HTTP_400_BAD_REQUEST}
+
+        serialToken = token.replace("Bearer ", "")
+
+        form_data = {
+            "client_id": APP_CLIENT_ID,
+            "client_secret": APP_CLIENT_SECRET,
+            "token": serialToken
+        }
+
+        response = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/token/introspect",
+                                 data=form_data)
+
+        data = response.json()
+
+        if data['active'] == False:
+            return {'is_authenticated': False, 'message': 'Unauthorized', 'payload': None, 'status': status.HTTP_401_UNAUTHORIZED}
+
+        return {'is_authenticated': True, 'message': 'Success', 'payload': response.json(), 'status': status.HTTP_200_OK}
+    except:
+        return {'is_authenticated': False, 'message': 'Unauthorized', 'payload': None, 'status': status.HTTP_401_UNAUTHORIZED}
+
 def role_assign (userId: str, role_object: dict[str, str], headers: dict[str, str]):
     form_data = [role_object]
     requests.post(url=f"{APP_USER_BASE_URL}/{userId}/role-mappings/realm", json=form_data, headers=headers)
