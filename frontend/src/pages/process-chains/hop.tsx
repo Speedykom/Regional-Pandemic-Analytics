@@ -1,6 +1,9 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import React from "react";
 import Router from "next/router";
+import getConfig from 'next/config'
+ 
+const { publicRuntimeConfig } = getConfig()
 
 type FormValues = {
   dagName: string;
@@ -16,7 +19,7 @@ export default function ProcessChains() {
     <DashboardFrame title="Hop Process Chains" back onBackPress={() => {
       Router.back()
     }}>
-      <iframe src={process.env.NEXT_HOP_UI} />
+      <iframe src={publicRuntimeConfig.NEXT_HOP_UI} />
     </DashboardFrame>
   );
 }
