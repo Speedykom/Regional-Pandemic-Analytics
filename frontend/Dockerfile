@@ -44,13 +44,11 @@ COPY --from=builder /frontend/public ./public
 COPY --from=builder /frontend/.next ./.next
 COPY --from=builder /frontend/node_modules ./node_modules
 COPY --from=builder /frontend/package.json ./package.json
-COPY --from=builder /frontend/entrypoint.sh ./entrypoint.sh
 COPY --from=builder /frontend/next.config.js ./next.config.js
 
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
 RUN chown -R nextjs:nodejs /frontend/.next
-RUN chmod +x /frontend/entrypoint.sh
 
 EXPOSE 3000
 
@@ -65,8 +63,6 @@ WORKDIR /frontend
 
 ENV NODE_ENV development
 COPY --from=builder /frontend ./
-
-RUN chmod +x /frontend/entrypoint.sh
 
 EXPOSE 3000
 
