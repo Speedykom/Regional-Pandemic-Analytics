@@ -109,7 +109,7 @@ const DelButton = ({ id }: { id: string }) => {
       open={state}
       onOpenChange={open}
     >
-      <Button className="dag-btn border-red-500 text-red-500 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:bg-red-500 focus:text-white">
+      <Button loading={loading} className="dag-btn border-red-500 text-red-500 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:bg-red-500 focus:text-white">
         Disable
       </Button>
     </Popover>
@@ -197,16 +197,26 @@ export const ProcessCard = ({ process, onLoad }: props) => {
             <div className="text-sm flex flex-col items-center">
               <p className="mb-2 text-xs font-bold">State</p>
               {process.state === "active" ? (
-                <p className="bg-gray-100 text-prim rounded-full p-1 px-3">Active</p>
+                <p className="bg-gray-100 text-prim rounded-full p-1 px-3">
+                  Active
+                </p>
               ) : (
-                <p className="bg-red-100 text-red-500 rounded-full p-1 px-3">Inactive</p>
+                <p className="bg-red-100 text-red-500 rounded-full p-1 px-3">
+                  Inactive
+                </p>
               )}
             </div>
           </div>
           <div className="flex space-x-2 justify-end">
-            <LoadButton onClick={() => onLoad(process)} id={process.dag_id} />
-            {process.airflow ? <RunButton id={process.dag_id} /> : null}
-            {process.airflow ? <ViewButton id={process.dag_id} /> : null}
+            {process.state === "active" ? (
+              <LoadButton onClick={() => onLoad(process)} id={process.dag_id} />
+            ) : null}
+            {process.airflow && process.state === "active" ? (
+              <RunButton id={process.dag_id} />
+            ) : null}
+            {process.airflow && process.state === "active" ? (
+              <ViewButton id={process.dag_id} />
+            ) : null}
             {process.state === "active" ? (
               <DelButton id={process.dag_id} />
             ) : null}
