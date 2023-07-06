@@ -2,10 +2,7 @@
 server {
     listen          80;
     server_name     $NGINX_DRUID_DOMAIN_NAME;
-
-    location / {
-        proxy_pass        http://$NGINX_UPSTREAM_DRUID:8888;
-    }
+	return 301 https://$host$request_uri;
 }
 server {
 	listen 443 ssl;
