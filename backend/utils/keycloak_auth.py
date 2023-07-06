@@ -1,14 +1,22 @@
-import requests
 import os
+import jwt
+import requests
+from rest_framework.response import Response
+from rest_framework import status
 
 from utils.env_configs import (
-    KEYCLOAK_ADMIN_AUTH_URL, 
-    KEYCLOAK_ADMIN_CLIENT_ID, 
-    KEYCLOAK_ADMIN_CLIENT_SECRET, 
-    KEYCLOAK_ADMIN_USERNAME, 
+    KEYCLOAK_ADMIN_AUTH_URL,
+    KEYCLOAK_ADMIN_CLIENT_ID,
+    KEYCLOAK_ADMIN_CLIENT_SECRET,
+    KEYCLOAK_ADMIN_USERNAME,
     KEYCLOAK_ADMIN_PASSWORD,
-    APP_USER_BASE_URL
+    APP_USER_BASE_URL,
+    APP_CLIENT_SECRET,
+    APP_REALM,
+    BASE_URL,
+    APP_CLIENT_ID
 )
+
 
 def keycloak_admin_login():
     form_data = {
@@ -23,7 +31,8 @@ def keycloak_admin_login():
         'Content-Type': 'application/x-www-form-urlencoded'
     }
 
-    response = requests.post(f"{KEYCLOAK_ADMIN_AUTH_URL}", data=form_data, headers=headers)
+    response = requests.post(
+        f"{KEYCLOAK_ADMIN_AUTH_URL}", data=form_data, headers=headers)
 
     serverResponse = {
         "data": response.json(),
@@ -33,51 +42,23 @@ def keycloak_admin_login():
     return serverResponse
 
 
-def create_keycloak_user ():
-    form_data = {
-        "firstName": "Djangoess",
-        "lastName": "Testerers",
-        "username": "tester-maniuois",
-        "email": "mohamedjramsey@gmail.coikkks",
-        "enabled": True,
-        "emailVerified": True
-    }
+pub_key = "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5MnLb2R/mU/QWcy2hYxVRZ082obB0tMLObTSaIkETwlo9wuO4Icie53IVZzltnH1Monu11H2dH9+Fdzt/T6BP6mTtynZ6a3+busBhbrUCx9lQDKEpjAyOo3YzJ/AieJyfR6HPlLapYJ5u0cKUqo+QYCLx1n052aGvu+RZwLbmSqiiZF/BdQ2n+UEkfr32CetjxhGNPJjVNMB2jaCh5pFaYRfDI0VYxcz++vZge+6qVXzadgftfF5353B4Zt/CzPe04lGCwkNFhvCtwE95cvcbgObKsyIiFedgAuQTGH3BDoVPsU1G8FguyKyxOHINQiO+dzyiT7jJqnSuFEnvjozTwIDAQAB\n-----END PUBLIC KEY-----"
 
-    auth_form_data = {
-        "username": KEYCLOAK_ADMIN_USERNAME,
-        "password": KEYCLOAK_ADMIN_PASSWORD,
-        "grant_type": "password",
-        "client_id": KEYCLOAK_ADMIN_CLIENT_ID,
-        "client_secret": KEYCLOAK_ADMIN_CLIENT_SECRET
-    }
 
-    login_headers = {
-        'Content-Type': 'application/x-www-form-urlencoded'
-    }
+def decode_auth_token(token: str):
+    try:
+        if not token:
+            return {'message': 'empty', 'payload': None, 'status': 400}
 
-    response = requests.post(f"{KEYCLOAK_ADMIN_AUTH_URL}", data=auth_form_data, headers=login_headers)
+        token = token.replace("Bearer ", "")
 
-    serverResponse = {
-        "data": response.json(),
-        "status": response.status_code
-    }
+        payload = jwt.decode(token, APP_CLIENT_SECRET)
 
-    if (response.status_code != 200):
-        return serverResponse
-
-    create_headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f"Bearer {serverResponse['data']['access_token']}",
-    }
-
-    res = requests.post(f"{APP_USER_BASE_URL}", data=form_data, headers=create_headers)
-
-    serverRes= {
-        "data": res.json(),
-        "status": res.status_code
-    }
-
-    return serverRes
+        return {'message': 'success', 'payload': payload, 'status': 200}
+    except jwt.ExpiredSignatureError:
+        return {'message': 'expired', 'payload': None, 'status': 401}
+    except jwt.InvalidTokenError:
+        return {'message': 'invalid', 'payload': None, 'status': 498}
 
 def me(request):
     try:
@@ -106,7 +87,9 @@ def me(request):
     except:
         return {'is_authenticated': False, 'message': 'Unauthorized', 'payload': None, 'status': status.HTTP_401_UNAUTHORIZED}
 
-def role_assign (userId: str, role_object: dict[str, str], headers: dict[str, str]):
+
+def role_assign(userId: str, role_object: dict[str, str], headers: dict[str, str]):
     form_data = [role_object]
-    requests.post(url=f"{APP_USER_BASE_URL}/{userId}/role-mappings/realm", json=form_data, headers=headers)
+    requests.post(url=f"{APP_USER_BASE_URL}/{userId}/role-mappings/realm",
+                  json=form_data, headers=headers)
     return True
