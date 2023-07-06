@@ -60,6 +60,7 @@ def decode_auth_token(token: str):
     except jwt.InvalidTokenError:
         return {'message': 'invalid', 'payload': None, 'status': 498}
 
+
 def me(request):
     try:
         token: str = request.headers['AUTHORIZATION']
