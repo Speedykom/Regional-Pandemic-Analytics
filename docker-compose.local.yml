@@ -10,7 +10,7 @@ services:
     container_name: frontend
     build:
       context: ./frontend
-      target: development-build-stage
+      target: dev
     volumes:
       - ./frontend/src/:/frontend/src
 
