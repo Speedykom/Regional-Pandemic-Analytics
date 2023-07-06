@@ -22,4 +22,7 @@ COPY keycloak/lib/*.jar /usr/local/tomcat/lib/
 COPY keycloak/tomcat-users.xml /usr/local/tomcat/conf
 COPY keycloak/context.xml /usr/local/tomcat/webapps/ROOT/META-INF
 COPY keycloak/web.xml /usr/local/tomcat/webapps/ROOT/WEB-INF
-COPY keycloak/keycloak.json /usr/local/tomcat/webapps/ROOT/WEB-INF
+COPY keycloak/keycloak.json /usr/local/tomcat/webapps/ROOT/WEB-INF/keycloak.template.json
+COPY run-web.sh /tmp/
+
+CMD ["/bin/bash", "/tmp/run-web.sh"]

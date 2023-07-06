@@ -1,6 +1,6 @@
 {
   "realm": "regional-pandemic-analytics",
-  "auth-server-url": "$HOP_KEYCLOAK_URL",
+  "auth-server-url": "${HOP_KEYCLOAK_URL}",
   "resource": "hop-client",
   "public-client": true,
   "use-resource-role-mappings": true
