@@ -24,7 +24,24 @@ class ListDashboardsAPI(APIView):
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
         return Response(response.json(), status=status.HTTP_200_OK)
+class ListChartsAPI(APIView):
+    """
+    API view to superset charts
+    """
+    permission_classes = [AllowAny,]
     
+    def get(self, request):
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/chart/"
+        headers = {
+            'Content-Type': "application/json",
+            'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', '')
+        }
+        
+        response = requests.get(url=url, headers=headers)
+        if response.status_code != 200:
+            return Response({'errorMessage': response.json()}, status=response.status_code)
+        
+        return Response(response.json(), status=status.HTTP_200_OK)
     
 class EnableEmbed(APIView):
     """
