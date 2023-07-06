@@ -6,7 +6,9 @@ import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Action } from "@/common/components/common/action";
 import axios from "axios";
 import { OpenNotification } from "@/common/utils/notify";
-
+import getConfig from 'next/config'
+ 
+const { publicRuntimeConfig } = getConfig()
 interface props {
 	edit: (id: string, name: string, description: string) => void;
 	del: () => void;
@@ -18,7 +20,7 @@ export const 	useRoles = ({ edit, del, refetch }: props) => {
 		const deleteUser = async () => {
 			await axios
 				.delete(
-					`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles/${id}/delete`,
+					`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/roles/${id}/delete`,
 					{
 						headers: {
 							"Content-Type": "application/json",
@@ -156,7 +158,7 @@ export const 	useRoles = ({ edit, del, refetch }: props) => {
 };
 
 export const fetchRoles = async () => {
-	const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
+	const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
 	return await axios.get(url).then((res) => {
 		return res.data;
 	}).catch((err) => {
