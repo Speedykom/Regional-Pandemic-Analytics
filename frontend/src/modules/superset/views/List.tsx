@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { IGADTable } from "@/common/components/common/table";
 import { IUser } from "@/modules/user/interface";
-import { BASE_URL } from "@/common/config";
 import axios from "axios";
 import secureLocalStorage from "react-secure-storage";
+import getConfig from 'next/config'
+ 
+const { publicRuntimeConfig } = getConfig()
 
 export const DashboardList = () => {
 	const [data, setData] = useState<Array<IUser>>([]);
@@ -17,7 +19,7 @@ export const DashboardList = () => {
 		const tokens: any = secureLocalStorage.getItem("tokens");
 		const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
 		setLoading(true);
-		const url = `${BASE_URL}/api/superset/list`;
+		const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/superset/list`;
 		await axios
 			.get(url, {
 				headers: {
