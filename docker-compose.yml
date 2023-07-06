@@ -98,6 +98,12 @@ services:
     build:
       context: ./frontend
       target: runner
+      args:
+      - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
+      - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
+      - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
+      - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
+      - NEXT_HOP_UI=${FRONTEND_NEXT_HOP_UI}
     ports:
       - "3000:3000"
     environment:
