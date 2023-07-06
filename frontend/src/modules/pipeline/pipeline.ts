@@ -1,12 +1,15 @@
 // Need to use the React-specific entry point to import createApi
+import { prepareHeaders } from "@/common/config";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { BASE_URL, prepareHeaders } from "@/common/config";
+import getConfig from "next/config";
+
+const { publicRuntimeConfig } = getConfig();
 
 // Define a service using a base URL and expected endpoints
 export const pipelineApi = createApi({
   reducerPath: "pipelineApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: BASE_URL,
+    baseUrl: publicRuntimeConfig.NEXT_PUBLIC_BASE_URL,
     prepareHeaders,
     credentials: "include",
   }),
