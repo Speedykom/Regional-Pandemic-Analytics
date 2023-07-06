@@ -46,7 +46,6 @@ COPY --from=builder /frontend/node_modules ./node_modules
 COPY --from=builder /frontend/package.json ./package.json
 COPY --from=builder /frontend/entrypoint.sh ./entrypoint.sh
 COPY --from=builder /frontend/next.config.js ./next.config.js
-#COPY --from=builder /frontend/config.template.json ./config.template.json
 
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
