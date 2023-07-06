@@ -85,6 +85,34 @@
         "clientRole": false,
         "containerId": "c89b3c58-aefb-4429-972b-feccb6a77750",
         "attributes": {}
+      },
+      {
+        "id": "3f14f73e-3e22-47b5-ab96-56ad5c48ba2b",
+        "name": "Administrator",
+        "description": "",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "c89b3c58-aefb-4429-972b-feccb6a77750",
+        "attributes": {
+          "Role": [
+            "{\"create\": true, \"read\": true, \"update\": true, \"delete\": true}"
+          ],
+          "User": [
+            "{\"create\": true, \"read\": true, \"update\": true, \"delete\": true}"
+          ],
+          "ProcessChain": [
+            "{\"create\": false, \"read\": false, \"update\": false, \"delete\": false}"
+          ],
+          "Dashboard": [
+            "{\"create\": false, \"read\": true, \"update\": true, \"delete\": false}"
+          ],
+          "Data": [
+            "{\"create\": false, \"read\": false, \"update\": false, \"delete\": false}"
+          ],
+          "Chart": [
+            "{\"create\": false, \"read\": false, \"update\": false, \"delete\": false}"
+          ]
+        }
       }
     ],
     "client": {
@@ -345,6 +373,17 @@
           "attributes": {}
         }
       ],
+      "hop": [
+        {
+          "id": "b0320b6d-5a4d-452a-a37e-92326957ec18",
+          "name": "hop-access-role",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "07e9943d-9f62-4c9d-93c5-68f4554c125a",
+          "attributes": {}
+        }
+      ],
       "admin-cli": [],
       "account-console": [],
       "broker": [
@@ -443,6 +482,26 @@
           "composite": false,
           "clientRole": true,
           "containerId": "f92914f0-4a4f-4713-8415-ee74b92a98d5",
+          "attributes": {}
+        }
+      ],
+      "hop-client": [
+        {
+          "id": "45b73946-c901-4c0f-963f-ad59add3109c",
+          "name": "hop-access-role",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "8fd9ba71-805d-4c3b-a900-3c74c205061d",
+          "attributes": {}
+        },
+        {
+          "id": "ae824f9e-4b51-4908-85d8-85150f726f86",
+          "name": "Administrator",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "8fd9ba71-805d-4c3b-a900-3c74c205061d",
           "attributes": {}
         }
       ]
@@ -884,6 +943,155 @@
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": false,
       "nodeReRegistrationTimeout": 0,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "roles",
+        "profile",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "id": "07e9943d-9f62-4c9d-93c5-68f4554c125a",
+      "clientId": "hop",
+      "name": "hop",
+      "description": "",
+      "rootUrl": "",
+      "adminUrl": "",
+      "baseUrl": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [
+        "*"
+      ],
+      "webOrigins": [],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "oidc.ciba.grant.enabled": "false",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "display.on.consent.screen": "false",
+        "backchannel.logout.session.required": "true",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "roles",
+        "profile",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "id": "8fd9ba71-805d-4c3b-a900-3c74c205061d",
+      "clientId": "hop-client",
+      "name": "",
+      "description": "",
+      "rootUrl": "",
+      "adminUrl": "",
+      "baseUrl": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "redirectUris": [
+        "*"
+      ],
+      "webOrigins": [],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "publicClient": true,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "oidc.ciba.grant.enabled": "false",
+        "client.secret.creation.time": "1684513829",
+        "backchannel.logout.session.required": "true",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "display.on.consent.screen": "false",
+        "use.jwks.url": "false",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "id": "e0f74548-76fa-4685-91d5-b1993bdbbc4d",
+          "name": "Client Host",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientHost",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientHost",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "7d681fe9-664d-43cf-8b65-82b6ae013a0b",
+          "name": "Client ID",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientId",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientId",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "43516a80-7c4c-4bb3-bb0e-924154d659ec",
+          "name": "Client IP Address",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientAddress",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientAddress",
+            "jsonType.label": "String"
+          }
+        }
+      ],
       "defaultClientScopes": [
         "web-origins",
         "acr",

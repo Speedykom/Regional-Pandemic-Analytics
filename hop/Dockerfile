@@ -8,6 +8,7 @@ FROM apache/hop-web:2.4.0
 # add installation of inotify tools
 RUN apt-get update
 RUN apt-get install inotify-tools -y
+RUN apt-get install gettext-base 
 
 # Copy and  file watcher script executable
 COPY watchFiles.sh /usr/local/tomcat/watchFiles.sh
