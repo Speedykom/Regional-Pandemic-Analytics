@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pipeline>
   <info>
-    <name>Reading-Data-From-Google-Sheet-One-Source</name>
+    <name>Covid</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
     <description/>
     <extended_description/>
@@ -12,160 +12,52 @@
     <capture_transform_performance>N</capture_transform_performance>
     <transform_performance_capturing_delay>1000</transform_performance_capturing_delay>
     <transform_performance_capturing_size_limit>100</transform_performance_capturing_size_limit>
-    <created_user>Speedykom</created_user>
+    <created_user>-</created_user>
     <created_date>2022/03/09 08:35:58.984</created_date>
     <modified_user>-</modified_user>
     <modified_date>2022/03/09 08:35:58.984</modified_date>
-    <key_for_session_key>H4sIAAAAAAAA/wMAAAAAAAAAAAA=</key_for_session_key>
-    <is_key_private>N</is_key_private>
   </info>
   <notepads>
-    <notepad>
-      <note>Please edit this transform and provide your credentials 
-to access the specific google spreadsheet
-
-Please ensure that you correctly uploaded the correct keys.json 
-file to establish a connection</note>
-      <xloc>48</xloc>
-      <yloc>320</yloc>
-      <width>400</width>
-      <heigth>90</heigth>
-      <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>14</fontcolorred>
-      <fontcolorgreen>58</fontcolorgreen>
-      <fontcolorblue>90</fontcolorblue>
-      <backgroundcolorred>201</backgroundcolorred>
-      <backgroundcolorgreen>232</backgroundcolorgreen>
-      <backgroundcolorblue>251</backgroundcolorblue>
-      <bordercolorred>14</bordercolorred>
-      <bordercolorgreen>58</bordercolorgreen>
-      <bordercolorblue>90</bordercolorblue>
-    </notepad>
-    <notepad>
-      <note>Use these helper transformation if you have a 
-date format different than MMM/dd/yyyy</note>
-      <xloc>240</xloc>
-      <yloc>80</yloc>
-      <width>289</width>
-      <heigth>42</heigth>
-      <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>200</fontcolorred>
-      <fontcolorgreen>231</fontcolorgreen>
-      <fontcolorblue>250</fontcolorblue>
-      <backgroundcolorred>15</backgroundcolorred>
-      <backgroundcolorgreen>136</backgroundcolorgreen>
-      <backgroundcolorblue>210</backgroundcolorblue>
-      <bordercolorred>200</bordercolorred>
-      <bordercolorgreen>231</bordercolorgreen>
-      <bordercolorblue>250</bordercolorblue>
-    </notepad>
-    <notepad>
-      <note>Use the remove nulls transform if you want to clean up your data 
-and remove nulls from a specific column
-An example of removing nulls from the Date column is provided</note>
-      <xloc>624</xloc>
-      <yloc>48</yloc>
-      <width>404</width>
-      <heigth>58</heigth>
-      <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>14</fontcolorred>
-      <fontcolorgreen>58</fontcolorgreen>
-      <fontcolorblue>90</fontcolorblue>
-      <backgroundcolorred>201</backgroundcolorred>
-      <backgroundcolorgreen>232</backgroundcolorgreen>
-      <backgroundcolorblue>251</backgroundcolorblue>
-      <bordercolorred>14</bordercolorred>
-      <bordercolorgreen>58</bordercolorgreen>
-      <bordercolorblue>90</bordercolorblue>
-    </notepad>
-    <notepad>
-      <note>Use this transform to sort data ascending or descending. 
-This transform is mandatory when trying to merge join 
-different data from different sources</note>
-      <xloc>704</xloc>
-      <yloc>304</yloc>
-      <width>359</width>
-      <heigth>58</heigth>
-      <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>14</fontcolorred>
-      <fontcolorgreen>58</fontcolorgreen>
-      <fontcolorblue>90</fontcolorblue>
-      <backgroundcolorred>201</backgroundcolorred>
-      <backgroundcolorgreen>232</backgroundcolorgreen>
-      <backgroundcolorblue>251</backgroundcolorblue>
-      <bordercolorred>14</bordercolorred>
-      <bordercolorgreen>58</bordercolorgreen>
-      <bordercolorblue>90</bordercolorblue>
-    </notepad>
-    <notepad>
-      <note>This is a mandatory transform! Please do not remove.
-Only add the fields you want to process.
-
-See the example fields provided for you when 
-click on edit transform
-
-Target fields don't accept white spaces or 
-specefic characters</note>
-      <xloc>1120</xloc>
-      <yloc>304</yloc>
-      <width>333</width>
-      <heigth>138</heigth>
-      <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>14</fontcolorred>
-      <fontcolorgreen>58</fontcolorgreen>
-      <fontcolorblue>90</fontcolorblue>
-      <backgroundcolorred>188</backgroundcolorred>
-      <backgroundcolorgreen>98</backgroundcolorgreen>
-      <backgroundcolorblue>90</backgroundcolorblue>
-      <bordercolorred>14</bordercolorred>
-      <bordercolorgreen>58</bordercolorgreen>
-      <bordercolorblue>90</bordercolorblue>
-    </notepad>
   </notepads>
   <order>
     <hop>
-      <from>Change Date</from>
-      <to>Remove nulls</to>
-      <enabled>N</enabled>
-    </hop>
-    <hop>
-      <from>Remove nulls</from>
-      <to>Sort by value descending</to>
-      <enabled>N</enabled>
-    </hop>
-    <hop>
-      <from>Sort by value descending</from>
-      <to>Write data to parquet file</to>
+      <from>Change Date Field Meta-data</from>
+      <to>Sort by country descending</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Read Data from Google Spreadsheet</from>
-      <to>Change Date</to>
-      <enabled>N</enabled>
+      <from>Read Covid aggregated Data from Google Spreadsheet</from>
+      <to>Change Date Field Meta-data</to>
+      <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Read Data from Google Spreadsheet</from>
-      <to>Sort by value descending</to>
+      <from>Read IGAD Country Details from Google spreadsheet</from>
+      <to>Sort Countries details descending</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Sort Countries details descending</from>
+      <to>Merge join</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Sort by country descending</from>
+      <to>Merge join</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Remove duplicate</from>
+      <to>Write data to paquet file</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Merge join</from>
+      <to>Remove duplicate</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <transform>
-    <name>Change Date</name>
+    <name>Change Date Field Meta-data</name>
     <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
@@ -197,12 +89,38 @@ specefic characters</note>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>512</xloc>
+      <xloc>464</xloc>
       <yloc>112</yloc>
     </GUI>
   </transform>
   <transform>
-    <name>Read Data from Google Spreadsheet</name>
+    <name>Merge join</name>
+    <type>MergeJoin</type>
+    <description/>
+    <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <join_type>LEFT OUTER</join_type>
+    <keys_1>
+      <key>MEMBER STATE</key>
+    </keys_1>
+    <keys_2>
+      <key>MEMBER STATE</key>
+    </keys_2>
+    <transform1>Sort by country descending</transform1>
+    <transform2>Sort Countries details descending</transform2>
+    <attributes/>
+    <GUI>
+      <xloc>688</xloc>
+      <yloc>208</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Read Covid aggregated Data from Google Spreadsheet</name>
     <type>GoogleSheetsPluginInput</type>
     <description/>
     <distribute>Y</distribute>
@@ -212,8 +130,8 @@ specefic characters</note>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <worksheetId>Dengue_Fever_Data</worksheetId>
-    <spreadsheetKey>1GwU7RImPNQDL7QHcJ8ZqGGmFozzPNA4QVOO06zRpQkA</spreadsheetKey>
+    <worksheetId>Covid19_Data</worksheetId>
+    <spreadsheetKey>1WGFNgsmNwhEtNB5OmBif3qrP3yIOoEOeNCqNKUMyzr4</spreadsheetKey>
     <jsonCredentialPath>${pipeline_source}/keys.json</jsonCredentialPath>
     <sampleFields>100</sampleFields>
     <fields>
@@ -250,19 +168,115 @@ specefic characters</note>
         <group>,</group>
         <position>-1</position>
         <length>-1</length>
-        <precision>0</precision>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>New Deaths</name>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal>.</decimal>
+        <group>,</group>
+        <position>-1</position>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>New Recoveries</name>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal>.</decimal>
+        <group>,</group>
+        <position>-1</position>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>Total Confirmed Cases</name>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal>.</decimal>
+        <group>,</group>
+        <position>-1</position>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>Total Recoveries</name>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal>.</decimal>
+        <group>,</group>
+        <position>-1</position>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>Total Deaths</name>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal>.</decimal>
+        <group>,</group>
+        <position>-1</position>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>Total Doses</name>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal>.</decimal>
+        <group>,</group>
+        <position>-1</position>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>Daily Tests</name>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal>.</decimal>
+        <group>,</group>
+        <position>-1</position>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>Fully Vaccinated</name>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal>.</decimal>
+        <group>,</group>
+        <position>-1</position>
+        <length>-1</length>
+        <precision>-1</precision>
         <trim_type>none</trim_type>
       </field>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>240</xloc>
-      <yloc>240</yloc>
+      <xloc>192</xloc>
+      <yloc>112</yloc>
     </GUI>
   </transform>
   <transform>
-    <name>Remove nulls</name>
-    <type>FilterRows</type>
+    <name>Read IGAD Country Details from Google spreadsheet</name>
+    <type>GoogleSheetsPluginInput</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -271,24 +285,103 @@ specefic characters</note>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <send_true_to/>
-    <send_false_to/>
-    <compare>
-      <condition>
-        <negated>N</negated>
-        <leftvalue>Date</leftvalue>
-        <function>IS NOT NULL</function>
-        <rightvalue/>
-      </condition>
-    </compare>
+    <worksheetId>Country_Details</worksheetId>
+    <spreadsheetKey>1WGFNgsmNwhEtNB5OmBif3qrP3yIOoEOeNCqNKUMyzr4</spreadsheetKey>
+    <jsonCredentialPath>${pipeline_source}/keys.json</jsonCredentialPath>
+    <sampleFields>100</sampleFields>
+    <fields>
+      <field>
+        <name>MEMBER STATE</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <position>-1</position>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>Population</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <position>-1</position>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>Code</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <position>-1</position>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>Latitude</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <position>-1</position>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+      <field>
+        <name>Longitude</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <position>-1</position>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+    </fields>
     <attributes/>
     <GUI>
-      <xloc>800</xloc>
-      <yloc>112</yloc>
+      <xloc>192</xloc>
+      <yloc>208</yloc>
     </GUI>
   </transform>
   <transform>
-    <name>Sort by value descending</name>
+    <name>Remove duplicate</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <select_unspecified>N</select_unspecified>
+      <remove>
+        <name>MEMBER STATE_1</name>
+      </remove>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>864</xloc>
+      <yloc>208</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Sort Countries details descending</name>
     <type>SortRows</type>
     <description/>
     <distribute>Y</distribute>
@@ -317,12 +410,46 @@ specefic characters</note>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>864</xloc>
-      <yloc>240</yloc>
+      <xloc>480</xloc>
+      <yloc>208</yloc>
     </GUI>
   </transform>
   <transform>
-    <name>Write data to parquet file</name>
+    <name>Sort by country descending</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <directory>${java.io.tmpdir}</directory>
+    <prefix>out</prefix>
+    <sort_size>1000000</sort_size>
+    <free_memory/>
+    <compress>N</compress>
+    <compress_variable/>
+    <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>MEMBER STATE</name>
+        <ascending>N</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>688</xloc>
+      <yloc>112</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Write data to paquet file</name>
     <type>ParquetFileOutput</type>
     <description/>
     <distribute>Y</distribute>
@@ -341,10 +468,6 @@ specefic characters</note>
         <target_field>STATE</target_field>
       </field>
       <field>
-        <source_field>Administrative Level Name</source_field>
-        <target_field>AdministrativeLevelName</target_field>
-      </field>
-      <field>
         <source_field>Date</source_field>
         <target_field>Date</target_field>
       </field>
@@ -352,8 +475,55 @@ specefic characters</note>
         <source_field>New Cases</source_field>
         <target_field>NewCases</target_field>
       </field>
+      <field>
+        <source_field>New Deaths</source_field>
+        <target_field>NewDeaths</target_field>
+      </field>
+      <field>
+        <source_field>New Recoveries</source_field>
+        <target_field>NewRecoveries</target_field>
+      </field>
+      <field>
+        <source_field>Total Confirmed Cases</source_field>
+        <target_field>TotalCases</target_field>
+      </field>
+      <field>
+        <source_field>Total Recoveries</source_field>
+        <target_field>TotalRecoveries</target_field>
+      </field>
+      <field>
+        <source_field>Total Deaths</source_field>
+        <target_field>TotalDeaths</target_field>
+      </field>
+      <field>
+        <source_field>Total Doses</source_field>
+        <target_field>TotalDoses</target_field>
+      </field>
+      <field>
+        <source_field>Daily Tests</source_field>
+        <target_field>DailyTests</target_field>
+      </field>
+      <field>
+        <source_field>Fully Vaccinated</source_field>
+        <target_field>FullyVaccinated</target_field>
+      </field>
+      <field>
+        <source_field>Population</source_field>
+        <target_field>Population</target_field>
+      </field>
+      <field>
+        <source_field>Code</source_field>
+        <target_field>Code</target_field>
+      </field>
+      <field>
+        <source_field>Latitude</source_field>
+        <target_field>Latitude</target_field>
+      </field>
+      <field>
+        <source_field>Longitude</source_field>
+        <target_field>Longitude</target_field>
+      </field>
     </fields>
-    <filename_split_size>1000000</filename_split_size>
     <filename_base>${output_source}/${Internal.Pipeline.Name}</filename_base>
     <filename_create_parent_folders>Y</filename_create_parent_folders>
     <filename_datetime_format>yyyyMMdd-HHmmss</filename_datetime_format>
@@ -363,14 +533,52 @@ specefic characters</note>
     <filename_include_datetime>N</filename_include_datetime>
     <filename_include_split>N</filename_include_split>
     <filename_include_time>N</filename_include_time>
+    <filename_split_size>1000000</filename_split_size>
     <row_group_size>20000</row_group_size>
     <version>1.0</version>
     <attributes/>
     <GUI>
-      <xloc>1248</xloc>
-      <yloc>240</yloc>
+      <xloc>1136</xloc>
+      <yloc>208</yloc>
     </GUI>
   </transform>
   <transform_error_handling>
   </transform_error_handling>
+  <attributes>
+    <group>
+      <name>debug_plugin</name>
+      <attribute>
+        <key>JavaScript : log_level</key>
+        <value>Rowlevel</value>
+      </attribute>
+      <attribute>
+        <key>JavaScript : end_row</key>
+        <value>-1</value>
+      </attribute>
+      <attribute>
+        <key>Transform Covid19 Data : start_row</key>
+        <value>-1</value>
+      </attribute>
+      <attribute>
+        <key>Transform Covid19 Data : log_level</key>
+        <value>Rowlevel</value>
+      </attribute>
+      <attribute>
+        <key>Transform Covid19 Data : end_row</key>
+        <value>-1</value>
+      </attribute>
+      <attribute>
+        <key>JavaScript : condition</key>
+        <value>PGNvbmRpdGlvbj4NCiA8bmVnYXRlZD5OPC9uZWdhdGVkPg0KIDxsZWZ0dmFsdWUvPg0KIDxmdW5jdGlvbj49PC9mdW5jdGlvbj4NCiA8cmlnaHR2YWx1ZS8+DQogPC9jb25kaXRpb24+DQo=</value>
+      </attribute>
+      <attribute>
+        <key>JavaScript : start_row</key>
+        <value>-1</value>
+      </attribute>
+      <attribute>
+        <key>Transform Covid19 Data : condition</key>
+        <value>PGNvbmRpdGlvbj4NCiA8bmVnYXRlZD5OPC9uZWdhdGVkPg0KIDxsZWZ0dmFsdWUvPg0KIDxmdW5jdGlvbj49PC9mdW5jdGlvbj4NCiA8cmlnaHR2YWx1ZS8+DQogPC9jb25kaXRpb24+DQo=</value>
+      </attribute>
+    </group>
+  </attributes>
 </pipeline>
