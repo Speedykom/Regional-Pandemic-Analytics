@@ -2,10 +2,7 @@
 server {
     listen          80;
     server_name     $NGINX_HOP_DOMAIN_NAME;
-
-    location / {
-        proxy_pass        http://$NGINX_UPSTREAM_HOP:8080;
-    }
+  	return 301 https://$host$request_uri;
 }
 server {
 	listen 443 ssl;
@@ -13,6 +10,11 @@ server {
 	ssl_certificate /etc/nginx/certs/hop.crt;
 	ssl_certificate_key /etc/nginx/certs/hop.key;
 	location / {
+		proxy_set_header Host                    $host;
+    	proxy_set_header X-Real-IP               $remote_addr;
+    	proxy_set_header X-Scheme                $scheme;
+    	proxy_set_header X-Auth-Request-Redirect $request_uri;
+		proxy_set_header X-Auth-Request-Redirect $scheme://$host$request_uri;
 		proxy_pass http://$NGINX_UPSTREAM_HOP:8080/;
 		error_log /var/log/hop_errors.log;
 	}

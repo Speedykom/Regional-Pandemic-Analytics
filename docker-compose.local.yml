@@ -33,8 +33,6 @@ services:
   # =======
   # Nginx
   # =======
-
-
   nginx:
     image: nginx:1.25.1-alpine
     container_name: nginx
@@ -66,3 +64,12 @@ services:
       - ./nginx/package-conf/:/etc/nginx/templates/package-conf/
     depends_on:
       - airflow-webserver
+
+  # =====
+  #  Hop
+  # =====
+  hop:
+    container_name: hop
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "keycloak.igad.local:host-gateway"
