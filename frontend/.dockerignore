@@ -4,4 +4,3 @@ scripts
 *Dockerfile*
 node_modules
 .env
-!next.config.template.js
