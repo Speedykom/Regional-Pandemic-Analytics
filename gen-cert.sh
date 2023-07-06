@@ -29,7 +29,7 @@ for service in $service_table; do
 commonname=$service
 openssl genrsa -out $service.key 2048
 openssl req -new -key $service.key -out $service.csr \
-    -subj "/C=$country/1=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
+    -subj "/C=$country/1=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/"
 
 cat > $service.ext << EOF
 authorityKeyIdentifier=keyid,issuer

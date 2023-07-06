@@ -364,12 +364,7 @@ services:
       - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
     environment:
       - HOP_KEYCLOAK_URL=${HOP_KEYCLOAK_URL}
-      # - com.sun.net.ssl.checkRevocation=false
-    command: > 
-      bash -c "cd /usr/local/tomcat/webapps/ROOT/WEB-INF/
-      && envsubst '$$HOP_KEYCLOAK_URL' < ./keycloak.json > ./result.json 
-      && mv ./result.json ./keycloak.json 
-      && /tmp/run-web.sh"
+
     # =======
     # Airflow
     # =======
@@ -462,8 +457,6 @@ services:
       - KC_HEALTH_ENABLED=true
       - KEYCLOAK_ADMIN=${KEYCLOAK_KEYCLOAK_ADMIN}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_KEYCLOAK_ADMIN_PASSWORD}
-      # - KC_HOSTNAME_ADMIN_URL=${KEYCLOAK_HOSTNAME_ADMIN_URL}
-      # - KC_HOSTNAME_URL=${KEYCLOAK_HOSTNAME_URL}
       - BACKEND_CLIENT_ID=${BACKEND_CLIENT_ID}
       - BACKEND_CLIENT_SECRET=${BACKEND_CLIENT_SECRET}
       - BACKEND_PUBLIC_URL=${BACKEND_PUBLIC_URL}

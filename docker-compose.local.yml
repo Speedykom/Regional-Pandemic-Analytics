@@ -16,6 +16,9 @@ services:
 
   superset:
     container_name: superset
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "keycloak.igad.local:host-gateway"
     command:
       - -c
       - |
