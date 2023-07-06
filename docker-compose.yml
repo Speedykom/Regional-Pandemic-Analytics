@@ -362,7 +362,14 @@ services:
       - ./storage:/home
       - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
       - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
-
+    environment:
+      - HOP_KEYCLOAK_URL=${HOP_KEYCLOAK_URL}
+      # - com.sun.net.ssl.checkRevocation=false
+    command: > 
+      bash -c "cd /usr/local/tomcat/webapps/ROOT/WEB-INF/
+      && envsubst '$$HOP_KEYCLOAK_URL' < ./keycloak.json > ./result.json 
+      && mv ./result.json ./keycloak.json 
+      && /tmp/run-web.sh"
     # =======
     # Airflow
     # =======
