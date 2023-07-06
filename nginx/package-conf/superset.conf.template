@@ -2,10 +2,16 @@
 server {
     listen          80;
     server_name     $NGINX_SUPERSET_DOMAIN_NAME;
-
-    location / {
-        proxy_pass        http://$NGINX_UPSTREAM_SUPERSET:8088;
-    }
+	location / {
+		proxy_set_header Host                    $host;
+    	proxy_set_header X-Real-IP               $remote_addr;
+    	proxy_set_header X-Scheme                $scheme;
+    	proxy_set_header X-Auth-Request-Redirect $request_uri;
+		proxy_set_header X-Auth-Request-Redirect $scheme://$host$request_uri;
+		proxy_pass http://$NGINX_UPSTREAM_SUPERSET:8088/;
+		error_log /var/log/superset_errors.log;
+	}
+	#return 301 https://$host$request_uri;
 }
 server {
 	listen 443 ssl;
@@ -13,6 +19,11 @@ server {
 	ssl_certificate /etc/nginx/certs/superset.crt;
 	ssl_certificate_key /etc/nginx/certs/superset.key;
 	location / {
+		proxy_set_header Host                    $host;
+    	proxy_set_header X-Real-IP               $remote_addr;
+    	proxy_set_header X-Scheme                $scheme;
+    	proxy_set_header X-Auth-Request-Redirect $request_uri;
+		proxy_set_header X-Auth-Request-Redirect $scheme://$host$request_uri;
 		proxy_pass http://$NGINX_UPSTREAM_SUPERSET:8088/;
 		error_log /var/log/superset_errors.log;
 	}
