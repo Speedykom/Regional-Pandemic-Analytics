@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { processApi } from "../../modules/process/process";
-import { AuthApi } from "../../modules/login/login";
+import { AuthApi } from "../../modules/auth/auth";
 import { pipelineApi } from "@/modules/pipeline/pipeline";
 
 export const store = configureStore({
