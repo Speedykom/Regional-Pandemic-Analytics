@@ -23,8 +23,6 @@ const TemplateModal = ({ state, onSelect }: Props) => {
 
     const checkIcon = icons.find((e) => name.toLowerCase().indexOf(e) != -1);
 
-    console.log(checkIcon, name.toLowerCase());
-
     const icon = checkIcon;
 
     switch (icon) {
