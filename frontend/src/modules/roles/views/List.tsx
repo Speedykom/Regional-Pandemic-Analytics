@@ -7,7 +7,9 @@ import { IRoles } from "../interface";
 import secureLocalStorage from "react-secure-storage";
 import { OpenNotification } from "@/common/utils/notify";
 import { PlusOutlined, DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
-import { BASE_URL } from "@/common/config";
+import getConfig from 'next/config'
+ 
+const { publicRuntimeConfig } = getConfig()
 
 interface props {
 	viewPro: () => void;
@@ -34,7 +36,7 @@ export const RoleList = () => {
 	const fetchRoles = async () => {
 		try {
 			setLoading(true);
-			const url = `${BASE_URL}/api/role`;
+			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/role`;
 			await axios
 				.get(url, {
 					headers: {
@@ -85,7 +87,7 @@ export const RoleList = () => {
 	);
 
 	const onFinish = async (values: any) => {
-		let url = `${BASE_URL}/api/role`;
+		let url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/role`;
 		url = operationType == OPERATION_TYPES.CREATE ? url : url + `/${roleId}`;
 		let method = operationType == OPERATION_TYPES.CREATE ? "POST" : "PUT";
 
