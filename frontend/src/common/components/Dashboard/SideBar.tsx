@@ -155,7 +155,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
 								<LockClosedIcon className="h-5 w-5" />
 							</div>
 							<div>
-								<p>App Roles</p>
+								<p>Roles</p>
 							</div>
 						</div>
 					</Link>

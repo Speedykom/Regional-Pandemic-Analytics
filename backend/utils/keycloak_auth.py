@@ -1,7 +1,5 @@
-import os
-import jwt
 import requests
-from rest_framework.response import Response
+import os
 from rest_framework import status
 
 from utils.env_configs import (
@@ -15,6 +13,7 @@ from utils.env_configs import (
     APP_REALM,
     BASE_URL,
     APP_CLIENT_ID
+    
 )
 
 def keycloak_admin_login():

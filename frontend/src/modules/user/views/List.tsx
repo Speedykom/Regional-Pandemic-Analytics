@@ -76,8 +76,10 @@ export const UserList = () => {
 		setOpen(false);
 	};
 
+	const tokens: any = secureLocalStorage.getItem("tokens") as object;
+	const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
+
 	const fetchUsers = async () => {
-		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		try {
 			setLoading(true);
 			const url = `${BASE_URL}/api/account/users`;
@@ -85,7 +87,7 @@ export const UserList = () => {
 				.get(url, {
 					headers: {
 						'Content-Type': 'application/json',
-						"Authorization": `Bearer ${tokens?.accessToken}`
+						"Authorization": `Bearer ${accessToken}`
 					},
 				})
 				.then((res) => {
@@ -148,7 +150,6 @@ export const UserList = () => {
 	const onFinish = async (values: any) => {
 		values["code"] = code;
 		values["role"] = JSON.parse(values["role"])
-		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		await axios
 			.put(
 				`${BASE_URL}/api/account/user/${userId}/update`,
@@ -156,7 +157,7 @@ export const UserList = () => {
 				{
 					headers: {
 						"Content-Type": "application/json",
-						"Authorization": `Bearer ${tokens?.accessToken}`
+						"Authorization": `Bearer ${accessToken}`
 					},
 				}
 			)
@@ -183,14 +184,13 @@ export const UserList = () => {
 	);
 
 	const fetchRoles = async () => {
-		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		try {
 			setRoleLoading(true)
 			const url = `${BASE_URL}/api/role`;
 			await axios.get(url, {
 				headers: {
 					"Content-Type": "application/json",
-					"Authorization": `Bearer ${tokens?.accessToken}`
+					"Authorization": `Bearer ${accessToken}`
 				},
 			}).then((res) => {
 				setRoleLoading(false)

@@ -3,8 +3,7 @@ import { IGADTable } from "@/common/components/common/table";
 import { BASE_URL } from "@/common/config";
 import { OpenNotification } from "@/common/utils/notify";
 import { useAttributes } from "@/modules/roles/hooks";
-import { IAttribute, IRole } from "@/modules/roles/interface";
-import { EditPermission } from "@/modules/roles/views/EditPermission";
+import { IAttribute, IRoles } from "@/modules/roles/interface";
 import {
 	DeleteColumnOutlined,
 	EditOutlined,
@@ -19,20 +18,22 @@ export const ViewRole = () => {
 	const userRole: any = secureLocalStorage.getItem("user_role");
 	const permits = userRole?.attributes;
 	const roleId = location.href.substring(location.href.lastIndexOf("/") + 1);
-	const [role, setRole] = useState<IRole>();
+	const [role, setRole] = useState<IRoles>();
 	const [attributes, setAttributes] = useState<IAttribute[]>([]);
 	const [error, setError] = useState(null);
-	const [disable, setDisable] = useState(true);
 	const [loading, setLoading] = useState(true);
+	const [onSaveLoad, setOnSaveLoad] = useState(false);
 	const [open, setOpen] = useState<boolean>(false);
 
+	const tokens: any = secureLocalStorage.getItem("tokens") as object;
+	const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
+
 	const fetchRole = async () => {
-		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		setLoading(true);
 		await axios
 			.get(`${BASE_URL}/api/role/${roleId}?type=id`, {
 				headers: {
-					Authorization: `Bearer ${tokens?.accessToken}`,
+					Authorization: `Bearer ${accessToken}`,
 				},
 			})
 			.then((res) => {
@@ -114,16 +115,17 @@ export const ViewRole = () => {
 	};
 
 	const onFinish = async () => {
-		const tokens: any = secureLocalStorage.getItem("tokens") as object;
+		setOnSaveLoad(true)
 		const roleId = location.href.substring(location.href.lastIndexOf('/') + 1);
 		await axios.put(`${BASE_URL}/api/role/${roleId}/permission`, {
 			key,
 			value
 		}, {
 			headers: {
-				Authorization: `Bearer ${tokens?.accessToken}`
+				Authorization: `Bearer ${accessToken}`
 			}
 		}).then((res) => {
+			setOnSaveLoad(false)
 			OpenNotification(res?.data?.message, "topRight", "success");
 			form.resetFields();
 			setOpen(false);
@@ -145,21 +147,6 @@ export const ViewRole = () => {
 						<h2 className="text-3xl">{role?.name}</h2>
 						<p className="my-2 text-gray-600">{role?.description}</p>
 					</div>
-					{permits?.Role && permits?.Role?.update && (
-						<div>
-							<Button
-								type="primary"
-								size="large"
-								icon={<EditOutlined />}
-								onClick={(e) => {
-									e.preventDefault();
-									setOpen(true);
-								}}
-							>
-								Edit Permissions
-							</Button>
-						</div>
-					)}
 				</div>
 			</nav>
 			<section className="mt-5">
@@ -193,6 +180,7 @@ export const ViewRole = () => {
 								type="primary"
 								className="flex items-center"
 								icon={<SaveOutlined />}
+								loading={onSaveLoad}
 								style={{
 									backgroundColor: "#087757",
 									border: "1px solid #e65e01",

@@ -1,4 +1,4 @@
-export interface IRole {
+export interface IRoles {
     id?: string;
     name: string;
     description: string;
@@ -7,7 +7,6 @@ export interface IRole {
     containerId: string;
     attributes: any;
 }
-
 export interface IAttribute {
 	key: string;
     value: {

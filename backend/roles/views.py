@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from roles.utils import (
-    User_pers, FALSE_User_pers, Role_pers, FALSE_Role_pers, Dashboard_pers, FALSE_dashboard_pers, Chart_pers, FALSE_chart_pers,
-    Data_pers, FALSE_data_pers, Process_chain_pers, FALSE_process_chain_pers
+    FALSE_User_pers, FALSE_Role_pers, FALSE_dashboard_pers, FALSE_chart_pers,
+    FALSE_data_pers, FALSE_process_chain_pers
 )
 from utils.keycloak_auth import keycloak_admin_login, current_user
 from utils.env_configs import (

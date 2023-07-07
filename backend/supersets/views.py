@@ -4,8 +4,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-
-from utils.keycloak_auth import current_user
 from . import auths
 
 class ListDashboardsAPI(APIView):
@@ -15,25 +13,13 @@ class ListDashboardsAPI(APIView):
     permission_classes = [AllowAny,]
     
     def get(self, request):
-        cur_user = current_user(request)
-        
-        if (cur_user['is_authenticated'] == False):
-            return Response(cur_user, status=cur_user["status"])
-        
-        #Login to superset
-        auth_response = auths.get_auth_token()
-        
-        if auth_response['status'] != 200:
-            return Response({'errorMessage': auth_response['message']}, status=auth_response['status'])
-        
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/"
-        
         headers = {
-            'Authorization': f"Bearer {auth_response['token']['access_token']}"
+            'Content-Type': "application/json",
+            'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', '')
         }
         
         response = requests.get(url=url, headers=headers)
-        
         if response.status_code != 200:
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
@@ -47,22 +33,16 @@ class EnableEmbed(APIView):
     permission_classes = [AllowAny,]
     
     def post(self, request):
-        #Login to superset
-        auth_response = auths.get_auth_token()
-        
-        if auth_response['status'] != 200:
-            return Response({'errorMessage': auth_response['message']}, status=auth_response['status'])
-        
         uid = request.data.get('uid', None)
         
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{uid}/embedded"
         
         headers = {
             'Content-Type': "application/json",
-            'Authorization': f"Bearer {auth_response['token']['access_token']}"
+            'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', '')
         }
         
-        response = requests.post(url, json={"allowed_domains": []}, headers=headers)
+        response = requests.post(url, json={"allowed_domains": [os.getenv("SUPERSET_ALLOWED_DOMAINS")]}, headers=headers)
         
         if response.status_code != 200:
             return Response({'errorMessage': response.json()}, status=response.status_code)
@@ -75,19 +55,12 @@ class GetEmbeddable(APIView):
     API view to get embedable superset dashboard
     """
     permission_classes = [AllowAny,]
-    
     def get(self, request, *args, **kwargs):
-        #Login to superset
-        auth_response = auths.get_auth_token()
-        
-        if auth_response['status'] != 200:
-            return Response({'errorMessage': auth_response['message']}, status=auth_response['status'])
-        
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['id']}/embedded"
         
         headers = {
-            'Content-Type': 'application/json',
-            'Authorization': f'Bearer {auth_response["token"]["access_token"]}'
+            'Content-Type': "application/json",
+            'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', '')
         }
         
         response = requests.get(url, headers=headers)
@@ -102,16 +75,9 @@ class GuestTokenApi(APIView):
     
     def post(self, request):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/security/guest_token/"
-        
-        guest_token = auths.get_csrf_token()
-        
-        if guest_token['status'] != 200:
-            return Response({'errorMessage': guest_token['message']}, status=guest_token['status'])
-        
         headers = {
             'Content-Type': "application/json",
-            'Authorization': f"Bearer {guest_token['token']['access_token']}",
-            'X-CSRF-TOKEN': f"{guest_token['token']['csrf_token']}"
+            'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', ''),
         }
         
         payload = {
