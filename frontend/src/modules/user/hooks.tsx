@@ -41,6 +41,9 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 		gender: string,
 		avatar: string
 	) => {
+		const userRole: any = secureLocalStorage.getItem("user_role");
+		const permits = userRole?.attributes;
+		
 		const deleteUser = async () => {
 			const tokens: any = secureLocalStorage.getItem("tokens") as object;
 			const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
@@ -77,33 +80,37 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 							<FiEye className="mt-1" /> <span>Preview</span>
 						</button>
 					</li>
-					<li>
-						<button
-							onClick={(e) => {
-								e.preventDefault();
-								edit(id, firstName, lastName, username, email, enabled, code, phone, country, gender, avatar);
-							}}
-							className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
-						>
-							<FiEdit className="mt-1" /> <span>Edit</span>
-						</button>
-					</li>
-					<li>
-						<Popconfirm
-							placement="left"
-							title={"Disable User"}
-							description={"Are you sure you want to disable this user"}
-							onConfirm={deleteUser}
-							okText="Yes"
-							cancelText="No"
-							okType="link"
-							okButtonProps={{style: {backgroundColor: "#3f96ff", color: "white"}}}
-						>
-							<button className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white">
-								<FiTrash className="mt-1" /> <span>Disable User</span>
+					{permits?.User && permits?.User?.update && (
+						<li>
+							<button
+								onClick={(e) => {
+									e.preventDefault();
+									edit(id, firstName, lastName, username, email, enabled, code, phone, country, gender, avatar);
+								}}
+								className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
+							>
+								<FiEdit className="mt-1" /> <span>Edit</span>
 							</button>
-						</Popconfirm>
-					</li>
+						</li>
+					)}
+					{permits?.User && permits?.User?.delete && (
+						<li>
+							<Popconfirm
+								placement="left"
+								title={"Disable User"}
+								description={"Are you sure you want to disable this user"}
+								onConfirm={deleteUser}
+								okText="Yes"
+								cancelText="No"
+								okType="link"
+								okButtonProps={{style: {backgroundColor: "#3f96ff", color: "white"}}}
+							>
+								<button className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white">
+									<FiTrash className="mt-1" /> <span>Disable User</span>
+								</button>
+							</Popconfirm>
+						</li>
+					)}
 				</ul>
 			</Action>
 		);
