@@ -9,6 +9,9 @@ import { useRouter } from "next/router";
 import { UploadOutlined } from "@ant-design/icons";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { getData } from "@/common/utils";
+import getConfig from 'next/config'
+ 
+const { publicRuntimeConfig } = getConfig()
 
 interface props {
   viewPro: () => void;
@@ -86,7 +89,7 @@ export const HopList = () => {
     setUploading(true);
     await axios
       .post(
-        `${process.env.FRONTEND_NEXT_PUBLIC_BASE_URL}/api/hop/new/`,
+        `${publicRuntimeConfig.FRONTEND_NEXT_PUBLIC_BASE_URL}/api/hop/new/`,
         formData,
         {
           headers: {

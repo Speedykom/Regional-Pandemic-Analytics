@@ -1,6 +1,9 @@
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import secureLocalStorage from "react-secure-storage";
+import getConfig from 'next/config'
+ 
+const { serverRuntimeConfig } = getConfig()
 
 export default async function handler(
   req: NextApiRequest,
@@ -8,7 +11,7 @@ export default async function handler(
 ) {
   if (req.method !== "POST")
     return res.status(405).send(`Method ${req.method} not allowed`);
-  const server_url = process.env.NEXT_PRIVATE_BASE_URL;
+  const server_url = serverRuntimeConfig.NEXT_PRIVATE_BASE_URL;
 
   const { refreshToken } = req.body;
 
