@@ -1,5 +1,6 @@
 
 import { BASE_URL } from "@/common/config";
+import { getData } from "@/common/utils";
 import { CovertFromTimestampToDate, ToMonthDayYear } from "@/common/utils/date-converter";
 import { Drawer } from "antd";
 import axios from "axios";
@@ -15,15 +16,16 @@ interface props {
 export const PreviewUser = ({ openDrawer, closeDrawer, userId }: props) => {
 	const [data, setData] = useState<any>();
 
+	const tokens: any = secureLocalStorage.getItem("tokens") as object;
+	const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
+
 	const fetchUser = async () => {
-		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		try {
 			const url = `${BASE_URL}/api/account/user/${userId}`;
-			console.log({userId})
 			const response = await axios.get(url, {
 				headers: {
 					"Content-Type": "application/json",
-					"Authorization": `Bearer ${tokens?.accessToken}`
+					"Authorization": `Bearer ${accessToken}`
 				},
 			});
 			setData(response?.data);

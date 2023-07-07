@@ -8,20 +8,18 @@ services:
   # ========
   frontend:
     container_name: frontend
+    build:
+      context: ./frontend
+      target: development-build-stage
     volumes:
-      - ./frontend/:/frontend
-    
-    command: sh -c "npm run dev"
+      - ./frontend/src/:/frontend/src
 
-  # =======
-  # Nginx
-  # =======
-
-  nginx:
-    image: nginx:stable
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/certificates/:/etc/nginx/certs/
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  superset:
+    container_name: superset
+    command:
+      - -c
+      - |
+        superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
+        superset db upgrade
+        superset superset init
+        FLASK_ENV=development flask run -p 8088 --with-threads --reload --debugger --host=0.0.0.0

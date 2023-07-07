@@ -69,8 +69,10 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 
 	const [form] = Form.useForm();
 
+	const tokens: any = secureLocalStorage.getItem("tokens") as object;
+	const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
+
 	const onFinish = async (values: any) => {
-		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		values["enabled"] = enabled;
 		values["emailVerified"] = emailVerified;
 		values["code"] = code;
@@ -80,7 +82,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 			.post(`${BASE_URL}/api/account/user`, values, {
 				headers: {
 					"Content-Type": "application/json",
-					"Authorization": `Bearer ${tokens?.accessToken}`
+					"Authorization": `Bearer ${accessToken}`
 				},
 			})
 			.then((res) => {
@@ -119,14 +121,13 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	};
 
 	const fetchRoles = async () => {
-		const tokens: any = secureLocalStorage.getItem("tokens") as object;
 		try {
 			setRoleLoading(true)
 			const url = `${BASE_URL}/api/role`;
 			await axios.get(url, {
 				headers: {
 					'Content-Type': 'application/json',
-					Authorization: `Bearer ${tokens?.accessToken}`
+					Authorization: `Bearer ${accessToken}`
 				},
 			}).then((res) => {
 				setRoleLoading(false)

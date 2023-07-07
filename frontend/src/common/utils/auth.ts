@@ -1,5 +1,6 @@
 import axios from "axios";
 import { BASE_URL } from "../config";
+import secureLocalStorage from "react-secure-storage";
 
 export const getUserRole = async (roles: [], accessToken: string) => {
     const rolee = roles.find(item => item != 'default-roles-stack')
@@ -15,19 +16,19 @@ export const getUserRole = async (roles: [], accessToken: string) => {
             newRole.attributes[key] = keyValue
         })
         return newRole
-    }).catch((err) => {
-        console.log(err)
     })
 }
-
+const tokens: any = secureLocalStorage.getItem("tokens");
+const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
 export const getGuestToken = async (uuid: string): Promise<string> => {
-    return new Promise<string>((resolve) => {
-        axios.post(`${BASE_URL}/api/superset/guest/token`, { id: uuid }).then((response) => {
-            console.log(response.status);
-            resolve(response.data?.token);
-        }).catch((err) => {
-            console.log(err)
-        });
+    return axios.post(`${BASE_URL}/api/superset/guest/token`, { id: uuid },{
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${accessToken}`
+        },
+    }).then((response) => {
+        return response.data?.token;
     })
     
 }

@@ -8,7 +8,8 @@ export const Dashboards = () => {
 	const permits = userRole?.attributes;
 	return (
 		<DashboardFrame>
-			{permits?.Dashboard && permits?.Dashboard?.read ? <DashboardList /> : <Unauthorised />}
+			{/* {permits?.Dashboard && permits?.Dashboard?.read ? <DashboardList /> : <Unauthorised />} */}
+			<DashboardList />
 		</DashboardFrame>
 	);
 };

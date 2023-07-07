@@ -27,7 +27,6 @@ from .models import *
 from utils.generators import get_random_secret
 from utils.keycloak_auth import keycloak_admin_login, current_user, role_assign
 
-
 def homepage(request):
     print(os.getenv('CLIENT_ID'))
     return HttpResponse('<h2 style="text-align:center">Welcome to IGAD API Page</h2>')
@@ -108,7 +107,7 @@ class CreateUserAPI(APIView):
             "emailVerified": form_data["emailVerified"]
         }
 
-        getUserId = requests.get(f"{APP_USER_BASE_URL}?email={form_data['email']}", headers=headers)
+        getUserId = requests.get(f"{APP_USER_BASE_URL}?email={user['email']}", headers=headers)
         
         if getUserId.status_code != 200:
             return Response(getUserId.reason, status=getUserId.status_code)
@@ -120,10 +119,10 @@ class CreateUserAPI(APIView):
 
         form_data['id'] = users[0]['id']
 
-        assign_role = role_assign(users[0]['id'], request.data.get(
+        assign_role = role_assign(form_data['id'], request.data.get(
             "role", dict[str, str]), headers)
         
-        user['id'] = users[0]['id']
+        user['id'] = form_data['id']
         user['role'] = request.data.get('role', None)
         user['password'] = form_data['credentials']
 
@@ -367,54 +366,6 @@ class AssignRolesAPI(APIView):
             return Response(response.reason, status=response.status_code)
 
         return Response({'message': 'Roles has been assigned successfully'}, status=status.HTTP_200_OK)
-
-class UpdateProfileAPI(APIView):
-    """
-    API view to change Keycloak user password
-    """
-    permission_classes = [AllowAny,]
-
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'newPassword': openapi.Schema(type=openapi.TYPE_STRING),
-            'confirmPassword': openapi.Schema(type=openapi.TYPE_STRING),
-            'userId': openapi.Schema(type=openapi.TYPE_STRING),
-        }
-    ))
-    def put(self, request, *args, **kwargs):
-        form_data = {
-            "newPassword": request.data.get("newPassword", None),
-            "confirmPassword": request.data.get("lastName", None),
-            "userId": request.data.get("userId", None),
-        }
-
-        # Login to admin
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
-            'Content-Type': "application/json",
-            'cache-control': "no-cache"
-        }
-
-        credentials = {
-            "type": "password",
-            "value": form_data["newPassword"],
-            "temporary": False
-        }
-
-        res = requests.put(
-            f"{APP_USER_BASE_URL}/{form_data['userId']}/reset-password", json=credentials, headers=headers)
-
-        if res.status_code == 200:
-            return Response({'message': 'Password created successfully'}, status=status.HTTP_200_OK)
-
-        return Response({'errorMessage': 'Error changing password'}, status=status.HTTP_401_UNAUTHORIZED)
-
 
 class AvatarUploadApI(APIView):
     """

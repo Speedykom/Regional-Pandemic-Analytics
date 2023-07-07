@@ -7,6 +7,7 @@ import { Action } from "@/common/components/common/action";
 import axios from "axios";
 import { OpenNotification } from "@/common/utils/notify";
 import secureLocalStorage from "react-secure-storage";
+import { BASE_URL } from "@/common/config";
 
 interface props {
 	edit: (
@@ -42,13 +43,15 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 	) => {
 		const deleteUser = async () => {
 			const tokens: any = secureLocalStorage.getItem("tokens") as object;
+			const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
+
 			await axios
 				.delete(
-					`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${id}/delete`,
+					`${BASE_URL}/api/account/user/${id}/delete`,
 					{
 						headers: {
 							"Content-Type": "application/json",
-							"Authorization": `Bearer ${tokens?.accessToken}`
+							"Authorization": `Bearer ${accessToken}`
 						},
 					}
 				)

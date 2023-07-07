@@ -3,7 +3,7 @@ import { Button, Form, Input, Modal } from "antd";
 import { useRoles } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { IRole } from "../interface";
+import { IRoles } from "../interface";
 import secureLocalStorage from "react-secure-storage";
 import { OpenNotification } from "@/common/utils/notify";
 import {
@@ -29,14 +29,15 @@ export const RoleList = () => {
 	const del = () => {};
 	const [form] = Form.useForm();
 
-	const [token, setToken] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(true);
 
-	const [data, setData] = useState<Array<IRole>>([]);
+	const [data, setData] = useState<Array<IRoles>>([]);
 
 	const [roleId, setRoleId] = useState<string>();
 
 	const tokens: any = secureLocalStorage.getItem("tokens") as object;
+	const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
+
 
 	const fetchRoles = async () => {
 		try {
@@ -46,7 +47,7 @@ export const RoleList = () => {
 				.get(url, {
 					headers: {
 						"Content-Type": `application/json`,
-						"Authorization": `Bearer ${tokens?.accessToken}`
+						"Authorization": `Bearer ${accessToken}`
 					},
 				})
 				.then((res) => {

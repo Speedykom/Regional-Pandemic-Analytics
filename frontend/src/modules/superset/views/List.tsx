@@ -14,7 +14,8 @@ export const DashboardList = () => {
 	const router = useRouter();
 
 	const fetchDashboards = async () => {
-		const tokens: any = secureLocalStorage.getItem("tokens") as object;
+		const tokens: any = secureLocalStorage.getItem("tokens");
+		const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
 		setLoading(true);
 		const url = `${BASE_URL}/api/superset/list`;
 		await axios
@@ -22,16 +23,16 @@ export const DashboardList = () => {
 				headers: {
 					"Content-Type": "application/json",
 					'Accept': "application/json",
-					"Authorization": `Bearer ${tokens?.accessToken}`
+					'Authorization': `Bearer ${accessToken}`
 				},
 			})
 			.then((res) => {
 				setLoading(false);
-				setData(res?.data?.result);
+				setData(res?.data?.result || null);
 			}).catch((err) => {
 				setLoading(false);
 				setData([]);
-				setError(err?.response?.data?.errorMessage)
+				setError("error fetching dashboards found")
 			});
 	};
 

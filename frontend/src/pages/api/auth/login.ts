@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import secureLocalStorage from 'react-secure-storage';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
