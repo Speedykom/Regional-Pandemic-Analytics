@@ -1,10 +1,12 @@
 
-import { BASE_URL } from "@/common/config";
 import { getData } from "@/common/utils";
 import { CovertFromTimestampToDate, ToMonthDayYear } from "@/common/utils/date-converter";
 import { Drawer } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import getConfig from "next/config"
+ 
+const { publicRuntimeConfig } = getConfig()
 
 interface props {
 	openDrawer: boolean;
@@ -17,7 +19,7 @@ export const PreviewUser = ({ openDrawer, closeDrawer, userId }: props) => {
 
 	const fetchUser = async () => {
 		try {
-			const url = `${BASE_URL}/api/account/user/${userId}`;
+			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${userId}`;
 			console.log({userId})
 			const response = await axios.get(url, {
 				headers: {
