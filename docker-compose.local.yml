@@ -11,6 +11,10 @@ services:
     build:
       context: ./frontend
       target: dev
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "superset.igad.local:host-gateway"  
+      - "backend.igad.local:host-gateway"  
     volumes:
       - ./frontend/src/:/frontend/src
 
@@ -19,6 +23,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
+      - "frontend.igad.local:host-gateway"
     command:
       - -c
       - |
@@ -26,12 +31,6 @@ services:
         superset db upgrade
         superset superset init
         FLASK_ENV=development flask run -p 8088 --with-threads --reload --debugger --host=0.0.0.0
-  # frontend:
-  #   container_name: frontend
-  #   volumes:
-  #     - ./frontend/:/frontend
-
-  #   command: sh -c "npm run dev"
 
   # =======
   # Nginx
@@ -76,3 +75,13 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
+
+  # =====
+  #  Minio
+  # =====
+  
+  storage:
+    container_name: storage
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "minio.igad.local:host-gateway"
