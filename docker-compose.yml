@@ -139,9 +139,7 @@ services:
       - "8000:8000"
     volumes:
       - ./airflow/dags:/airflow/dags
-      - ./hop/pipelines/:/hop
-      - ./hop/pipelines/templates:/hop/templates
-      - ./hop/data-orch.list:/hop/data-orch.list
+      - ./hop:/hop
     environment:
       - DEVELOPMENT_MODE=${BACKEND_DEVELOPMENT_MODE}
       - KEYCLOAK_ADMIN_CLIENT_ID=${BACKEND_KEYCLOAK_ADMIN_CLIENT_ID}
