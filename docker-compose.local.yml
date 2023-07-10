@@ -13,8 +13,8 @@ services:
       target: dev
     extra_hosts:
       - "host.docker.internal:host-gateway"
-      - "superset.igad.local:host-gateway"  
-      - "backend.igad.local:host-gateway"  
+      - "superset.igad.local:host-gateway"
+      - "backend.igad.local:host-gateway"
     volumes:
       - ./frontend/src/:/frontend/src
 
@@ -44,6 +44,7 @@ services:
     environment:
       - NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d/
       - NGINX_FRONTEND_DOMAIN_NAME=${NGINX_FRONTEND_DOMAIN_NAME}
+      - NGINX_OPENHIM_DOMAIN_NAME=${NGINX_OPENHIM_DOMAIN_NAME}
       - NGINX_BACKEND_DOMAIN_NAME=${NGINX_BACKEND_DOMAIN_NAME}
       - NGINX_KEYCLOAK_DOMAIN_NAME=${NGINX_KEYCLOAK_DOMAIN_NAME}
       - NGINX_MINIO_DOMAIN_NAME=${NGINX_MINIO_DOMAIN_NAME}
@@ -58,6 +59,7 @@ services:
       - NGINX_UPSTREAM_KEYCLOAK=${NGINX_UPSTREAM_KEYCLOAK}
       - NGINX_UPSTREAM_MINIO=${NGINX_UPSTREAM_MINIO}
       - NGINX_UPSTREAM_SUPERSET=${NGINX_UPSTREAM_SUPERSET}
+      - NGINX_UPSTREAM_OPENHIM=${NGINX_UPSTREAM_OPENHIM}
       - NGINX_UPSTREAM_HOP=${NGINX_UPSTREAM_HOP}
       - NGINX_UPSTREAM_DRUID=${NGINX_UPSTREAM_DRUID}
     volumes:
@@ -79,9 +81,68 @@ services:
   # =====
   #  Minio
   # =====
-  
+
   storage:
     container_name: storage
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "minio.igad.local:host-gateway"
+
+  # =====
+  #  OpenHIM
+  # =====
+
+  mongo-db:
+    container_name: mongo-db
+    image: mongo:4.0
+    volumes:
+      - "mongo-data:/data/db"
+    restart: unless-stopped
+
+  openhim-core:
+    container_name: openhim-core
+    image: jembi/openhim-core:latest
+    restart: unless-stopped
+    environment:
+      - mongo_url=mongodb://mongo-db/openhim-development
+      - mongo_atnaUrl=mongodb://mongo-db/openhim-development
+      - api_authenticationTypes=["token", "basic", "openid", "local"]
+      - authentication_enableCustomTokenAuthentication=true
+      - api_openid_url=${KC_FRONTEND_URL}/realms/${KC_REALM_NAME}
+      - api_openid_callbackUrl=${KC_OPENHIM_ROOT_URL}
+      - api_openid_clientId=${KC_OPENHIM_CLIENT_ID}
+      # - api_openid_clientSecret=${KC_OPENHIM_CLIENT_SECRET}
+
+    ports:
+      - "8080:8080"
+      - "5000:5000"
+      - "5001:5001"
+    depends_on:
+      - mongo-db
+    healthcheck:
+      test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  openhim-console:
+    container_name: openhim-console
+    image: jembi/openhim-console:latest
+    ports:
+      - "9000:80"
+    environment:
+      - KC_OPENHIM_SSO_ENABLED=true
+      - KC_OPENHIM_CLIENT_ID=${KC_OPENHIM_CLIENT_ID}
+      - KC_REALM_NAME=${KC_REALM_NAME}
+      - KC_FRONTEND_URL=${KC_FRONTEND_URL}
+    depends_on:
+      - openhim-core
+    restart: unless-stopped
+    healthcheck:
+      test: "curl -sS http://openhim-console || exit 1"
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+volumes:
+  mongo-data:
