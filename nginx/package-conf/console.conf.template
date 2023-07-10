@@ -7,8 +7,8 @@ server {
 server {
   listen 443 ssl;
   server_name $NGINX_CONSOLE_MINIO_DOMAIN_NAME;
-  ssl_certificate /etc/nginx/certs/minio.crt;
-  ssl_certificate_key /etc/nginx/certs/minio.key;
+  ssl_certificate /etc/nginx/certs/console-minio.crt;
+  ssl_certificate_key /etc/nginx/certs/console-minio.key;
   proxy_buffering off;
   location / {
     proxy_pass http://$NGINX_UPSTREAM_MINIO:9090;
