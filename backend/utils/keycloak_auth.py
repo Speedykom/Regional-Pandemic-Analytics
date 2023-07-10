@@ -71,8 +71,8 @@ def me(request):
         serialToken = token.replace("Bearer ", "")
 
         form_data = {
-            "client_id": APP_CLIENT_ID,
-            "client_secret": APP_CLIENT_SECRET,
+            "client_id": os.getenv("CLIENT_ID"),
+            "client_secret": os.getenv("CLIENT_SECRET"),
             "token": serialToken
         }
 
