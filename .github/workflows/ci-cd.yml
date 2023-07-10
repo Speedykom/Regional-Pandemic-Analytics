@@ -49,4 +49,4 @@ jobs:
           script: |
             cd Regional-Pandemic-Analytics/
             git pull
-            ./run.sh
+            make start

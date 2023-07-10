@@ -82,10 +82,16 @@ services:
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-
+      - MINIO_SERVER_URL=${MINIO_SERVER_URL}
+      - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL}
     ports:
       - "9001:9000"
       - "8887:9090"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
     volumes:
       - minio_data:/data
 
@@ -357,10 +363,12 @@ services:
       - ./storage:/home
       - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
       - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
+    environment:
+      - HOP_KEYCLOAK_URL=${HOP_KEYCLOAK_URL}
 
-  # =======
-  # Airflow
-  # =======
+    # =======
+    # Airflow
+    # =======
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg
@@ -390,7 +398,11 @@ services:
   airflow-webserver:
     <<: *airflow
     depends_on:
-      - airflow-pg
+      airflow-pg:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+        restart: true
     container_name: airflow-webserver
     restart: always
     command: webserver
@@ -442,10 +454,10 @@ services:
       - KC_DB_PASSWORD=${KEYCLOAK_DB_PASSWORD}
       - KC_DB_SCHEMA=${KEYCLOAK_DB_SCHEMA}
       - KC_PROXY=${KEYCLOAK_PROXY}
+      - KC_PROXY_ADDRESS_FORWARDING=true
+      - KC_HEALTH_ENABLED=true
       - KEYCLOAK_ADMIN=${KEYCLOAK_KEYCLOAK_ADMIN}
       - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_KEYCLOAK_ADMIN_PASSWORD}
-      - KC_HOSTNAME_ADMIN_URL=${KEYCLOAK_HOSTNAME_ADMIN_URL}
-      - KC_HOSTNAME_URL=${KEYCLOAK_HOSTNAME_URL}
       - BACKEND_CLIENT_ID=${BACKEND_CLIENT_ID}
       - BACKEND_CLIENT_SECRET=${BACKEND_CLIENT_SECRET}
       - BACKEND_PUBLIC_URL=${BACKEND_PUBLIC_URL}
@@ -457,3 +469,13 @@ services:
       - ./keycloak/realm/realm.json:/opt/keycloak/data/import/realm.json
     depends_on:
       - keycloak-pg
+    healthcheck:
+      test: [
+          "CMD",
+          "curl",
+          "--head","-fsS",
+          "http://localhost:8080/health/ready"
+        ]
+      interval: 60s
+      timeout: 10s
+      retries: 10
