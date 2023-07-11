@@ -1,7 +1,7 @@
 import { ColumnsType } from "antd/es/table";
-import { IRoles } from "./interface";
+import { IRole } from "./interface";
 import { Popconfirm, Tag } from "antd";
-import { FiEdit, FiTrash } from "react-icons/fi";
+import { FiEdit, FiEye, FiTrash } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Action } from "@/common/components/common/action";
 import axios from "axios";
@@ -12,10 +12,11 @@ const { publicRuntimeConfig } = getConfig()
 interface props {
 	edit: (id: string, name: string, description: string) => void;
 	del: () => void;
+	view: (id: string) => void;
 	refetch: () => void;
 }
 
-export const 	useRoles = ({ edit, del, refetch }: props) => {
+export const useRoles = ({ edit, view, del, refetch }: props) => {
 	const action = (id: string, name: string, description: string) => {
 		const deleteUser = async () => {
 			await axios
@@ -42,6 +43,17 @@ export const 	useRoles = ({ edit, del, refetch }: props) => {
 		return (
 			<Action>
 				<ul>
+					<li>
+						<button
+							onClick={(e) => {
+								e.preventDefault();
+								view(id);
+							}}
+							className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
+						>
+							<FiEye className="mt-1" /> <span>View</span>
+						</button>
+					</li>
 					<li>
 						<button
 							onClick={(e) => {
@@ -76,7 +88,7 @@ export const 	useRoles = ({ edit, del, refetch }: props) => {
 		);
 	};
 
-	const columns: ColumnsType<IRoles> = [
+	const columns: ColumnsType<IRole> = [
 		{
 			// fixed: "left",
 			title: "Role Name",
@@ -101,17 +113,11 @@ export const 	useRoles = ({ edit, del, refetch }: props) => {
 			render: (composite) => (
 				<div>
 					{composite ? (
-						<Tag
-							icon={<CheckCircleOutlined />}
-							color="processing"
-						>
+						<Tag icon={<CheckCircleOutlined />} color="processing">
 							True
 						</Tag>
 					) : (
-						<Tag
-							icon={<ClockCircleOutlined />}
-							color="default"
-						>
+						<Tag icon={<ClockCircleOutlined />} color="default">
 							False
 						</Tag>
 					)}{" "}
@@ -127,17 +133,11 @@ export const 	useRoles = ({ edit, del, refetch }: props) => {
 			render: (clientRole) => (
 				<div>
 					{clientRole ? (
-						<Tag
-							icon={<CheckCircleOutlined />}
-							color="warning"
-						>
+						<Tag icon={<CheckCircleOutlined />} color="warning">
 							True
 						</Tag>
 					) : (
-						<Tag
-							icon={<ClockCircleOutlined />}
-							color="default"
-						>
+						<Tag icon={<ClockCircleOutlined />} color="default">
 							False
 						</Tag>
 					)}{" "}
@@ -165,3 +165,193 @@ export const fetchRoles = async () => {
 		console.log(err?.response)
 	});
 };
+
+export const useAttributes = () => {
+	const columns: ColumnsType<any> = [
+		{
+			title: "Permissions",
+			key: "key",
+			dataIndex: "key",
+			className: "text-gray-700 font-sans",
+			ellipsis: true,
+			width: 250,
+		},
+		{
+			title: "Create",
+			key: "create",
+			dataIndex: "value",
+			render: (value) => (
+				<div>
+					{value.create ? (
+						<Tag icon={<CheckCircleOutlined />} color="warning">
+							True
+						</Tag>
+					) : (
+						<Tag icon={<ClockCircleOutlined />} color="default">
+							False
+						</Tag>
+					)}{" "}
+				</div>
+			),
+			className: "text-gray-700 font-sans",
+			ellipsis: true,
+		},
+		{
+			title: "Read",
+			key: "read",
+			dataIndex: "value",
+			render: (value) => (
+				<div>
+					{value.read ? (
+						<Tag icon={<CheckCircleOutlined />} color="warning">
+							True
+						</Tag>
+					) : (
+						<Tag icon={<ClockCircleOutlined />} color="default">
+							False
+						</Tag>
+					)}{" "}
+				</div>
+			),
+			className: "text-gray-700 font-sans",
+			ellipsis: true,
+		},
+		{
+			title: "Update",
+			key: "update",
+			dataIndex: "value",
+			render: (value) => (
+				<div>
+					{value.update ? (
+						<Tag icon={<CheckCircleOutlined />} color="warning">
+							True
+						</Tag>
+					) : (
+						<Tag icon={<ClockCircleOutlined />} color="default">
+							False
+						</Tag>
+					)}{" "}
+				</div>
+			),
+			className: "text-gray-700 font-sans",
+			ellipsis: true,
+		},
+		{
+			title: "Delete",
+			key: "delete",
+			dataIndex: "value",
+			render: (value) => (
+				<div>
+					{value.delete ? (
+						<Tag icon={<CheckCircleOutlined />} color="warning">
+							True
+						</Tag>
+					) : (
+						<Tag icon={<ClockCircleOutlined />} color="default">
+							False
+						</Tag>
+					)}{" "}
+				</div>
+			),
+			className: "text-gray-700 font-sans",
+			ellipsis: true,
+		},
+	]
+
+	return { columns }
+}
+
+export const useAttributeForEdit = () => {
+	const columns: ColumnsType<any> = [
+		{
+			title: "Permissions",
+			key: "key",
+			dataIndex: "key",
+			className: "text-gray-700 font-sans",
+			ellipsis: true,
+			width: 250,
+		},
+		{
+			title: "Create",
+			key: "create",
+			dataIndex: "value",
+			render: (value) => (
+				<div>
+					{value.create ? (
+						<Tag icon={<CheckCircleOutlined />} color="warning">
+							True
+						</Tag>
+					) : (
+						<Tag icon={<ClockCircleOutlined />} color="default">
+							False
+						</Tag>
+					)}{" "}
+				</div>
+			),
+			className: "text-gray-700 font-sans",
+			ellipsis: true,
+		},
+		{
+			title: "Read",
+			key: "read",
+			dataIndex: "value",
+			render: (value) => (
+				<div>
+					{value.read ? (
+						<Tag icon={<CheckCircleOutlined />} color="warning">
+							True
+						</Tag>
+					) : (
+						<Tag icon={<ClockCircleOutlined />} color="default">
+							False
+						</Tag>
+					)}{" "}
+				</div>
+			),
+			className: "text-gray-700 font-sans",
+			ellipsis: true,
+		},
+		{
+			title: "Update",
+			key: "update",
+			dataIndex: "value",
+			render: (value) => (
+				<div>
+					{value.update ? (
+						<Tag icon={<CheckCircleOutlined />} color="warning">
+							True
+						</Tag>
+					) : (
+						<Tag icon={<ClockCircleOutlined />} color="default">
+							False
+						</Tag>
+					)}{" "}
+				</div>
+			),
+			className: "text-gray-700 font-sans",
+			ellipsis: true,
+		},
+		{
+			title: "Delete",
+			key: "delete",
+			dataIndex: "value",
+			render: (value) => (
+				<div>
+					{value.delete ? (
+						<Tag icon={<CheckCircleOutlined />} color="warning">
+							True
+						</Tag>
+					) : (
+						<Tag icon={<ClockCircleOutlined />} color="default">
+							False
+						</Tag>
+					)}{" "}
+				</div>
+			),
+			className: "text-gray-700 font-sans",
+			ellipsis: true,
+		},
+	]
+
+	return { columns }
+}
