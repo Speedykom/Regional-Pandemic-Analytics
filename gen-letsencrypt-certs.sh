@@ -46,7 +46,7 @@ for domains in "${domain_names[@]}"; do
   echo
 
   echo "### Deleting dummy certificate for $domains ..."
-  docker compose run --rm --entrypoint "\
+  docker compose  --env-file ./.env -f docker-compose.yml -f docker-compose.dev.yml run --rm --entrypoint "\
     rm -Rf /etc/letsencrypt/live/$domains && \
     rm -Rf /etc/letsencrypt/archive/$domains && \
     rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
