@@ -13,4 +13,4 @@ venv/
 /venv/
 
 node_modules
-certbot/conf/live/*
+certbot/conf/*
