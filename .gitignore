@@ -13,8 +13,9 @@ venv/
 /venv/
 
 node_modules
-!certbot/conf/live/
 certbot/conf/live/*
+!certbot/conf/live/.gitkeep
 certbot/conf/renewal/*
+!certbot/conf/renewal/.gitkeep
 certbot/conf/options-ssl-nginx.conf
 certbot/conf/ssl-dhparams.pem
