@@ -60,26 +60,26 @@ for domains in "${domain_names[@]}"; do
     domain_args="$domain_args -d $domain"
   done
 
-# Select appropriate email arg
-case "$email" in
-  "") email_arg="--register-unsafely-without-email" ;;
-  *) email_arg="--email $email" ;;
-esac
+  # Select appropriate email arg
+  case "$email" in
+    "") email_arg="--register-unsafely-without-email" ;;
+    *) email_arg="--email $email" ;;
+  esac
 
-# Enable staging mode if needed
-if [ $staging != "0" ]; then staging_arg="--staging"; fi
+  # Enable staging mode if needed
+  if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
-docker compose  --env-file ./.env -f docker-compose.yml -f docker-compose.dev.yml run --rm --entrypoint "\
-  certbot certonly --webroot -w /var/www/certbot \
-    $staging_arg \
-    $email_arg \
-    $domain_args \
-    --rsa-key-size $rsa_key_size \
-    --agree-tos \
-    --force-renewal" certbot
-echo
+  docker compose  --env-file ./.env -f docker-compose.yml -f docker-compose.dev.yml run --rm --entrypoint "\
+    certbot certonly --webroot -w /var/www/certbot \
+      $staging_arg \
+      $email_arg \
+      $domain_args \
+      --rsa-key-size $rsa_key_size \
+      --agree-tos \
+      --force-renewal" certbot
+  echo
 
-echo "### Reloading nginx ..."
-docker compose exec nginx nginx -s reload
+  echo "### Reloading nginx ..."
+  docker compose exec nginx nginx -s reload
 
 done
