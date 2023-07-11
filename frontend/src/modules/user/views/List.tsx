@@ -1,8 +1,5 @@
 import { IGADTable } from "@/common/components/common/table";
-import {
-	DeleteColumnOutlined,
-	SaveOutlined,
-} from "@ant-design/icons";
+import { DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
 import {
 	Button,
 	Divider,
@@ -13,6 +10,7 @@ import {
 	Select,
 	SelectProps,
 	Switch,
+	Tag,
 } from "antd";
 import { useUsers } from "../hooks";
 import { IUser } from "../interface";
@@ -25,6 +23,7 @@ import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
 import { BASE_URL } from "@/common/config";
 import secureLocalStorage from "react-secure-storage";
+import { IRoles } from "@/modules/roles/interface";
 
 interface props {
 	viewPro: () => void;
@@ -59,8 +58,10 @@ export const UserList = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [code, setCode] = useState<string>("");
 	const [roles, setRoles] = useState([]);
-	const [role, setRole] = useState<string>("")
-	const [roleLoading, setRoleLoading] = useState(true)
+	const [userRoles, setUserRoles] = useState<Array<IRoles>>([]);
+	const [role, setRole] = useState<string>("");
+	const [roleLoading, setRoleLoading] = useState(true);
+	const [userRoleLoad, setUserRoleLoad] = useState(true);
 
 	const [view, setView] = useState<boolean>(false);
 	const [userId, setUserId] = useState<string>();
@@ -77,7 +78,8 @@ export const UserList = () => {
 	};
 
 	const tokens: any = secureLocalStorage.getItem("tokens") as object;
-	const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
+	const accessToken =
+		tokens && "accessToken" in tokens ? tokens.accessToken : "";
 
 	const fetchUsers = async () => {
 		try {
@@ -86,8 +88,8 @@ export const UserList = () => {
 			await axios
 				.get(url, {
 					headers: {
-						'Content-Type': 'application/json',
-						"Authorization": `Bearer ${accessToken}`
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${accessToken}`,
 					},
 				})
 				.then((res) => {
@@ -105,7 +107,7 @@ export const UserList = () => {
 
 	const [openModal, setOpenModal] = useState<boolean>(false);
 
-	const edit = (
+	const edit = async (
 		id: string,
 		firstName: string,
 		lastName: string,
@@ -116,8 +118,11 @@ export const UserList = () => {
 		phone: string,
 		country: string,
 		gender: string,
-		avatar: string
+		avatar: string,
+		editLoad: boolean,
+		userRole: any
 	) => {
+		setUserRoles(userRole);
 		setUserId(id);
 		setOpenModal(true);
 		form.setFieldValue("firstName", firstName);
@@ -149,18 +154,15 @@ export const UserList = () => {
 
 	const onFinish = async (values: any) => {
 		values["code"] = code;
-		values["role"] = JSON.parse(values["role"])
+		values["role"] = JSON.parse(values["role"]);
+		values["oldRole"] = { id: userRoles[0]?.id, name: userRoles[0]?.name }
 		await axios
-			.put(
-				`${BASE_URL}/api/account/user/${userId}/update`,
-				values,
-				{
-					headers: {
-						"Content-Type": "application/json",
-						"Authorization": `Bearer ${accessToken}`
-					},
-				}
-			)
+			.put(`${BASE_URL}/api/account/user/${userId}/update`, values, {
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${accessToken}`,
+				},
+			})
 			.then((res) => {
 				OpenNotification(res?.data?.message, "topRight", "success");
 				setOpenModal(false);
@@ -185,18 +187,19 @@ export const UserList = () => {
 
 	const fetchRoles = async () => {
 		try {
-			setRoleLoading(true)
+			setRoleLoading(true);
 			const url = `${BASE_URL}/api/role`;
-			await axios.get(url, {
-				headers: {
-					"Content-Type": "application/json",
-					"Authorization": `Bearer ${accessToken}`
-				},
-			}).then((res) => {
-				setRoleLoading(false)
-				setRoles(res?.data);
-			})
-			
+			await axios
+				.get(url, {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${accessToken}`,
+					},
+				})
+				.then((res) => {
+					setRoleLoading(false);
+					setRoles(res?.data);
+				});
 		} catch (error) {
 			console.error("Error:", error);
 		}
@@ -205,7 +208,7 @@ export const UserList = () => {
 	useEffect(() => {
 		fetchRoles();
 		fetchUsers();
-	}, [])
+	}, []);
 
 	const { columns } = useUsers({ edit, viewPro, refetch });
 	return (
@@ -428,6 +431,22 @@ export const UserList = () => {
 							<Switch style={{ backgroundColor: "#8c8c8c" }} />
 						</Form.Item>
 						<Form.Item
+							name="enabled"
+							label="Roles"
+							valuePropName="checked"
+							tooltip="Toggle to enable or disable this user"
+						>
+							<div className="flex space-x-3">
+								{userRoles.map((rolee, i) => (
+									<p key={i}>
+										<Tag className="flex items-center" color="geekblue">
+											{rolee?.name}
+										</Tag>
+									</p>
+								))}
+							</div>
+						</Form.Item>
+						<Form.Item
 							name={"role"}
 							label="Role"
 							rules={[
@@ -436,6 +455,7 @@ export const UserList = () => {
 									message: "Please select role",
 								},
 							]}
+							initialValue={JSON.stringify({ id: userRoles[0]?.id, name: userRoles[0]?.name })}
 						>
 							<Select
 								size="large"
@@ -445,13 +465,11 @@ export const UserList = () => {
 								loading={roleLoading}
 								placeholder={"Select role"}
 								options={roles?.map((val: any, i: number) => {
-									return (
-										{
-											key: i,
-											value: JSON.stringify({ id: val?.id, name: val?.name }),
-											label: val?.name
-										}
-									)
+									return {
+										key: i,
+										value: JSON.stringify({ id: val?.id, name: val?.name }),
+										label: val?.name,
+									};
 								})}
 							/>
 						</Form.Item>

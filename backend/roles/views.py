@@ -45,8 +45,12 @@ class CreateViewRoles(APIView):
             return Response(response.reason, status=response.status_code)
 
 
-        role_data = response.json()
-        return Response(role_data, status=status.HTTP_200_OK)
+        roles: list = response.json()
+        for role in roles:
+            if role['name'] == 'default-roles-stack':
+                roles.remove(role)
+                
+        return Response(roles, status=status.HTTP_200_OK)
 
     """_api view to create realm roles_
     """
@@ -160,6 +164,7 @@ class GetEditRole(APIView):
             return Response(response.reason, status=response.status_code)
         
         role = response.json()
+                    
         return Response({'status': 'success', 'role': role}, status=status.HTTP_200_OK)
     
     """

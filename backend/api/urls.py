@@ -50,6 +50,7 @@ urlpatterns = [
     path('account/user', views.CreateUserAPI.as_view()),  # Create User
     path('account/users', views.ListUsersAPI.as_view()),  # get users
     path('account/user/<str:id>/', views.GetUserAPI.as_view()),  # get user
+    path('account/user/<str:id>/roles', views.GetUserRolesAPI.as_view()),  # get user roles
     path('account/user/<str:id>/delete', views.DeleteUserAPI.as_view()),  # delete user
     path('account/user/<str:id>/update',  views.UpdateUserAPI.as_view()),  # update user
     path('account/user/<str:id>/assign-roles', views.AssignRolesAPI.as_view()),  # assign user

@@ -53,6 +53,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const [gender, setGender] = useState<string>();
 	const [roles, setRoles] = useState([])
 	const [roleLoading, setRoleLoading] = useState(true)
+	const [saveLoading, setSaveLoading] = useState(false)
 
 	const [code, setCode] = useState<string>();
 
@@ -73,6 +74,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 	const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
 
 	const onFinish = async (values: any) => {
+		setSaveLoading(true)
 		values["enabled"] = enabled;
 		values["emailVerified"] = emailVerified;
 		values["code"] = code;
@@ -86,12 +88,14 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 				},
 			})
 			.then((res) => {
+				setSaveLoading(false)
 				closeDrawer();
 				refetch();
 				OpenNotification(res.data?.message, "topRight", "success");
 				form.resetFields();
 			})
 			.catch((err) => {
+				setSaveLoading(false)
 				OpenNotification(
 					err?.response?.data?.errorMessage,
 					"topRight",
@@ -179,6 +183,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 									type="primary"
 									className="flex items-center"
 									icon={<SaveOutlined />}
+									loading={saveLoading}
 									style={{
 										backgroundColor: "#087757",
 										border: "1px solid #e65e01",

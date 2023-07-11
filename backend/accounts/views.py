@@ -25,7 +25,7 @@ from .serializers import *
 from .models import *
 
 from utils.generators import get_random_secret
-from utils.keycloak_auth import keycloak_admin_login, current_user, role_assign
+from utils.keycloak_auth import keycloak_admin_login, current_user, role_assign, unassign_role
 
 def homepage(request):
     print(os.getenv('CLIENT_ID'))
@@ -124,7 +124,7 @@ class CreateUserAPI(APIView):
         
         user['id'] = form_data['id']
         user['role'] = request.data.get('role', None)
-        user['password'] = form_data['credentials']
+        user['password'] = form_data['credentials'][0]['value']
 
         if assign_role:
             return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_201_CREATED)
@@ -203,12 +203,15 @@ class UpdateUserAPI(APIView):
 
         if res.status_code != 204:
             return Response(res.reason, status=res.status_code)
-
-        _ = role_assign(kwargs['id'], request.data.get(
-            "role", dict[str, str]), headers)
+        
+        new_role = request.data.get("role", dict[str, str])
+        old_role = request.data.get("oldRole", dict[str, str])
+        
+        if old_role != new_role:
+            _ = unassign_role(kwargs['id'], request.data.get("oldRole", dict[str, str]), headers)
+            _ = role_assign(kwargs['id'], request.data.get("role", dict[str, str]), headers)
 
         return Response({'message': 'Account details updated successfully'}, status=status.HTTP_200_OK)
-
 
 class ListUsersAPI(APIView):
     """
@@ -240,6 +243,7 @@ class ListUsersAPI(APIView):
             return Response(response.json(), status=response.status_code)
 
         users = response.json()
+        
         return Response(users, status=status.HTTP_200_OK)
 
 class GetUserAPI(APIView):
@@ -267,14 +271,50 @@ class GetUserAPI(APIView):
 
         response = requests.get(
             url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
-
         if response.status_code != 200:
             return Response(response.reason, status=response.status_code)
-
+        
+        userRoleResponse = requests.get(f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings", headers=headers)
+        if userRoleResponse.status_code != 200:
+            return Response(userRoleResponse.reason, status=userRoleResponse.status_code)
+        
         users = response.json()
+        users['roles'] = userRoleResponse.json()['realmMappings']
         return Response(users, status=status.HTTP_200_OK)
 
+class GetUserRolesAPI(APIView):
+    """
+    API view to get user roles
+    """
+    permission_classes = [AllowAny, ]
+    
+    def get(self, request, **kwargs):
+        cur_user = current_user(request)
+        
+        if (cur_user['is_authenticated'] == False):
+            return Response(cur_user, status=cur_user["status"])
+        
+        # Login to admin
+        admin_login = keycloak_admin_login()
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
 
+        headers = {
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
+            'Content-Type': "application/json"
+        }
+        
+        response = requests.get(f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings/realm", headers=headers)
+        if response.status_code != 200:
+            return Response(response.reason, status=response.status_code)
+        
+        roles: list = response.json()
+        for role in roles:
+            if role['name'] == 'default-roles-stack':
+                roles.remove(role)
+                
+        return Response(roles, status=status.HTTP_200_OK)
+    
 class DeleteUserAPI(APIView):
     """
     API view to delete user from keycloak
@@ -313,10 +353,6 @@ class DeleteUserAPI(APIView):
             user['attributes']['status'] = "Archived"
 
         user['enabled'] = False
-        # user_data = {
-
-        #     'attributes': user['attributes']
-        # }
 
         response = requests.put(
             url=f"{APP_USER_BASE_URL}/{kwargs['id']}", json=user, headers=headers)
