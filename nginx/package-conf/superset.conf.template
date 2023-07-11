@@ -2,13 +2,30 @@
 server {
     listen          80;
     server_name     $NGINX_SUPERSET_DOMAIN_NAME;
+
+    location /.well-known/acme-challenge/ {
+		root /var/www/certbot;
+	}
+
 	return 301 https://$host$request_uri;
 }
+
 server {
 	listen 443 ssl;
 	server_name $NGINX_SUPERSET_DOMAIN_NAME;
-	ssl_certificate /etc/nginx/certs/superset.crt;
-	ssl_certificate_key /etc/nginx/certs/superset.key;
+
+    # Check if we need local self signed certs ors letsencrypt ones
+	if ($NGINX_SUPERSET_DOMAIN_NAME ~* "local$") {
+		ssl_certificate /etc/nginx/certs/airflow.crt;
+		ssl_certificate_key /etc/nginx/certs/airflow.key;
+	}
+	if ($NGINX_SUPERSET_DOMAIN_NAME ~* "eu$") {
+		ssl_certificate /etc/letsencrypt/live/$NGINX_SUPERSET_DOMAIN_NAME/fullchain.pem;
+		ssl_certificate_key /etc/letsencrypt/live/$NGINX_SUPERSET_DOMAIN_NAME/privkey.pem;
+		include /etc/letsencrypt/options-ssl-nginx.conf;
+		ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+	}
+
 	location / {
 		proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
