@@ -208,15 +208,15 @@ export const ProcessCard = ({ process, onLoad }: props) => {
             </div>
           </div>
           <div className="flex space-x-2 justify-end">
-            {process.state === "active" ? (
+            {/* {process.state === "active" ? (
               <LoadButton onClick={() => onLoad(process)} id={process.dag_id} />
-            ) : null}
+            ) : null} */}
             {process.airflow && process.state === "active" ? (
               <RunButton id={process.dag_id} />
             ) : null}
-            {process.airflow && process.state === "active" ? (
+            {/* {process.airflow && process.state === "active" ? (
               <ViewButton id={process.dag_id} />
-            ) : null}
+            ) : null} */}
             {process.state === "active" ? (
               <DelButton id={process.dag_id} />
             ) : null}
