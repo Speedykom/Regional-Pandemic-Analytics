@@ -62,6 +62,7 @@ urlpatterns = [
     
     # ---------------------- API Superset Endpoints --------------------------
     path('superset/list', superset_view.ListDashboardsAPI.as_view()),  # list dashboards
+    path('superset/list/charts', superset_view.ListChartsAPI.as_view()),  # list charts
     path('superset/guest/token', superset_view.GuestTokenApi.as_view()),  # get guest token
     path('superset/csrf/token', superset_view.CsrfTokenApi.as_view()),  # get csrf token
     path('superset/dashboard/enable-embed', superset_view.EnableEmbed.as_view()),  # enable embed
