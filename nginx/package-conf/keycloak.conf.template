@@ -3,7 +3,8 @@ server {
     listen          80;
     server_name     $NGINX_KEYCLOAK_DOMAIN_NAME;
 
-  	location /.well-known/acme-challenge/ {
+
+	location ^~ /.well-known/acme-challenge/ {
 		root /var/www/certbot;
 	}
 
