@@ -63,3 +63,8 @@ def role_assign (userId: str, role_object: dict[str, str], headers: dict[str, st
     form_data = [role_object]
     requests.post(url=f"{APP_USER_BASE_URL}/{userId}/role-mappings/realm", json=form_data, headers=headers)
     return True
+
+def unassign_role(userId: str, role_object: dict[str, str], headers: dict[str, str]):
+    form_data = [role_object]
+    requests.delete(url=f"{APP_USER_BASE_URL}/{userId}/role-mappings/realm", json=form_data, headers=headers)
+    return True

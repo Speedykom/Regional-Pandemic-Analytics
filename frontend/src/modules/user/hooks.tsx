@@ -1,6 +1,6 @@
 import { ColumnsType } from "antd/es/table";
 import { IUser } from "./interface";
-import { Popconfirm, Tag } from "antd";
+import { Button, Popconfirm, Tag } from "antd";
 import { FiEdit, FiEye, FiTrash } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Action } from "@/common/components/common/action";
@@ -8,6 +8,7 @@ import axios from "axios";
 import { OpenNotification } from "@/common/utils/notify";
 import secureLocalStorage from "react-secure-storage";
 import { BASE_URL } from "@/common/config";
+import { IRoles } from "../roles/interface";
 
 interface props {
 	edit: (
@@ -21,7 +22,9 @@ interface props {
 		phone: string,
 		country: string,
 		gender: string,
-		avatar: string
+		avatar: string,
+		editLoad: boolean,
+		userRole: any
 	) => void;
 	viewPro: (id: string) => void;
 	refetch: () => void;
@@ -41,26 +44,59 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 		gender: string,
 		avatar: string
 	) => {
+		let editLoad: boolean = false;
+
 		const deleteUser = async () => {
 			const tokens: any = secureLocalStorage.getItem("tokens") as object;
-			const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
+			const accessToken =
+				tokens && "accessToken" in tokens ? tokens.accessToken : "";
 
 			await axios
-				.delete(
-					`${BASE_URL}/api/account/user/${id}/delete`,
-					{
-						headers: {
-							"Content-Type": "application/json",
-							"Authorization": `Bearer ${accessToken}`
-						},
-					}
-				)
+				.delete(`${BASE_URL}/api/account/user/${id}/delete`, {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${accessToken}`,
+					},
+				})
 				.then((res) => {
-					OpenNotification('User archived successfully', "topRight", "success");
+					OpenNotification("User archived successfully", "topRight", "success");
 					refetch();
 				})
 				.catch((err) => {
 					OpenNotification(err.response?.data, "topRight", "error");
+				});
+		};
+		const editRec = async () => {
+			editLoad = true
+			const tokens: any = secureLocalStorage.getItem("tokens") as object;
+			const accessToken =
+				tokens && "accessToken" in tokens ? tokens.accessToken : "";
+			
+			await axios
+				.get(`${BASE_URL}/api/account/user/${id}/roles`, {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${accessToken}`,
+					},
+				})
+				.then((res) => {
+					editLoad = false;
+					const userRole = res.data
+					edit(
+						id,
+						firstName,
+						lastName,
+						username,
+						email,
+						enabled,
+						code,
+						phone,
+						country,
+						gender,
+						avatar,
+						editLoad,
+						userRole
+					);
 				});
 		};
 		return (
@@ -81,7 +117,8 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 						<button
 							onClick={(e) => {
 								e.preventDefault();
-								edit(id, firstName, lastName, username, email, enabled, code, phone, country, gender, avatar);
+								editLoad = true
+								editRec();
 							}}
 							className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
 						>
@@ -97,7 +134,9 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 							okText="Yes"
 							cancelText="No"
 							okType="link"
-							okButtonProps={{style: {backgroundColor: "#3f96ff", color: "white"}}}
+							okButtonProps={{
+								style: { backgroundColor: "#3f96ff", color: "white" },
+							}}
 						>
 							<button className="flex space-x-2 w-full py-1 px-3 hover:bg-orange-600 hover:text-white">
 								<FiTrash className="mt-1" /> <span>Disable User</span>
@@ -119,7 +158,15 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 				<div className="flex items-center pr-1">
 					<div>
 						<div className="w-10 h-10 mr-3 overflow-hidden rounded-full flex items-center justify-center border border-gray-300">
-							<img src={record?.attributes?.avatar && record?.attributes?.avatar[0] != "" ? record?.attributes?.avatar[0] : '/avater.png'} className="w-full h-full" />
+							<img
+								src={
+									record?.attributes?.avatar &&
+									record?.attributes?.avatar[0] != ""
+										? record?.attributes?.avatar[0]
+										: "/avater.png"
+								}
+								className="w-full h-full"
+							/>
 						</div>
 					</div>
 					<p className="font-sans">
@@ -129,7 +176,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 			),
 			className: "text-gray-700",
 			ellipsis: true,
-			width: 250
+			width: 250,
 		},
 		{
 			title: "Email",
@@ -138,7 +185,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 			render: (email) => email,
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
-			width: 350
+			width: 350,
 		},
 		{
 			title: "Username",
@@ -152,7 +199,12 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 			title: "Phone",
 			key: "attributes",
 			dataIndex: "attributes",
-			render: (attributes) => attributes?.phone ? `${attributes?.code ? attributes?.code[0] : ''}${attributes?.phone[0]}` : '',
+			render: (attributes) =>
+				attributes?.phone
+					? `${attributes?.code ? attributes?.code[0] : ""}${
+							attributes?.phone[0]
+					  }`
+					: "",
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
 		},
@@ -160,7 +212,8 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 			title: "Gender",
 			key: "attributes",
 			dataIndex: "attributes",
-			render: (attributes) => attributes?.gender ? attributes?.gender[0] : 'None',
+			render: (attributes) =>
+				attributes?.gender ? attributes?.gender[0] : "None",
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
 		},
@@ -168,7 +221,8 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 			title: "Country",
 			key: "attributes",
 			dataIndex: "attributes",
-			render: (attributes) => attributes?.country ? attributes?.country[0] : 'None',
+			render: (attributes) =>
+				attributes?.country ? attributes?.country[0] : "None",
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
 		},
@@ -240,11 +294,11 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 					record.username,
 					record.email,
 					record.enabled,
-					record.attributes?.code ? record.attributes?.code[0] : '',
-					record.attributes?.phone ? record.attributes?.phone[0]: '',
-					record.attributes?.country ? record.attributes?.country[0] : '',
-					record.attributes?.gender ? record.attributes?.gender[0]: '',
-					record.attributes?.avatar ? record.attributes?.avatar[0] : '',
+					record.attributes?.code ? record.attributes?.code[0] : "",
+					record.attributes?.phone ? record.attributes?.phone[0] : "",
+					record.attributes?.country ? record.attributes?.country[0] : "",
+					record.attributes?.gender ? record.attributes?.gender[0] : "",
+					record.attributes?.avatar ? record.attributes?.avatar[0] : ""
 				),
 		},
 	];
