@@ -14,17 +14,10 @@ server {
 	listen 443 ssl;
 	server_name $NGINX_DRUID_DOMAIN_NAME;
 
-	# Check if we need local self signed certs ors letsencrypt ones
-	if ($host ~* "local$") {
-		ssl_certificate /etc/nginx/certs/airflow.crt;
-		ssl_certificate_key /etc/nginx/certs/airflow.key;
-	}
-	if ($host ~* "eu$") {
-		ssl_certificate /etc/letsencrypt/live/$NGINX_DRUID_DOMAIN_NAME/fullchain.pem;
-		ssl_certificate_key /etc/letsencrypt/live/$NGINX_DRUID_DOMAIN_NAME/privkey.pem;
-		include /etc/letsencrypt/options-ssl-nginx.conf;
-		ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-	}
+	ssl_certificate /etc/letsencrypt/live/$NGINX_DRUID_DOMAIN_NAME/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/$NGINX_DRUID_DOMAIN_NAME/privkey.pem;
+	include /etc/letsencrypt/options-ssl-nginx.conf;
+	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
 	location / {
 		proxy_pass http://$NGINX_UPSTREAM_DRUID:8888/;
