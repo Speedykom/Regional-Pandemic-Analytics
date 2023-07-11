@@ -16,9 +16,11 @@ export const getUserRole = async (roles: []) => {
         return newRole
     })
 }
-const tokens: any = secureLocalStorage.getItem("tokens");
-const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
+
 export const getGuestToken = async (uuid: string): Promise<string> => {
+    const tokens: any = secureLocalStorage.getItem("tokens");
+    const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '';
+
     return axios.post(`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/superset/guest/token`, { id: uuid },{
         headers: {
             "Content-Type": "application/json",
