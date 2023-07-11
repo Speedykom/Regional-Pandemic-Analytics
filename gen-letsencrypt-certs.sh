@@ -8,16 +8,16 @@ fi
 rsa_key_size=4096
 data_path="./certbot"
 email="hamza@speedykom.de" # Adding a valid address is strongly recommended
-staging=1 # Set to 1 if you're testing your setup to avoid hitting request limits
+staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
-domain_names=(analytics2.igad-health.eu coordinator2.igad-health.eu db2.igad-health.eu integration2.igad-health.eu auth2.igad-health.eu data2.igad-health.eu orchestration2.igad-health.eu cache2.igad-health.eu data2.igad-health.eu home2.igad-health.eu)
+domain_names=(analytics2.igad-health.eu coordinator2.igad-health.eu db2.igad-health.eu integration2.igad-health.eu auth2.igad-health.eu data2.igad-health.eu orchestration2.igad-health.eu cache2.igad-health.eu console.cache2.igad-health.eu home2.igad-health.eu)
 #Geneate certificates for each service
 for domains in "${domain_names[@]}"; do
 
   if [ -d "$data_path" ]; then
     read -p "Existing data found for $domains. Continue and replace existing certificate? (y/N) " decision
     if [ "$decision" != "Y" ] && [ "$decision" != "y" ]; then
-      exit
+      continue
     fi
   fi
 
@@ -70,7 +70,7 @@ for domains in "${domain_names[@]}"; do
   if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
   docker compose  --env-file ./.env -f docker-compose.yml -f docker-compose.dev.yml run --rm --entrypoint "\
-    certbot certonly --webroot -w /var/www/certbot \
+    certbot certonly --cert-name $domains --webroot -w /var/www/certbot \
       $staging_arg \
       $email_arg \
       $domain_args \
