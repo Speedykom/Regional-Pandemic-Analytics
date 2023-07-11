@@ -1,6 +1,5 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import { IGADTable } from "@/common/components/common/table";
-import { BASE_URL } from "@/common/config";
 import { OpenNotification } from "@/common/utils/notify";
 import { useAttributes } from "@/modules/roles/hooks";
 import { IAttribute, IRoles } from "@/modules/roles/interface";
@@ -12,7 +11,9 @@ import {
 import { Button, Form, Modal, Switch } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import getConfig from 'next/config'
 import secureLocalStorage from "react-secure-storage";
+const { publicRuntimeConfig } = getConfig()
 
 export const ViewRole = () => {
 	const userRole: any = secureLocalStorage.getItem("user_role");
@@ -31,7 +32,7 @@ export const ViewRole = () => {
 	const fetchRole = async () => {
 		setLoading(true);
 		await axios
-			.get(`${BASE_URL}/api/role/${roleId}?type=id`, {
+			.get(`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/role/${roleId}?type=id`, {
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
 				},
@@ -117,7 +118,7 @@ export const ViewRole = () => {
 	const onFinish = async () => {
 		setOnSaveLoad(true)
 		const roleId = location.href.substring(location.href.lastIndexOf('/') + 1);
-		await axios.put(`${BASE_URL}/api/role/${roleId}/permission`, {
+		await axios.put(`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/role/${roleId}/permission`, {
 			key,
 			value
 		}, {
