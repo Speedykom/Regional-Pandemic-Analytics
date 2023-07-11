@@ -3,7 +3,9 @@ import { Button } from "antd";
 import { useEditAccessMutation, useFindAllQuery } from "./pipeline";
 import { useState } from "react";
 import { ShowMessage } from "@/common/components/ShowMessage";
-
+import getConfig from 'next/config'
+ 
+const { publicRuntimeConfig } = getConfig()
 const ViewButton = ({ id }: { id: string }) => {
   const [editAccess] = useEditAccessMutation();
 
@@ -17,7 +19,7 @@ const ViewButton = ({ id }: { id: string }) => {
         return;
       }
 
-      window.open(process.env.NEXT_PUBLIC_HOP_UI, "_blank");
+      window.open(publicRuntimeConfig.NEXT_PUBLIC_HOP_UI, "_blank");
       setLoading(false);
     });
   };
