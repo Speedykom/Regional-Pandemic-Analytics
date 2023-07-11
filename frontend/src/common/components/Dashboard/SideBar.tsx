@@ -1,15 +1,6 @@
 import { Ref, forwardRef } from "react";
 import Link from "next/link";
 import {
-  HomeIcon,
-  ChevronDoubleRightIcon,
-  ChartBarSquareIcon,
-  UsersIcon,
-  CircleStackIcon,
-  DocumentIcon,
-  LockClosedIcon,
-} from "@heroicons/react/24/solid";
-import {
   BiChart,
   BiData,
   BiGitMerge,
@@ -63,24 +54,16 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
             <p>Dashboard</p>
           </NavLink>
         )}
-        {/* {permits?.Chart && permits?.Chart?.read && (
-          <Link href="/charts">
-            <div
-              className={`px-2 py-3 mx-5 rounded text-center cursor-pointer mb-3 flex items-center transition-colors ${
-                router.pathname == "/charts"
-                  ? "bg-green-100 text-green-500"
-                  : "text-gray-400 hover:bg-green-100 hover:text-green-500"
-              }`}
-            >
-              <div className="mr-5">
-                <ChevronDoubleRightIcon className="h-5 w-5" />
-              </div>
-              <div>
-                <p>Chart(s)</p>
-              </div>
-            </div>
-          </Link>
-        )} */}
+        {permits?.Chart && permits?.Chart?.read && (
+          <NavLink
+          href="/charts"
+          activeClassName="bg-prim text-white"
+          className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
+        >
+          <BiChart className="text-xl" />
+          <p>Chart(s)</p>
+        </NavLink>
+        )}
         {permits?.ProcessChain && permits?.ProcessChain?.read && (
           <NavLink
             href="/process-chains"
@@ -88,7 +71,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
             className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
           >
             <BiGitPullRequest className="text-xl" />
-            <p>Process Chain</p>
+            <p>Process Chain(s)</p>
           </NavLink>
         )}
         {permits?.Data && permits?.Data?.read && (
@@ -107,7 +90,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
           className="px-3.5 text-gray-400 py-3 mx-5 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
         >
           <BiGitMerge className="text-xl" />
-          <p>My Pipeline</p>
+          <p>My Pipeline(s)</p>
         </NavLink>
         {permits?.User && permits?.User?.read && (
           <NavLink
@@ -116,7 +99,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
             className="px-3.5 text-gray-400 py-3 mx-5 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
           >
             <BiUser className="text-xl" />
-            <p>Account</p>
+            <p>Account(s)</p>
           </NavLink>
         )}
         {permits?.Role && permits?.Role?.read && (
