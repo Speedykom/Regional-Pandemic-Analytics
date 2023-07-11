@@ -17,10 +17,8 @@ import { Menu, Transition, Popover } from "@headlessui/react";
 import Link from "next/link";
 import secureLocalStorage from "react-secure-storage";
 import { useRouter } from "next/router";
-import axios from "axios";
 import { PreviewUser } from "@/modules/user/views/Preview";
-import { OpenNotification } from "@/common/utils/notify";
-import { useLogoutMutation } from "@/modules/auth/auth";
+import { useLogoutMutation } from "@/modules/auth/logout";
 import { ShowMessage } from "../ShowMessage";
 
 interface props {
