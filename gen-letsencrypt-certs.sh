@@ -60,8 +60,6 @@ for domains in "${domain_names[@]}"; do
     domain_args="$domain_args -d $domain"
   done
 
-done
-
 # Select appropriate email arg
 case "$email" in
   "") email_arg="--register-unsafely-without-email" ;;
@@ -83,3 +81,5 @@ echo
 
 echo "### Reloading nginx ..."
 docker compose exec nginx nginx -s reload
+
+done
