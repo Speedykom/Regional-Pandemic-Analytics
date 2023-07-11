@@ -5,10 +5,19 @@ from flask_appbuilder.security.sqla.models import (
     User
 )
 from flask import Request
+from flask_appbuilder.views import expose
+from werkzeug.wrappers import Response as WerkzeugResponse
+from flask import flash, redirect, request, session
+from flask_appbuilder._compat import as_unicode
+from flask_login import login_user
+from flask_appbuilder.utils.base import get_safe_redirect
+from flask_appbuilder.security.views import AuthOAuthView
+import jwt
 from typing import Optional
 import logging
 from keycloak import KeycloakOpenID
 
+log = logging.getLogger(__name__)
 
 # Superset Oauth2 Docs : https://superset.apache.org/docs/installation/configuring-superset/#custom-oauth2-configuration
 # https://flask-appbuilder.readthedocs.io/en/latest/security.html#authentication-oauth
@@ -32,7 +41,9 @@ OAUTH_PROVIDERS = [
             "client_id": SUPERSET_KEYCLOAK_CLIENT_ID,
             "client_secret": SUPERSET_KEYCLOAK_CLIENT_SECRET,
             "api_base_url": f"{SUPERSET_KEYCLOAK_INTERNAL_URL}/realms/{SUPERSET_KEYCLOAK_APP_REALM}/protocol/openid-connect",
-            "client_kwargs": {"scope": "openid email profile offline_access roles"},
+            "client_kwargs": {
+                "scope": "openid email profile offline_access roles"
+            },
             # 'access_token_method':'POST',    # HTTP Method to call access_token_url
             # 'access_token_params':{        # Additional parameters for calls to access_token_url
             #     'client_id':'myClientId'
@@ -70,7 +81,77 @@ keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_INTERNAL_URL,
                                 realm_name=SUPERSET_KEYCLOAK_APP_REALM,
                                 client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET)
 
+
+class CustomAuthOAuthView(AuthOAuthView):
+    @expose("/oauth-authorized/<provider>")
+    def oauth_authorized(self, provider: str) -> WerkzeugResponse:
+        log.debug("Authorized init")
+        if provider not in self.appbuilder.sm.oauth_remotes:
+            flash("Provider not supported.", "warning")
+            log.warning("OAuth authorized got an unknown provider %s", provider)
+            return redirect(self.appbuilder.get_url_for_login)
+        try:
+            resp = self.appbuilder.sm.oauth_remotes[provider].authorize_access_token(claims_options={
+                    'iss': {
+                        'values': [
+                            f"{SUPERSET_KEYCLOAK_INTERNAL_URL}/realms/{SUPERSET_KEYCLOAK_APP_REALM}",
+                            f"{SUPERSET_KEYCLOAK_EXTERNAL_URL}/realms/{SUPERSET_KEYCLOAK_APP_REALM}"
+                        ]
+                    }
+                })
+        except Exception as e:
+            log.error("Error authorizing OAuth access token: {0}".format(e))
+            flash("The request to sign in was denied.", "error")
+            return redirect(self.appbuilder.get_url_for_login)
+        if resp is None:
+            flash("You denied the request to sign in.", "warning")
+            return redirect(self.appbuilder.get_url_for_login)
+        log.debug("OAUTH Authorized resp: {0}".format(resp))
+        # Retrieves specific user info from the provider
+        try:
+            self.appbuilder.sm.set_oauth_session(provider, resp)
+            userinfo = self.appbuilder.sm.oauth_user_info(provider, resp)
+        except Exception as e:
+            log.error("Error returning OAuth user info: {0}".format(e))
+            user = None
+        else:
+            log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
+            # User email is not whitelisted
+            if provider in self.appbuilder.sm.oauth_whitelists:
+                whitelist = self.appbuilder.sm.oauth_whitelists[provider]
+                allow = False
+                for email in whitelist:
+                    if "email" in userinfo and re.search(email, userinfo["email"]):
+                        allow = True
+                        break
+                if not allow:
+                    flash("You are not authorized.", "warning")
+                    return redirect(self.appbuilder.get_url_for_login)
+            else:
+                log.debug("No whitelist for OAuth provider")
+            user = self.appbuilder.sm.auth_user_oauth(userinfo)
+
+        if user is None:
+            flash(as_unicode(self.invalid_login_message), "warning")
+            return redirect(self.appbuilder.get_url_for_login)
+        else:
+            try:
+                state = jwt.decode(
+                    request.args["state"], session["oauth_state"], algorithms=["HS256"]
+                )
+            except (jwt.InvalidTokenError, KeyError):
+                flash(as_unicode("Invalid state signature"), "warning")
+                return redirect(self.appbuilder.get_url_for_login)
+
+            login_user(user)
+            next_url = self.appbuilder.get_url_for_index
+            # Check if there is a next url on state
+            if "next" in state and len(state["next"]) > 0:
+                next_url = get_safe_redirect(state["next"][0])
+            return redirect(next_url)
+
 class CustomSupersetSecurityManager(SupersetSecurityManager):
+    authoauthview = CustomAuthOAuthView
 
     def get_oauth_user_info(self, provider, resp):
         """
@@ -79,8 +160,10 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
         """
         # for Keycloak
         if provider in ["keycloak", "keycloak_before_17"]:
+            log.info("BREAKPOINT %s", provider)
             me = self.appbuilder.sm.oauth_remotes[provider].get(
-                "openid-connect/userinfo"
+                f"{SUPERSET_KEYCLOAK_EXTERNAL_URL}/realms/{SUPERSET_KEYCLOAK_APP_REALM}/protocol/openid-connect/userinfo",
+                verify=False
             )
             me.raise_for_status()
             data = me.json()

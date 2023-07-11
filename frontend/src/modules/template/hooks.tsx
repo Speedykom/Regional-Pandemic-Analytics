@@ -5,7 +5,9 @@ import { Action } from "@/common/components/common/action";
 import axios from "axios";
 import { OpenNotification } from "@/common/utils/notify";
 import { useFindAllQuery } from "./template";
-
+import getConfig from 'next/config'
+ 
+const { publicRuntimeConfig } = getConfig()
 interface props {
   edit: (id: string, name: string, description: string) => void;
   del: () => void;
@@ -21,7 +23,7 @@ export const useTemplate = ({ edit, del }: props) => {
     const deleteUser = async () => {
       await axios
         .delete(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles/${id}/delete`,
+          `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/roles/${id}/delete`,
           {
             headers: {
               "Content-Type": "application/json",

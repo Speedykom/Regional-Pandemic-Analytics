@@ -4,6 +4,9 @@ import axios from "axios";
 import { IGADTable } from "@/common/components/common/table";
 import { getData } from "@/common/utils";
 import { useCharts } from "../hooks/chart";
+import getConfig from 'next/config'
+ 
+const { publicRuntimeConfig } = getConfig()
 
 export const ChartList = () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -29,7 +32,7 @@ export const ChartList = () => {
     setLoading(true);
     const fetchCharts = async () => {
       try {
-        const url = `${process.env.NEXT_PUBLIC_SUPERSET_URL}/api/v1/chart/`;
+        const url = `${publicRuntimeConfig.NEXT_PUBLIC_SUPERSET_URL}/api/v1/chart/`;
         const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,

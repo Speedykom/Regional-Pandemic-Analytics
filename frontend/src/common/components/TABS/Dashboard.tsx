@@ -1,5 +1,6 @@
 import { BarChart, Card, Grid, Metric, Subtitle, Title } from "@tremor/react";
 import { useEffect } from "react";
+import getConfig from 'next/config'
 import MetricsCards from "@/common/components/Cards/MetricsCard";
 import { embedDashboard } from "@superset-ui/embedded-sdk";
 import useSWR from "swr";
@@ -9,12 +10,14 @@ interface IBarData {
   total_death: number;
 }
 
+const { publicRuntimeConfig } = getConfig()
+
 export default function Dashboard() {
   const { data: metrics, error: metricsError } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/global-data/`
+    `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/global-data/`
   );
   const { data, error, isLoading } = useSWR(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/covid-data/`
+    `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/covid-data/`
   );
   const filteredData = data
     ? data.map((item: IBarData) => ({

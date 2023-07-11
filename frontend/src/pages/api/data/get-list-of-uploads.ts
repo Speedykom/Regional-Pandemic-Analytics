@@ -1,9 +1,11 @@
 import {NextApiRequest, NextApiResponse} from "next";
 import axios from "axios";
-
+import getConfig from 'next/config'
+ 
+const { serverRuntimeConfig } = getConfig()
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse){
-    const server_url = process.env.NEXT_PRIVATE_BASE_URL;
+    const server_url = serverRuntimeConfig.NEXT_PRIVATE_BASE_URL;
 
     const {username} = req?.query
 

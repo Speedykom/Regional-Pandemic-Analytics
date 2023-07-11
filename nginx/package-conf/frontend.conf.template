@@ -1,0 +1,16 @@
+# IGAD frontend config
+server {
+    listen          80;
+    server_name     $NGINX_FRONTEND_DOMAIN_NAME;
+	return 301 https://$host$request_uri;
+}
+server {
+	listen 443 ssl;
+	server_name $NGINX_FRONTEND_DOMAIN_NAME;
+	ssl_certificate /etc/nginx/certs/frontend.crt;
+	ssl_certificate_key /etc/nginx/certs/frontend.key;
+	location / {
+		proxy_pass http://$NGINX_UPSTREAM_FRONTEND:3000/;
+		error_log /var/log/front_end_errors.log;
+	}
+}

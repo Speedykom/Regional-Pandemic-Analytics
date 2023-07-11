@@ -1,11 +1,12 @@
 import { Loading } from "@/common/components/Loading";
-import { BASE_URL } from "@/common/config";
 import { CreatePassword } from "@/modules/user/views/create-password";
 import { LinkExpired } from "@/modules/user/views/link-expired";
-
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import getConfig from "next/config"
+ 
+const { publicRuntimeConfig } = getConfig()
 
 export default function CreatePasswordLayout() {
 	const router = useRouter();
@@ -17,7 +18,7 @@ export default function CreatePasswordLayout() {
 		setIsLoading(true)
 		await axios
 			.patch(
-				`${BASE_URL}/api/auth/request-verify`,
+				`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/auth/request-verify`,
 				{
 					token: String(tok),
 				},

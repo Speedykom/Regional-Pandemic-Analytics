@@ -3,8 +3,10 @@ import { embedDashboard } from "@superset-ui/embedded-sdk";
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import { getGuestToken } from "@/common/utils/auth";
 import axios from "axios";
-import { BASE_URL, SUPERSET_URL } from "@/common/config";
 import secureLocalStorage from "react-secure-storage";
+import getConfig from 'next/config'
+ 
+const { publicRuntimeConfig } = getConfig()
 
 export default function SupersetDashboard() {
 	let ref = useRef(null);
@@ -16,7 +18,7 @@ export default function SupersetDashboard() {
 		const dashId = location.href.substring(location.href.lastIndexOf('/') + 1);
 			await axios
 				.post(
-					`${BASE_URL}/api/superset/dashboard/enable-embed`,
+					`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/superset/dashboard/enable-embed`,
 					{
 						uid: dashId,
 					},
@@ -39,7 +41,7 @@ export default function SupersetDashboard() {
 		if (ref.current) {
 			await embedDashboard({
 				id: uuid, // given by the Superset embedding UI
-				supersetDomain: `${SUPERSET_URL}`,
+				supersetDomain: `${publicRuntimeConfig.NEXT_PUBLIC_SUPERSET_URL}`,
 				mountPoint: ref.current, // html element in which iframe render
 				fetchGuestToken: () => getGuestToken(uuid),
 				dashboardUiConfig: {

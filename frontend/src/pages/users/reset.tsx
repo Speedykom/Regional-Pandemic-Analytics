@@ -2,7 +2,9 @@ import { OpenNotification } from "@/common/utils/notify";
 import { Button, Form, Input } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
-
+import getConfig from 'next/config'
+ 
+const { publicRuntimeConfig } = getConfig()
 export const ResetMe = () => {
 	const router = useRouter();
 	const [form] = Form.useForm();
@@ -10,7 +12,7 @@ export const ResetMe = () => {
 	const onFinish = async (values: any) => {
 		await axios
 			.post(
-				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/reset/password-request`,
+				`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/reset/password-request`,
 				values,
 				{
 					headers: {

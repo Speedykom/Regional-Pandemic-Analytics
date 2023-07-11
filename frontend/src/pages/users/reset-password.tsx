@@ -1,9 +1,11 @@
-import { BASE_URL } from "@/common/config";
 import { OpenNotification } from "@/common/utils/notify";
 
 import { Button, Form, Input } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
+import getConfig from "next/config"
+ 
+const { publicRuntimeConfig } = getConfig()
 
 export const ResetPassword = () => {
 	const router = useRouter();
@@ -11,7 +13,7 @@ export const ResetPassword = () => {
 	const onFinish = async (values: any) => {
 		console.log({ values });
 		await axios
-			.post(`${BASE_URL}/api/auth/request-verify`, values, {
+			.post(`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/auth/request-verify`, values, {
 				headers: {
 					"Content-Type": "application/json",
 				},

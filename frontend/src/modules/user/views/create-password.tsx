@@ -1,9 +1,11 @@
-import { BASE_URL } from "@/common/config";
 import { OpenNotification } from "@/common/utils/notify";
 import { Button, Form, Input } from "antd";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import getConfig from 'next/config'
+ 
+const { publicRuntimeConfig } = getConfig()
 
 const specialChars = /[!-\/:-@[-`{-~]/;
 const upperRegex = /[A-Z]/;
@@ -63,7 +65,7 @@ export const CreatePassword = ({ mail, token }: props) => {
 		} else {
 			await axios
 				.post(
-					`${BASE_URL}/api/auth/password`,
+					`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/auth/password`,
 					{
 						newPassword: values["password"],
 						confirmPassword: values["confirmPassword"],

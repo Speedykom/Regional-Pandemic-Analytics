@@ -1,5 +1,4 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-import { BASE_URL } from "@/common/config";
 import { countries } from "@/common/utils/countries";
 import { OpenNotification } from "@/common/utils/notify";
 
@@ -30,6 +29,9 @@ import type { UploadFile, UploadProps } from "antd/es/upload/interface";
 import axios from "axios";
 import { useState } from "react";
 import secureLocalStorage from "react-secure-storage";
+import getConfig from 'next/config'
+ 
+const { publicRuntimeConfig } = getConfig()
 
 const getBase64 = (file: RcFile): Promise<string> =>
 	new Promise((resolve, reject) => {
@@ -140,7 +142,7 @@ export const ProfileSettings = () => {
 	const handleDetailsEdit = async (values: any) => {
 		await axios
 			.put(
-				`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/update`,
+				`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/update`,
 				values,
 				{
 					headers: {
@@ -180,7 +182,7 @@ export const ProfileSettings = () => {
 		} else {
 			await axios
 				.put(
-					`${BASE_URL}/api/auth/password`,
+					`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/auth/password`,
 					{
 						id: user?.sub,
 						newPassword: values["newPassword"],
@@ -229,7 +231,7 @@ export const ProfileSettings = () => {
 										onPreview={handlePreview}
 										showUploadList={{ showRemoveIcon: false }}
 										maxCount={1}
-										action={`${process.env.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/avatar-upload1`}
+										action={`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/avatar-upload1`}
 										customRequest={(options) => {
 											const data = new FormData();
 											data.append("file", options.file);
