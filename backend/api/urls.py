@@ -3,7 +3,8 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import include, re_path, path
-from process.views.process import GetProcess, RunProcess, RequestEditProcess, CreateProcess, EditProcess, DeleteProcess
+from process.views.pipeline import CreatePipeline, GetPipeline, RequestEditPipeline
+from process.views.process import GetProcess, RunProcess, CreateProcess, DeleteProcess
 from data.views import DataUploadAPI
 from accounts import views
 
@@ -62,18 +63,22 @@ urlpatterns = [
     
     # ---------------------- API Superset Endpoints --------------------------
     path('superset/list', superset_view.ListDashboardsAPI.as_view()),  # list dashboards
+    path('superset/list/charts', superset_view.ListChartsAPI.as_view()),  # list charts
     path('superset/guest/token', superset_view.GuestTokenApi.as_view()),  # get guest token
     path('superset/csrf/token', superset_view.CsrfTokenApi.as_view()),  # get csrf token
     path('superset/dashboard/enable-embed', superset_view.EnableEmbed.as_view()),  # enable embed
     path('superset/dashboard/embed/<str:id>', superset_view.GetEmbeddable.as_view()),  # get embedded dashboard
     
+    # ---------------------- Piepline  Endpoints ------------------------------------------
+    path('pipeline', CreatePipeline.as_view()),
+    path('pipeline/list', GetPipeline.as_view()),
+    path('pipeline/access/<str:id>', RequestEditPipeline.as_view()),
+
     # ---------------------- Process Chain  Endpoints ------------------------------------------
     path('process', CreateProcess.as_view()),
     path('process/list', GetProcess.as_view()),
     path('process/run/<str:id>', RunProcess.as_view()),
-    path('process/access/<str:dag_id>', RequestEditProcess.as_view()),
     path('process/delete/<str:dag_id>', DeleteProcess.as_view()),
-    path('process/<str:id>', EditProcess.as_view()),
     path('process/one/<str:dag_id>', GetProcess.as_view()),
 
     # ---------------------- Data upload Endpoints ------------------------------------------
