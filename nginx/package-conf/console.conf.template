@@ -2,11 +2,14 @@ server {
   listen 80;
   server_name $NGINX_CONSOLE_MINIO_DOMAIN_NAME;
 
-  location /.well-known/acme-challenge/ {
+
+	location ^~ /.well-known/acme-challenge/ {
 		root /var/www/certbot;
 	}
 
-  #return 301 https://$host$request_uri;
+	location / {
+		return 301 https://$host$request_uri;
+	}
 }
 
 server {
