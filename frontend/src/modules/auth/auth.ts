@@ -13,15 +13,15 @@ export const AuthApi = createApi({
     baseUrl: publicRuntimeConfig.NEXT_PUBLIC_BASE_URL,
     prepareHeaders: (headers: any, { getState, endpoint }: any) => {
       const tokens = secureLocalStorage.getItem("tokens");
-  
+
       if (!tokens) return headers;
-  
-      const { refreshToken } = (tokens as any);
-  
+
+      const { refreshToken } = tokens as any;
+
       headers.set("AUTHORIZATION", `Bearer ${refreshToken}`);
-  
+
       return headers;
-  },
+    },
     credentials: "include",
   }),
   endpoints: (builder) => ({
