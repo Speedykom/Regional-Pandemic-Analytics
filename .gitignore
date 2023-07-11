@@ -14,6 +14,7 @@ venv/
 
 node_modules
 certbot/conf/live/*
+!certbot/conf/live
 certbot/conf/renewal/*
 certbot/conf/options-ssl-nginx.conf
 certbot/conf/ssl-dhparams.pem
