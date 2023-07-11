@@ -6,9 +6,9 @@ import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Action } from "@/common/components/common/action";
 import axios from "axios";
 import { OpenNotification } from "@/common/utils/notify";
+import getConfig from 'next/config'
 import secureLocalStorage from "react-secure-storage";
-import { BASE_URL } from "@/common/config";
-
+const { publicRuntimeConfig } = getConfig()
 interface props {
 	edit: (id: string, name: string, description: string) => void;
 	del: () => void;
@@ -26,7 +26,7 @@ export const useRoles = ({ edit, view, del, refetch }: props) => {
 			const accessToken =
 				tokens && "accessToken" in tokens ? tokens.accessToken : "";
 			await axios
-				.delete(`${BASE_URL}/api/account/roles/${id}/delete`, {
+				.delete(`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/roles/${id}/delete`, {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${accessToken}`,
@@ -163,18 +163,6 @@ export const useRoles = ({ edit, view, del, refetch }: props) => {
 	];
 
 	return { columns, loading: false };
-};
-
-export const fetchRoles = async () => {
-	const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
-	return await axios
-		.get(url)
-		.then((res) => {
-			return res.data;
-		})
-		.catch((err) => {
-			console.log(err?.response);
-		});
 };
 
 interface editProps {

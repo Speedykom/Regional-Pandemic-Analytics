@@ -6,10 +6,9 @@ import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Action } from "@/common/components/common/action";
 import axios from "axios";
 import { OpenNotification } from "@/common/utils/notify";
+import getConfig from 'next/config'
 import secureLocalStorage from "react-secure-storage";
-import { BASE_URL } from "@/common/config";
-import { IRoles } from "../roles/interface";
-
+const { publicRuntimeConfig } = getConfig()
 interface props {
 	edit: (
 		id: string,
@@ -52,12 +51,15 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 				tokens && "accessToken" in tokens ? tokens.accessToken : "";
 
 			await axios
-				.delete(`${BASE_URL}/api/account/user/${id}/delete`, {
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${accessToken}`,
-					},
-				})
+				.delete(
+					`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${id}/delete`,
+					{
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer ${accessToken}`,
+						},
+					}
+				)
 				.then((res) => {
 					OpenNotification("User archived successfully", "topRight", "success");
 					refetch();
@@ -73,7 +75,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 				tokens && "accessToken" in tokens ? tokens.accessToken : "";
 			
 			await axios
-				.get(`${BASE_URL}/api/account/user/${id}/roles`, {
+				.get(`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${id}/roles`, {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${accessToken}`,

@@ -21,9 +21,10 @@ import { PreviewUser } from "./Preview";
 import { countries } from "@/common/utils/countries";
 import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
-import { BASE_URL } from "@/common/config";
+import getConfig from "next/config"
 import secureLocalStorage from "react-secure-storage";
 import { IRoles } from "@/modules/roles/interface";
+const { publicRuntimeConfig } = getConfig()
 
 interface props {
 	viewPro: () => void;
@@ -84,7 +85,7 @@ export const UserList = () => {
 	const fetchUsers = async () => {
 		try {
 			setLoading(true);
-			const url = `${BASE_URL}/api/account/users`;
+			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/users`;
 			await axios
 				.get(url, {
 					headers: {
@@ -157,7 +158,7 @@ export const UserList = () => {
 		values["role"] = JSON.parse(values["role"]);
 		values["oldRole"] = { id: userRoles[0]?.id, name: userRoles[0]?.name }
 		await axios
-			.put(`${BASE_URL}/api/account/user/${userId}/update`, values, {
+			.put(`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${userId}/update`, values, {
 				headers: {
 					"Content-Type": "application/json",
 					Authorization: `Bearer ${accessToken}`,
@@ -188,7 +189,7 @@ export const UserList = () => {
 	const fetchRoles = async () => {
 		try {
 			setRoleLoading(true);
-			const url = `${BASE_URL}/api/role`;
+			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/role`;
 			await axios
 				.get(url, {
 					headers: {
