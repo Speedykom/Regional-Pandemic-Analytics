@@ -3,17 +3,14 @@ import { Button, Form, Input, Modal } from "antd";
 import { useRoles } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { IRoles } from "../interface";
+import { IRole } from "../interface";
 import secureLocalStorage from "react-secure-storage";
 import { OpenNotification } from "@/common/utils/notify";
 import { PlusOutlined, DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
 import getConfig from 'next/config'
+import { useRouter } from "next/router";
  
 const { publicRuntimeConfig } = getConfig()
-
-interface props {
-	viewPro: () => void;
-}
 
 enum OPERATION_TYPES {
 	CREATE,
@@ -22,15 +19,15 @@ enum OPERATION_TYPES {
 }
 
 export const RoleList = () => {
+	const router = useRouter();
 	const del = () => {};
 	const [form] = Form.useForm();
 
 	const [token, setToken] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(true);
 
-	const [data, setData] = useState<Array<IRoles>>([]);
+	const [data, setData] = useState<Array<IRole>>([]);
 
-	const [view, setView] = useState<boolean>(false);
 	const [roleId, setRoleId] = useState<string>();
 
 	const fetchRoles = async () => {
@@ -77,6 +74,10 @@ export const RoleList = () => {
 		setOpen(true);
 	};
 
+	const view = (id: string) => {
+		router.push(`/roles/${id}`);
+	};
+
 	const showModal = () => {
 		setOpertaionType(OPERATION_TYPES.CREATE);
 		setOpen(true);
@@ -119,7 +120,7 @@ export const RoleList = () => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const { columns } = useRoles({ edit, del, refetch });
+	const { columns } = useRoles({ edit, view, del, refetch });
 	// @ts-ignore
 
 	const userRole: any = secureLocalStorage.getItem("user_role");
@@ -138,7 +139,7 @@ export const RoleList = () => {
 						<div>
 							<Button
 								type="primary"
-                size="large"
+								size="large"
 								icon={<PlusOutlined />}
 								onClick={showModal}
 							>
