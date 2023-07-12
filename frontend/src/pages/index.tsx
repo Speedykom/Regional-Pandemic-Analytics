@@ -1,4 +1,4 @@
-import LoginForm from "@/modules/login/views/login";
+import LoginForm from "@/modules/auth/views/login";
 
 const LoginPage = () => {
 	return <LoginForm />;

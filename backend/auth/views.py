@@ -18,7 +18,7 @@ from utils.filename import gen_filename
 from utils.env_configs import (
     BASE_URL, APP_USER_BASE_URL, APP_SECRET_KEY, APP_REALM, APP_USER_ROLES, REST_REDIRECT_URI)
 
-from utils.keycloak_auth import keycloak_admin_login
+from utils.keycloak_auth import keycloak_admin_login, current_user
 
 class LoginAPI(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
@@ -41,23 +41,12 @@ class Authorization (APIView):
     API to get details of current logged in user
     """
     def get(self, request, *args, **kwargs):
-        reqToken: str = request.META.get('HTTP_AUTHORIZATION')
-        if reqToken is None:
-            return Response({'error': 'Authorization header was not provider or invalid'})
+        cur_user = current_user(request)
+
+        if (cur_user['is_authenticated'] == False):
+            return Response(cur_user, status=cur_user["status"])
         
-        serialToken = reqToken.replace("Bearer ", "")
-        form_data = {
-            "client_id": os.getenv("CLIENT_ID"),
-            "client_secret": os.getenv("CLIENT_SECRET"),
-            "token": serialToken
-        }
-        response = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/token/introspect",
-                            data=form_data)
-        
-        if response.status_code != 200:
-            return Response({'status': response.json()['active'], 'error': 'Authorization token is invalid or expired'}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        return Response(response.json(), status=status.HTTP_200_OK)
+        return Response(cur_user['payload'], status=status.HTTP_200_OK)
     
 class Logout (APIView):
     permission_classes = [AllowAny]
@@ -67,18 +56,21 @@ class Logout (APIView):
     """
     def get(self, request, *args, **kwargs):
         reqToken: str = request.META.get('HTTP_AUTHORIZATION')
+
         if reqToken is None:
-            return Response({'error': 'Refresh token was not set in authorization header'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Refresh token was not set in authorization header'}, status=status.HTTP_401_UNAUTHORIZED)
         
         serialToken = reqToken.replace("Bearer ", "")
+
         form_data = {
             "client_id": os.getenv("CLIENT_ID"),
             "client_secret": os.getenv("CLIENT_SECRET"),
             "refresh_token": serialToken
         }
+
         response = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/logout",
                             data=form_data)
-        
+
         if response.status_code != 204:
             return Response(response.json(), status=response.status_code)
         

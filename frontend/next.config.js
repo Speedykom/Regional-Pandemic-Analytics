@@ -8,7 +8,7 @@ const nextConfig = {
     NEXT_PUBLIC_MINIO_URL: process.env.NEXT_PUBLIC_MINIO_URL,
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
     NEXT_PUBLIC_SUPERSET_URL: process.env.NEXT_PUBLIC_SUPERSET_URL,
-    NEXT_HOP_UI: process.env.NEXT_HOP_UI,
+    NEXT_PUBLIC_HOP_UI: process.env.NEXT_PUBLIC_HOP_UI
   },
 };
 

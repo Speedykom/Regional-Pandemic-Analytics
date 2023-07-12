@@ -1,6 +1,7 @@
 import { AppDrawer } from "@/common/components/AppDrawer";
 import { ShowMessage } from "@/common/components/ShowMessage";
 import { schedule_intervals } from "@/common/utils/processs";
+import { useFindAllQuery as usePipelinesQuery } from "@/modules/pipeline/pipeline";
 import { useCreateProcessMutation } from "@/modules/process/process";
 import { Button, Form, Input, Select } from "antd";
 import { useState } from "react";
@@ -8,18 +9,21 @@ import { useState } from "react";
 interface Props {
   state: boolean;
   onClose: () => void;
-  selectedTemplate: any;
 }
 
-export const AddProcess = ({ state, onClose, selectedTemplate }: Props) => {
+export const AddProcess = ({ state, onClose }: Props) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [addProcess] = useCreateProcessMutation();
 
+  const { data: res } = usePipelinesQuery();
+
+  const pipelines = res?.data || [];
+
   const onFinish = (value: any) => {
     setLoading(true);
 
-    addProcess({ ...value, path: selectedTemplate?.path })
+    addProcess({ ...value })
       .then((res: any) => {
         if (res.error) {
           const { data } = res.error;
@@ -66,36 +70,27 @@ export const AddProcess = ({ state, onClose, selectedTemplate }: Props) => {
         scrollToFirstError
       >
         <Form.Item
-          name="dag_name"
-          label="Dag name"
-          tooltip="Dag name should be in this formate 'process-dag-name'"
+          name="name"
+          label="Name"
+          tooltip="Process Name"
           rules={[
             {
               required: true,
-              message: "Please input your dag name",
+              message: "Please enter process name",
             },
           ]}
         >
           <Input placeholder="Enter Dag Name" className="w-full" />
         </Form.Item>
-        <Form.Item
-          name="dag_id"
-          label="Dag id"
-          tooltip="Dag name should be in this formate 'process-dag-id'"
-          rules={[
-            {
-              required: true,
-              message: "Please input your dag id",
-            },
-          ]}
-        >
-          <Input placeholder="Enter Dag Id" className="w-full" />
-        </Form.Item>
-        <Form.Item name="path" label="Pipeline Path" className="w-full">
-          <Input
-            disabled
-            placeholder={selectedTemplate?.path}
-            className="w-full"
+        <Form.Item name="pipeline" label="Pipeline" className="w-full">
+          <Select
+            showSearch
+            placeholder="Select Pipeline"
+            options={pipelines.map((pipeline: any, i: number) => ({
+              key: i + 353,
+              label: pipeline.name,
+              value: pipeline.id,
+            }))}
           />
         </Form.Item>
         <Form.Item
@@ -104,31 +99,19 @@ export const AddProcess = ({ state, onClose, selectedTemplate }: Props) => {
           rules={[
             {
               required: true,
-              message: "Please input your data source name",
+              message: "Please select schedule interval",
             },
           ]}
         >
           <Select
             showSearch
-            placeholder="Enter Schedule Interval"
+            placeholder="Select Schedule Interval"
             options={schedule_intervals.map((time: string, i: number) => ({
               key: i,
               label: time,
               value: time,
             }))}
           />
-        </Form.Item>
-        <Form.Item
-          name="data_source_name"
-          label="Data source name"
-          rules={[
-            {
-              required: true,
-              message: "Please input your data source name",
-            },
-          ]}
-        >
-          <Input placeholder="Enter Data source name" className="w-full" />
         </Form.Item>
       </Form>
     </AppDrawer>

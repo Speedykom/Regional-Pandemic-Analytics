@@ -5,6 +5,7 @@ import { IGADTable } from "@/common/components/common/table";
 import { getData } from "@/common/utils";
 import { useCharts } from "../hooks/chart";
 import getConfig from 'next/config'
+import secureLocalStorage from "react-secure-storage";
  
 const { publicRuntimeConfig } = getConfig()
 
@@ -12,41 +13,29 @@ export const ChartList = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<any>({ count: 0, result: [] });
 
-  const [token, setToken] = useState<string>("");
-
-  const fetchToken = async () => {
-    try {
-      const url = "/api/get-access-token/";
-      const response = await getData(url);
-      setToken(response?.accessToken);
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchToken();
-  }, []);
+  const tokens: any = secureLocalStorage.getItem("tokens");
+	const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
 
   useEffect(() => {
     setLoading(true);
     const fetchCharts = async () => {
       try {
-        const url = `${publicRuntimeConfig.NEXT_PUBLIC_SUPERSET_URL}/api/v1/chart/`;
+        const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/superset/list/charts`;
         const response = await axios.get(url, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "Authorization": `Bearer ${accessToken}`
           },
         });
         setData(response?.data);
         setLoading(false);
       } catch (error) {
-        console.error("Error:", error);
         setLoading(false);
       }
     };
     fetchCharts();
-  }, [token]);
+  }, [accessToken]);
 
   const { columns } = useCharts();
 

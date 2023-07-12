@@ -2,7 +2,7 @@ import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import { IGADTable } from "@/common/components/common/table";
 import { OpenNotification } from "@/common/utils/notify";
 import { useAttributes } from "@/modules/roles/hooks";
-import { IAttribute, IRoles } from "@/modules/roles/interface";
+import { IAttribute, IRole } from "@/modules/roles/interface";
 import {
 	DeleteColumnOutlined,
 	EditOutlined,
@@ -19,7 +19,7 @@ export const ViewRole = () => {
 	const userRole: any = secureLocalStorage.getItem("user_role");
 	const permits = userRole?.attributes;
 	const roleId = location.href.substring(location.href.lastIndexOf("/") + 1);
-	const [role, setRole] = useState<IRoles>();
+	const [role, setRole] = useState<IRole>();
 	const [attributes, setAttributes] = useState<IAttribute[]>([]);
 	const [error, setError] = useState(null);
 	const [loading, setLoading] = useState(true);

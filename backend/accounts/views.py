@@ -130,7 +130,6 @@ class CreateUserAPI(APIView):
             return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_201_CREATED)
         return Response({'errorMessage': 'Role was not assigned'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 class UpdateUserAPI(APIView):
     """
     API view to update Keycloak user
@@ -483,5 +482,3 @@ class AvatarDownload(APIView):
             'transfer-encoding': 'chunked'
         }
         return Response(url.read(), content_type='binary/octet-stream')
-
-# endpoint="89.58.44.88:9001",

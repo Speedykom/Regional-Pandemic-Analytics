@@ -49,6 +49,7 @@ x-airflow-common:
     - AUTH_USER_REGISTRATION=${AIRFLOW_AUTH_USER_REGISTRATION}
     - AUTH_USER_REGISTRATION_ROLE=${AIRFLOW_AUTH_USER_REGISTRATION_ROLE}
     - AUTH_ROLES_SYNC_AT_LOGIN=${AIRFLOW_AUTH_ROLES_SYNC_AT_LOGIN}
+    - ENVIRONMENT=${AIRFLOW_ENVIRONMENT}
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
@@ -108,7 +109,7 @@ services:
       - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
       - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
       - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
-      - NEXT_HOP_UI=${FRONTEND_NEXT_HOP_UI}
+      - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
     ports:
       - "3000:3000"
     environment:
@@ -116,7 +117,7 @@ services:
       - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
       - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
       - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
-      - NEXT_HOP_UI=${FRONTEND_NEXT_HOP_UI}
+      - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
     restart: always
 
   # ========
@@ -144,9 +145,7 @@ services:
       - "8000:8000"
     volumes:
       - ./airflow/dags:/airflow/dags
-      - ./hop/pipelines/:/hop
-      - ./hop/pipelines/templates:/hop/templates
-      - ./hop/data-orch.list:/hop/data-orch.list
+      - ./hop:/hop
     environment:
       - DEVELOPMENT_MODE=${BACKEND_DEVELOPMENT_MODE}
       - KEYCLOAK_ADMIN_CLIENT_ID=${BACKEND_KEYCLOAK_ADMIN_CLIENT_ID}

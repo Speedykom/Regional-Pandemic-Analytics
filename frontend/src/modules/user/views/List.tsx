@@ -23,7 +23,7 @@ import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
 import getConfig from "next/config"
 import secureLocalStorage from "react-secure-storage";
-import { IRoles } from "@/modules/roles/interface";
+import { IRole } from "@/modules/roles/interface";
 const { publicRuntimeConfig } = getConfig()
 
 interface props {
@@ -59,7 +59,7 @@ export const UserList = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [code, setCode] = useState<string>("");
 	const [roles, setRoles] = useState([]);
-	const [userRoles, setUserRoles] = useState<Array<IRoles>>([]);
+	const [userRoles, setUserRoles] = useState<Array<IRole>>([]);
 	const [role, setRole] = useState<string>("");
 	const [roleLoading, setRoleLoading] = useState(true);
 	const [userRoleLoad, setUserRoleLoad] = useState(true);

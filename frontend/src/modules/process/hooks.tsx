@@ -138,18 +138,18 @@ const RunButton = ({ id }: { id: string }) => {
   );
 };
 
-export const useProcessChainList = ({ loadData, viewProcess }: Props) => {
+export const useProcessChainList = () => {
   const { data: data, isLoading: loading } = useFindAllQuery();
 
   const columns: ColumnsType<any> = [
-    {
-      dataIndex: "load",
-      key: "load",
-      render: (dag) => {
-        return <Button onClick={() => loadData(dag)}>Load Data</Button>;
-      },
-      width: 100,
-    },
+    // {
+    //   dataIndex: "load",
+    //   key: "load",
+    //   render: (dag) => {
+    //     return <Button onClick={() => loadData(dag)}>Load Data</Button>;
+    //   },
+    //   width: 100,
+    // },
     {
       title: "Dag",
       dataIndex: "dag_id",
