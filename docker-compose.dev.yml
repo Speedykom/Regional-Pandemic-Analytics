@@ -1,0 +1,50 @@
+version: "3.4"
+
+## This overrides frontend on the docker-compose.yml file when running run.local.sh, this is done so the frontend local container
+## can be updated in real time while editing frontend code, it only needs to be restarted when changing the env variables
+services:
+  # =======
+  # Nginx
+  # =======
+  nginx:
+    image: nginx:1.25.1-alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d/
+      - NGINX_FRONTEND_DOMAIN_NAME=${NGINX_FRONTEND_DOMAIN_NAME}
+      - NGINX_BACKEND_DOMAIN_NAME=${NGINX_BACKEND_DOMAIN_NAME}
+      - NGINX_KEYCLOAK_DOMAIN_NAME=${NGINX_KEYCLOAK_DOMAIN_NAME}
+      - NGINX_MINIO_DOMAIN_NAME=${NGINX_MINIO_DOMAIN_NAME}
+      - NGINX_CONSOLE_MINIO_DOMAIN_NAME=${NGINX_CONSOLE_MINIO_DOMAIN_NAME}
+      - NGINX_SUPERSET_DOMAIN_NAME=${NGINX_SUPERSET_DOMAIN_NAME}
+      - NGINX_AIRFLOW_DOMAIN_NAME=${NGINX_AIRFLOW_DOMAIN_NAME}
+      - NGINX_HOP_DOMAIN_NAME=${NGINX_HOP_DOMAIN_NAME}
+      - NGINX_DRUID_DOMAIN_NAME=${NGINX_DRUID_DOMAIN_NAME}
+      - NGINX_DRUID_COORDINATOR_DOMAIN_NAME=${NGINX_DRUID_COORDINATOR_DOMAIN_NAME}
+      - NGINX_UPSTREAM_FRONTEND=${NGINX_UPSTREAM_FRONTEND}
+      - NGINX_UPSTREAM_BACKEND=${NGINX_UPSTREAM_BACKEND}
+      - NGINX_UPSTREAM_AIRFLOW=${NGINX_UPSTREAM_AIRFLOW}
+      - NGINX_UPSTREAM_KEYCLOAK=${NGINX_UPSTREAM_KEYCLOAK}
+      - NGINX_UPSTREAM_MINIO=${NGINX_UPSTREAM_MINIO}
+      - NGINX_UPSTREAM_SUPERSET=${NGINX_UPSTREAM_SUPERSET}
+      - NGINX_UPSTREAM_HOP=${NGINX_UPSTREAM_HOP}
+      - NGINX_UPSTREAM_DRUID=${NGINX_UPSTREAM_DRUID}
+      - NGINX_UPSTREAM_DRUID_COORDINATOR=${NGINX_UPSTREAM_DRUID_COORDINATOR}
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/package-conf/:/etc/nginx/templates/package-conf/
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    #entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+
+

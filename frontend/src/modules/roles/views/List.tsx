@@ -3,17 +3,14 @@ import { Button, Form, Input, Modal } from "antd";
 import { useRoles } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { IRoles } from "../interface";
+import { IRole } from "../interface";
 import secureLocalStorage from "react-secure-storage";
 import { OpenNotification } from "@/common/utils/notify";
 import { PlusOutlined, DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
 import getConfig from 'next/config'
 import { useRouter } from "next/router";
+ 
 const { publicRuntimeConfig } = getConfig()
-
-interface props {
-	viewPro: () => void;
-}
 
 enum OPERATION_TYPES {
 	CREATE,
@@ -28,7 +25,7 @@ export const RoleList = () => {
 
 	const [loading, setLoading] = useState<boolean>(true);
 
-	const [data, setData] = useState<Array<IRoles>>([]);
+	const [data, setData] = useState<Array<IRole>>([]);
 
 	const [roleId, setRoleId] = useState<string>();
 
