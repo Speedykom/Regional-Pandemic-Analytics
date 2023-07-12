@@ -33,7 +33,7 @@ export default function LoginForm() {
         refreshToken: res.data.refresh_token,
       });
 
-      const role = await getUserRole(payload?.realm_access?.roles);
+      const role = await getUserRole(payload?.realm_access?.roles, res.data.access_token);
       secureLocalStorage.setItem("user_role", role);
 
       // @ts-ignore
