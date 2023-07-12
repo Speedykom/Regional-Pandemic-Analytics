@@ -22,12 +22,12 @@ export const useRoles = ({ edit, view, del, refetch }: props) => {
 		const userRole: any = secureLocalStorage.getItem("user_role");
 		const permits = userRole?.attributes;
 
-		const deleteUser = async () => {
+		const deleteRole = async () => {
 			const tokens: any = secureLocalStorage.getItem("tokens") as object;
 			const accessToken =
 				tokens && "accessToken" in tokens ? tokens.accessToken : "";
 			await axios
-				.delete(`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/roles/${id}/delete`, {
+				.delete(`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/role/${id}`, {
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer ${accessToken}`,
@@ -78,7 +78,7 @@ export const useRoles = ({ edit, view, del, refetch }: props) => {
 								placement="left"
 								title={"Delete User"}
 								description={"Are you sure you want to delete this user"}
-								onConfirm={deleteUser}
+								onConfirm={deleteRole}
 								okText="Yes"
 								cancelText="No"
 								okType="link"
