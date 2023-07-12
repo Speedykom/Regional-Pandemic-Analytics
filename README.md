@@ -1,22 +1,28 @@
 # Regional-Pandemic-Analytics
+
 RePan: A regional pandemic analytics tool to collect, analyze, and report granular and aggregated data from multiple sources for informed decision-making.
 
 # What is RePan
+
 RePan is a state-of-the-art regional pandemic analytics tool that provides high-level insights into the pandemic situation across multiple countries. It allows decision-makers to monitor and manage the pandemic situation with a high level of granularity and aggregated data. The tool can analyze data from diverse sources, including hospital admission rates, mortality rates, test positivity rates, and vaccination rates.
 RePan's advanced data analysis algorithms enable decision-makers to identify trends and patterns in the pandemic situation across different countries. The tool provides insights into the effectiveness of existing measures and identifies areas that require immediate attention.
 RePan's user-friendly interface enables decision-makers to access high-level insights and also view detailed and granular data for each country. This level of granularity empowers decision-makers to make informed decisions that are specific to the situation in each country.
 RePan is a game-changer, providing decision-makers with a reliable and efficient way to monitor and manage the pandemic situation at a regional level while still allowing for a granular view of the data within each country.
 
 # Makefile
+
 The Makefile contains alias for basic commands
+
 - `make start-local` to start the cluster locally
-- `make start-local service=nginx` to restart a specific service (in this example nginx) 
+- `make start-local service=nginx` to restart a specific service (in this example nginx)
 - `make start` to start the cluster in dev server
-- `make start service=nginx` to restart a specific service (in this example nginx) 
+- `make start service=nginx` to restart a specific service (in this example nginx)
 - `make destroy` to remove volumes
 
 # Local development
+
 To run the cluster, on local environment:
+
 1. run `sudo ./add-local-hosts
 ` to add containers domain name to your /etc/hosts
 2. generate ssl self-signed certificates with `./gen-cert`
@@ -39,10 +45,10 @@ To run the cluster, on local environment:
 
 - [analytics2.igad-health.eu](https://analytics2.igad-health.eu) for Superset
 - [coordinator2.igad-health.eu](https://coordinator2.igad-health.eu) for Druid API
-- [db2.igad-health.eu](https://db2.igad-health.eu) for Druid 
-- [integration2.igad-health.eu](https://integration2.igad-health.eu) for Hop 
+- [db2.igad-health.eu](https://db2.igad-health.eu) for Druid
+- [integration2.igad-health.eu](https://integration2.igad-health.eu) for Hop
 - [auth2.igad-health.eu](https://auth2.igad-health.eu) for Keycloak
-- [orchestration2.igad-health.eu](https://orchestration2.igad-health.eu) for Airflow 
+- [orchestration2.igad-health.eu](https://orchestration2.igad-health.eu) for Airflow
 - [cache2.igad-health.eu](https://cache2.igad-health.eu) for Minio
 - [data2.igad-health.eu](https://data2.igad-health.eu) for Backend
 - [home2.igad-health.eu](https://home2.igad-health.eu) for Frontend
