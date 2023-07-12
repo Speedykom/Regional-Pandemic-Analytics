@@ -13,6 +13,7 @@ services:
       - "80:80"
       - "443:443"
     environment:
+      - NGINX_ENV=${NGINX_ENV}
       - NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d/
       - NGINX_FRONTEND_DOMAIN_NAME=${NGINX_FRONTEND_DOMAIN_NAME}
       - NGINX_BACKEND_DOMAIN_NAME=${NGINX_BACKEND_DOMAIN_NAME}
@@ -39,7 +40,7 @@ services:
       - NGINX_UPSTREAM_CONSOLE_OPENHIM=${NGINX_UPSTREAM_CONSOLE_OPENHIM}
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/package-conf/:/etc/nginx/templates/package-conf/
+      - ./nginx/package-conf-${NGINX_ENV}/:/etc/nginx/templates/package-conf/
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
 
