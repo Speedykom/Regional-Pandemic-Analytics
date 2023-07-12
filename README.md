@@ -25,7 +25,7 @@ To run the cluster, on local environment:
 
 1. run `sudo ./add-local-hosts
 ` to add containers domain name to your /etc/hosts
-2. generate ssl self-signed certificates with `./gen-cert`
+2. generate ssl self-signed certificates with `./gen-local-certs`
 3. run `make start-local` to start the cluster
 4. open keycloak interface and add a new user
 
@@ -39,7 +39,11 @@ To run the cluster, on local environment:
 - [airflow.igad.local](https://airflow.igad.local "airflow.igad.local") for airflow web console
 - [hop.igad.local](https://hop.igad.local "hop.igad.local") for hop web console
 - [druid.igad.local](https://druid.igad.local "druid.igad.local") for keycloak web console
-- [console.minio.igad.local](https://druid.igad.local "druid.igad.local") for minio web console
+- [coordinator.igad.local](https://coordinator.igad.local "coordinator.igad.local") for druid coordinator
+- [console.minio.igad.local](https://minio.igad.local "minio.igad.local") for minio web console
+- [minio.igad.local](https://minio.igad.local "minio.igad.local") for minio API
+- [console.openhim.igad.local](https://console.openhim.igad.local "console.openhim.igad.local") for openhim web console
+- [openhim.igad.local](https://openhim.igad.local "openhim.igad.local") for openhim API
 
 ### Dev Server domains
 
