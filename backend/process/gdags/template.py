@@ -9,6 +9,8 @@ import requests
 import os
 
 ENVIRONMENT = os.getenv("ENVIRONMENT")
+DB_URL = os.getenv("DB_URL")
+druid_url = "{}/druid/indexer/v1/task".format(DB_URL)
 
 pipelines = "{}/hop/pipelines".format(ENVIRONMENT)
 storage = "{}/storage".format(ENVIRONMENT)
@@ -28,7 +30,7 @@ default_args = {
 
 # Ingest to druid
 def ingest():
-    url = 'https://coordinator2.igad-health.eu/druid/indexer/v1/task'
+    url = druid_url,
     payload = {
       "type": "index_parallel",
       "spec": {
@@ -56,43 +58,7 @@ def ingest():
             "format": "millis"
           },
           "dimensionsSpec": {
-            "dimensions": [
-              "FullyVaccinated",
-              {
-                "type": "long",
-                "name": "NewDeaths"
-              },
-              "STATE",
-              "Latitude",
-              {
-                "type": "long",
-                "name": "NewRecoveries"
-              },
-              {
-                "type": "long",
-                "name": "TotalCases"
-              },
-              "Code",
-              "Longitude",
-              "TotalDoses",
-              {
-                "type": "long",
-                "name": "TotalRecoveries"
-              },
-              "Population",
-              {
-                "type": "long",
-                "name": "NewCases"
-              },
-              {
-                "type": "long",
-                "name": "TotalDeaths"
-              },
-              {
-                "type": "long",
-                "name": "DailyTests"
-              }
-            ]
+            "dimensions": []
           },
           "granularitySpec": {
             "queryGranularity": "none",

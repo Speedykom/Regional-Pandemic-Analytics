@@ -48,6 +48,7 @@ x-airflow-common: &airflow
     - AUTH_USER_REGISTRATION_ROLE=${AIRFLOW_AUTH_USER_REGISTRATION_ROLE}
     - AUTH_ROLES_SYNC_AT_LOGIN=${AIRFLOW_AUTH_ROLES_SYNC_AT_LOGIN}
     - ENVIRONMENT=${AIRFLOW_ENVIRONMENT}
+    - DB_URL=${AIRFLOW_DB_URL}
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
