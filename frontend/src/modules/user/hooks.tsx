@@ -178,7 +178,15 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 			),
 			className: "text-gray-700",
 			ellipsis: true,
-			width: 250,
+			width: 200,
+		},
+		{
+			title: "Username",
+			key: "username",
+			dataIndex: "username",
+			render: (username) => username,
+			className: "text-gray-700 font-sans",
+			ellipsis: true,
 		},
 		{
 			title: "Email",
@@ -188,14 +196,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
 			width: 350,
-		},
-		{
-			title: "Username",
-			key: "username",
-			dataIndex: "username",
-			render: (username) => username,
-			className: "text-gray-700 font-sans",
-			ellipsis: true,
+			responsive: ["lg"]
 		},
 		{
 			title: "Phone",
@@ -209,6 +210,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 					: "",
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
+			responsive: ["lg"]
 		},
 		{
 			title: "Gender",
@@ -218,6 +220,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 				attributes?.gender ? attributes?.gender[0] : "None",
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
+			responsive: ["md"]
 		},
 		{
 			title: "Country",
@@ -227,6 +230,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 				attributes?.country ? attributes?.country[0] : "None",
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
+			responsive: ["lg"]
 		},
 		{
 			title: "Email Verified",
@@ -255,6 +259,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 			),
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
+			responsive: ["lg"]
 		},
 		{
 			title: "Enabled",
@@ -283,6 +288,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 			),
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
+			responsive: ["lg"]
 		},
 		{
 			align: "right",

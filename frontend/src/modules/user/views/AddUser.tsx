@@ -155,7 +155,7 @@ export const AddUser123 = ({ openDrawer, closeDrawer, refetch }: props) => {
 			destroyOnClose={true}
 			open={openDrawer}
 			onClose={closeDrawer}
-			width={700}
+			width={500}
 			footer={
 				<div className="flex justify-end space-x-3 py-3 px-4">
 					<Form form={form} onFinish={onFinish}>
