@@ -114,6 +114,7 @@ export const useRoles = ({ edit, view, del, refetch }: props) => {
 			render: (description) => description,
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
+			responsive: ["md"]
 		},
 		{
 			title: "Composite",
@@ -134,6 +135,7 @@ export const useRoles = ({ edit, view, del, refetch }: props) => {
 			),
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
+			responsive: ["lg"]
 		},
 		{
 			title: "Client Role",
@@ -154,6 +156,7 @@ export const useRoles = ({ edit, view, del, refetch }: props) => {
 			),
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
+			responsive: ["lg"]
 		},
 		{
 			align: "right",

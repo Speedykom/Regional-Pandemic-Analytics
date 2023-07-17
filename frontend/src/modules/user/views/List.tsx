@@ -215,7 +215,7 @@ export const UserList = () => {
 	return (
 		<div className="">
 			<nav>
-				<div className="flex justify-between items-center">
+				<div className="flex justify-between space-x-8">
 					<div>
 						<h2 className="text-3xl">App Accounts</h2>
 						<p className="my-2 text-gray-600">
