@@ -216,6 +216,13 @@ class ListUsersAPI(APIView):
     """
     API view to get all users
     """
+    keycloak_scopes = {	
+        'GET': 'user:read',	
+        'POST': 'user:create',	
+        'PUT': 'user:update',	
+        'DELETE': 'user:delete'	
+    } 
+     
     permission_classes = [AllowAny, ]
 
     def get(self, request, *args, **kwargs):

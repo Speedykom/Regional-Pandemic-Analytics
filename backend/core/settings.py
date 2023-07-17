@@ -52,13 +52,12 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django-keycloak-auth.middleware.KeycloakMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'django-keycloak-auth.middleware.KeycloakMiddleware',
+    'core.middleware.KeycloakMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -171,14 +170,25 @@ CSRF_TRUSTED_ORIGINS = [
     'https://data2.igad-health.eu',
 ]
 
-KEYCLOAK_EXEMPT_URIS = []
-
+KEYCLOAK_BEARER_AUTHENTICATION_EXEMPT_PATHS = [
+    'api/auth',
+]
+CONFIG_DIR = os.path.join(os.path.dirname(__file__),os.pardir)
+KEYCLOAK_CLIENT_PUBLIC_KEY = f"""-----BEGIN PUBLIC KEY-----
+{os.getenv("APP_PUBLIC_KEY")}
+-----END PUBLIC KEY-----"""
 KEYCLOAK_CONFIG = {
-    'KEYCLOAK_SERVER_URL': os.getenv("KEYCLOAK_SERVER_URL"),
     'KEYCLOAK_REALM': os.getenv("KEYCLOAK_REALM"),
     'KEYCLOAK_CLIENT_ID': os.getenv("CLIENT_ID"),
-    'KEYCLOAK_CLIENT_SECRET_KEY': os.getenv("CLIENT_SECRET")
+    'KEYCLOAK_DEFAULT_ACCESS': 'ALLOW', # DENY or ALLOW
+    'KEYCLOAK_AUTHORIZATION_CONFIG': os.path.join(CONFIG_DIR , 'authorization-config.json'),
+    'KEYCLOAK_METHOD_VALIDATE_TOKEN': 'DECODE',
+    'KEYCLOAK_SERVER_URL': os.getenv("KEYCLOAK_SERVER_URL"),
+    'KEYCLOAK_CLIENT_SECRET_KEY': os.getenv("CLIENT_SECRET"),
+    'KEYCLOAK_CLIENT_PUBLIC_KEY': KEYCLOAK_CLIENT_PUBLIC_KEY, 
 }
+
+# KEYCLOAK_EXEMPT_URIS = []
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
