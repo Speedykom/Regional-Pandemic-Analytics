@@ -4,6 +4,7 @@
 /hop/pipelines/watchDirLog.txt
 /hop/pipelines/watchRuns.txt
 
+/storage
 frontend/.env
 # backend/.env
 

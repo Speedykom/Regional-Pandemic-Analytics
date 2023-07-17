@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import React, { useState } from "react";
-import { Button, Modal, Card, Col, Row } from "antd";
+import { Button, Modal, Card, Col, Row, Tooltip } from "antd";
 import { useTemplatesQuery } from "../pipeline";
 
 type Props = {
@@ -95,27 +95,29 @@ const TemplateModal = ({ state, onSelect }: Props) => {
           <Row gutter={[16, 16]} className="my-3">
             {res?.data?.map((data: any, index: number) => (
               <Col key={index} span={8}>
-                <Card
-                  title={data?.name}
-                  bordered={true}
-                  headStyle={{ color: "#16a34a" }}
-                  hoverable
-                  size="small"
-                  onClick={() => handleCardClick(data)}
-                  className={`border-2 ${
-                    selected?.name === data?.name
-                      ? `border-green-800`
-                      : `border-gray-300 hover:border-green-800`
-                  } cursor-pointer`}
-                >
-                  <div className="flex justify-center p-3">
-                    <img
-                      className="h-16"
-                      src={getIcon(data?.name)}
-                      alt="icon"
-                    />
-                  </div>
-                </Card>
+                <Tooltip title={data?.name}>
+                  <Card
+                    title={data?.name}
+                    bordered={true}
+                    headStyle={{ color: "#16a34a" }}
+                    hoverable
+                    size="small"
+                    onClick={() => handleCardClick(data)}
+                    className={`border-2 ${
+                      selected?.name === data?.name
+                        ? `border-green-800`
+                        : `border-gray-300 hover:border-green-800`
+                    } cursor-pointer`}
+                  >
+                    <div className="flex justify-center p-3">
+                      <img
+                        className="h-16"
+                        src={getIcon(data?.name)}
+                        alt="icon"
+                      />
+                    </div>
+                  </Card>
+                </Tooltip>
               </Col>
             ))}
           </Row>
