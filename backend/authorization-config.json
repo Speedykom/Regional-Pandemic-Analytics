@@ -1,0 +1,115 @@
+{
+  "allowRemoteResourceManagement": true,
+  "policyEnforcementMode": "ENFORCING",
+  "resources": [
+    {
+      "name": "Default Resource",
+      "type": "urn:frontend:resources:default",
+      "ownerManagedAccess": false,
+      "attributes": {},
+      "_id": "2ab860cd-8784-45af-a37e-4c5900a1b522",
+      "uris": [
+        "/*"
+      ]
+    }
+  ],
+  "policies": [
+    {
+      "id": "1f56b76a-ec94-4bae-848a-09fc986ceac8",
+      "name": "Default Policy",
+      "description": "A policy that grants access only for users within this realm",
+      "type": "js",
+      "logic": "POSITIVE",
+      "decisionStrategy": "AFFIRMATIVE",
+      "config": {
+        "code": "// by default, grants any permission associated with this policy\n$evaluation.grant();\n"
+      }
+    },
+    {
+      "id": "acb315df-c306-4245-a406-40dc706a8d15",
+      "name": "admin-policy",
+      "description": "policy for all administrative users",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"Administrator\",\"required\":true}]"
+      }
+    },
+    {
+      "id": "92f7f862-af6d-47c7-8e95-467ae46c239c",
+      "name": "dho-policy",
+      "description": "policy for all dho users",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"District Health Officer (DHO)\",\"required\":true}]"
+      }
+    },
+    {
+      "id": "1ee48928-6176-48c4-99c2-ba6945bb77bc",
+      "name": "Default Permission",
+      "description": "A permission that applies to the default resource type",
+      "type": "resource",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "defaultResourceType": "urn:frontend:resources:default",
+        "applyPolicies": "[\"Default Policy\"]"
+      }
+    },
+    {
+      "id": "bd62d7be-8453-4ea2-9193-ca317d3373db",
+      "name": "readonly-access",
+      "description": "read only access of the scope",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"user:read\"]",
+        "applyPolicies": "[\"dho-policy\"]"
+      }
+    },
+    {
+      "id": "9c290d78-0637-4198-9a61-664449964cbc",
+      "name": "full-access",
+      "description": "full access grant to all scope based resources",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "defaultResourceType": "",
+        "applyPolicies": "[\"admin-policy\"]",
+        "scopes": "[\"user:read\",\"user:delete\",\"user:create\",\"user:update\"]"
+      }
+    }
+  ],
+  "scopes": [
+    {
+      "id": "a0fc0d9e-a391-4088-b425-e1a11aa536ed",
+      "name": "user:read",
+      "iconUri": "",
+      "displayName": "user:read"
+    },
+    {
+      "id": "bc1c7678-da66-49b8-9201-bc2be0620ba8",
+      "name": "user:create",
+      "iconUri": "",
+      "displayName": "user:create"
+    },
+    {
+      "id": "5011a104-1fa7-4a56-804d-36c2c09b6f8f",
+      "name": "user:update",
+      "iconUri": "",
+      "displayName": "user:update"
+    },
+    {
+      "id": "cbac4f61-6c6d-42b6-95c4-e4ab230a1f4f",
+      "name": "user:delete",
+      "iconUri": "",
+      "displayName": "user:delete"
+    }
+  ],
+  "decisionStrategy": "UNANIMOUS"
+}
