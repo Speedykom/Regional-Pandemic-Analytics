@@ -13,8 +13,8 @@ services:
       target: dev
     extra_hosts:
       - "host.docker.internal:host-gateway"
-      - "superset.igad.local:host-gateway"  
-      - "backend.igad.local:host-gateway"  
+      - "superset.igad.local:host-gateway"
+      - "backend.igad.local:host-gateway"
     volumes:
       - ./frontend/src/:/frontend/src
 
@@ -32,41 +32,6 @@ services:
         superset superset init
         FLASK_ENV=development flask run -p 8088 --with-threads --reload --debugger --host=0.0.0.0
 
-  # =======
-  # Nginx
-  # =======
-  nginx:
-    image: nginx:1.25.1-alpine
-    container_name: nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      - NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d/
-      - NGINX_FRONTEND_DOMAIN_NAME=${NGINX_FRONTEND_DOMAIN_NAME}
-      - NGINX_BACKEND_DOMAIN_NAME=${NGINX_BACKEND_DOMAIN_NAME}
-      - NGINX_KEYCLOAK_DOMAIN_NAME=${NGINX_KEYCLOAK_DOMAIN_NAME}
-      - NGINX_MINIO_DOMAIN_NAME=${NGINX_MINIO_DOMAIN_NAME}
-      - NGINX_CONSOLE_MINIO_DOMAIN_NAME=${NGINX_CONSOLE_MINIO_DOMAIN_NAME}
-      - NGINX_SUPERSET_DOMAIN_NAME=${NGINX_SUPERSET_DOMAIN_NAME}
-      - NGINX_AIRFLOW_DOMAIN_NAME=${NGINX_AIRFLOW_DOMAIN_NAME}
-      - NGINX_HOP_DOMAIN_NAME=${NGINX_HOP_DOMAIN_NAME}
-      - NGINX_DRUID_DOMAIN_NAME=${NGINX_DRUID_DOMAIN_NAME}
-      - NGINX_UPSTREAM_FRONTEND=${NGINX_UPSTREAM_FRONTEND}
-      - NGINX_UPSTREAM_BACKEND=${NGINX_UPSTREAM_BACKEND}
-      - NGINX_UPSTREAM_AIRFLOW=${NGINX_UPSTREAM_AIRFLOW}
-      - NGINX_UPSTREAM_KEYCLOAK=${NGINX_UPSTREAM_KEYCLOAK}
-      - NGINX_UPSTREAM_MINIO=${NGINX_UPSTREAM_MINIO}
-      - NGINX_UPSTREAM_SUPERSET=${NGINX_UPSTREAM_SUPERSET}
-      - NGINX_UPSTREAM_HOP=${NGINX_UPSTREAM_HOP}
-      - NGINX_UPSTREAM_DRUID=${NGINX_UPSTREAM_DRUID}
-    volumes:
-      - ./nginx/certificates/:/etc/nginx/certs/
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/package-conf/:/etc/nginx/templates/package-conf/
-    depends_on:
-      - airflow-webserver
-
   # =====
   #  Hop
   # =====
@@ -79,7 +44,7 @@ services:
   # =====
   #  Minio
   # =====
-  
+
   storage:
     container_name: storage
     extra_hosts:

@@ -22,7 +22,7 @@ else
 fi
 
 #Our services
-service_table="frontend backend airflow druid hop keycloak minio console-minio superset"
+service_table="frontend backend airflow druid hop keycloak minio console.minio superset openhim console.openhim coordinator"
 #Geneate certificates for each service
 for service in $service_table; do
 commonname=$service
