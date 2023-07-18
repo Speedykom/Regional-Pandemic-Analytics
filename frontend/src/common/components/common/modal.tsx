@@ -9,7 +9,7 @@ interface props {
 	footer?: ReactNode;
 }
 
-export const Modal = ({ title, openModal, onClose, body, footer }: props) => {
+export const IGADModal = ({ title, openModal, onClose, body, footer }: props) => {
 	return (
 		<>
 			{openModal ? (
