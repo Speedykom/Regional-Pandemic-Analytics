@@ -1,0 +1,81 @@
+{
+  "allowRemoteResourceManagement": true,
+  "policyEnforcementMode": "ENFORCING",
+  "resources": [],
+  "policies": [
+    {
+      "id": "ca8c869f-475d-43a1-8ad9-2dd090d3afc8",
+      "name": "admin-policy",
+      "description": "",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"repan-staging/admin\",\"required\":true}]"
+      }
+    },
+    {
+      "id": "3db1b794-be63-4b4b-925e-2883523e5845",
+      "name": "read-only-policy",
+      "description": "",
+      "type": "role",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "roles": "[{\"id\":\"repan-staging/user\",\"required\":true}]"
+      }
+    },
+    {
+      "id": "840bf064-b47c-4e81-8157-58382c8f6478",
+      "name": "Full Access",
+      "description": "",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "defaultResourceType": "",
+        "applyPolicies": "[\"admin-policy\"]",
+        "scopes": "[\"user:add\",\"user:update\",\"user:read\",\"user:delete\"]"
+      }
+    },
+    {
+      "id": "9bc0ad79-6d01-434a-97e0-1d94723fc9fc",
+      "name": "Read Only Access",
+      "description": "",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"user:read\"]",
+        "applyPolicies": "[\"read-only-policy\"]"
+      }
+    }
+  ],
+  "scopes": [
+    {
+      "id": "065d8768-8cec-412c-b679-75a13c3cac7f",
+      "name": "user:add",
+      "iconUri": "",
+      "displayName": "Add users"
+    },
+    {
+      "id": "39157187-e8d6-4b32-a476-68887d2f4dbb",
+      "name": "user:read",
+      "iconUri": "",
+      "displayName": "Read users"
+    },
+    {
+      "id": "ae9a0b8d-a0de-4bf7-a6e5-7ad509ad8c48",
+      "name": "user:update",
+      "iconUri": "",
+      "displayName": "Update User"
+    },
+    {
+      "id": "dfc894bb-f651-487e-8216-f9f5667696cd",
+      "name": "user:delete",
+      "iconUri": "",
+      "displayName": "Delete User"
+    }
+  ],
+  "decisionStrategy": "UNANIMOUS"
+}
