@@ -1,5 +1,4 @@
 import { ColumnsType } from "antd/es/table";
-import { IUser } from "./interface";
 import { Popconfirm, Tag } from "antd";
 import { FiEdit, FiEye, FiTrash } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
@@ -7,6 +6,7 @@ import { Action } from "@/common/components/common/action";
 import axios from "axios";
 import { OpenNotification } from "@/common/utils/notify";
 import getConfig from 'next/config'
+import { User } from "@modules/user/interface";
  
 const { publicRuntimeConfig } = getConfig()
 interface props {
@@ -105,7 +105,7 @@ export const useUsers = ({ edit, viewPro, refetch }: props) => {
 		);
 	};
 
-	const columns: ColumnsType<IUser> = [
+	const columns: ColumnsType<User> = [
 		{
 			// fixed: "left",
 			title: "Full Name",
