@@ -28,7 +28,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
       <div className="flex justify-center mt-6 mb-14">
         <picture>
           <img
-            className="w-32 h-auto"
+            className="w-28 md:32 lg:32 h-auto"
             src="/images/igad_logo.jpeg"
             alt="company logo"
           />
