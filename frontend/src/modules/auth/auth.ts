@@ -1,17 +1,12 @@
 // Need to use the React-specific entry point to import createApi
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import getConfig from "next/config";
+import { baseQuery } from "@/common/redux/api";
+import { createApi } from "@reduxjs/toolkit/query/react";
 import { Credentials, LoginParams } from "./interface";
-
-const { publicRuntimeConfig } = getConfig();
 
 // Define a service using a base URL and expected endpoints
 export const AuthApi = createApi({
   reducerPath: "AuthApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: publicRuntimeConfig.NEXT_PUBLIC_BASE_URL,
-    credentials: "include",
-  }),
+  baseQuery,
   endpoints: (builder) => ({
     login: builder.mutation<Credentials, LoginParams>({
       query: (body) => ({

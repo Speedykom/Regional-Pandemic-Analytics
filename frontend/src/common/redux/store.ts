@@ -5,8 +5,6 @@ import { pipelineApi } from "@/modules/pipeline/pipeline";
 import { LogoutApi } from "@/modules/auth/logout";
 import { UserApi } from "@/modules/user/user";
 
-console.log('>>>>>', UserApi)
-
 export const store = configureStore({
   reducer: {
     [processApi.reducerPath]: processApi.reducer,
