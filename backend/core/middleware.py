@@ -29,13 +29,13 @@ import json
 
 logger = logging.getLogger(__name__)
 
-class KeycloakMiddleware(MiddlewareMixin):
 
-    def __init__(self, get_response):
+class KeycloakHelper(object):
+
+    def __init__(self):
         """
         :param get_response:
         """
-
         self.config = settings.KEYCLOAK_CONFIG
 
         # Read configurations
@@ -62,10 +62,7 @@ class KeycloakMiddleware(MiddlewareMixin):
         # Read policies
         if self.keycloak_authorization_config:
             self.keycloak.load_authorization_config(self.keycloak_authorization_config)
-
-        # Django
-        self.get_response = get_response
-
+    
     @property
     def keycloak(self):
         return self._keycloak
@@ -137,6 +134,19 @@ class KeycloakMiddleware(MiddlewareMixin):
     @method_validate_token.setter
     def method_validate_token(self, value):
         self._method_validate_token = value
+
+
+class KeycloakMiddleware(MiddlewareMixin, KeycloakHelper):
+
+    def __init__(self, get_response):
+        """
+        :param get_response:
+        """
+        # Initialize Keycloak
+        KeycloakHelper.__init__(self)
+        
+        # Django
+        self.get_response = get_response
 
     def __call__(self, request):
         """

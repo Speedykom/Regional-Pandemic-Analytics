@@ -15,17 +15,6 @@
       }
     },
     {
-      "id": "3db1b794-be63-4b4b-925e-2883523e5845",
-      "name": "read-only-policy",
-      "description": "",
-      "type": "role",
-      "logic": "POSITIVE",
-      "decisionStrategy": "UNANIMOUS",
-      "config": {
-        "roles": "[{\"id\":\"repan-staging/user\",\"required\":true}]"
-      }
-    },
-    {
       "id": "840bf064-b47c-4e81-8157-58382c8f6478",
       "name": "Full Access",
       "description": "",
@@ -36,18 +25,6 @@
         "defaultResourceType": "",
         "applyPolicies": "[\"admin-policy\"]",
         "scopes": "[\"user:add\",\"user:update\",\"user:read\",\"user:delete\"]"
-      }
-    },
-    {
-      "id": "9bc0ad79-6d01-434a-97e0-1d94723fc9fc",
-      "name": "Read Only Access",
-      "description": "",
-      "type": "scope",
-      "logic": "POSITIVE",
-      "decisionStrategy": "UNANIMOUS",
-      "config": {
-        "scopes": "[\"user:read\"]",
-        "applyPolicies": "[\"read-only-policy\"]"
       }
     }
   ],
