@@ -19,17 +19,15 @@ import {
 import {
 	CheckIcon,
 	ExclamationCircleIcon,
-	EyeIcon,
-	PencilIcon,
-	TrashIcon,
 	WifiIcon,
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
-import router, { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { Loading } from "@/common/components/Loading";
 const { publicRuntimeConfig } = getConfig();
 import MediaQuery from "react-responsive";
-import { UserListMobile } from "./UserMobile";
+import { FiDelete, FiEdit, FiEye } from "react-icons/fi";
+import { DataLoading } from "@/common/components/common/data-loading";
 
 export const UserList = () => {
 	const [open, setOpen] = useState<boolean>(false);
@@ -79,16 +77,13 @@ export const UserList = () => {
 					</p>
 				</div>
 			</nav>
-			<MediaQuery maxWidth={1224}>
-				<UserListMobile loading={loading} data={data} />
-			</MediaQuery>
-			<MediaQuery minWidth={1824}>
-				<div>
-					<Card>
-						<Table className="mt-5">
-							<TableHead>
-								<TableRow>
-									<TableHeaderCell>Full Name</TableHeaderCell>
+			<div>
+				<Card>
+					<Table className="mt-5">
+						<TableHead>
+							<TableRow>
+								<TableHeaderCell>Full Name</TableHeaderCell>
+								<MediaQuery minWidth={1824}>
 									<TableHeaderCell>Username</TableHeaderCell>
 									<TableHeaderCell>Email</TableHeaderCell>
 									<TableHeaderCell>Phone</TableHeaderCell>
@@ -96,31 +91,33 @@ export const UserList = () => {
 									<TableHeaderCell>Country</TableHeaderCell>
 									<TableHeaderCell>Email Verified</TableHeaderCell>
 									<TableHeaderCell>Status</TableHeaderCell>
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{data.map((item) => (
-									<TableRow key={item.id}>
-										<TableCell>
-											<div className="flex items-center pr-1">
-												<div>
-													<div className="w-10 h-10 mr-3 overflow-hidden rounded-full flex items-center justify-center border border-gray-300">
-														<img
-															src={
-																item?.attributes?.avatar &&
-																item?.attributes?.avatar[0] != ""
-																	? item?.attributes?.avatar[0]
-																	: "/avater.png"
-															}
-															className="w-full h-full"
-														/>
-													</div>
+								</MediaQuery>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							{data.map((item) => (
+								<TableRow key={item.id}>
+									<TableCell>
+										<div className="flex items-center pr-1">
+											<div>
+												<div className="w-10 h-10 mr-3 overflow-hidden rounded-full flex items-center justify-center border border-gray-300">
+													<img
+														src={
+															item?.attributes?.avatar &&
+															item?.attributes?.avatar[0] != ""
+																? item?.attributes?.avatar[0]
+																: "/avater.png"
+														}
+														className="w-full h-full"
+													/>
 												</div>
-												<Text className="font-sans">
-													{item.firstName} {item?.lastName}
-												</Text>
 											</div>
-										</TableCell>
+											<Text className="font-sans">
+												{item.firstName} {item?.lastName}
+											</Text>
+										</div>
+									</TableCell>
+									<MediaQuery minWidth={1824}>
 										<TableCell>
 											<Text>{item.username}</Text>
 										</TableCell>
@@ -190,31 +187,29 @@ export const UserList = () => {
 												</Badge>
 											)}{" "}
 										</TableCell>
-										<TableCell>
-											<Flex>
-												<Button
-													variant="primary"
-													icon={EyeIcon}
-													className="text-white"
-												/>
-												<Button
-													variant="secondary"
-													icon={PencilIcon}
-													className="text-green-500"
-												/>
-												<Button
-													icon={TrashIcon}
-													className="text-white bg-red-500"
-												/>
-											</Flex>
-										</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</Card>
-				</div>
-			</MediaQuery>
+									</MediaQuery>
+									<TableCell>
+										<Flex>
+											<Button variant="primary">
+												<FiEye />
+											</Button>
+											<Button
+												variant="secondary"
+												className="text-green-500 bg-gray-200"
+											>
+												<FiEdit />
+											</Button>
+											<Button className="text-white bg-red-500">
+												<FiDelete />
+											</Button>
+										</Flex>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</Card>
+			</div>
 			<button
 				onClick={() => router.push("/users/add")}
 				title="Add User"
