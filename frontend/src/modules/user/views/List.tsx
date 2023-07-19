@@ -1,81 +1,48 @@
-import { IGADTable } from "@/common/components/common/table";
-import {
-	DeleteColumnOutlined,
-	SaveOutlined,
-} from "@ant-design/icons";
-import {
-	Button,
-	Divider,
-	Form,
-	Input,
-	Modal,
-	Radio,
-	Select,
-	SelectProps,
-	Switch,
-} from "antd";
-import { useUsers } from "../hooks";
 import { IUser } from "../interface";
 import { useEffect, useState } from "react";
-import { AddUser123 } from "./AddUser";
 import axios from "axios";
-import { PreviewUser } from "./Preview";
-import { countries } from "@/common/utils/countries";
-import { getData } from "@/common/utils";
-import { OpenNotification } from "@/common/utils/notify";
-import getConfig from "next/config"
- 
-const { publicRuntimeConfig } = getConfig()
-
-interface props {
-	viewPro: () => void;
-}
-
-const genderOptions = [
-	{ label: "Male", value: "Male" },
-	{ label: "Female", value: "Female" },
-];
-
-const myCodeOptions: SelectProps["options"] = [];
-const countryOptions: SelectProps["options"] = [];
-
-countries.forEach((item, index) => {
-	myCodeOptions.push({
-		key: index,
-		value: item.code,
-		label: item.code,
-	});
-	countryOptions.push({
-		key: index,
-		value: item.name,
-		label: item.name,
-	});
-});
+import getConfig from "next/config";
+import secureLocalStorage from "react-secure-storage";
+import { IRole } from "@/modules/roles/interface";
+import {
+	Card,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeaderCell,
+	TableRow,
+	Title,
+	Text,
+	Badge as Badg,
+	Button,
+	Flex,
+} from "@tremor/react";
+import {
+	CheckIcon,
+	ExclamationCircleIcon,
+	EyeIcon,
+	PencilIcon,
+	TrashIcon,
+	WifiIcon,
+	XMarkIcon,
+} from "@heroicons/react/24/outline";
+import { FiMoreVertical } from "react-icons/fi";
+import { useRouter } from "next/router";
+const { publicRuntimeConfig } = getConfig();
 
 export const UserList = () => {
-	const [form] = Form.useForm();
-
 	const [open, setOpen] = useState<boolean>(false);
 	const [data, setData] = useState<Array<IUser>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [code, setCode] = useState<string>("");
 	const [roles, setRoles] = useState([]);
-	const [role, setRole] = useState<string>("")
-	const [roleLoading, setRoleLoading] = useState(true)
+	const [userRoles, setUserRoles] = useState<Array<IRole>>([]);
+	const [roleLoading, setRoleLoading] = useState(true);
+	const router = useRouter()
 
-	const [view, setView] = useState<boolean>(false);
-	const [userId, setUserId] = useState<string>();
-	const viewPro = (id: string) => {
-		setView(true);
-		setUserId(id);
-	};
-	const onCloseView = () => {
-		setView(false);
-	};
-
-	const onClose = () => {
-		setOpen(false);
-	};
+	const tokens: any = secureLocalStorage.getItem("tokens") as object;
+	const accessToken =
+		tokens && "accessToken" in tokens ? tokens.accessToken : "";
 
 	const fetchUsers = async () => {
 		try {
@@ -84,7 +51,8 @@ export const UserList = () => {
 			await axios
 				.get(url, {
 					headers: {
-						'Content-Type': 'application/json',
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${accessToken}`,
 					},
 				})
 				.then((res) => {
@@ -100,98 +68,21 @@ export const UserList = () => {
 		fetchUsers();
 	};
 
-	const [openModal, setOpenModal] = useState<boolean>(false);
-
-	const edit = (
-		id: string,
-		firstName: string,
-		lastName: string,
-		username: string,
-		email: string,
-		enabled: boolean,
-		code: string,
-		phone: string,
-		country: string,
-		gender: string,
-		avatar: string
-	) => {
-		setUserId(id);
-		setOpenModal(true);
-		form.setFieldValue("firstName", firstName);
-		form.setFieldValue("lastName", lastName);
-		form.setFieldValue("username", username);
-		form.setFieldValue("email", email);
-		form.setFieldValue("enabled", enabled);
-		form.setFieldValue("code", code);
-		form.setFieldValue("phone", phone);
-		form.setFieldValue("country", country);
-		form.setFieldValue("gender", gender);
-		setCode(code);
-	};
-
-	const handleCancel = () => {
-		setOpenModal(false);
-	};
-
-	const formItemLayout = {
-		labelCol: {
-			xs: { span: 24 },
-			sm: { span: 8 },
-		},
-		wrapperCol: {
-			xs: { span: 24 },
-			sm: { span: 16 },
-		},
-	};
-
-	const onFinish = async (values: any) => {
-		values["code"] = code;
-		values["role"] = JSON.parse(values["role"])
-		await axios
-			.put(
-				`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${userId}/update`,
-				values,
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			)
-			.then((res) => {
-				OpenNotification(res?.data?.message, "topRight", "success");
-				setOpenModal(false);
-				refetch();
-				form.resetFields();
-			})
-			.catch((err) => {
-				OpenNotification(err.response?.data?.error, "topRight", "error");
-			});
-	};
-
-	const selectBefore = (
-		<Select
-			size="large"
-			value={code}
-			onChange={setCode}
-			showSearch
-			placeholder={!code && "+232"}
-			options={myCodeOptions}
-		/>
-	);
-
 	const fetchRoles = async () => {
 		try {
-			setRoleLoading(true)
+			setRoleLoading(true);
 			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/role`;
-			await axios.get(url, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}).then((res) => {
-				setRoleLoading(false)
-				setRoles(res?.data);
-			})
-			
+			await axios
+				.get(url, {
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${accessToken}`,
+					},
+				})
+				.then((res) => {
+					setRoleLoading(false);
+					setRoles(res?.data);
+				});
 		} catch (error) {
 			console.error("Error:", error);
 		}
@@ -200,260 +91,103 @@ export const UserList = () => {
 	useEffect(() => {
 		fetchRoles();
 		fetchUsers();
-	}, [])
+	}, []);
 
-	const { columns } = useUsers({ edit, viewPro, refetch });
 	return (
 		<div className="">
-			<nav>
-				<div className="flex justify-between items-center">
-					<div>
-						<h2 className="text-3xl">App Accounts</h2>
-						<p className="my-2 text-gray-600">
-							View and manage settings related to app users.
-						</p>
-					</div>
-					<div>
-						<Button
-							type="primary"
-							size="large"
-							onClick={(e) => {
-								e.preventDefault();
-								setOpen(true);
-							}}
-						>
-							New User
-						</Button>
-					</div>
+			<nav className="mb-5">
+				<div>
+					<h2 className="text-3xl">App Accounts</h2>
+					<p className="my-2 text-gray-600">
+						View and manage settings related to app users.
+					</p>
 				</div>
 			</nav>
-			<section className="mt-5">
-				<div className="py-2">
-					<IGADTable
-						key={"id"}
-						loading={loading}
-						rows={data}
-						columns={columns}
-					/>
+			<div className="container mb-5">
+				<div className="flex flex-wrap">
+					{data.map((item, index) => (
+						<div className="lg:w-1/3 lg:p-2 md:py-2 md:w-full w-full">
+							<Card>
+								<div className="flex space-x-4">
+									<div className="h-12 w-12 mr-2 overflow-hidden rounded-full flex items-center justify-center border border-gray-300">
+										<img
+											src={
+												item?.attributes?.avatar &&
+												item?.attributes?.avatar[0] != ""
+													? item?.attributes?.avatar[0]
+													: "/avater.png"
+											}
+											className="w-full h-full"
+										/>
+									</div>
+									<div className="flex-1 space-y-4 py-1">
+										<div className="h-4 rounded w-3/4 flex space-x-2">
+											<Text className="text-lg font-sans">
+												{item.firstName} {item?.lastName}
+											</Text>
+											<Text className="text-lg font-sans">
+												({item.username})
+											</Text>
+										</div>
+										<div className="space-y-2">
+											<div className="h-4 rounded">
+												<Text className="font-sans">{item.email}</Text>
+											</div>
+											<div className="h-4 rounded w-5/6 flex space-x-2">
+												<Text className="font-sans">
+													{item.attributes?.country
+														? item.attributes?.country[0]
+														: ""}
+												</Text>
+												<Text className="font-sans">
+													-{" "}
+													{item.attributes?.gender
+														? item.attributes?.gender[0]
+														: ""}
+												</Text>
+											</div>
+										</div>
+										<div className="space-y-2">
+											<div className="h-4 rounded w-5/6 flex space-x-2">
+												<Text className="font-sans">
+												{item.attributes?.phone ? `${item.attributes?.code ? item.attributes?.code[0] : ''}${item.attributes?.phone[0]}` : ''}
+												</Text>
+												<Text className="font-sans">
+													-{" "}
+													{item.enabled ? <Badg>Active</Badg> : <Badg color="slate">Inactive</Badg>}
+												</Text>
+											</div>
+										</div>
+									</div>
+									<div>
+										<button>
+											<FiMoreVertical className="text-xl" />
+										</button>
+									</div>
+								</div>
+							</Card>
+						</div>
+					))}
 				</div>
-			</section>
-			<div>
-				<AddUser123
-					openDrawer={open}
-					closeDrawer={onClose}
-					refetch={fetchUsers}
-				/>
 			</div>
-			<div>
-				{view && userId && (
-					<PreviewUser
-						openDrawer={view}
-						closeDrawer={onCloseView}
-						userId={userId}
-					/>
-				)}
-			</div>
-			<Modal
-				open={openModal}
-				title={"Update Account"}
-				onCancel={handleCancel}
-				footer={
-					<Form form={form} onFinish={onFinish}>
-						<Form.Item>
-							<div className="flex space-x-2 justify-end">
-								<Button
-									className="focus:outline-none px-6 py-2 text-gray-700 font-medium flex items-center"
-									style={{
-										backgroundColor: "#48328526",
-										border: "1px solid #48328526",
-									}}
-									type="primary"
-									size="large"
-									icon={<DeleteColumnOutlined />}
-									onClick={handleCancel}
-								>
-									Cancel
-								</Button>
-								<Button
-									type="primary"
-									className="flex items-center"
-									icon={<SaveOutlined />}
-									style={{
-										backgroundColor: "#087757",
-										border: "1px solid #e65e01",
-									}}
-									htmlType="submit"
-									size="large"
-								>
-									Save Changes
-								</Button>
-							</div>
-						</Form.Item>
-					</Form>
-				}
+			<button
+				onClick={() => router.push("/users/add")}
+				title="Add User"
+				className="fixed z-90 bottom-10 right-8 w-20 h-20 bg-prim rounded-full drop-shadow-lg flex justify-center items-center text-white text-4xl hover:bg-prim hover:drop-shadow-2xl hover:animate-bounce duration-300"
 			>
-				<div className="mt-8">
-					<Form
-						{...formItemLayout}
-						form={form}
-						onFinish={onFinish}
-						scrollToFirstError
-						size="large"
-						className="w-full"
-						labelAlign="left"
-					>
-						<Form.Item
-							name="firstName"
-							label="Given Names"
-							className="w-full"
-							rules={[
-								{
-									required: true,
-									message: "Please input your given names",
-								},
-							]}
-						>
-							<Input className="w-full" placeholder="John" />
-						</Form.Item>
-						<Form.Item
-							name="lastName"
-							label="Family Name"
-							rules={[
-								{
-									required: true,
-									message: "Please input your family name",
-								},
-							]}
-						>
-							<Input placeholder="Doe" />
-						</Form.Item>
-						<Form.Item
-							name="email"
-							label="E-mail"
-							rules={[
-								{
-									type: "email",
-									message: "The input is not valid E-mail!",
-								},
-								{
-									required: true,
-									message: "Please input your E-mail!",
-								},
-							]}
-						>
-							<Input className="w-full" placeholder="john.doe@mail.com" />
-						</Form.Item>
-						<Form.Item
-							name="username"
-							label="Username"
-							rules={[
-								{
-									required: true,
-									message: "Please input your username",
-								},
-							]}
-						>
-							<Input disabled />
-						</Form.Item>
-						<Form.Item
-							name="phone"
-							label="Phone"
-							rules={[
-								{
-									required: true,
-									validator(rule, value, callback) {
-										if (value === "") {
-											callback("Please input your phone number");
-										} else if (!code) {
-											callback("Please select country code");
-										} else {
-											callback();
-										}
-									},
-								},
-							]}
-						>
-							<Input
-								type="number"
-								addonBefore={selectBefore}
-								placeholder="76293389"
-							/>
-						</Form.Item>
-						<Form.Item
-							name="country"
-							label="Country"
-							rules={[
-								{
-									required: true,
-									message: "Please select your country",
-								},
-							]}
-						>
-							<Select
-								showSearch
-								placeholder="select country"
-								size="large"
-								className="h-10 w-full mt-1 bg-gray-50"
-								options={countryOptions}
-							/>
-						</Form.Item>
-						<Form.Item
-							name={"gender"}
-							label="Gender"
-							rules={[
-								{
-									required: true,
-									message: "Please select gender",
-								},
-							]}
-						>
-							<Radio.Group
-								options={genderOptions}
-								className="h-10 mt-1 w-full"
-								optionType="button"
-								buttonStyle="solid"
-							/>
-						</Form.Item>
-						<Form.Item
-							name="enabled"
-							label="Enable"
-							valuePropName="checked"
-							tooltip="Toggle to enable or disable this user"
-						>
-							<Switch style={{ backgroundColor: "#8c8c8c" }} />
-						</Form.Item>
-						<Form.Item
-							name={"role"}
-							label="Role"
-							rules={[
-								{
-									required: true,
-									message: "Please select role",
-								},
-							]}
-						>
-							<Select
-								size="large"
-								value={role}
-								onChange={setRole}
-								showSearch
-								loading={roleLoading}
-								placeholder={"Select role"}
-								options={roles?.map((val: any, i: number) => {
-									return (
-										{
-											key: i,
-											value: JSON.stringify({ id: val?.id, name: val?.name }),
-											label: val?.name
-										}
-									)
-								})}
-							/>
-						</Form.Item>
-					</Form>
-					<Divider dashed={true} style={{ border: "1px solid gray" }} />
-				</div>
-			</Modal>
+				<svg
+					viewBox="0 0 20 20"
+					enable-background="new 0 0 20 20"
+					className="w-6 h-6 inline-block"
+				>
+					<path
+						fill="#FFFFFF"
+						d="M16,10c0,0.553-0.048,1-0.601,1H11v4.399C11,15.951,10.553,16,10,16c-0.553,0-1-0.049-1-0.601V11H4.601
+                                    C4.049,11,4,10.553,4,10c0-0.553,0.049-1,0.601-1H9V4.601C9,4.048,9.447,4,10,4c0.553,0,1,0.048,1,0.601V9h4.399
+                                    C15.952,9,16,9.447,16,10z"
+					/>
+				</svg>
+			</button>
 		</div>
 	);
 };
