@@ -25,7 +25,6 @@ from .models import *
 from utils.generators import get_random_secret
 from utils.keycloak_auth import keycloak_admin_login, role_assign
 
-
 def homepage():
     return HttpResponse('<h2 style="text-align:center">Welcome to IGAD API Page</h2>')
 
@@ -310,127 +309,6 @@ class UserRolesView(APIView):
             return Response(response.reason, status=response.status_code)
 
         return Response({'message': 'Roles has been assigned successfully'}, status=status.HTTP_200_OK)
-
-# @todo : not used, should delete ?
-class ResetPasswordRequestAPI(APIView):
-    """
-    API view to reset users password
-    """
-    permission_classes = [AllowAny, ]
-
-    def post(self, request, **kwargs):
-        # Login to admin
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"Bearer {admin_login['data']['access_token']}",
-            'Content-Type': "application/json"
-        }
-
-        request_body = {
-            "email": request.data.get("email", None)
-        }
-
-        checkUser = requests.get(
-            f"{APP_USER_BASE_URL}?email={request_body['email']}", headers=headers)
-        if checkUser.status_code != 200:
-            return Response(checkUser.reason, status=checkUser.status_code)
-
-        users = checkUser.json()
-
-        if len(users) == 0:
-            return Response({'errorMessage': 'Account not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        user = users[0]
-
-        payload = {
-            "id": user["id"],
-            "name": user["firstName"],
-            "email": user["email"],
-            "exp": datetime.utcnow() + timedelta(hours=5),
-            "secret": APP_SECRET_KEY,
-            "algorithm": 'HS256'
-        }
-
-        token = jwt.encode(payload, APP_SECRET_KEY, algorithm='HS256')
-        redirectUri = f"{REST_REDIRECT_URI}?tok={token}"
-
-        SendMail("IGAD Reset Password", payload, redirectUri)
-
-        return Response({'message': 'Reset password link has been sent to your email'}, status=status.HTTP_200_OK)
-
-# @todo : not used, should delete ?
-class VerifyResetTokenAPI(APIView):
-    """
-    API view to verify reset password token
-    """
-    permission_classes = [AllowAny,]
-
-    def post(self, request, *args, **kwargs):
-        form_data = {
-            "token": request.data.get("token", None),
-        }
-
-        try:
-            decode = jwt.decode(
-                form_data["token"], APP_SECRET_KEY, algorithms=['HS256'])
-            return Response(decode, status=status.HTTP_200_OK)
-        except jwt.ExpiredSignatureError:
-            return Response({'errorMessage': 'Reset password token expired'}, status=status.HTTP_401_UNAUTHORIZED)
-        except jwt.InvalidTokenError:
-            return Response({'errorMessage': 'Token provided is invalid'}, status=status.HTTP_401_UNAUTHORIZED)
-
-# @todo : not used, should delete ?
-class UpdateProfileAPI(APIView):
-    """
-    API view to change Keycloak user password
-    """
-    permission_classes = [AllowAny,]
-
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'newPassword': openapi.Schema(type=openapi.TYPE_STRING),
-            'confirmPassword': openapi.Schema(type=openapi.TYPE_STRING),
-            'userId': openapi.Schema(type=openapi.TYPE_STRING),
-        }
-    ))
-    def put(self, request, *args, **kwargs):
-        form_data = {
-            "newPassword": request.data.get("newPassword", None),
-            "confirmPassword": request.data.get("lastName", None),
-            "userId": request.data.get("userId", None),
-        }
-
-        # Login to admin
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
-            'Content-Type': "application/json",
-            'cache-control': "no-cache"
-        }
-
-        credentials = {
-            "type": "password",
-            "value": form_data["newPassword"],
-            "temporary": False
-        }
-
-        res = requests.put(
-            f"{APP_USER_BASE_URL}/{form_data['userId']}/reset-password", json=credentials, headers=headers)
-
-        if res.status_code == 200:
-            return Response({'message': 'Password created successfully'}, status=status.HTTP_200_OK)
-
-        return Response({'errorMessage': 'Error changing password'}, status=status.HTTP_401_UNAUTHORIZED)
-
 
 class UserAvatarView(APIView):
     """
