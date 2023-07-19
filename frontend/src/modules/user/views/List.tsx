@@ -23,14 +23,11 @@ import {
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
-import { Loading } from "@/common/components/Loading";
 const { publicRuntimeConfig } = getConfig();
 import MediaQuery from "react-responsive";
 import { FiDelete, FiEdit, FiEye } from "react-icons/fi";
-import { DataLoading } from "@/common/components/common/data-loading";
 
 export const UserList = () => {
-	const [open, setOpen] = useState<boolean>(false);
 	const [data, setData] = useState<Array<IUser>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const router = useRouter();
