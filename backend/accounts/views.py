@@ -4,8 +4,6 @@ import json
 import os
 import jwt
 from django.http import HttpResponse
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -18,7 +16,7 @@ from utils.filename import gen_filename
 from utils.env_configs import (
     APP_USER_BASE_URL, APP_SECRET_KEY, REST_REDIRECT_URI)
 
-from utils.minio import upload_file_to_minio, download_file, get_download_url
+from utils.minio import upload_file_to_minio, download_file
 from django.utils.datastructures import MultiValueDictKeyError
 
 from .serializers import *
@@ -27,17 +25,38 @@ from .models import *
 from utils.generators import get_random_secret
 from utils.keycloak_auth import keycloak_admin_login, role_assign
 
-
-def homepage(request):
-    print(os.getenv('CLIENT_ID'))
+def homepage():
     return HttpResponse('<h2 style="text-align:center">Welcome to IGAD API Page</h2>')
 
-class CreateUserAPI(APIView):
+class UserListView(APIView):
     """
-    API view to create Keycloak user
+    View class for listing all, and creating a new user
     """
-    permission_classes = [AllowAny,]
+    keycloak_scopes = {
+        'GET': 'user:read',
+        'POST': 'user:add'
+    }
+    def get(self, request, *args, **kwargs):
+        # Login to admin
+        admin_login = keycloak_admin_login()
 
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
+            'Content-Type': "application/json",
+            'cache-control': "no-cache"
+        }
+
+        response = requests.get(f"{APP_USER_BASE_URL}", headers=headers)
+
+        if not response.ok:
+            return Response(response.json(), status=response.status_code)
+
+        users = response.json()
+        return Response(users, status=status.HTTP_200_OK)
+    
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
@@ -91,7 +110,7 @@ class CreateUserAPI(APIView):
         res = requests.post(f"{APP_USER_BASE_URL}",
                             json=form_data, headers=headers)
 
-        if res.status_code != 201:
+        if not res.ok:
             return Response(res.reason, status=res.status_code)
 
         user = {
@@ -111,12 +130,36 @@ class CreateUserAPI(APIView):
         return Response({'errorMessage': 'Role was not assigned'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class UpdateUserAPI(APIView):
+class UserDetailView(APIView):
     """
-    API view to update Keycloak user
+    View class for listing, updating and deleting a single post
     """
-    permission_classes = [AllowAny,]
+    keycloak_scopes = {
+        'GET': 'user:read',
+        'PUT': 'user:update',
+        'DELETE': 'user:delete'
+    }
+    def get(self, request, **kwargs):
+        # Login to admin
+        admin_login = keycloak_admin_login()
 
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
+            'Content-Type': "application/json"
+        }
+
+        response = requests.get(
+            url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
+
+        if not response.ok:
+            return Response(response.reason, status=response.status_code)
+
+        users = response.json()
+        return Response(users, status=status.HTTP_200_OK)
+    
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
@@ -159,7 +202,7 @@ class UpdateUserAPI(APIView):
         checkUser = requests.get(
             url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
 
-        if checkUser.status_code != 200:
+        if not checkUser.ok:
             return Response({'errorMessage': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         user = checkUser.json()
@@ -176,75 +219,13 @@ class UpdateUserAPI(APIView):
         res = requests.put(
             f"{APP_USER_BASE_URL}/{kwargs['id']}", json=form_data, headers=headers)
 
-        if res.status_code != 204:
+        if not res.ok:
             return Response(res.reason, status=res.status_code)
 
         _ = role_assign(kwargs['id'], request.data.get(
             "role", dict[str, str]), headers)
 
         return Response({'message': 'Account details updated successfully'}, status=status.HTTP_200_OK)
-
-
-class ListUsersAPI(APIView):
-    """
-    API view to get all users
-    """
-    permission_classes = [AllowAny, ]
-
-    def get(self, request, *args, **kwargs):
-        # Login to admin
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"Bearer {admin_login['data']['access_token']}",
-            'Content-Type': "application/json",
-            'cache-control': "no-cache"
-        }
-
-        response = requests.get(f"{APP_USER_BASE_URL}", headers=headers)
-
-        if response.status_code != 200:
-            return Response(response.json(), status=response.status_code)
-
-        users = response.json()
-        return Response(users, status=status.HTTP_200_OK)
-
-class GetUserAPI(APIView):
-    """
-    API view to get user profile
-    """
-    permission_classes = [AllowAny, ]
-
-    def get(self, request, **kwargs):
-        # Login to admin
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"Bearer {admin_login['data']['access_token']}",
-            'Content-Type': "application/json"
-        }
-
-        response = requests.get(
-            url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
-
-        if response.status_code != 200:
-            return Response(response.reason, status=response.status_code)
-
-        users = response.json()
-        return Response(users, status=status.HTTP_200_OK)
-
-
-class DeleteUserAPI(APIView):
-    """
-    API view to delete user from keycloak
-    """
-    permission_classes = [AllowAny, ]
 
     def delete(self, request, **kwargs):
         # Login to admin
@@ -281,17 +262,19 @@ class DeleteUserAPI(APIView):
         response = requests.put(
             url=f"{APP_USER_BASE_URL}/{kwargs['id']}", json=user, headers=headers)
 
-        if response.status_code != 200:
+        if not response.ok:
             return Response(response.reason, status=response.status_code)
 
         return Response({'message': 'User archived successfully'}, status=status.HTTP_200_OK)
 
 
-class AssignRolesAPI(APIView):
+class UserRolesView(APIView):
     """
     API view to assign roles to users
     """
-    permission_classes = [AllowAny, ]
+    keycloak_scopes = {
+        'PUT': 'user:update'
+    }
 
     roleObject = {
         'id': str,
@@ -322,138 +305,28 @@ class AssignRolesAPI(APIView):
         response = requests.post(
             url=f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings/realm", json=form_data, headers=headers)
 
-        if response.status_code != 200:
+        if not response.ok:
             return Response(response.reason, status=response.status_code)
 
         return Response({'message': 'Roles has been assigned successfully'}, status=status.HTTP_200_OK)
 
-class ResetPasswordRequestAPI(APIView):
+class UserAvatarView(APIView):
     """
-    API view to reset users password
+    API view to read/upload Keycloak user avatar to minio
     """
-    permission_classes = [AllowAny, ]
-
-    def post(self, request, **kwargs):
-        # Login to admin
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"Bearer {admin_login['data']['access_token']}",
-            'Content-Type': "application/json"
-        }
-
-        request_body = {
-            "email": request.data.get("email", None)
-        }
-
-        checkUser = requests.get(
-            f"{APP_USER_BASE_URL}?email={request_body['email']}", headers=headers)
-        if checkUser.status_code != 200:
-            return Response(checkUser.reason, status=checkUser.status_code)
-
-        users = checkUser.json()
-
-        if len(users) == 0:
-            return Response({'errorMessage': 'Account not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        user = users[0]
-
-        payload = {
-            "id": user["id"],
-            "name": user["firstName"],
-            "email": user["email"],
-            "exp": datetime.utcnow() + timedelta(hours=5),
-            "secret": APP_SECRET_KEY,
-            "algorithm": 'HS256'
-        }
-
-        token = jwt.encode(payload, APP_SECRET_KEY, algorithm='HS256')
-        redirectUri = f"{REST_REDIRECT_URI}?tok={token}"
-
-        SendMail("IGAD Reset Password", payload, redirectUri)
-
-        return Response({'message': 'Reset password link has been sent to your email'}, status=status.HTTP_200_OK)
-
-
-class VerifyResetTokenAPI(APIView):
-    """
-    API view to verify reset password token
-    """
-    permission_classes = [AllowAny,]
-
-    def post(self, request, *args, **kwargs):
-        form_data = {
-            "token": request.data.get("token", None),
-        }
-
-        try:
-            decode = jwt.decode(
-                form_data["token"], APP_SECRET_KEY, algorithms=['HS256'])
-            return Response(decode, status=status.HTTP_200_OK)
-        except jwt.ExpiredSignatureError:
-            return Response({'errorMessage': 'Reset password token expired'}, status=status.HTTP_401_UNAUTHORIZED)
-        except jwt.InvalidTokenError:
-            return Response({'errorMessage': 'Token provided is invalid'}, status=status.HTTP_401_UNAUTHORIZED)
-
-
-class UpdateProfileAPI(APIView):
-    """
-    API view to change Keycloak user password
-    """
-    permission_classes = [AllowAny,]
-
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'newPassword': openapi.Schema(type=openapi.TYPE_STRING),
-            'confirmPassword': openapi.Schema(type=openapi.TYPE_STRING),
-            'userId': openapi.Schema(type=openapi.TYPE_STRING),
-        }
-    ))
-    def put(self, request, *args, **kwargs):
-        form_data = {
-            "newPassword": request.data.get("newPassword", None),
-            "confirmPassword": request.data.get("lastName", None),
-            "userId": request.data.get("userId", None),
-        }
-
-        # Login to admin
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
-            'Content-Type': "application/json",
-            'cache-control': "no-cache"
-        }
-
-        credentials = {
-            "type": "password",
-            "value": form_data["newPassword"],
-            "temporary": False
-        }
-
-        res = requests.put(
-            f"{APP_USER_BASE_URL}/{form_data['userId']}/reset-password", json=credentials, headers=headers)
-
-        if res.status_code == 200:
-            return Response({'message': 'Password created successfully'}, status=status.HTTP_200_OK)
-
-        return Response({'errorMessage': 'Error changing password'}, status=status.HTTP_401_UNAUTHORIZED)
-
-
-class AvatarUploadApI(APIView):
-    """
-    API view to upload Keycloak user avatar to minio
-    """
-    permission_classes = [AllowAny,]
-
+    keycloak_scopes = {
+        'GET': 'user:read',
+        'POST': 'user:add'
+    }
     parser_classes = (MultiPartParser,)
+
+    def get(self, request, **kwargs):
+        filename = request.query_params['filename']
+        url = download_file('avatars', filename)
+        headers = {
+            'transfer-encoding': 'chunked'
+        }
+        return Response(url.read(), content_type='binary/octet-stream')
 
     def post(self, request, **kwargs):
         """Receives a request to upload a file and sends it to filesystem for now. Later the file will be uploaded to minio server."""
@@ -480,7 +353,7 @@ class AvatarUploadApI(APIView):
             response = requests.get(
                 url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
 
-            if response.status_code != 200:
+            if not response.ok:
                 return Response(response.reason, status=response.status_code)
 
             user: dict = response.json()
@@ -501,26 +374,10 @@ class AvatarUploadApI(APIView):
             res = requests.put(
                 f"{APP_USER_BASE_URL}/{kwargs['id']}", json=user_data, headers=headers)
 
-            if res.status_code != 204:
+            if not res.ok:
                 return Response({'reason': res.reason, 'message': res.text, 'user': user_data}, status=res.status_code)
+            
             return Response({'status': 'success', "message": "Avatar uploaded successfully"}, status=200)
 
         except MultiValueDictKeyError:
             return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
-
-
-class AvatarDownload(APIView):
-    """
-    API view to download user avatar from minio
-    """
-    permission_classes = [AllowAny,]
-    
-    def get(self, request, **kwargs):
-        filename = request.query_params['filename']
-        url = download_file('avatars', filename)
-        headers = {
-            'transfer-encoding': 'chunked'
-        }
-        return Response(url.read(), content_type='binary/octet-stream')
-
-# endpoint="89.58.44.88:9001",
