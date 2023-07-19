@@ -15,21 +15,16 @@ import {
 	Switch,
 } from "antd";
 import { useUsers } from "../hooks";
-import { IUser } from "../interface";
 import { useEffect, useState } from "react";
 import { AddUser123 } from "./AddUser";
 import axios from "axios";
 import { PreviewUser } from "./Preview";
 import { countries } from "@/common/utils/countries";
-import { getData } from "@/common/utils";
 import { OpenNotification } from "@/common/utils/notify";
 import getConfig from "next/config"
+import { useGetUsersQuery } from "@modules/user/user";
  
 const { publicRuntimeConfig } = getConfig()
-
-interface props {
-	viewPro: () => void;
-}
 
 const genderOptions = [
 	{ label: "Male", value: "Male" },
@@ -53,11 +48,10 @@ countries.forEach((item, index) => {
 });
 
 export const UserList = () => {
+	const { data, refetch, isFetching } = useGetUsersQuery()
 	const [form] = Form.useForm();
 
 	const [open, setOpen] = useState<boolean>(false);
-	const [data, setData] = useState<Array<IUser>>([]);
-	const [loading, setLoading] = useState<boolean>(true);
 	const [code, setCode] = useState<string>("");
 	const [roles, setRoles] = useState([]);
 	const [role, setRole] = useState<string>("")
@@ -75,29 +69,6 @@ export const UserList = () => {
 
 	const onClose = () => {
 		setOpen(false);
-	};
-
-	const fetchUsers = async () => {
-		try {
-			setLoading(true);
-			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/users`;
-			await axios
-				.get(url, {
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				})
-				.then((res) => {
-					setLoading(false);
-					setData(res?.data);
-				});
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
-
-	const refetch = () => {
-		fetchUsers();
 	};
 
 	const [openModal, setOpenModal] = useState<boolean>(false);
@@ -199,7 +170,6 @@ export const UserList = () => {
 
 	useEffect(() => {
 		fetchRoles();
-		fetchUsers();
 	}, [])
 
 	const { columns } = useUsers({ edit, viewPro, refetch });
@@ -231,8 +201,8 @@ export const UserList = () => {
 				<div className="py-2">
 					<IGADTable
 						key={"id"}
-						loading={loading}
-						rows={data}
+						loading={isFetching}
+						rows={data as any[]}
 						columns={columns}
 					/>
 				</div>
@@ -241,7 +211,7 @@ export const UserList = () => {
 				<AddUser123
 					openDrawer={open}
 					closeDrawer={onClose}
-					refetch={fetchUsers}
+					refetch={refetch}
 				/>
 			</div>
 			<div>
