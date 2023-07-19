@@ -44,7 +44,7 @@ export default function Layout({ children }: props) {
         leaveFrom="translate-x-0"
         leaveTo="-translate-x-full"
       >
-        <SideBar showNav={showNav} />
+        <SideBar />
       </Transition>
       <main
         className={`pt-16 transition-all duration-[400ms] ${

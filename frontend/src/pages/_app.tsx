@@ -1,12 +1,13 @@
-import { ToastContainer } from "react-toastify";
-import { SWRConfig } from "swr";
-import axios from "axios";
-import { AppProps } from "next/app";
-import "@/common/styles/globals.css";
-import "react-toastify/dist/ReactToastify.css";
-import { Provider } from "react-redux";
-import { ConfigProvider } from "antd";
-import { store } from "@/common/redux/store";
+import { ToastContainer } from 'react-toastify';
+import { SWRConfig } from 'swr';
+import axios from 'axios';
+import { AppProps } from 'next/app';
+import '@/common/styles/globals.css';
+import 'react-toastify/dist/ReactToastify.css';
+import { Provider } from 'react-redux';
+import { ConfigProvider } from 'antd';
+import { store } from '@/common/redux/store';
+import { PermissionProvider } from '@/common/hooks/use-permission';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -22,13 +23,15 @@ export default function App({ Component, pageProps }: AppProps) {
           theme={{
             components: {},
             token: {
-              colorPrimary: "#007b38",
+              colorPrimary: '#007b38',
               fontSize: 14,
             },
           }}
         >
-          <Component {...pageProps} />
-          <ToastContainer />
+          <PermissionProvider>
+            <Component {...pageProps} />
+            <ToastContainer />
+          </PermissionProvider>
         </ConfigProvider>
       </Provider>
     </SWRConfig>
