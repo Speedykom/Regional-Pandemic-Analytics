@@ -2,15 +2,15 @@ import { useDashboards } from "../hooks";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { IGADTable } from "@/common/components/common/table";
-import { IUser } from "@/modules/user/interface";
 import axios from "axios";
 import secureLocalStorage from "react-secure-storage";
 import getConfig from 'next/config'
+import { User } from "@modules/user/interface";
  
 const { publicRuntimeConfig } = getConfig()
 
 export const DashboardList = () => {
-	const [data, setData] = useState<Array<IUser>>([]);
+	const [data, setData] = useState<Array<User>>([]);
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState("")
 	const router = useRouter();
