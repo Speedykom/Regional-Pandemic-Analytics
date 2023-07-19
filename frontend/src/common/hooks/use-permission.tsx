@@ -21,7 +21,7 @@ export const PermissionProvider = ({
 
   useEffect(() => {
     const perms = secureLocalStorage.getItem('permissions') as Permissions;
-    setPermissions(perms);
+    setPermissions(perms || []);
   }, []);
 
   const hasPermission = (scope: string) => {
