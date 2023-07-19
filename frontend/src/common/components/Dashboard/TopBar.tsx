@@ -58,6 +58,8 @@ export default function TopBar({ showNav, setShowNav }: props) {
     logout()
       .then(() => {
         secureLocalStorage.removeItem("tokens");
+        secureLocalStorage.removeItem("permissions");
+        // @todo : remove if not needed anymore
         secureLocalStorage.removeItem("user_role");
         secureLocalStorage.removeItem("username");
         secureLocalStorage.removeItem("sue");
