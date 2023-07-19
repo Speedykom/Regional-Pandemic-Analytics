@@ -9,6 +9,7 @@ import requests
 import os
 
 ENVIRONMENT = os.getenv("ENVIRONMENT")
+DRUID_COORDINATOR_URL = os.getenv("DRUID_COORDINATOR_URL")
 
 pipelines = "{}/hop/pipelines".format(ENVIRONMENT)
 storage = "{}/storage".format(ENVIRONMENT)
@@ -28,7 +29,7 @@ default_args = {
 
 # Ingest to druid
 def ingest():
-    url = 'https://coordinator2.igad-health.eu/druid/indexer/v1/task'
+    url = "{}/druid/indexer/v1/task".format(DRUID_COORDINATOR_URL)
     payload = {
       "type": "index_parallel",
       "spec": {
