@@ -4,20 +4,7 @@ import axios from "axios";
 import getConfig from "next/config";
 import secureLocalStorage from "react-secure-storage";
 import { IRole } from "@/modules/roles/interface";
-import {
-	Card,
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeaderCell,
-	TableRow,
-	Title,
-	Text,
-	Badge as Badg,
-	Button,
-	Flex,
-} from "@tremor/react";
+import { Card, Text, Badge } from "@tremor/react";
 import {
 	CheckIcon,
 	ExclamationCircleIcon,
@@ -29,6 +16,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { FiMoreVertical } from "react-icons/fi";
 import { useRouter } from "next/router";
+import { Loading } from "@/common/components/Loading";
 const { publicRuntimeConfig } = getConfig();
 
 export const UserList = () => {
@@ -38,7 +26,7 @@ export const UserList = () => {
 	const [roles, setRoles] = useState([]);
 	const [userRoles, setUserRoles] = useState<Array<IRole>>([]);
 	const [roleLoading, setRoleLoading] = useState(true);
-	const router = useRouter()
+	const router = useRouter();
 
 	const tokens: any = secureLocalStorage.getItem("tokens") as object;
 	const accessToken =
@@ -104,71 +92,85 @@ export const UserList = () => {
 				</div>
 			</nav>
 			<div className="container mb-5">
-				<div className="flex flex-wrap">
-					{data.map((item, index) => (
-						<div className="lg:w-1/3 lg:p-2 md:py-2 md:w-full w-full">
-							<Card>
-								<div className="flex space-x-4">
-									<div className="h-12 w-12 mr-2 overflow-hidden rounded-full flex items-center justify-center border border-gray-300">
-										<img
-											src={
-												item?.attributes?.avatar &&
-												item?.attributes?.avatar[0] != ""
-													? item?.attributes?.avatar[0]
-													: "/avater.png"
-											}
-											className="w-full h-full"
-										/>
-									</div>
-									<div className="flex-1 space-y-4 py-1">
-										<div className="h-4 rounded w-3/4 flex space-x-2">
-											<Text className="text-lg font-sans">
-												{item.firstName} {item?.lastName}
-											</Text>
-											<Text className="text-lg font-sans">
-												({item.username})
-											</Text>
+				{loading ? (
+					<Loading />
+				) : (
+					<div className="flex flex-wrap">
+						{data.map((item, index) => (
+							<div className="lg:w-1/3 lg:p-2 md:py-2 md:w-full w-full">
+								<Card>
+									<div className="flex space-x-4">
+										<div className="h-12 w-12 mr-2 overflow-hidden rounded-full flex items-center justify-center border border-gray-300">
+											<img
+												src={
+													item?.attributes?.avatar &&
+													item?.attributes?.avatar[0] != ""
+														? item?.attributes?.avatar[0]
+														: "/avater.png"
+												}
+												className="w-full h-full"
+											/>
 										</div>
-										<div className="space-y-2">
-											<div className="h-4 rounded">
-												<Text className="font-sans">{item.email}</Text>
-											</div>
-											<div className="h-4 rounded w-5/6 flex space-x-2">
-												<Text className="font-sans">
-													{item.attributes?.country
-														? item.attributes?.country[0]
-														: ""}
+										<div className="flex-1 space-y-4 py-1">
+											<div className="h-4 rounded w-3/4 flex space-x-2">
+												<Text className="text-lg font-sans">
+													{item.firstName} {item?.lastName}
 												</Text>
-												<Text className="font-sans">
-													-{" "}
-													{item.attributes?.gender
-														? item.attributes?.gender[0]
-														: ""}
+												<Text className="text-lg font-sans">
+													({item.username})
 												</Text>
 											</div>
-										</div>
-										<div className="space-y-2">
-											<div className="h-4 rounded w-5/6 flex space-x-2">
-												<Text className="font-sans">
-												{item.attributes?.phone ? `${item.attributes?.code ? item.attributes?.code[0] : ''}${item.attributes?.phone[0]}` : ''}
-												</Text>
-												<Text className="font-sans">
-													-{" "}
-													{item.enabled ? <Badg>Active</Badg> : <Badg color="slate">Inactive</Badg>}
-												</Text>
+											<div className="space-y-2">
+												<div className="h-4 rounded">
+													<Text className="font-sans">{item.email}</Text>
+												</div>
+												<div className="h-4 rounded w-5/6 flex space-x-2">
+													<Text className="font-sans">
+														{item.attributes?.country
+															? item.attributes?.country[0]
+															: ""}
+													</Text>
+													<Text className="font-sans">
+														-{" "}
+														{item.attributes?.gender
+															? item.attributes?.gender[0]
+															: ""}
+													</Text>
+												</div>
+											</div>
+											<div className="space-y-2">
+												<div className="h-4 rounded w-5/6 flex space-x-2">
+													<Text className="font-sans">
+														{item.attributes?.phone
+															? `${
+																	item.attributes?.code
+																		? item.attributes?.code[0]
+																		: ""
+															  }${item.attributes?.phone[0]}`
+															: ""}
+													</Text>
+													<Text className="font-sans">
+														-{" "}
+														{item.enabled ? (
+															<Badge>Active</Badge>
+														) : (
+															<Badge color="slate">Inactive</Badge>
+														)}
+													</Text>
+												</div>
 											</div>
 										</div>
+										<div>
+											<button>
+												<FiMoreVertical className="text-xl" />
+											</button>
+										</div>
 									</div>
-									<div>
-										<button>
-											<FiMoreVertical className="text-xl" />
-										</button>
-									</div>
-								</div>
-							</Card>
-						</div>
-					))}
-				</div>
+								</Card>
+							</div>
+						))}
+					</div>
+				)}
 			</div>
 			<button
 				onClick={() => router.push("/users/add")}
