@@ -1,6 +1,7 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import getConfig from "next/config";
+import { Credentials, LoginParams } from "./interface";
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -12,10 +13,10 @@ export const AuthApi = createApi({
     credentials: "include",
   }),
   endpoints: (builder) => ({
-    login: builder.mutation<any, any>({
+    login: builder.mutation<Credentials, LoginParams>({
       query: (body) => ({
-        url: "/api/auth/key-auth",
-        method: "POST",
+        url: '/auth/key-auth',
+        method: 'POST',
         body: body,
       }),
     }),
