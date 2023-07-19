@@ -140,6 +140,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - backend_db
+      - keycloak
     ports:
       - "8000:8000"
     volumes:
