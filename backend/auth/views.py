@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import requests
 import json
 import os
+from core.middleware import KeycloakHelper
 import jwt
 from django.http import HttpResponse
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -102,22 +103,15 @@ class KeyCloakLoginAPI(APIView):
         }
     ))
     def post(self, request, *args, **kwargs):
-        form_data = {
-            "username": request.data.get("username", None),
-            "password": request.data.get("password", None),
-            "grant_type": "password",
-            "client_id": os.getenv("CLIENT_ID"),
-            "client_secret": os.getenv("CLIENT_SECRET")
-        }
+        keycloakHelper = KeycloakHelper()
+        credentials = keycloakHelper.keycloak.token(request.data.get("username", None), request.data.get("password", None))
+        if credentials:
+            permissions = keycloakHelper.keycloak.get_permissions(credentials['access_token'], method_token_info='introspect')
+            print(permissions)
+            credentials["permissions"] = map(lambda p: { 'name': p.name, 'scopes': p.scopes }, permissions)
+            return Response(credentials, status=status.HTTP_200_OK)
 
-        res = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/token",
-                            data=form_data)
-
-        if res.status_code == 200:
-            data = res.json()
-            return Response(data, status=status.HTTP_200_OK)
-
-        return Response({"result": "Login Failed"}, status=res.status_code)
+        return Response({"result": "Login Failed"}, status=status.HTTP_401_UNAUTHORIZED)
     
     """API to refresh and update keycloak access token
     """
