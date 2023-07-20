@@ -10,7 +10,9 @@ class ListDashboardsAPI(APIView):
     """
     API view to superset dashboards
     """
-    permission_classes = [AllowAny,]
+    keycloak_scopes = {
+        'GET': 'dashboard:read',
+    }
     
     def get(self, request):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/"
@@ -18,12 +20,12 @@ class ListDashboardsAPI(APIView):
             'Content-Type': "application/json",
             'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', '')
         }
-        
         response = requests.get(url=url, headers=headers)
         if response.status_code != 200:
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
         return Response(response.json(), status=status.HTTP_200_OK)
+
 class ListChartsAPI(APIView):
     """
     API view to superset charts
@@ -47,8 +49,9 @@ class EnableEmbed(APIView):
     """
     API view to enable superset dashboard embed
     """
-    permission_classes = [AllowAny,]
-    
+    keycloak_scopes = {
+        'POST': 'dashboard:read',
+    }
     def post(self, request):
         uid = request.data.get('uid', None)
         
@@ -71,7 +74,9 @@ class GetEmbeddable(APIView):
     """
     API view to get embedable superset dashboard
     """
-    permission_classes = [AllowAny,]
+    keycloak_scopes = {
+        'GET': 'dashboard:read',
+    }
     def get(self, request, *args, **kwargs):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['id']}/embedded"
         
@@ -88,8 +93,9 @@ class GuestTokenApi(APIView):
     """
     API view to get superset guest token
     """
-    permission_classes = [AllowAny,]
-    
+    keycloak_scopes = {
+        'POST': 'dashboard:read',
+    }
     def post(self, request):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/security/guest_token/"
         headers = {
