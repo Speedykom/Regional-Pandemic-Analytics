@@ -54,8 +54,8 @@ export const UserList = () => {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							{(data || []).map((item) => (
-								<TableRow key={item.id}>
+							{(data || []).map((item, index) => (
+								<TableRow key={index}>
 									<TableCell>
 										<div className="flex items-center pr-1">
 											<div>
@@ -86,11 +86,7 @@ export const UserList = () => {
 										<TableCell>
 											<Text>
 												{item.attributes?.phone
-													? `${
-															item.attributes?.code
-																? item.attributes?.code[0]
-																: ""
-													  }${item.attributes?.phone[0]}`
+													? item.attributes?.phone[0]
 													: ""}
 											</Text>
 										</TableCell>
