@@ -23,6 +23,7 @@ import { countries } from "@/common/utils/countries";
 import { OpenNotification } from "@/common/utils/notify";
 import getConfig from "next/config"
 import { useGetUsersQuery } from "@modules/user/user";
+import { useRouter } from "next/router";
  
 const { publicRuntimeConfig } = getConfig()
 
@@ -168,6 +169,8 @@ export const UserList = () => {
 		}
 	};
 
+	const router = useRouter()
+
 	useEffect(() => {
 		fetchRoles();
 	}, [])
@@ -189,7 +192,7 @@ export const UserList = () => {
 							size="large"
 							onClick={(e) => {
 								e.preventDefault();
-								setOpen(true);
+								router.push("/users/add")
 							}}
 						>
 							New User
