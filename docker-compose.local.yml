@@ -18,38 +18,38 @@ services:
     volumes:
       - ./frontend/src/:/frontend/src
 
-  # superset:
-  #   container_name: superset
-  #   extra_hosts:
-  #     - "host.docker.internal:host-gateway"
-  #     - "keycloak.igad.local:host-gateway"
-  #     - "frontend.igad.local:host-gateway"
-  #   command:
-  #     - -c
-  #     - |
-  #       superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
-  #       superset db upgrade
-  #       superset superset init
-  #       FLASK_ENV=development flask run -p 8088 --with-threads --reload --debugger --host=0.0.0.0
+  superset:
+    container_name: superset
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "keycloak.igad.local:host-gateway"
+      - "frontend.igad.local:host-gateway"
+    command:
+      - -c
+      - |
+        superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
+        superset db upgrade
+        superset superset init
+        FLASK_ENV=development flask run -p 8088 --with-threads --reload --debugger --host=0.0.0.0
 
   # =====
   #  Hop
   # =====
-  # hop:
-  #   container_name: hop
-  #   extra_hosts:
-  #     - "host.docker.internal:host-gateway"
-  #     - "keycloak.igad.local:host-gateway"
+  hop:
+    container_name: hop
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "keycloak.igad.local:host-gateway"
 
   # =====
   #  Minio
   # =====
 
-  # storage:
-  #   container_name: storage
-  #   extra_hosts:
-  #     - "host.docker.internal:host-gateway"
-  #     - "minio.igad.local:host-gateway"
+  storage:
+    container_name: storage
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "minio.igad.local:host-gateway"
 
   # ========
   # Backend
