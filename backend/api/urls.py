@@ -48,14 +48,14 @@ urlpatterns = [
     path('auth/logout', auth_view.Logout.as_view()), # logout
 
     # ---------------------- User Management Endpoints --------------------------
-    path('account/user', views.CreateUserAPI.as_view()),  # Create User
-    path('account/users', views.ListUsersAPI.as_view()),  # get users
-    path('account/user/<str:id>/', views.GetUserAPI.as_view()),  # get user
-    path('account/user/<str:id>/delete', views.DeleteUserAPI.as_view()),  # delete user
-    path('account/user/<str:id>/update',  views.UpdateUserAPI.as_view()),  # update user
-    path('account/user/<str:id>/assign-roles', views.AssignRolesAPI.as_view()),  # assign user
-    path('account/user/<str:id>/avatar-upload1', views.AvatarUploadApI.as_view()),  # update avatar
-    path('account/user/avatar/get', views.AvatarDownload.as_view()), # download avatar
+    path('account/user', views.UserListView.as_view()),  # Create User
+    path('account/users', views.UserListView.as_view()),  # get users
+    path('account/user/<str:id>/', views.UserDetailView.as_view()),  # get user
+    path('account/user/<str:id>/delete', views.UserDetailView.as_view()),  # delete user
+    path('account/user/<str:id>/update',  views.UserDetailView.as_view()),  # update user
+    path('account/user/<str:id>/assign-roles', views.UserRolesView.as_view()),  # assign user
+    path('account/user/<str:id>/avatar-upload1', views.UserAvatarView.as_view()),  # update avatar
+    path('account/user/avatar/get', views.UserAvatarView.as_view()), # download avatar
     
     # ---------------------- API Role Endpoints --------------------------
     path('role/', role_view.CreateViewRoles.as_view()),  # create role

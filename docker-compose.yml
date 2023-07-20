@@ -140,6 +140,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - backend_db
+      - keycloak
     ports:
       - "8000:8000"
     volumes:
@@ -198,6 +199,7 @@ services:
       - SUPERSET_GUEST_LASTNAME=${BACKEND_SUPERSET_GUEST_LASTNAME}
       - CORS_ORIGIN_ALLOW_ALL=${BACKEND_CORS_ORIGIN_ALLOW_ALL}
       - SUPERSET_ALLOWED_DOMAINS=${BACKEND_SUPERSET_ALLOWED_DOMAINS}
+      - DRUID_COORDINATOR_URL={BACKEND_DRUID_COORDINATOR_URL}
 
   # =======
   #  Druid

@@ -33,6 +33,9 @@ export default function LoginForm() {
         refreshToken: res.data.refresh_token,
       });
 
+      secureLocalStorage.setItem("permissions", res.data.permissions);
+
+      // @todo : remove once not needed anymore
       const role = await getUserRole(payload?.realm_access?.roles);
       secureLocalStorage.setItem("user_role", role);
 

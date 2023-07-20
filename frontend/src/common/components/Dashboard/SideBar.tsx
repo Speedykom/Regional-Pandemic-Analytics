@@ -1,5 +1,5 @@
-import { Ref, forwardRef } from "react";
-import Link from "next/link";
+import { Ref, forwardRef } from 'react';
+import Link from 'next/link';
 import {
   BiChart,
   BiData,
@@ -8,19 +8,19 @@ import {
   BiHome,
   BiLock,
   BiUser,
-} from "react-icons/bi";
-import { useRouter } from "next/router";
-import secureLocalStorage from "react-secure-storage";
-import { NavLink } from "../link";
+} from 'react-icons/bi';
+import { useRouter } from 'next/router';
+import secureLocalStorage from 'react-secure-storage';
+import { NavLink } from '../link';
+import { usePermission } from '@/common/hooks/use-permission';
 
 interface props {
   showNav?: boolean;
 }
 
 const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
-  const router = useRouter();
-  const user: any = secureLocalStorage.getItem("user");
-  const userRole: any = secureLocalStorage.getItem("user_role");
+  const { hasPermission } = usePermission();
+  const userRole: any = secureLocalStorage.getItem('user_role');
   const permits = userRole?.attributes;
 
   return (
@@ -56,13 +56,13 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
         )}
         {permits?.Chart && permits?.Chart?.read && (
           <NavLink
-          href="/charts"
-          activeClassName="bg-prim text-white"
-          className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
-        >
-          <BiChart className="text-xl" />
-          <p>Chart(s)</p>
-        </NavLink>
+            href="/charts"
+            activeClassName="bg-prim text-white"
+            className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
+          >
+            <BiChart className="text-xl" />
+            <p>Chart(s)</p>
+          </NavLink>
         )}
         {permits?.ProcessChain && permits?.ProcessChain?.read && (
           <NavLink
@@ -92,7 +92,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
           <BiGitMerge className="text-xl" />
           <p>My Pipeline(s)</p>
         </NavLink>
-        {permits?.User && permits?.User?.read && (
+        {hasPermission('user:read') && (
           <NavLink
             href="/users"
             activeClassName="bg-prim text-white"
@@ -117,6 +117,6 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
   );
 });
 
-SideBar.displayName = "SideBar";
+SideBar.displayName = 'SideBar';
 
 export default SideBar;
