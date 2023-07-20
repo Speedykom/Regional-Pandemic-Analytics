@@ -124,7 +124,7 @@ class UserListView(APIView):
 
         getUserId = requests.get(f"{APP_USER_BASE_URL}?email={user['email']}", headers=headers)
         
-        if getUserId.status_code != 200:
+        if not getUserId.ok:
             return Response(getUserId.reason, status=getUserId.status_code)
 
         users = getUserId.json()
