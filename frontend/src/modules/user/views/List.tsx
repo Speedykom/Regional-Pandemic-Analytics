@@ -1,8 +1,3 @@
-import { IUser } from "../interface";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import getConfig from "next/config";
-import secureLocalStorage from "react-secure-storage";
 import {
 	Card,
 	Text,
@@ -23,46 +18,13 @@ import {
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useRouter } from "next/router";
-const { publicRuntimeConfig } = getConfig();
 import MediaQuery from "react-responsive";
 import { FiDelete, FiEdit, FiEye } from "react-icons/fi";
+import { useGetUsersQuery } from "../user";
 
 export const UserList = () => {
-	const [data, setData] = useState<Array<IUser>>([]);
-	const [loading, setLoading] = useState<boolean>(true);
+	const { data } = useGetUsersQuery();
 	const router = useRouter();
-
-	const tokens: any = secureLocalStorage.getItem("tokens") as object;
-	const accessToken =
-		tokens && "accessToken" in tokens ? tokens.accessToken : "";
-
-	const fetchUsers = async () => {
-		try {
-			setLoading(true);
-			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/users`;
-			await axios
-				.get(url, {
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${accessToken}`,
-					},
-				})
-				.then((res) => {
-					setLoading(false);
-					setData(res?.data);
-				});
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
-
-	const refetch = () => {
-		fetchUsers();
-	};
-
-	useEffect(() => {
-		fetchUsers();
-	}, []);
 
 	return (
 		<div className="">
@@ -92,7 +54,7 @@ export const UserList = () => {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							{data.map((item) => (
+							{(data || []).map((item) => (
 								<TableRow key={item.id}>
 									<TableCell>
 										<div className="flex items-center pr-1">

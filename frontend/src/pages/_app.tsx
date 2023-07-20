@@ -1,12 +1,14 @@
-import { ToastContainer } from "react-toastify";
-import { SWRConfig } from "swr";
-import axios from "axios";
-import { AppProps } from "next/app";
-import "@/common/styles/globals.css";
-import "react-toastify/dist/ReactToastify.css";
-import { Provider } from "react-redux";
-import { ConfigProvider } from "antd";
-import { store } from "@/common/redux/store";
+import { ToastContainer } from 'react-toastify';
+import { SWRConfig } from 'swr';
+import axios from 'axios';
+import { AppProps } from 'next/app';
+import '@/common/styles/globals.css';
+import 'react-toastify/dist/ReactToastify.css';
+import { Provider } from 'react-redux';
+import { ConfigProvider } from 'antd';
+import { store } from '@/common/redux/store';
+import { PermissionProvider } from '@/common/hooks/use-permission';
+import { ModalProvider } from "@/common/hooks/use-modal";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -17,20 +19,24 @@ export default function App({ Component, pageProps }: AppProps) {
           axios.get(resource, init).then((res) => res.data),
       }}
     >
-      <Provider store={store}>
-        <ConfigProvider
-          theme={{
-            components: {},
-            token: {
-              colorPrimary: "#007b38",
-              fontSize: 14,
-            },
-          }}
-        >
-          <Component {...pageProps} />
-          <ToastContainer />
-        </ConfigProvider>
-      </Provider>
+      <ModalProvider>
+        <Provider store={store}>
+          <ConfigProvider
+            theme={{
+              components: {},
+              token: {
+                colorPrimary: '#007b38',
+                fontSize: 14,
+              },
+            }}
+          >
+            <PermissionProvider>
+              <Component {...pageProps} />
+              <ToastContainer />
+            </PermissionProvider>
+          </ConfigProvider>
+        </Provider>
+      </ModalProvider>
     </SWRConfig>
   );
 }

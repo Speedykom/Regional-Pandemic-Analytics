@@ -55,17 +55,19 @@ export default function TopBar({ showNav, setShowNav }: props) {
 		}
 	}, []);
 
-	const handleLogout = async () => {
-		logout()
-			.then(() => {
-				secureLocalStorage.removeItem("tokens");
-				secureLocalStorage.removeItem("user_role");
-				secureLocalStorage.removeItem("username");
-				secureLocalStorage.removeItem("sue");
-				secureLocalStorage.removeItem("userId");
-				secureLocalStorage.removeItem("user");
-				secureLocalStorage.removeItem("passcode");
-				secureLocalStorage.removeItem("sua");
+  const handleLogout = async () => {
+    logout()
+      .then(() => {
+        secureLocalStorage.removeItem("tokens");
+        secureLocalStorage.removeItem("permissions");
+        // @todo : remove if not needed anymore
+        secureLocalStorage.removeItem("user_role");
+        secureLocalStorage.removeItem("username");
+        secureLocalStorage.removeItem("sue");
+        secureLocalStorage.removeItem("userId");
+        secureLocalStorage.removeItem("user");
+        secureLocalStorage.removeItem("passcode");
+        secureLocalStorage.removeItem("sua");
 
 				router.push("/");
 			})
