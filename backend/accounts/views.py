@@ -122,8 +122,24 @@ class UserListView(APIView):
             "emailVerified": form_data["emailVerified"]
         }
 
-        assign_role = role_assign(kwargs['id'], request.data.get(
+        getUserId = requests.get(f"{APP_USER_BASE_URL}?email={user['email']}", headers=headers)
+        
+        if getUserId.status_code != 200:
+            return Response(getUserId.reason, status=getUserId.status_code)
+
+        users = getUserId.json()
+
+        if len(users) == 0:
+            return Response({'errorMessage': 'Account not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        form_data['id'] = users[0]['id']
+
+        assign_role = role_assign(form_data['id'], request.data.get(
             "role", dict[str, str]), headers)
+        
+        user['id'] = form_data['id']
+        user['role'] = request.data.get('role', None)
+        user['password'] = form_data['credentials'][0]['value']
 
         if assign_role:
             return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_201_CREATED)
