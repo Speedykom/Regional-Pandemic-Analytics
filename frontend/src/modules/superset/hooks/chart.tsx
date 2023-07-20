@@ -1,5 +1,5 @@
 import { ColumnsType } from "antd/es/table";
-import { DashboardList } from "../interface";
+import { ChartListResult } from "../interface";
 
 interface props {
 	view: (id: number, dashboard_title: string) => void;
@@ -7,7 +7,7 @@ interface props {
 
 export const useCharts = () => {
 	
-	const columns: ColumnsType<DashboardList> = [
+	const columns: ColumnsType<ChartListResult> = [
 		{
 			// fixed: "left",
 			title: "Chart",
