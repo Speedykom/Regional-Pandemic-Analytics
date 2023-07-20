@@ -1,50 +1,15 @@
 import { useDashboards } from "../hooks";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { IGADTable } from "@/common/components/common/table";
-import axios from "axios";
-import secureLocalStorage from "react-secure-storage";
-import getConfig from 'next/config'
-import { User } from "@modules/user/interface";
+import { useGetDashboardsQuery } from "../superset";
  
-const { publicRuntimeConfig } = getConfig()
-
 export const DashboardList = () => {
-	const [data, setData] = useState<Array<User>>([]);
-	const [loading, setLoading] = useState<boolean>(true);
-	const [error, setError] = useState("")
+	const { data, isFetching, isError } = useGetDashboardsQuery()
 	const router = useRouter();
-
-	const fetchDashboards = async () => {
-		const tokens: any = secureLocalStorage.getItem("tokens");
-		const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
-		setLoading(true);
-		const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/superset/list`;
-		await axios
-			.get(url, {
-				headers: {
-					"Content-Type": "application/json",
-					'Accept': "application/json",
-					'Authorization': `Bearer ${accessToken}`
-				},
-			})
-			.then((res) => {
-				setLoading(false);
-				setData(res?.data?.result || null);
-			}).catch((err) => {
-				setLoading(false);
-				setData([]);
-				setError("error fetching dashboards found")
-			});
-	};
 
 	const embedDashboard = (id: string) => {
 		router.push(`/dashboards/${id}`);
 	};
-
-	useEffect(() => {
-		fetchDashboards();
-	}, []);
 
 	const { columns } = useDashboards();
 	return (
@@ -63,14 +28,14 @@ export const DashboardList = () => {
 				<div className="py-2">
 					<IGADTable
 						key={"id"}
-						loading={loading}
-						rows={data}
+						loading={isFetching}
+						rows={data?.result || []}
 						columns={columns}
 						onRow={(record: any) => ({
 							onClick: () => embedDashboard(record.id),
 						})}
 					/>
-					{error && <p className="mt-3 text-sm text-gray-400">error fetching data, {error}</p>}
+					{isError && <p className="mt-3 text-sm text-gray-400">Unable to fetch data</p>}
 				</div>
 			</section>
 		</div>
