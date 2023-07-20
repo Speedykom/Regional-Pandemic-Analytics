@@ -12,7 +12,7 @@ import Select from "react-select";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import { usePermission } from "@/common/hooks/use-permission";
-import toast from 'react-hot-toast';
+import {ToastContainer, toast} from "react-toastify"
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -25,6 +25,7 @@ export const AddUser = () => {
 	const [role, setRole] = useState<string>("");
 	const [phone, setPhone] = useState<string>();
 	const [roleLoading, setRoleLoading] = useState(true);
+	
 	const triggerEnabled = () => {
 		if (enabled) {
 			setEnabled(false);  
@@ -60,15 +61,15 @@ export const AddUser = () => {
 			)
 			.then((res) => {
                 toast.success(res.data.message, {
-                    position: "top-right",
-                    duration: 4000
+					position: "top-right",
+					delay: 4000
                 })
 				form.resetFields();
 			})
 			.catch((err) => {
 				toast.error(err.response.data.message, {
                     position: "top-right",
-                    duration: 4000
+                    delay: 4000
                 })
 			});
 	};
@@ -342,10 +343,11 @@ export const AddUser = () => {
 
 							<hr className="mt-6 border-b-1 border-blueGray-300" />
 
-							<div className="px-4 text-right">
+							<div className="px-4 text-right mt-2">
 								<button className="bg-prim border border-gray-200 p-3 rounded-md text-white">
 									Save User
 								</button>
+								<ToastContainer />
 							</div>
 						</Form>
 					</div>
