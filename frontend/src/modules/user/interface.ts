@@ -28,3 +28,25 @@ export interface User {
 }
 
 export type Users = User[];
+
+export interface SerialUser {
+  id?: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  enabled: boolean;
+  emailVerified: boolean;
+  phone: string;
+  country: string;
+  gender: string;
+  role: {
+    id: string;
+    name: string;
+  }
+}
+
+export interface UserResponse {
+  mesage: string,
+  user: SerialUser
+}
