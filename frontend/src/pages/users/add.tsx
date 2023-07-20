@@ -13,6 +13,7 @@ import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import { usePermission } from "@/common/hooks/use-permission";
 import {ToastContainer, toast} from "react-toastify"
+import secureLocalStorage from "react-secure-storage";
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -32,7 +33,6 @@ export const AddUser = () => {
 		} else {
 			setEnabled(true);
 		}
-		console.log({ enabled });
 	};
 
 	const triggerVerify = () => {
@@ -42,6 +42,10 @@ export const AddUser = () => {
 			setVerify(true);
 		}
 	};
+
+	const tokens: any = secureLocalStorage.getItem("tokens") as object;
+	const accessToken =
+		tokens && "accessToken" in tokens ? tokens.accessToken : "";
 
 	const onFinish = async (values: any) => {
 		values["enabled"] = enabled;
@@ -56,20 +60,19 @@ export const AddUser = () => {
 				{
 					headers: {
 						"Content-Type": "application/json",
+						Authorization: `Bearer ${accessToken}`,
 					},
 				}
 			)
 			.then((res) => {
                 toast.success(res.data.message, {
 					position: "top-right",
-					delay: 4000
                 })
 				form.resetFields();
 			})
 			.catch((err) => {
 				toast.error(err.response.data.message, {
                     position: "top-right",
-                    delay: 4000
                 })
 			});
 	};
