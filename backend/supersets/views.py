@@ -30,7 +30,9 @@ class ListChartsAPI(APIView):
     """
     API view to superset charts
     """
-    permission_classes = [AllowAny,]
+    keycloak_scopes = {
+        'GET': 'chart:read',
+    }
     
     def get(self, request):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/chart/"
