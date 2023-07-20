@@ -14,7 +14,6 @@ import PhoneInput from "react-phone-number-input";
 import { usePermission } from "@/common/hooks/use-permission";
 import toast from 'react-hot-toast';
 
-
 const { publicRuntimeConfig } = getConfig();
 
 export const AddUser = () => {
@@ -48,7 +47,6 @@ export const AddUser = () => {
 		values["emailVerified"] = emailVerified;
 		values["country"] = country;
 		values["role"] = JSON.parse(role);
-		console.log("Finish:", values);
 
 		await axios
 			.post(
