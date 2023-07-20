@@ -16,7 +16,7 @@
     },
     {
       "id": "840bf064-b47c-4e81-8157-58382c8f6478",
-      "name": "Full Access",
+      "name": "Users Management",
       "description": "",
       "type": "scope",
       "logic": "POSITIVE",
@@ -25,6 +25,19 @@
         "defaultResourceType": "",
         "applyPolicies": "[\"admin-policy\"]",
         "scopes": "[\"user:add\",\"user:update\",\"user:read\",\"user:delete\"]"
+      }
+    },
+    {
+      "id": "1282eb9f-ee7d-43c5-a803-3a0a38fbc9e2",
+      "name": "Dashboard Management",
+      "description": "",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "defaultResourceType": "",
+        "applyPolicies": "[\"admin-policy\"]",
+        "scopes": "[\"dashboard:read\"]"
       }
     }
   ],
@@ -52,6 +65,12 @@
       "name": "user:delete",
       "iconUri": "",
       "displayName": "Delete User"
+    },
+    {
+      "id": "df973678-c670-4782-a8dd-462d5f18723d",
+      "name": "dashboard:read",
+      "iconUri": "",
+      "displayName": "View Dashboards"
     }
   ],
   "decisionStrategy": "UNANIMOUS"
