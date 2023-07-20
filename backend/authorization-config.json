@@ -39,6 +39,18 @@
         "applyPolicies": "[\"admin-policy\"]",
         "scopes": "[\"dashboard:read\"]"
       }
+    },
+    {
+      "id": "21835bf0-7efe-4cca-a260-3231e26a5983",
+      "name": "Chart Management",
+      "description": "",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"chart:read\"]",
+        "applyPolicies": "[\"admin-policy\"]"
+      }
     }
   ],
   "scopes": [
@@ -71,6 +83,12 @@
       "name": "dashboard:read",
       "iconUri": "",
       "displayName": "View Dashboards"
+    },
+    {
+      "id": "eeebe32b-9087-41ec-9d4b-8dd0b35d98ad",
+      "name": "chart:read",
+      "iconUri": "",
+      "displayName": "View Charts"
     }
   ],
   "decisionStrategy": "UNANIMOUS"
