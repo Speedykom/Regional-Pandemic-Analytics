@@ -1,61 +1,61 @@
 version: "3.4"
 
-# x-druid-common: &druid
-#   environment:
-#     - DRUID_SINGLE_NODE_CONF=${DRUID_DRUID_SINGLE_NODE_CONF}
-#     - druid_emitter_logging_logLevel=${DRUID_druid_emitter_logging_logLevel}
-#     - druid_extensions_loadList=${DRUID_druid_extensions_loadList}
-#     - druid_zk_service_host=${DRUID_druid_zk_service_host}
-#     - druid_metadata_storage_host=${DRUID_druid_metadata_storage_host}
-#     # - druid_metadata_storage_type=${DRUID_druid_metadata_storage_type}
-#     # - druid_metadata_storage_connector_connectURI=${DRUID_druid_metadata_storage_connector_connectURI}
-#     # - druid_metadata_storage_connector_user=${DRUID_druid_metadata_storage_connector_user}
-#     # - druid_metadata_storage_connector_password=${DRUID_druid_metadata_storage_connector_password}
-#     - druid_coordinator_balancer_strategy=${DRUID_druid_coordinator_balancer_strategy}
-#     - druid_indexer_runner_javaOptsArray=${DRUID_druid_indexer_runner_javaOptsArray}
-#     - druid_indexer_fork_property_druid_processing_buffer_sizeBytes=${DRUID_druid_indexer_fork_property_druid_processing_buffer_sizeBytes}
-#     - druid_storage_type=${DRUID_druid_storage_type}
-#     - druid_storage_storageDirectory=${DRUID_druid_storage_storageDirectory}
-#     - druid_indexer_logs_type=${DRUID_druid_indexer_logs_type}
-#     - druid_indexer_logs_directory=${DRUID_druid_indexer_logs_directory}
-#     - druid_processing_numThreads=${DRUID_druid_processing_numThreads}
-#     - druid_processing_numMergeBuffers=${DRUID_druid_processing_numMergeBuffers}
-#     - DRUID_LOG4J=${DRUID_DRUID_LOG4J}
-# x-airflow-common: &airflow
-#   image: apache/airflow:2.5.2
-#   user: "0:0"
-#   environment:
-#     - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_AIRFLOW__CORE__FERNET_KEY}
-#     - AIRFLOW__CORE__EXECUTOR=${AIRFLOW_AIRFLOW__CORE__EXECUTOR}
-#     - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=${AIRFLOW_AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION}
-#     - AIRFLOW__CORE__LOAD_EXAMPLES=${AIRFLOW_AIRFLOW__CORE__LOAD_EXAMPLES}
-#     - SQLALCHEMY_SILENCE_UBER_WARNING=${AIRFLOW_SQLALCHEMY_SILENCE_UBER_WARNING}
-#     - AIRFLOW_UID=${AIRFLOW_AIRFLOW_UID}
-#     - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=${AIRFLOW_AIRFLOW__DATABASE__SQL_ALCHEMY_CONN}
-#     - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=${AIRFLOW_AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS}
-#     - _AIRFLOW_DB_UPGRADE=${AIRFLOW__AIRFLOW_DB_UPGRADE}
-#     - _AIRFLOW_WWW_USER_CREATE=${AIRFLOW__AIRFLOW_WWW_USER_CREATE}
-#     - _AIRFLOW_WWW_USER_USERNAME=${AIRFLOW__AIRFLOW_WWW_USER_USERNAME}
-#     - _AIRFLOW_WWW_USER_PASSWORD=${AIRFLOW__AIRFLOW_WWW_USER_PASSWORD}
-#     - PROVIDER_NAME=${AIRFLOW_PROVIDER_NAME}
-#     - CLIENT_ID=${AIRFLOW_CLIENT_ID}
-#     - CLIENT_SECRET=${AIRFLOW_CLIENT_SECRET}
-#     - OIDC_ISSUER=${AIRFLOW_OIDC_ISSUER}
-#     - KEYCLOAK_BASE_URL=${AIRFLOW_KEYCLOAK_BASE_URL}
-#     - KEYCLOAK_TOKEN_URL=${AIRFLOW_KEYCLOAK_TOKEN_URL}
-#     - KEYCLOAK_AUTH_URL=${AIRFLOW_KEYCLOAK_AUTH_URL}
-#     - AUTH_USER_REGISTRATION=${AIRFLOW_AUTH_USER_REGISTRATION}
-#     - AUTH_USER_REGISTRATION_ROLE=${AIRFLOW_AUTH_USER_REGISTRATION_ROLE}
-#     - AUTH_ROLES_SYNC_AT_LOGIN=${AIRFLOW_AUTH_ROLES_SYNC_AT_LOGIN}
-#     - ENVIRONMENT=${AIRFLOW_ENVIRONMENT}
-#   volumes:
-#     - ./airflow/dags:/opt/airflow/dags
-#     - ./airflow/logs:/opt/airflow/logs
-#     - ./airflow/plugins:/opt/airflow/plugins
-#     - ./airflow/webserver_config.py:/opt/airflow/webserver_config.py
-#     - ./airflow/user_auth.py:/opt/airflow/user_auth.py
-#     - ./airflow/airflow.cfg:/opt/airflow/airflow.cfg
-#     - /var/run/docker.sock:/var/run/docker.sock
+x-druid-common: &druid
+  environment:
+    - DRUID_SINGLE_NODE_CONF=${DRUID_DRUID_SINGLE_NODE_CONF}
+    - druid_emitter_logging_logLevel=${DRUID_druid_emitter_logging_logLevel}
+    - druid_extensions_loadList=${DRUID_druid_extensions_loadList}
+    - druid_zk_service_host=${DRUID_druid_zk_service_host}
+    - druid_metadata_storage_host=${DRUID_druid_metadata_storage_host}
+    # - druid_metadata_storage_type=${DRUID_druid_metadata_storage_type}
+    # - druid_metadata_storage_connector_connectURI=${DRUID_druid_metadata_storage_connector_connectURI}
+    # - druid_metadata_storage_connector_user=${DRUID_druid_metadata_storage_connector_user}
+    # - druid_metadata_storage_connector_password=${DRUID_druid_metadata_storage_connector_password}
+    - druid_coordinator_balancer_strategy=${DRUID_druid_coordinator_balancer_strategy}
+    - druid_indexer_runner_javaOptsArray=${DRUID_druid_indexer_runner_javaOptsArray}
+    - druid_indexer_fork_property_druid_processing_buffer_sizeBytes=${DRUID_druid_indexer_fork_property_druid_processing_buffer_sizeBytes}
+    - druid_storage_type=${DRUID_druid_storage_type}
+    - druid_storage_storageDirectory=${DRUID_druid_storage_storageDirectory}
+    - druid_indexer_logs_type=${DRUID_druid_indexer_logs_type}
+    - druid_indexer_logs_directory=${DRUID_druid_indexer_logs_directory}
+    - druid_processing_numThreads=${DRUID_druid_processing_numThreads}
+    - druid_processing_numMergeBuffers=${DRUID_druid_processing_numMergeBuffers}
+    - DRUID_LOG4J=${DRUID_DRUID_LOG4J}
+x-airflow-common: &airflow
+  image: apache/airflow:2.5.2
+  user: "0:0"
+  environment:
+    - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_AIRFLOW__CORE__FERNET_KEY}
+    - AIRFLOW__CORE__EXECUTOR=${AIRFLOW_AIRFLOW__CORE__EXECUTOR}
+    - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=${AIRFLOW_AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION}
+    - AIRFLOW__CORE__LOAD_EXAMPLES=${AIRFLOW_AIRFLOW__CORE__LOAD_EXAMPLES}
+    - SQLALCHEMY_SILENCE_UBER_WARNING=${AIRFLOW_SQLALCHEMY_SILENCE_UBER_WARNING}
+    - AIRFLOW_UID=${AIRFLOW_AIRFLOW_UID}
+    - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=${AIRFLOW_AIRFLOW__DATABASE__SQL_ALCHEMY_CONN}
+    - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=${AIRFLOW_AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS}
+    - _AIRFLOW_DB_UPGRADE=${AIRFLOW__AIRFLOW_DB_UPGRADE}
+    - _AIRFLOW_WWW_USER_CREATE=${AIRFLOW__AIRFLOW_WWW_USER_CREATE}
+    - _AIRFLOW_WWW_USER_USERNAME=${AIRFLOW__AIRFLOW_WWW_USER_USERNAME}
+    - _AIRFLOW_WWW_USER_PASSWORD=${AIRFLOW__AIRFLOW_WWW_USER_PASSWORD}
+    - PROVIDER_NAME=${AIRFLOW_PROVIDER_NAME}
+    - CLIENT_ID=${AIRFLOW_CLIENT_ID}
+    - CLIENT_SECRET=${AIRFLOW_CLIENT_SECRET}
+    - OIDC_ISSUER=${AIRFLOW_OIDC_ISSUER}
+    - KEYCLOAK_BASE_URL=${AIRFLOW_KEYCLOAK_BASE_URL}
+    - KEYCLOAK_TOKEN_URL=${AIRFLOW_KEYCLOAK_TOKEN_URL}
+    - KEYCLOAK_AUTH_URL=${AIRFLOW_KEYCLOAK_AUTH_URL}
+    - AUTH_USER_REGISTRATION=${AIRFLOW_AUTH_USER_REGISTRATION}
+    - AUTH_USER_REGISTRATION_ROLE=${AIRFLOW_AUTH_USER_REGISTRATION_ROLE}
+    - AUTH_ROLES_SYNC_AT_LOGIN=${AIRFLOW_AUTH_ROLES_SYNC_AT_LOGIN}
+    - ENVIRONMENT=${AIRFLOW_ENVIRONMENT}
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/logs:/opt/airflow/logs
+    - ./airflow/plugins:/opt/airflow/plugins
+    - ./airflow/webserver_config.py:/opt/airflow/webserver_config.py
+    - ./airflow/user_auth.py:/opt/airflow/user_auth.py
+    - ./airflow/airflow.cfg:/opt/airflow/airflow.cfg
+    - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
   superset_data: {}
@@ -204,215 +204,215 @@ services:
   # =======
   #  Druid
   # =======
-  # db:
-  #   image: postgres:14
-  #   container_name: db
-  #   volumes:
-  #     - metadata_data:/var/lib/postgresql/data
-  #   environment:
-  #     - POSTGRES_PASSWORD=${DRUID_POSTGRES_PASSWORD}
-  #     - POSTGRES_USER=${DRUID_POSTGRES_USER}
-  #     - POSTGRES_DB=${DRUID_POSTGRES_DB}
+  db:
+    image: postgres:14
+    container_name: db
+    volumes:
+      - metadata_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${DRUID_POSTGRES_PASSWORD}
+      - POSTGRES_USER=${DRUID_POSTGRES_USER}
+      - POSTGRES_DB=${DRUID_POSTGRES_DB}
 
   # Need 3.5 or later for container nodes
-  # zookeeper:
-  #   container_name: zookeeper
-  #   image: zookeeper:3.5
-  #   ports:
-  #     - "2181:2181"
-  #   environment:
-  #     - ZOO_MY_ID=${ZOOKEEPER_ZOO_MY_ID}
+  zookeeper:
+    container_name: zookeeper
+    image: zookeeper:3.5
+    ports:
+      - "2181:2181"
+    environment:
+      - ZOO_MY_ID=${ZOOKEEPER_ZOO_MY_ID}
 
-  # coordinator:
-  #   <<: *druid
-  #   image: apache/druid:25.0.0
-  #   container_name: coordinator
-  #   volumes:
-  #     - ./storage:/opt/shared
-  #     - coordinator_var:/opt/druid/var
-  #   depends_on:
-  #     - zookeeper
-  #     - db
-  #   ports:
-  #     - "8081:8081"
-  #   command:
-  #     - coordinator
+  coordinator:
+    <<: *druid
+    image: apache/druid:25.0.0
+    container_name: coordinator
+    volumes:
+      - ./storage:/opt/shared
+      - coordinator_var:/opt/druid/var
+    depends_on:
+      - zookeeper
+      - db
+    ports:
+      - "8081:8081"
+    command:
+      - coordinator
 
-  # broker:
-  #   <<: *druid
-  #   image: apache/druid:25.0.0
-  #   container_name: broker
-  #   volumes:
-  #     - broker_var:/opt/druid/var
-  #   depends_on:
-  #     - zookeeper
-  #     - db
-  #     - coordinator
-  #   ports:
-  #     - "8082:8082"
-  #   command:
-  #     - broker
+  broker:
+    <<: *druid
+    image: apache/druid:25.0.0
+    container_name: broker
+    volumes:
+      - broker_var:/opt/druid/var
+    depends_on:
+      - zookeeper
+      - db
+      - coordinator
+    ports:
+      - "8082:8082"
+    command:
+      - broker
 
-  # historical:
-  #   <<: *druid
-  #   image: apache/druid:25.0.0
-  #   container_name: historical
-  #   volumes:
-  #     - ./storage:/opt/shared
-  #     - historical_var:/opt/druid/var
-  #   depends_on:
-  #     - zookeeper
-  #     - db
-  #     - coordinator
-  #   ports:
-  #     - "8083:8083"
-  #   command:
-  #     - historical
+  historical:
+    <<: *druid
+    image: apache/druid:25.0.0
+    container_name: historical
+    volumes:
+      - ./storage:/opt/shared
+      - historical_var:/opt/druid/var
+    depends_on:
+      - zookeeper
+      - db
+      - coordinator
+    ports:
+      - "8083:8083"
+    command:
+      - historical
 
-  # middlemanager:
-  #   <<: *druid
-  #   image: apache/druid:25.0.0
-  #   container_name: middlemanager
-  #   volumes:
-  #     - ./storage:/opt/shared
-  #     - middle_var:/opt/druid/var
-  #   depends_on:
-  #     - zookeeper
-  #     - db
-  #     - coordinator
-  #   ports:
-  #     - "8091:8091"
-  #     - "8100-8105:8100-8105"
-  #   command:
-  #     - middleManager
+  middlemanager:
+    <<: *druid
+    image: apache/druid:25.0.0
+    container_name: middlemanager
+    volumes:
+      - ./storage:/opt/shared
+      - middle_var:/opt/druid/var
+    depends_on:
+      - zookeeper
+      - db
+      - coordinator
+    ports:
+      - "8091:8091"
+      - "8100-8105:8100-8105"
+    command:
+      - middleManager
 
-  # router:
-  #   <<: *druid
-  #   image: apache/druid:25.0.0
-  #   container_name: router
-  #   volumes:
-  #     - ./storage:/opt/shared
-  #     - router_var:/opt/druid/var
-  #   depends_on:
-  #     - zookeeper
-  #     - db
-  #     - coordinator
-  #   ports:
-  #     - "8884:8888"
-  #   command:
-  #     - router
+  router:
+    <<: *druid
+    image: apache/druid:25.0.0
+    container_name: router
+    volumes:
+      - ./storage:/opt/shared
+      - router_var:/opt/druid/var
+    depends_on:
+      - zookeeper
+      - db
+      - coordinator
+    ports:
+      - "8884:8888"
+    command:
+      - router
 
   # =======
   # Superset
   # =======
-  # superset_cache:
-  #   container_name: superset_cache
-  #   image: redis:5
-  #   restart: always
+  superset_cache:
+    container_name: superset_cache
+    image: redis:5
+    restart: always
 
-  # superset_db:
-  #   container_name: superset_db
-  #   image: postgres:14
-  #   volumes:
-  #     - superset_data:/var/lib/postgresql/data
-  #   environment:
-  #     - POSTGRES_PASSWORD=${SUPERSET_POSTGRES_PASSWORD}
-  #     - POSTGRES_USER=${SUPERSET_POSTGRES_USER}
-  #     - POSTGRES_DB=${SUPERSET_POSTGRES_DB}
+  superset_db:
+    container_name: superset_db
+    image: postgres:14
+    volumes:
+      - superset_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${SUPERSET_POSTGRES_PASSWORD}
+      - POSTGRES_USER=${SUPERSET_POSTGRES_USER}
+      - POSTGRES_DB=${SUPERSET_POSTGRES_DB}
 
-  # superset:
-  #   container_name: superset
-  #   build: ./superset/.
-  #   environment:
-  #     - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
-  #     - SUPERSET_DATABASE_URI=${SUPERSET_DATABASE_URI}
-  #     - SUPERSET_KEYCLOAK_APP_REALM=${SUPERSET_KEYCLOAK_APP_REALM}
-  #     - SUPERSET_KEYCLOAK_CLIENT_ID=${SUPERSET_KEYCLOAK_CLIENT_ID}
-  #     - SUPERSET_KEYCLOAK_CLIENT_SECRET=${SUPERSET_KEYCLOAK_CLIENT_SECRET}
-  #     - SUPERSET_KEYCLOAK_EXTERNAL_URL=${SUPERSET_KEYCLOAK_EXTERNAL_URL}
-  #     - SUPERSET_KEYCLOAK_INTERNAL_URL=${SUPERSET_KEYCLOAK_INTERNAL_URL}
-  #     - SUPERSET_FEATURE_EMBEDDED_SUPERSET=True
-  #   volumes:
-  #     - ./superset/superset_config.py:/app/pythonpath/superset_config.py
-  #   ports:
-  #     - 8883:8088
-  #   depends_on:
-  #     - superset_db
-  #     - superset_cache
-  #   restart: always
-  #   entrypoint: /bin/bash
-  #   command:
-  #     - -c
-  #     - |
-  #       superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
-  #       superset db upgrade
-  #       superset superset init
-  #       cd /usr/bin && ./run-server.sh
+  superset:
+    container_name: superset
+    build: ./superset/.
+    environment:
+      - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
+      - SUPERSET_DATABASE_URI=${SUPERSET_DATABASE_URI}
+      - SUPERSET_KEYCLOAK_APP_REALM=${SUPERSET_KEYCLOAK_APP_REALM}
+      - SUPERSET_KEYCLOAK_CLIENT_ID=${SUPERSET_KEYCLOAK_CLIENT_ID}
+      - SUPERSET_KEYCLOAK_CLIENT_SECRET=${SUPERSET_KEYCLOAK_CLIENT_SECRET}
+      - SUPERSET_KEYCLOAK_EXTERNAL_URL=${SUPERSET_KEYCLOAK_EXTERNAL_URL}
+      - SUPERSET_KEYCLOAK_INTERNAL_URL=${SUPERSET_KEYCLOAK_INTERNAL_URL}
+      - SUPERSET_FEATURE_EMBEDDED_SUPERSET=True
+    volumes:
+      - ./superset/superset_config.py:/app/pythonpath/superset_config.py
+    ports:
+      - 8883:8088
+    depends_on:
+      - superset_db
+      - superset_cache
+    restart: always
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
+        superset db upgrade
+        superset superset init
+        cd /usr/bin && ./run-server.sh
 
   # =====
   #  Hop
   # =====
-  # hop:
-  #   build: ./hop
-  #   container_name: hop
-  #   user: "0:1000"
-  #   ports:
-  #     - "8882:8080"
-  #   volumes:
-  #     - ./hop/pipelines:/files
-  #     - ./storage:/home
-  #     - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
-  #     - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
-  #   environment:
-  #     - HOP_KEYCLOAK_URL=${HOP_KEYCLOAK_URL}
+  hop:
+    build: ./hop
+    container_name: hop
+    user: "0:1000"
+    ports:
+      - "8882:8080"
+    volumes:
+      - ./hop/pipelines:/files
+      - ./storage:/home
+      - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
+      - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
+    environment:
+      - HOP_KEYCLOAK_URL=${HOP_KEYCLOAK_URL}
 
   #   # =======
   #   # Airflow
   #   # =======
-  # airflow-pg:
-  #   image: postgres:14
-  #   container_name: airflow-pg
-  #   environment:
-  #     - POSTGRES_USER=${AIRFLOW_POSTGRES_USER}
-  #     - POSTGRES_PASSWORD=${AIRFLOW_POSTGRES_PASSWORD}
-  #     - POSTGRES_DB=${AIRFLOW_POSTGRES_DB}
-  #   ports:
-  #     - "6434:6432"
-  #   volumes:
-  #     - airflow_data:/var/lib/postgresql/data
-  #   healthcheck:
-  #     test: ["CMD", "pg_isready", "-U", "airflow"]
-  #     interval: 5s
-  #     retries: 5
+  airflow-pg:
+    image: postgres:14
+    container_name: airflow-pg
+    environment:
+      - POSTGRES_USER=${AIRFLOW_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${AIRFLOW_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${AIRFLOW_POSTGRES_DB}
+    ports:
+      - "6434:6432"
+    volumes:
+      - airflow_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 5s
+      retries: 5
 
-  # airflow-scheduler:
-  #   <<: *airflow
-  #   depends_on:
-  #     - airflow-pg
-  #   container_name: airflow-scheduler
-  #   command: scheduler
-  #   restart: on-failure
-  #   ports:
-  #     - "8793:8793"
+  airflow-scheduler:
+    <<: *airflow
+    depends_on:
+      - airflow-pg
+    container_name: airflow-scheduler
+    command: scheduler
+    restart: on-failure
+    ports:
+      - "8793:8793"
 
-  # airflow-webserver:
-  #   <<: *airflow
-  #   depends_on:
-  #     airflow-pg:
-  #       condition: service_healthy
-  #     keycloak:
-  #       condition: service_healthy
-  #       restart: true
-  #   container_name: airflow-webserver
-  #   restart: always
-  #   command: webserver
-  #   ports:
-  #     - "8881:8080"
-  #   healthcheck:
-  #     test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
-  #     interval: 30s
-  #     timeout: 30s
-  #     retries: 5
+  airflow-webserver:
+    <<: *airflow
+    depends_on:
+      airflow-pg:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+        restart: true
+    container_name: airflow-webserver
+    restart: always
+    command: webserver
+    ports:
+      - "8881:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
 
   # =======
   # keycloak
@@ -520,60 +520,60 @@ services:
   #  OpenHIM
   # =====
 
-  # mongo-db:
-  #   container_name: mongo-db
-  #   image: mongo:4.0
-  #   volumes:
-  #     - "mongo-data:/data/db"
-  #   restart: unless-stopped
+  mongo-db:
+    container_name: mongo-db
+    image: mongo:4.0
+    volumes:
+      - "mongo-data:/data/db"
+    restart: unless-stopped
 
-  # openhim-core:
-  #   container_name: openhim-core
-  #   image: jembi/openhim-core:latest
-  #   restart: unless-stopped
-  #   environment:
-  #     - mongo_url=mongodb://mongo-db/openhim-development
-  #     - mongo_atnaUrl=mongodb://mongo-db/openhim-development
-  #     - api_authenticationTypes=["token", "basic", "openid", "local"]
-  #     - authentication_enableCustomTokenAuthentication=true
-  #     - api_openid_url=${OPENHIM_KEYCLOAK_FRONTEND_URL}/realms/${OPENHIM_KEYCLOAK_REALM_NAME}
-  #     - api_openid_callbackUrl=${OPENHIM_KEYCLOAK_ROOT_URL}
-  #     - api_openid_clientId=${OPENHIM_KEYCLOAK_CLIENT_ID}
-  #     - api_openid_clientSecret=${OPENHIM_KEYCLOAK_SECRET}
-  #     - NODE_TLS_REJECT_UNAUTHORIZED=0
-  #   extra_hosts:
-  #     - "host.docker.internal:host-gateway"
-  #     - "keycloak.igad.local:host-gateway"
+  openhim-core:
+    container_name: openhim-core
+    image: jembi/openhim-core:latest
+    restart: unless-stopped
+    environment:
+      - mongo_url=mongodb://mongo-db/openhim-development
+      - mongo_atnaUrl=mongodb://mongo-db/openhim-development
+      - api_authenticationTypes=["token", "basic", "openid", "local"]
+      - authentication_enableCustomTokenAuthentication=true
+      - api_openid_url=${OPENHIM_KEYCLOAK_FRONTEND_URL}/realms/${OPENHIM_KEYCLOAK_REALM_NAME}
+      - api_openid_callbackUrl=${OPENHIM_KEYCLOAK_ROOT_URL}
+      - api_openid_clientId=${OPENHIM_KEYCLOAK_CLIENT_ID}
+      - api_openid_clientSecret=${OPENHIM_KEYCLOAK_SECRET}
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "keycloak.igad.local:host-gateway"
 
-  #   ports:
-  #     - "8080:8080"
-  #     - "5000:5000"
-  #     - "5001:5001"
-  #   depends_on:
-  #     - mongo-db
-  #   healthcheck:
-  #     test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
-  #     interval: 30s
-  #     timeout: 30s
-  #     retries: 3
+    ports:
+      - "8080:8080"
+      - "5000:5000"
+      - "5001:5001"
+    depends_on:
+      - mongo-db
+    healthcheck:
+      test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
+      interval: 30s
+      timeout: 30s
+      retries: 3
 
-  # openhim-console:
-  #   container_name: openhim-console
-  #   image: jembi/openhim-console:latest
-  #   ports:
-  #     - "9000:80"
-  #   environment:
-  #     - KC_OPENHIM_SSO_ENABLED=true
-  #     - KC_OPENHIM_CLIENT_ID=${OPENHIM_KEYCLOAK_CLIENT_ID}
-  #     - KC_REALM_NAME=${OPENHIM_KEYCLOAK_REALM_NAME}
-  #     - KC_FRONTEND_URL=${OPENHIM_KEYCLOAK_FRONTEND_URL}
-  #     - OPENHIM_CORE_MEDIATOR_HOSTNAME=${OPENHIM_CORE_MEDIATOR_HOSTNAME}
-  #     - OPENHIM_MEDIATOR_API_PORT=${OPENHIM_MEDIATOR_API_PORT}
-  #   depends_on:
-  #     - openhim-core
-  #   restart: unless-stopped
-  #   healthcheck:
-  #     test: "curl -sS http://openhim-console || exit 1"
-  #     interval: 30s
-  #     timeout: 30s
-  #     retries: 3
+  openhim-console:
+    container_name: openhim-console
+    image: jembi/openhim-console:latest
+    ports:
+      - "9000:80"
+    environment:
+      - KC_OPENHIM_SSO_ENABLED=true
+      - KC_OPENHIM_CLIENT_ID=${OPENHIM_KEYCLOAK_CLIENT_ID}
+      - KC_REALM_NAME=${OPENHIM_KEYCLOAK_REALM_NAME}
+      - KC_FRONTEND_URL=${OPENHIM_KEYCLOAK_FRONTEND_URL}
+      - OPENHIM_CORE_MEDIATOR_HOSTNAME=${OPENHIM_CORE_MEDIATOR_HOSTNAME}
+      - OPENHIM_MEDIATOR_API_PORT=${OPENHIM_MEDIATOR_API_PORT}
+    depends_on:
+      - openhim-core
+    restart: unless-stopped
+    healthcheck:
+      test: "curl -sS http://openhim-console || exit 1"
+      interval: 30s
+      timeout: 30s
+      retries: 3
