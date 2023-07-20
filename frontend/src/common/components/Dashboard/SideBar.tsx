@@ -44,7 +44,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
           <BiHome className="text-xl" />
           <p>Home</p>
         </NavLink>
-        {permits?.Dashboard && permits?.Dashboard?.read && (
+        {hasPermission('dashboard:read') && (
           <NavLink
             href="/dashboards"
             activeClassName="bg-prim text-white"
