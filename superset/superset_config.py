@@ -75,13 +75,6 @@ AUTH_USER_REGISTRATION_ROLE = os.getenv('AUTH_USER_REGISTRATION_ROLE','Public')
 
 logger = logging.getLogger(__name__)
 
-# Configure client
-keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_INTERNAL_URL,
-                                client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
-                                realm_name=SUPERSET_KEYCLOAK_APP_REALM,
-                                client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET)
-
-
 class CustomAuthOAuthView(AuthOAuthView):
     @expose("/oauth-authorized/<provider>")
     def oauth_authorized(self, provider: str) -> WerkzeugResponse:
@@ -167,9 +160,12 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
             )
             me.raise_for_status()
             data = me.json()
-            #logger.debug("Response from Keycloak: %s", resp)
-            #logger.debug("User info from Keycloak: %s", data)
 
+            # Configure client
+            keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_INTERNAL_URL,
+                                            client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
+                                            realm_name=SUPERSET_KEYCLOAK_APP_REALM,
+                                            client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET)
             # Decode token to get the roles
             KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" + keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
             options = {"verify_signature": True, "verify_aud": False, "verify_exp": True}
@@ -190,15 +186,25 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
         # pylint: disable=import-outside-toplevel
         from superset.extensions import feature_flag_manager
 
+
+        keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL,
+                                client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
+                                realm_name=SUPERSET_KEYCLOAK_APP_REALM,
+                                client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET,
+                                verify=False) # @todo : add env var for local dev
+
         # next, try to login using Basic Auth
         access_token = request.headers.get('X-KeycloakToken')
         if access_token:
             token_info = keycloak_openid.introspect(access_token)
-            logger.info("Keycloak Introspect", token_info)
+            logger.info("Keycloak Introspect")
+            logger.info(token_info)
             if (token_info['active']):
                 user = self.find_user(email=token_info['email'])
                 logger.info("Keycloak auth success")
                 return user
+            else:
+                raise ValueError("Keycloak Token is invalid")
         
         if feature_flag_manager.is_feature_enabled("EMBEDDED_SUPERSET"):
             return self.get_guest_user_from_request(request)
