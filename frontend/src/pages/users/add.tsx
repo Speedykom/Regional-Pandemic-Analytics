@@ -12,7 +12,8 @@ import Select from "react-select";
 import "react-phone-number-input/style.css";
 import PhoneInput from "react-phone-number-input";
 import { usePermission } from "@/common/hooks/use-permission";
-import {ToastContainer, toast} from "react-toastify"
+import { ToastContainer, toast } from "react-toastify";
+import secureLocalStorage from "react-secure-storage";
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -25,14 +26,13 @@ export const AddUser = () => {
 	const [role, setRole] = useState<string>("");
 	const [phone, setPhone] = useState<string>();
 	const [roleLoading, setRoleLoading] = useState(true);
-	
+
 	const triggerEnabled = () => {
 		if (enabled) {
-			setEnabled(false);  
+			setEnabled(false);
 		} else {
 			setEnabled(true);
 		}
-		console.log({ enabled });
 	};
 
 	const triggerVerify = () => {
@@ -42,6 +42,10 @@ export const AddUser = () => {
 			setVerify(true);
 		}
 	};
+
+	const tokens: any = secureLocalStorage.getItem("tokens") as object;
+	const accessToken =
+		tokens && "accessToken" in tokens ? tokens.accessToken : "";
 
 	const onFinish = async (values: any) => {
 		values["enabled"] = enabled;
@@ -56,21 +60,20 @@ export const AddUser = () => {
 				{
 					headers: {
 						"Content-Type": "application/json",
+						Authorization: `Bearer ${accessToken}`,
 					},
 				}
 			)
 			.then((res) => {
-                toast.success(res.data.message, {
+				toast.success(res.data.message, {
 					position: "top-right",
-					delay: 4000
-                })
+				});
 				form.resetFields();
 			})
 			.catch((err) => {
 				toast.error(err.response.data.message, {
-                    position: "top-right",
-                    delay: 4000
-                })
+					position: "top-right",
+				});
 			});
 	};
 
@@ -347,7 +350,6 @@ export const AddUser = () => {
 								<button className="bg-prim border border-gray-200 p-3 rounded-md text-white">
 									Save User
 								</button>
-								
 								<ToastContainer />
 							</div>
 						</Form>
