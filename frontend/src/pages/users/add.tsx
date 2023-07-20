@@ -347,6 +347,7 @@ export const AddUser = () => {
 								<button className="bg-prim border border-gray-200 p-3 rounded-md text-white">
 									Save User
 								</button>
+								
 								<ToastContainer />
 							</div>
 						</Form>
