@@ -1,42 +1,9 @@
-import { useDashboards } from "../hooks";
-import { useEffect, useState } from "react";
-import axios from "axios";
 import { IGADTable } from "@/common/components/common/table";
-import { getData } from "@/common/utils";
 import { useCharts } from "../hooks/chart";
-import getConfig from 'next/config'
-import secureLocalStorage from "react-secure-storage";
+import { useGetChartsQuery } from "../superset";
  
-const { publicRuntimeConfig } = getConfig()
-
 export const ChartList = () => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [data, setData] = useState<any>({ count: 0, result: [] });
-
-  const tokens: any = secureLocalStorage.getItem("tokens");
-	const accessToken = tokens && 'accessToken' in tokens ? tokens.accessToken : '' 
-
-  useEffect(() => {
-    setLoading(true);
-    const fetchCharts = async () => {
-      try {
-        const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/superset/list/charts`;
-        const response = await axios.get(url, {
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "Authorization": `Bearer ${accessToken}`
-          },
-        });
-        setData(response?.data);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-      }
-    };
-    fetchCharts();
-  }, [accessToken]);
-
+  const { data, isFetching } = useGetChartsQuery()
   const { columns } = useCharts();
 
   return (
@@ -55,8 +22,8 @@ export const ChartList = () => {
         <div className="py-2">
           <IGADTable
             key={"id"}
-            loading={loading}
-            rows={data.result}
+            loading={isFetching}
+            rows={data ? data.result : []}
             columns={columns}
           />
         </div>
