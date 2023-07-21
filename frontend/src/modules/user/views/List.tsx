@@ -22,31 +22,27 @@ import { FiDelete, FiEdit, FiEye } from "react-icons/fi";
 import { useDisableUserMutation, useGetUsersQuery } from "../user";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import Popconfirm from "@/common/components/popconfirm";
+import Popconfirm from "@/common/components/common/popconfirm";
 
 export const UserList = () => {
 	const { data } = useGetUsersQuery();
-	const [disableUser, result] = useDisableUserMutation();
+	const [disableUser, { isLoading }] = useDisableUserMutation();
 	const router = useRouter();
-	const [onDeleteLoad, setOnDeleteLoad] = useState(false);
 
-	const onDelete = (id: string) => {
-		setOnDeleteLoad(true);
-		disableUser(id).then((res: any) => {
+	const onDelete = async (id: string) => {
+		await disableUser(id).then((res: any) => {
 			if (res.error) {
-				setOnDeleteLoad(false);
 				toast.error(res?.response?.data?.message, {
 					position: "top-right",
 				});
 				console.log({ error: res.error });
 				return;
 			} else {
-				setOnDeleteLoad(false);
 				toast.success(res?.data?.message, {
 					position: "top-right",
 				});
 			}
-		});
+		})
 	};
 
 	return (
@@ -160,10 +156,7 @@ export const UserList = () => {
 													Verified
 												</Badge>
 											) : (
-												<Badge
-													icon={XMarkIcon}
-													color="red"
-												>
+												<Badge icon={XMarkIcon} color="red">
 													Unverified
 												</Badge>
 											)}{" "}
@@ -178,10 +171,7 @@ export const UserList = () => {
 													Active
 												</Badge>
 											) : (
-												<Badge
-													color="red"
-													icon={SignalSlashIcon}
-												>
+												<Badge color="red" icon={SignalSlashIcon}>
 													Disabled
 												</Badge>
 											)}{" "}
@@ -204,20 +194,20 @@ export const UserList = () => {
 											>
 												<FiEdit />
 											</Button>
-											<Popconfirm title="This user will be denied assces, continue?" cancelText="Cancel" okText="Confirm" onConfirm={() => onDelete(item.id)}>
+											<Popconfirm
+												title="This user will be denied assces, continue?"
+												cancelText="Cancel"
+												okText="Confirm"
+												onConfirm={() => onDelete(item.id)}
+											>
 												<Button
 													title="Disable User"
-													loading={onDeleteLoad}
+													loading={isLoading}
 													className="text-white bg-red-500 border-0"
-													// onClick={(e) => {
-													// 	e.preventDefault();
-													// 	onDelete(item.id);
-													// }}
 												>
 													<FiDelete />
 												</Button>
 											</Popconfirm>
-											
 										</div>
 									</TableCell>
 								</TableRow>
