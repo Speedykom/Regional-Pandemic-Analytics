@@ -3,7 +3,7 @@ import { embedDashboard } from '@superset-ui/embedded-sdk';
 import DashboardFrame from '@/common/components/Dashboard/DashboardFrame';
 import getConfig from 'next/config';
 import { usePermission } from '@/common/hooks/use-permission';
-import { Unauthorised } from '@/common/components/common/unauth';
+import { Unauthorized } from '@/common/components/common/unauth';
 import { useRouter } from 'next/router';
 import { useEnableDashboardMutation, useGenerateGuestTokenMutation } from '@/modules/superset/superset';
 
@@ -49,7 +49,7 @@ export default function SupersetDashboard() {
   }, [id]);
 
   if (!hasPermission('dashboard:read')) {
-    return <Unauthorised />;
+    return <Unauthorized />;
   }
 
   return (

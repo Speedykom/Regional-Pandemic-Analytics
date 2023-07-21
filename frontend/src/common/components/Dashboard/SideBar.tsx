@@ -54,7 +54,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
             <p>Dashboard</p>
           </NavLink>
         )}
-        {permits?.Chart && permits?.Chart?.read && (
+        {hasPermission('chart:read') && (
           <NavLink
             href="/charts"
             activeClassName="bg-prim text-white"

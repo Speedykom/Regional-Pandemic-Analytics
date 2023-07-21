@@ -1,7 +1,7 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from '@/common/redux/api';
-import { DashboardList, DashboardStatus } from './interface';
+import { ChartList, DashboardList, DashboardStatus } from './interface';
 
 export const DashboardApi = createApi({
   reducerPath: 'DashboardApi',
@@ -27,5 +27,20 @@ export const DashboardApi = createApi({
   }),
 });
 
-export const { useGetDashboardsQuery, useEnableDashboardMutation, useGenerateGuestTokenMutation } =
-  DashboardApi;
+export const ChartApi = createApi({
+  reducerPath: 'ChartApi',
+  baseQuery: baseQuery,
+  endpoints: (builder) => ({
+    getCharts: builder.query<ChartList, void>({
+      query: () => 'superset/list/charts',
+    }),
+  }),
+});
+
+export const {
+  useGetDashboardsQuery,
+  useEnableDashboardMutation,
+  useGenerateGuestTokenMutation,
+} = DashboardApi;
+
+export const { useGetChartsQuery } = ChartApi;
