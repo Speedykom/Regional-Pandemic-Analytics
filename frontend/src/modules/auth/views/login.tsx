@@ -1,58 +1,48 @@
-import Head from "next/head";
-import Image from "next/image";
-import { useRouter } from "next/router";
-import { Button, Checkbox, Form, Input } from "antd";
-import { useState } from "react";
-import { ShowMessage } from "@/common/components/ShowMessage";
-import jwt_decode from "jwt-decode";
-import secureLocalStorage from "react-secure-storage";
-import { getUserRole } from "@/common/utils/auth";
-import { useLoginMutation } from "../auth";
+import Head from 'next/head';
+import Image from 'next/image';
+import { useRouter } from 'next/router';
+import { Button, Checkbox, Form, Input } from 'antd';
+import { ShowMessage } from '@/common/components/ShowMessage';
+import secureLocalStorage from 'react-secure-storage';
+import { getUserRole } from '@/common/utils/auth';
+import { setCredentials, useLoginMutation } from '../auth';
+import { useDispatch } from 'react-redux';
+import jwt_decode from 'jwt-decode';
+import { Jwt } from '../interface';
 
 export default function LoginForm() {
-  const [loading, setLoading] = useState(false);
-  const [login] = useLoginMutation();
+  const [login, { isLoading }] = useLoginMutation();
   const [form] = Form.useForm();
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const onFinish = (data: any) => {
-    setLoading(true);
-
-    login(data).then(async (res: any) => {
-      if (res.error) {
-        setLoading(false);
-
-        ShowMessage("error", "Wrong username or password!");
+    login(data).then(async (res) => {
+      if ('error' in res) {
+        ShowMessage('error', 'Wrong username or password!');
         return;
       }
 
-      let payload: any = jwt_decode(res.data.access_token);
-
-      secureLocalStorage.setItem("tokens", {
-        accessToken: res.data.access_token,
-        refreshToken: res.data.refresh_token,
-      });
-
-      secureLocalStorage.setItem("permissions", res.data.permissions);
-
-      // @todo : remove once not needed anymore
-      const role = await getUserRole(payload?.realm_access?.roles);
-      secureLocalStorage.setItem("user_role", role);
-
-      // @ts-ignore
-      secureLocalStorage.setItem("username", payload?.given_name);
-      // @ts-ignore
-      secureLocalStorage.setItem("sue", payload?.email);
-      secureLocalStorage.setItem("userId", payload?.sub);
-      secureLocalStorage.setItem("user", payload);
-      secureLocalStorage.setItem(
-        "passcode",
-        Buffer.from(data.password).toString("base64")
+      dispatch(
+        setCredentials({
+          permissions: res.data.permissions,
+          accessToken: res.data.access_token,
+          refreshToken: res.data.refresh_token,
+        })
       );
 
-      secureLocalStorage.setItem("sua", "authenticated");
+      // @todo : this needs cleaning in another PR, remove once not needed anymore
+      const { realm_access } = jwt_decode(res.data.access_token) as Jwt;
+      const role = await getUserRole(realm_access?.roles);
+      secureLocalStorage.setItem('user_role', role);
 
-      router.push("/home");
+      // @todo : seek a better way to handle this
+      secureLocalStorage.setItem(
+        'passcode',
+        Buffer.from(data.password).toString('base64')
+      );
+
+      router.push('/home');
     });
   };
 
@@ -62,7 +52,7 @@ export default function LoginForm() {
         <title>Regional Pandemic Analytics Tool | Welcome</title>
       </Head>
       <section className="gradient-form md:h-screen">
-        <div className="container mx-auto px-6" style={{ marginTop: "10vh" }}>
+        <div className="container mx-auto px-6" style={{ marginTop: '10vh' }}>
           <div className="flex justify-center items-center flex-wrap g-6 text-gray-800">
             <div className="xl:w-10/12">
               <div className="block bg-white shadow-lg rounded-lg">
@@ -92,7 +82,7 @@ export default function LoginForm() {
                             rules={[
                               {
                                 required: true,
-                                message: "Please input your username",
+                                message: 'Please input your username',
                               },
                             ]}
                           >
@@ -108,7 +98,7 @@ export default function LoginForm() {
                           rules={[
                             {
                               required: true,
-                              message: "Please input your password",
+                              message: 'Please input your password',
                             },
                           ]}
                         >
@@ -126,7 +116,7 @@ export default function LoginForm() {
                           <div className="w-full md:w-auto">
                             <a
                               onClick={() =>
-                                router.push("/users/reset-password")
+                                router.push('/users/reset-password')
                               }
                             >
                               Forgot password
@@ -136,7 +126,7 @@ export default function LoginForm() {
 
                         <div className="mb-5">
                           <Button
-                            loading={loading}
+                            loading={isLoading}
                             type="primary"
                             onClick={() => form.submit()}
                             size="large"
