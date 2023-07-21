@@ -289,6 +289,7 @@ class UserRolesView(APIView):
     API view to assign roles to users
     """
     keycloak_scopes = {
+        'GET': 'user:read',
         'PUT': 'user:update'
     }
 
@@ -325,6 +326,26 @@ class UserRolesView(APIView):
             return Response(response.reason, status=response.status_code)
 
         return Response({'message': 'Roles has been assigned successfully'}, status=status.HTTP_200_OK)
+    
+    def get(self, request, **kwargs):
+        # Login to admin
+        admin_login = keycloak_admin_login()
+
+        if admin_login["status"] != 200:
+            return Response(admin_login["data"], status=admin_login["status"])
+
+        headers = {
+            'Authorization': f"Bearer {admin_login['data']['access_token']}",
+            'Content-Type': "application/json"
+        }
+
+        response = requests.post(
+            url=f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings", headers=headers)
+
+        if not response.ok:
+            return Response(response.reason, status=response.status_code)
+
+        return Response(response.json(), status=status.HTTP_200_OK)
 
 class UserAvatarView(APIView):
     """
