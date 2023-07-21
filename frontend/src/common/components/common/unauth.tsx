@@ -1,4 +1,18 @@
+import { useEffect } from "react";
+import { selectCurrentUser, selectIsAuthenticated } from "@/modules/auth/auth";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
+
 export const Unauthorized = () => {
+	const isAuthenticated = useSelector(selectIsAuthenticated);
+	const router = useRouter()
+	useEffect(() => {
+    if (!isAuthenticated) {
+      router.push("/");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+	
 	return (
 		<div>
 			<section className="flex items-center h-full p-16">
