@@ -11,7 +11,7 @@ import { usePermission } from "@/common/hooks/use-permission";
 import { Badge } from "@tremor/react";
 import { useGetUserQuery } from "@/modules/user/user";
 
-export const GetUser = () => {
+export const UserDetails = () => {
 	const userId: any = location.href.substring(location.href.lastIndexOf("/") + 1);
 	const { data } = useGetUserQuery(userId)
 
@@ -182,7 +182,7 @@ export default function UserAdd() {
 	const { hasPermission } = usePermission();
 	return (
 		<DashboardFrame>
-			{hasPermission("user:read") ? <GetUser /> : <Unauthorised />}
+			{hasPermission("user:read") ? <UserDetails /> : <Unauthorised />}
 		</DashboardFrame>
 	);
 }
