@@ -1,429 +1,188 @@
-import { IGADTable } from "@/common/components/common/table";
 import {
-	DeleteColumnOutlined,
-	SaveOutlined,
-} from "@ant-design/icons";
-import {
+	Card,
+	Text,
+	Badge,
+	Table,
 	Button,
-	Divider,
-	Form,
-	Input,
-	Modal,
-	Radio,
-	Select,
-	SelectProps,
-	Switch,
-} from "antd";
-import { useUsers } from "../hooks";
-import { useEffect, useState } from "react";
-import { AddUser123 } from "./AddUser";
-import axios from "axios";
-import { PreviewUser } from "./Preview";
-import { countries } from "@/common/utils/countries";
-import { OpenNotification } from "@/common/utils/notify";
-import getConfig from "next/config"
-import { useGetUsersQuery } from "@modules/user/user";
- 
-const { publicRuntimeConfig } = getConfig()
-
-const genderOptions = [
-	{ label: "Male", value: "Male" },
-	{ label: "Female", value: "Female" },
-];
-
-const myCodeOptions: SelectProps["options"] = [];
-const countryOptions: SelectProps["options"] = [];
-
-countries.forEach((item, index) => {
-	myCodeOptions.push({
-		key: index,
-		value: item.code,
-		label: item.code,
-	});
-	countryOptions.push({
-		key: index,
-		value: item.name,
-		label: item.name,
-	});
-});
+	Flex,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeaderCell,
+	TableRow,
+} from "@tremor/react";
+import {
+	CheckIcon,
+	ExclamationCircleIcon,
+	WifiIcon,
+	XMarkIcon,
+} from "@heroicons/react/24/outline";
+import { useRouter } from "next/router";
+import MediaQuery from "react-responsive";
+import { FiDelete, FiEdit, FiEye } from "react-icons/fi";
+import { useGetUsersQuery } from "../user";
 
 export const UserList = () => {
-	const { data, refetch, isFetching } = useGetUsersQuery()
-	const [form] = Form.useForm();
+	const { data } = useGetUsersQuery();
+	const router = useRouter();
 
-	const [open, setOpen] = useState<boolean>(false);
-	const [code, setCode] = useState<string>("");
-	const [roles, setRoles] = useState([]);
-	const [role, setRole] = useState<string>("")
-	const [roleLoading, setRoleLoading] = useState(true)
-
-	const [view, setView] = useState<boolean>(false);
-	const [userId, setUserId] = useState<string>();
-	const viewPro = (id: string) => {
-		setView(true);
-		setUserId(id);
-	};
-	const onCloseView = () => {
-		setView(false);
-	};
-
-	const onClose = () => {
-		setOpen(false);
-	};
-
-	const [openModal, setOpenModal] = useState<boolean>(false);
-
-	const edit = (
-		id: string,
-		firstName: string,
-		lastName: string,
-		username: string,
-		email: string,
-		enabled: boolean,
-		code: string,
-		phone: string,
-		country: string,
-		gender: string,
-		avatar: string
-	) => {
-		setUserId(id);
-		setOpenModal(true);
-		form.setFieldValue("firstName", firstName);
-		form.setFieldValue("lastName", lastName);
-		form.setFieldValue("username", username);
-		form.setFieldValue("email", email);
-		form.setFieldValue("enabled", enabled);
-		form.setFieldValue("code", code);
-		form.setFieldValue("phone", phone);
-		form.setFieldValue("country", country);
-		form.setFieldValue("gender", gender);
-		setCode(code);
-	};
-
-	const handleCancel = () => {
-		setOpenModal(false);
-	};
-
-	const formItemLayout = {
-		labelCol: {
-			xs: { span: 24 },
-			sm: { span: 8 },
-		},
-		wrapperCol: {
-			xs: { span: 24 },
-			sm: { span: 16 },
-		},
-	};
-
-	const onFinish = async (values: any) => {
-		values["code"] = code;
-		values["role"] = JSON.parse(values["role"])
-		await axios
-			.put(
-				`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${userId}/update`,
-				values,
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			)
-			.then((res) => {
-				OpenNotification(res?.data?.message, "topRight", "success");
-				setOpenModal(false);
-				refetch();
-				form.resetFields();
-			})
-			.catch((err) => {
-				OpenNotification(err.response?.data?.error, "topRight", "error");
-			});
-	};
-
-	const selectBefore = (
-		<Select
-			size="large"
-			value={code}
-			onChange={setCode}
-			showSearch
-			placeholder={!code && "+232"}
-			options={myCodeOptions}
-		/>
-	);
-
-	const fetchRoles = async () => {
-		try {
-			setRoleLoading(true)
-			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/role`;
-			await axios.get(url, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			}).then((res) => {
-				setRoleLoading(false)
-				setRoles(res?.data);
-			})
-			
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
-
-	useEffect(() => {
-		fetchRoles();
-	}, [])
-
-	const { columns } = useUsers({ edit, viewPro, refetch });
 	return (
 		<div className="">
-			<nav>
-				<div className="flex justify-between items-center">
-					<div>
-						<h2 className="text-3xl">App Accounts</h2>
-						<p className="my-2 text-gray-600">
-							View and manage settings related to app users.
-						</p>
-					</div>
-					<div>
-						<Button
-							type="primary"
-							size="large"
-							onClick={(e) => {
-								e.preventDefault();
-								setOpen(true);
-							}}
-						>
-							New User
-						</Button>
-					</div>
+			<nav className="mb-5">
+				<div>
+					<h2 className="text-3xl">App Accounts</h2>
+					<p className="my-2 text-gray-600">
+						View and manage settings related to app users.
+					</p>
 				</div>
 			</nav>
-			<section className="mt-5">
-				<div className="py-2">
-					<IGADTable
-						key={"id"}
-						loading={isFetching}
-						rows={data as any[]}
-						columns={columns}
-					/>
-				</div>
-			</section>
 			<div>
-				<AddUser123
-					openDrawer={open}
-					closeDrawer={onClose}
-					refetch={refetch}
-				/>
+				<Card>
+					<Table className="mt-5">
+						<TableHead>
+							<TableRow>
+								<TableHeaderCell>Full Name</TableHeaderCell>
+								<MediaQuery minWidth={1824}>
+									<TableHeaderCell>Username</TableHeaderCell>
+									<TableHeaderCell>Email</TableHeaderCell>
+									<TableHeaderCell>Phone</TableHeaderCell>
+									<TableHeaderCell>Gender</TableHeaderCell>
+									<TableHeaderCell>Country</TableHeaderCell>
+									<TableHeaderCell>Email Verified</TableHeaderCell>
+									<TableHeaderCell>Status</TableHeaderCell>
+								</MediaQuery>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							{(data || []).map((item, index) => (
+								<TableRow key={index}>
+									<TableCell>
+										<div className="flex items-center pr-1">
+											<div>
+												<div className="w-10 h-10 mr-3 overflow-hidden rounded-full flex items-center justify-center border border-gray-300">
+													<img
+														src={
+															item?.attributes?.avatar &&
+															item?.attributes?.avatar[0] != ""
+																? item?.attributes?.avatar[0]
+																: "/avater.png"
+														}
+														className="w-full h-full"
+													/>
+												</div>
+											</div>
+											<Text className="font-sans">
+												{item.firstName} {item?.lastName}
+											</Text>
+										</div>
+									</TableCell>
+									<MediaQuery minWidth={1824}>
+										<TableCell>
+											<Text>{item.username}</Text>
+										</TableCell>
+										<TableCell>
+											<Text>{item.email}</Text>
+										</TableCell>
+										<TableCell>
+											<Text>
+												{item.attributes?.phone
+													? item.attributes?.phone[0]
+													: ""}
+											</Text>
+										</TableCell>
+										<TableCell>
+											<Text>
+												{item.attributes?.gender
+													? item.attributes?.gender[0]
+													: "None"}
+											</Text>
+										</TableCell>
+										<TableCell>
+											<Text>
+												{item.attributes?.country
+													? item.attributes?.country[0]
+													: "None"}
+											</Text>
+										</TableCell>
+										<TableCell>
+											{item.emailVerified ? (
+												<Badge
+													className="flex items-center space-x-1"
+													icon={CheckIcon}
+													color="indigo"
+												>
+													True
+												</Badge>
+											) : (
+												<Badge
+													// className="flex items-center"
+													icon={XMarkIcon}
+													color="neutral"
+												>
+													False
+												</Badge>
+											)}{" "}
+										</TableCell>
+										<TableCell>
+											{item.enabled ? (
+												<Badge
+													className="flex items-center space-x-1"
+													color="emerald"
+													icon={WifiIcon}
+												>
+													Active
+												</Badge>
+											) : (
+												<Badge
+													// className="flex items-center"
+													color="neutral"
+													icon={ExclamationCircleIcon}
+												>
+													Inactive
+												</Badge>
+											)}{" "}
+										</TableCell>
+									</MediaQuery>
+									<TableCell>
+										<Flex>
+											<Button variant="primary">
+												<FiEye />
+											</Button>
+											<Button
+												variant="secondary"
+												className="text-green-500 bg-gray-200"
+											>
+												<FiEdit />
+											</Button>
+											<Button className="text-white bg-red-500">
+												<FiDelete />
+											</Button>
+										</Flex>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</Card>
 			</div>
-			<div>
-				{view && userId && (
-					<PreviewUser
-						openDrawer={view}
-						closeDrawer={onCloseView}
-						userId={userId}
-					/>
-				)}
-			</div>
-			<Modal
-				open={openModal}
-				title={"Update Account"}
-				onCancel={handleCancel}
-				footer={
-					<Form form={form} onFinish={onFinish}>
-						<Form.Item>
-							<div className="flex space-x-2 justify-end">
-								<Button
-									className="focus:outline-none px-6 py-2 text-gray-700 font-medium flex items-center"
-									style={{
-										backgroundColor: "#48328526",
-										border: "1px solid #48328526",
-									}}
-									type="primary"
-									size="large"
-									icon={<DeleteColumnOutlined />}
-									onClick={handleCancel}
-								>
-									Cancel
-								</Button>
-								<Button
-									type="primary"
-									className="flex items-center"
-									icon={<SaveOutlined />}
-									style={{
-										backgroundColor: "#087757",
-										border: "1px solid #e65e01",
-									}}
-									htmlType="submit"
-									size="large"
-								>
-									Save Changes
-								</Button>
-							</div>
-						</Form.Item>
-					</Form>
-				}
+			<button
+				onClick={() => router.push("/users/add")}
+				title="Add User"
+				className="fixed z-90 bottom-10 right-8 w-16 h-16 md:w-20 md:h-20 lg:h-20 lg:w-20 bg-prim rounded-full drop-shadow-lg flex justify-center items-center text-white text-4xl hover:bg-prim hover:drop-shadow-2xl hover:animate-bounce duration-300"
 			>
-				<div className="mt-8">
-					<Form
-						{...formItemLayout}
-						form={form}
-						onFinish={onFinish}
-						scrollToFirstError
-						size="large"
-						className="w-full"
-						labelAlign="left"
-					>
-						<Form.Item
-							name="firstName"
-							label="Given Names"
-							className="w-full"
-							rules={[
-								{
-									required: true,
-									message: "Please input your given names",
-								},
-							]}
-						>
-							<Input className="w-full" placeholder="John" />
-						</Form.Item>
-						<Form.Item
-							name="lastName"
-							label="Family Name"
-							rules={[
-								{
-									required: true,
-									message: "Please input your family name",
-								},
-							]}
-						>
-							<Input placeholder="Doe" />
-						</Form.Item>
-						<Form.Item
-							name="email"
-							label="E-mail"
-							rules={[
-								{
-									type: "email",
-									message: "The input is not valid E-mail!",
-								},
-								{
-									required: true,
-									message: "Please input your E-mail!",
-								},
-							]}
-						>
-							<Input className="w-full" placeholder="john.doe@mail.com" />
-						</Form.Item>
-						<Form.Item
-							name="username"
-							label="Username"
-							rules={[
-								{
-									required: true,
-									message: "Please input your username",
-								},
-							]}
-						>
-							<Input disabled />
-						</Form.Item>
-						<Form.Item
-							name="phone"
-							label="Phone"
-							rules={[
-								{
-									required: true,
-									validator(rule, value, callback) {
-										if (value === "") {
-											callback("Please input your phone number");
-										} else if (!code) {
-											callback("Please select country code");
-										} else {
-											callback();
-										}
-									},
-								},
-							]}
-						>
-							<Input
-								type="number"
-								addonBefore={selectBefore}
-								placeholder="76293389"
-							/>
-						</Form.Item>
-						<Form.Item
-							name="country"
-							label="Country"
-							rules={[
-								{
-									required: true,
-									message: "Please select your country",
-								},
-							]}
-						>
-							<Select
-								showSearch
-								placeholder="select country"
-								size="large"
-								className="h-10 w-full mt-1 bg-gray-50"
-								options={countryOptions}
-							/>
-						</Form.Item>
-						<Form.Item
-							name={"gender"}
-							label="Gender"
-							rules={[
-								{
-									required: true,
-									message: "Please select gender",
-								},
-							]}
-						>
-							<Radio.Group
-								options={genderOptions}
-								className="h-10 mt-1 w-full"
-								optionType="button"
-								buttonStyle="solid"
-							/>
-						</Form.Item>
-						<Form.Item
-							name="enabled"
-							label="Enable"
-							valuePropName="checked"
-							tooltip="Toggle to enable or disable this user"
-						>
-							<Switch style={{ backgroundColor: "#8c8c8c" }} />
-						</Form.Item>
-						<Form.Item
-							name={"role"}
-							label="Role"
-							rules={[
-								{
-									required: true,
-									message: "Please select role",
-								},
-							]}
-						>
-							<Select
-								size="large"
-								value={role}
-								onChange={setRole}
-								showSearch
-								loading={roleLoading}
-								placeholder={"Select role"}
-								options={roles?.map((val: any, i: number) => {
-									return (
-										{
-											key: i,
-											value: JSON.stringify({ id: val?.id, name: val?.name }),
-											label: val?.name
-										}
-									)
-								})}
-							/>
-						</Form.Item>
-					</Form>
-					<Divider dashed={true} style={{ border: "1px solid gray" }} />
-				</div>
-			</Modal>
+				<svg
+					viewBox="0 0 20 20"
+					enable-background="new 0 0 20 20"
+					className="w-6 h-6 inline-block"
+				>
+					<path
+						fill="#FFFFFF"
+						d="M16,10c0,0.553-0.048,1-0.601,1H11v4.399C11,15.951,10.553,16,10,16c-0.553,0-1-0.049-1-0.601V11H4.601
+                                    C4.049,11,4,10.553,4,10c0-0.553,0.049-1,0.601-1H9V4.601C9,4.048,9.447,4,10,4c0.553,0,1,0.048,1,0.601V9h4.399
+                                    C15.952,9,16,9.447,16,10z"
+					/>
+				</svg>
+			</button>
 		</div>
 	);
 };
