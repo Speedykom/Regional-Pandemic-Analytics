@@ -135,19 +135,11 @@ const Popconfirm = ({
 
 			<Portal>
 				<div ref={popoverRef} className={popoverClasses}>
-					<div className="flex gap-4 mb-4">
-						<span>
+					<div className="flex px-2 mb-4">
+						<span >
 							<i className="fa-solid fa-circle-info text-blue-500"></i>
 						</span>
 						<span>{title}</span>
-						<span
-							onClick={handleClickCancel}
-							className="cursor-pointer hover:bg-gray-100 px-2 rounded-sm"
-						>
-							<i className="fa-solid fa-close">
-								<XMarkIcon />
-							</i>
-						</span>
 					</div>
 					<div className="flex">
 						<button
@@ -158,7 +150,7 @@ const Popconfirm = ({
 						</button>
 						<button
 							onClick={handleClickOk}
-							className="bg-prim text-white py-1 px-2 rounded-sm hover:bg-blue-500"
+							className="bg-indigo-400 text-white py-1 px-2 rounded-sm hover:bg-indigo-600"
 						>
 							{okText}
 						</button>
