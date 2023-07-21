@@ -6,15 +6,19 @@ const { publicRuntimeConfig } = getConfig();
 
 export const baseQuery = fetchBaseQuery({
   baseUrl: `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/`,
-  prepareHeaders: (headers: any) => {
+  prepareHeaders: (headers: any, { endpoint }) => {
     const tokens = secureLocalStorage.getItem('tokens') as {
       accessToken: string;
       refreshToken: string;
     };
 
     if (tokens) {
-      const { accessToken } = tokens as any;
-      headers.set('AUTHORIZATION', `Bearer ${accessToken}`);
+      const { accessToken, refreshToken } = tokens as any;
+
+      headers.set(
+        'AUTHORIZATION',
+        `Bearer ${endpoint === 'logout' ? refreshToken : accessToken}`
+      );
     }
 
     headers.set('Content-Type', 'application/json');
