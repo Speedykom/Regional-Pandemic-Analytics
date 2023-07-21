@@ -1,49 +1,18 @@
-import { Text, TextInput } from "@tremor/react";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import getConfig from "next/config";
-import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-import { Unauthorised } from "@/common/components/common/unauth";
+import { Text } from "@tremor/react";
 import {
 	CheckIcon,
-	ExclamationCircleIcon,
 	XMarkIcon,
 	WifiIcon,
+	SignalSlashIcon,
 } from "@heroicons/react/24/outline";
-import { usePermission } from "@/common/hooks/use-permission";
-import secureLocalStorage from "react-secure-storage";
-import { User } from "@/modules/user/interface";
 import { Badge } from "@tremor/react";
+import { useGetUserQuery } from "@/modules/user/user";
+import { useRouter } from "next/router";
 
-const { publicRuntimeConfig } = getConfig();
-
-export const GetUser = () => {
-	const [roles, setRoles] = useState([]);
-	const [data, setData] = useState<User>();
-
-	const tokens: any = secureLocalStorage.getItem("tokens") as object;
-	const accessToken =
-		tokens && "accessToken" in tokens ? tokens.accessToken : "";
-	const userId = location.href.substring(location.href.lastIndexOf("/") + 1);
-
-	const gethUser = async () => {
-		try {
-			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${userId}`;
-			const response = await axios.get(url, {
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${accessToken}`,
-				},
-			});
-			setData(response?.data);
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
-
-	useEffect(() => {
-		gethUser();
-	}, []);
+export const UserDetails = () => {
+  const router = useRouter();
+  const { id } = router.query;
+	const { data } = useGetUserQuery(String(id));
 
 	return (
 		<section className="py-1 bg-blueGray-50">
@@ -165,9 +134,15 @@ export const GetUser = () => {
 									>
 										Email Status
 									</label>
-									{
-										data?.emailVerified ? <Badge color="emerald" icon={CheckIcon}>Active</Badge> : <Badge color="red" icon={XMarkIcon}>Inactive</Badge>
-									}
+									{data?.emailVerified ? (
+										<Badge color="indigo" icon={CheckIcon}>
+											Enable
+										</Badge>
+									) : (
+										<Badge color="red" icon={XMarkIcon}>
+											Disabled
+										</Badge>
+									)}
 								</div>
 							</div>
 							<div className="w-full lg:w-6/12 px-4">
@@ -179,11 +154,11 @@ export const GetUser = () => {
 										User Status
 									</label>
 									{data?.enabled ? (
-										<Badge color="emerald" icon={WifiIcon}>
+										<Badge color="green" icon={WifiIcon}>
 											Active
 										</Badge>
 									) : (
-										<Badge color="red" icon={ExclamationCircleIcon}>
+										<Badge color="red" icon={SignalSlashIcon}>
 											Inactive
 										</Badge>
 									)}
@@ -197,7 +172,13 @@ export const GetUser = () => {
 									>
 										User Role
 									</label>
-									{"Roles"}
+									<div>
+										<div className="flex px-2">
+										{data?.roles.map((role, index) => (
+											<Text className="bg-gray-200 p-2 text-black rounded-md" key={index}>{role?.name}</Text>
+										))}
+										</div>
+									</div>	
 								</div>
 							</div>
 						</div>
@@ -207,12 +188,3 @@ export const GetUser = () => {
 		</section>
 	);
 };
-
-export default function UserAdd() {
-	const { hasPermission } = usePermission();
-	return (
-		<DashboardFrame>
-			{hasPermission("user:read") ? <GetUser /> : <Unauthorised />}
-		</DashboardFrame>
-	);
-}
