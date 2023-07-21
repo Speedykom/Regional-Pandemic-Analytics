@@ -28,13 +28,14 @@ export const UserList = () => {
 
 	return (
 		<div className="">
-			<nav className="mb-5">
-				<div>
+			<nav className="mb-5 flex justify-between items-center">
+				<div className="">
 					<h2 className="text-3xl">App Accounts</h2>
 					<p className="my-2 text-gray-600">
 						View and manage settings related to app users.
 					</p>
 				</div>
+				<Button className="bg-prim text-white border-0" onClick={() => router.push("/users/add")}>New User</Button>
 			</nav>
 			<div>
 				<Card>
@@ -165,24 +166,6 @@ export const UserList = () => {
 					</Table>
 				</Card>
 			</div>
-			<button
-				onClick={() => router.push("/users/add")}
-				title="Add User"
-				className="fixed z-90 bottom-10 right-8 w-16 h-16 md:w-20 md:h-20 lg:h-20 lg:w-20 bg-prim rounded-full drop-shadow-lg flex justify-center items-center text-white text-4xl hover:bg-prim hover:drop-shadow-2xl hover:animate-bounce duration-300"
-			>
-				<svg
-					viewBox="0 0 20 20"
-					enable-background="new 0 0 20 20"
-					className="w-6 h-6 inline-block"
-				>
-					<path
-						fill="#FFFFFF"
-						d="M16,10c0,0.553-0.048,1-0.601,1H11v4.399C11,15.951,10.553,16,10,16c-0.553,0-1-0.049-1-0.601V11H4.601
-                                    C4.049,11,4,10.553,4,10c0-0.553,0.049-1,0.601-1H9V4.601C9,4.048,9.447,4,10,4c0.553,0,1,0.048,1,0.601V9h4.399
-                                    C15.952,9,16,9.447,16,10z"
-					/>
-				</svg>
-			</button>
 		</div>
 	);
 };
