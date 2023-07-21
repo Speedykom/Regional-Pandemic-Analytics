@@ -1,4 +1,4 @@
-export const Unauthorised = () => {
+export const Unauthorized = () => {
 	return (
 		<div>
 			<section className="flex items-center h-full p-16">
