@@ -1,7 +1,4 @@
-import { Text, TextInput } from "@tremor/react";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import getConfig from "next/config";
+import { Text } from "@tremor/react";
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import { Unauthorised } from "@/common/components/common/unauth";
 import {
@@ -11,39 +8,12 @@ import {
 	WifiIcon,
 } from "@heroicons/react/24/outline";
 import { usePermission } from "@/common/hooks/use-permission";
-import secureLocalStorage from "react-secure-storage";
-import { User } from "@/modules/user/interface";
 import { Badge } from "@tremor/react";
-
-const { publicRuntimeConfig } = getConfig();
+import { useGetUserQuery } from "@/modules/user/user";
 
 export const GetUser = () => {
-	const [roles, setRoles] = useState([]);
-	const [data, setData] = useState<User>();
-
-	const tokens: any = secureLocalStorage.getItem("tokens") as object;
-	const accessToken =
-		tokens && "accessToken" in tokens ? tokens.accessToken : "";
-	const userId = location.href.substring(location.href.lastIndexOf("/") + 1);
-
-	const gethUser = async () => {
-		try {
-			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${userId}`;
-			const response = await axios.get(url, {
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${accessToken}`,
-				},
-			});
-			setData(response?.data);
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
-
-	useEffect(() => {
-		gethUser();
-	}, []);
+	const userId: any = location.href.substring(location.href.lastIndexOf("/") + 1);
+	const { data } = useGetUserQuery(userId)
 
 	return (
 		<section className="py-1 bg-blueGray-50">
