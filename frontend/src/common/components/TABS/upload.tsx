@@ -1,11 +1,12 @@
 import { TextInput } from "@tremor/react";
-import { useState, useEffect, Fragment } from "react";
+import { useState, Fragment } from "react";
 import { useDropzone } from "react-dropzone";
-import secureLocalStorage from "react-secure-storage";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { Dialog, Transition } from "@headlessui/react";
 import { ArrowUpOnSquareIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/modules/auth/auth";
 
 interface prop {
   dag: any;
@@ -15,16 +16,9 @@ interface prop {
 
 export default function LoadData({ dag, state, onClose }: prop) {
   const [fileName, setFIleName] = useState<string>("");
-
-  const [username, setUsername] = useState<string>("");
-
+  const user = useSelector(selectCurrentUser);
+  const email = user?.email || '';
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.localStorage) {
-      setUsername(secureLocalStorage.getItem("sue") as string);
-    }
-  }, []);
 
   const handleDataUpload = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -44,7 +38,7 @@ export default function LoadData({ dag, state, onClose }: prop) {
 
     const formData = new FormData();
 
-    formData.append("username", username);
+    formData.append("username", email);
     formData.append("file_name", fileName);
 
     acceptedFiles.forEach((file, index) => {
