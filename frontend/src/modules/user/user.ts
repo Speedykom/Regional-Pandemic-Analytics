@@ -2,6 +2,11 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from '@/common/redux/api';
 import { User, Users } from './interface';
+import { Role } from "../roles/interface";
+
+interface DisableResponse {
+  message: string
+}
 
 interface DisableResponse {
   message: string
