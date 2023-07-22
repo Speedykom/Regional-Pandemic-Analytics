@@ -13,6 +13,7 @@ import {
 import {
 	CheckIcon,
 	ExclamationCircleIcon,
+	SignalSlashIcon,
 	WifiIcon,
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
@@ -65,9 +66,9 @@ export const UserList = () => {
 				</Button>
 			</nav>
 			<div>
-				<Card>
+				<Card className="bg-white">
 					<Table>
-						<TableHead className=" bg-cyan-100">
+						<TableHead>
 							<TableRow>
 								<TableHeaderCell>Full Name</TableHeaderCell>
 								<MediaQuery minWidth={768}>
@@ -156,14 +157,14 @@ export const UserList = () => {
 													icon={CheckIcon}
 													color="indigo"
 												>
-													True
+													Verified
 												</Badge>
 											) : (
 												<Badge
 													icon={XMarkIcon}
-													color="neutral"
+													color="red"
 												>
-													False
+													Unverified
 												</Badge>
 											)}{" "}
 										</TableCell>
@@ -171,17 +172,17 @@ export const UserList = () => {
 											{item.enabled ? (
 												<Badge
 													className="flex items-center space-x-1"
-													color="emerald"
+													color="green"
 													icon={WifiIcon}
 												>
 													Active
 												</Badge>
 											) : (
 												<Badge
-													color="neutral"
-													icon={ExclamationCircleIcon}
+													color="red"
+													icon={SignalSlashIcon}
 												>
-													Inactive
+													Disabled
 												</Badge>
 											)}{" "}
 										</TableCell>
