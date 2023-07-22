@@ -1,7 +1,6 @@
 import { Dialog, Switch, Transition } from "@headlessui/react";
 
 import React, { Fragment, useEffect, useState, useCallback } from "react";
-import { Dropdown, DropdownItem } from "@tremor/react";
 import { Flex, TextInput } from "@tremor/react";
 import { DagType } from "../TABS/interface";
 import {
