@@ -172,9 +172,15 @@ class UserDetailView(APIView):
 
         if not response.ok:
             return Response(response.reason, status=response.status_code)
+        
+        userRoles = requests.get(
+            url=f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings", headers=headers)
+        
+        clientRoles = userRoles.json()['clientMappings'][os.getenv('CLIENT_ID')]['mappings']
 
-        users = response.json()
-        return Response(users, status=status.HTTP_200_OK)
+        user = response.json()
+        user['roles'] = clientRoles
+        return Response(user, status=status.HTTP_200_OK)
     
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -339,7 +345,7 @@ class UserRolesView(APIView):
             'Content-Type': "application/json"
         }
 
-        response = requests.post(
+        response = requests.get(
             url=f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings", headers=headers)
 
         if not response.ok:

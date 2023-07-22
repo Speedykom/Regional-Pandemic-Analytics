@@ -1,14 +1,14 @@
 import { ColumnsType } from "antd/es/table";
-import { IRole } from "./interface";
+import { Role } from "./interface";
 import { Popconfirm, Tag } from "antd";
 import { FiEdit, FiEye, FiTrash } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import { Action } from "@/common/components/common/action";
 import axios from "axios";
 import { OpenNotification } from "@/common/utils/notify";
-import getConfig from 'next/config'
- 
-const { publicRuntimeConfig } = getConfig()
+import getConfig from "next/config";
+
+const { publicRuntimeConfig } = getConfig();
 interface props {
 	edit: (id: string, name: string, description: string) => void;
 	del: () => void;
@@ -88,7 +88,7 @@ export const useRoles = ({ edit, view, del, refetch }: props) => {
 		);
 	};
 
-	const columns: ColumnsType<IRole> = [
+	const columns: ColumnsType<Role> = [
 		{
 			// fixed: "left",
 			title: "Role Name",
@@ -159,11 +159,14 @@ export const useRoles = ({ edit, view, del, refetch }: props) => {
 
 export const fetchRoles = async () => {
 	const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/roles`;
-	return await axios.get(url).then((res) => {
-		return res.data;
-	}).catch((err) => {
-		console.log(err?.response)
-	});
+	return await axios
+		.get(url)
+		.then((res) => {
+			return res.data;
+		})
+		.catch((err) => {
+			console.log(err?.response);
+		});
 };
 
 export const useAttributes = () => {
@@ -256,10 +259,10 @@ export const useAttributes = () => {
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
 		},
-	]
+	];
 
-	return { columns }
-}
+	return { columns };
+};
 
 export const useAttributeForEdit = () => {
 	const columns: ColumnsType<any> = [
@@ -351,7 +354,7 @@ export const useAttributeForEdit = () => {
 			className: "text-gray-700 font-sans",
 			ellipsis: true,
 		},
-	]
+	];
 
-	return { columns }
-}
+	return { columns };
+};
