@@ -191,7 +191,7 @@ export const UserList = () => {
 											<Button
 												title="View Details"
 												variant="primary"
-												onClick={() => router.push(`users/${item.id}/get`)}
+												onClick={() => router.push(`users/${item.id}/details`)}
 											>
 												<FiEye />
 											</Button>
