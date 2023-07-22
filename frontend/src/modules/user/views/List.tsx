@@ -20,7 +20,6 @@ import { useRouter } from "next/router";
 import MediaQuery from "react-responsive";
 import { FiDelete, FiEdit, FiEye } from "react-icons/fi";
 import { useDisableUserMutation, useGetUsersQuery } from "../user";
-import { useState } from "react";
 import { toast } from "react-toastify";
 import Popconfirm from "@/common/components/common/popconfirm";
 
@@ -29,8 +28,8 @@ export const UserList = () => {
 	const [disableUser, { isLoading }] = useDisableUserMutation();
 	const router = useRouter();
 
-	const onDelete = async (id: string) => {
-		await disableUser(id).then((res: any) => {
+	const onDelete = (id: string) => {
+		disableUser(id).then((res: any) => {
 			if (res.error) {
 				toast.error(res?.response?.data?.message, {
 					position: "top-right",
@@ -42,7 +41,7 @@ export const UserList = () => {
 					position: "top-right",
 				});
 			}
-		})
+		});
 	};
 
 	return (
