@@ -1,8 +1,8 @@
-import { Button } from "antd";
+import { Button } from "@tremor/react";
 import { useRouter } from "next/router";
 
 export const LinkExpired = () => {
-    const router = useRouter()
+	const router = useRouter();
 	return (
 		<div className="grid h-screen container mx-auto w-full">
 			<div className="flex flex-col items-center justify-center px-6 my-12">
@@ -29,16 +29,14 @@ export const LinkExpired = () => {
 						</div>
 						<div className="px-8 mb-4">
 							<p className="mb-4 text-sm text-gray-700">
-								Note: the password reset link is only valid for 5 hours and
-								can only be used ones
+								Note: the password reset link is only valid for 5 hours and can
+								only be used ones
 							</p>
 						</div>
 						<div className="px-8 mb-10 mt-10">
 							<Button
-								className="w-full px-4 py-2 font-bold text-white bg-red-500 rounded-full hover:bg-red-700 focus:outline-none focus:shadow-outline"
-								htmlType="submit"
-                                size="large"
-                                onClick={() => router.push('/users/reset-password')}
+								className="w-full px-4 py-2 font-bold text-white bg-prim hover:bg-red-700 focus:outline-none focus:shadow-outline"
+								onClick={() => router.push("/users/reset-password")}
 							>
 								Reset Password
 							</Button>
