@@ -1,6 +1,6 @@
 import { Text } from "@tremor/react";
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-import { Unauthorised } from "@/common/components/common/unauth";
+import { Unauthorized } from "@/common/components/common/unauth";
 import {
 	CheckIcon,
 	ExclamationCircleIcon,
@@ -10,10 +10,11 @@ import {
 import { usePermission } from "@/common/hooks/use-permission";
 import { Badge } from "@tremor/react";
 import { useGetUserQuery } from "@/modules/user/user";
+import { useEffect } from "react";
 
 export const UserDetails = () => {
-	const userId: any = location.href.substring(location.href.lastIndexOf("/") + 1);
-	const { data } = useGetUserQuery(userId)
+	const userId: any = location.href.split("/").slice(-2)[0];
+	const { data } = useGetUserQuery(userId);
 
 	return (
 		<section className="py-1 bg-blueGray-50">
@@ -135,9 +136,15 @@ export const UserDetails = () => {
 									>
 										Email Status
 									</label>
-									{
-										data?.emailVerified ? <Badge color="emerald" icon={CheckIcon}>Active</Badge> : <Badge color="red" icon={XMarkIcon}>Inactive</Badge>
-									}
+									{data?.emailVerified ? (
+										<Badge color="emerald" icon={CheckIcon}>
+											Active
+										</Badge>
+									) : (
+										<Badge color="red" icon={XMarkIcon}>
+											Inactive
+										</Badge>
+									)}
 								</div>
 							</div>
 							<div className="w-full lg:w-6/12 px-4">
@@ -167,7 +174,13 @@ export const UserDetails = () => {
 									>
 										User Role
 									</label>
-									{"Roles"}
+									<div>
+										<div className="flex px-2">
+										{data?.roles.map((role, index) => (
+											<Text className="bg-gray-200 p-2 text-black rounded-md" key={index}>{role?.name}</Text>
+										))}
+										</div>
+									</div>	
 								</div>
 							</div>
 						</div>
@@ -182,7 +195,7 @@ export default function UserAdd() {
 	const { hasPermission } = usePermission();
 	return (
 		<DashboardFrame>
-			{hasPermission("user:read") ? <UserDetails /> : <Unauthorised />}
+			{hasPermission("user:read") ? <UserDetails /> : <Unauthorized />}
 		</DashboardFrame>
 	);
 }
