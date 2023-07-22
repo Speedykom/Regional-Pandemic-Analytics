@@ -176,10 +176,14 @@ class UserDetailView(APIView):
         userRoles = requests.get(
             url=f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings", headers=headers)
         
-        clientRoles = userRoles.json()['clientMappings'][os.getenv('CLIENT_ID')]['mappings']
-
         user = response.json()
-        user['roles'] = clientRoles
+        
+        if 'clientMappings' not in userRoles.json():
+            user['roles'] = []
+        else:
+            clientRoles = userRoles.json()['clientMappings'][os.getenv('CLIENT_ID')]['mappings']
+            user['roles'] = clientRoles
+            
         return Response(user, status=status.HTTP_200_OK)
     
     @swagger_auto_schema(request_body=openapi.Schema(
