@@ -1,4 +1,4 @@
-export interface IRole {
+export interface Role {
     id?: string;
     name: string;
     description: string;
@@ -9,7 +9,7 @@ export interface IRole {
 }
 
 export interface IAttribute {
-	key: string;
+    key: string;
     value: {
         create: boolean;
         read: boolean;
