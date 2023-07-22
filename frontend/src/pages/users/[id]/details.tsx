@@ -3,9 +3,9 @@ import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import { Unauthorized } from "@/common/components/common/unauth";
 import {
 	CheckIcon,
-	ExclamationCircleIcon,
 	XMarkIcon,
 	WifiIcon,
+	SignalSlashIcon,
 } from "@heroicons/react/24/outline";
 import { usePermission } from "@/common/hooks/use-permission";
 import { Badge } from "@tremor/react";
@@ -137,12 +137,12 @@ export const UserDetails = () => {
 										Email Status
 									</label>
 									{data?.emailVerified ? (
-										<Badge color="emerald" icon={CheckIcon}>
-											Active
+										<Badge color="indigo" icon={CheckIcon}>
+											Enable
 										</Badge>
 									) : (
 										<Badge color="red" icon={XMarkIcon}>
-											Inactive
+											Disabled
 										</Badge>
 									)}
 								</div>
@@ -156,11 +156,11 @@ export const UserDetails = () => {
 										User Status
 									</label>
 									{data?.enabled ? (
-										<Badge color="emerald" icon={WifiIcon}>
+										<Badge color="green" icon={WifiIcon}>
 											Active
 										</Badge>
 									) : (
-										<Badge color="red" icon={ExclamationCircleIcon}>
+										<Badge color="red" icon={SignalSlashIcon}>
 											Inactive
 										</Badge>
 									)}
