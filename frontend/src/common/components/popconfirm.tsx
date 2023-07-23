@@ -158,7 +158,7 @@ const Popconfirm = ({
 						</button>
 						<button
 							onClick={handleClickOk}
-							className="bg-blue-400 text-white py-1 px-2 rounded-sm hover:bg-blue-500"
+							className="bg-prim text-white py-1 px-2 rounded-sm hover:bg-blue-500"
 						>
 							{okText}
 						</button>
