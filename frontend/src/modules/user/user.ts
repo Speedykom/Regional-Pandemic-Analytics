@@ -13,7 +13,7 @@ interface DisableResponse {
 
 export const UserApi = createApi({
   reducerPath: 'UserApi',
-  baseQuery: baseQuery,
+  baseQuery,
   endpoints: (builder) => ({
     getUsers: builder.query<Users, void>({
       query: () => 'account/users',
