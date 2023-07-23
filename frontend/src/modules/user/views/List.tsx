@@ -12,7 +12,6 @@ import {
 } from "@tremor/react";
 import {
 	CheckIcon,
-	ExclamationCircleIcon,
 	SignalSlashIcon,
 	WifiIcon,
 	XMarkIcon,
@@ -23,6 +22,7 @@ import { FiDelete, FiEdit, FiEye } from "react-icons/fi";
 import { useDisableUserMutation, useGetUsersQuery } from "../user";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import Popconfirm from "@/common/components/popconfirm";
 
 export const UserList = () => {
 	const { data } = useGetUsersQuery();
@@ -204,17 +204,20 @@ export const UserList = () => {
 											>
 												<FiEdit />
 											</Button>
-											<Button
-												title="Disable User"
-												loading={onDeleteLoad}
-												className="text-white bg-red-500 border-0"
-												onClick={(e) => {
-													e.preventDefault();
-													onDelete(item.id);
-												}}
-											>
-												<FiDelete />
-											</Button>
+											<Popconfirm title="This user will be denied assces, continue?" cancelText="Cancel" okText="Confirm" onConfirm={() => onDelete(item.id)}>
+												<Button
+													title="Disable User"
+													loading={onDeleteLoad}
+													className="text-white bg-red-500 border-0"
+													// onClick={(e) => {
+													// 	e.preventDefault();
+													// 	onDelete(item.id);
+													// }}
+												>
+													<FiDelete />
+												</Button>
+											</Popconfirm>
+											
 										</div>
 									</TableCell>
 								</TableRow>
