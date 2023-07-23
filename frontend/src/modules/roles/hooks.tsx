@@ -1,5 +1,5 @@
 import { ColumnsType } from "antd/es/table";
-import { IRole } from "./interface";
+import { Role } from "./interface";
 import { Popconfirm, Tag } from "antd";
 import { FiEdit, FiEye, FiTrash } from "react-icons/fi";
 import { CheckCircleOutlined, ClockCircleOutlined } from "@ant-design/icons";
@@ -88,7 +88,7 @@ export const useRoles = ({ edit, view, del, refetch }: props) => {
 		);
 	};
 
-	const columns: ColumnsType<IRole> = [
+	const columns: ColumnsType<Role> = [
 		{
 			// fixed: "left",
 			title: "Role Name",
