@@ -1,5 +1,4 @@
 import { Ref, forwardRef } from 'react';
-import Link from 'next/link';
 import {
   BiChart,
   BiData,
@@ -9,7 +8,6 @@ import {
   BiLock,
   BiUser,
 } from 'react-icons/bi';
-import { useRouter } from 'next/router';
 import secureLocalStorage from 'react-secure-storage';
 import { NavLink } from '../link';
 import { usePermission } from '@/common/hooks/use-permission';
