@@ -1,54 +1,47 @@
 // Need to use the React-specific entry point to import createApi
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { Process } from "../../common/redux/interface/process";
-import { prepareHeaders } from "@/common/config";
-import getConfig from "next/config";
-
-const { publicRuntimeConfig } = getConfig();
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { Process } from '../../common/redux/interface/process';
+import { baseQuery } from '@/common/redux/api';
 
 // Define a service using a base URL and expected endpoints
 export const processApi = createApi({
-  reducerPath: "processApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: publicRuntimeConfig.NEXT_PUBLIC_BASE_URL,
-    prepareHeaders,
-    credentials: "include",
-  }),
-  tagTypes: ["processes"],
+  reducerPath: 'processApi',
+  baseQuery,
+  tagTypes: ['processes'],
   endpoints: (builder) => ({
-    findAll: builder.query<Process, void>({
-      query: () => "/api/process/list",
-      providesTags: ["processes"],
+    getProcessChains: builder.query<Process, void>({
+      query: () => '/process/list',
+      providesTags: ['processes'],
     }),
-    findOne: builder.query<Process, string>({
-      query: (id) => `/api/process/one/${id}`,
+    getProcessChainById: builder.query<Process, string>({
+      query: (id) => `/process/one/${id}`,
     }),
-    editAccess: builder.mutation<Process, string>({
-      query: (id) => `/api/process/access/${id}`,
+    updateProcessChainAction: builder.mutation<Process, string>({
+      query: (id) => `/process/access/${id}`,
     }),
-    runProcess: builder.mutation<Process, string>({
+    runProcessChain: builder.mutation<Process, string>({
       query: (id) => ({
-        url: `/api/process/run/${id}`,
-        method: "POST",
+        url: `/process/run/${id}`,
+        method: 'POST',
         body: {},
       }),
-      invalidatesTags: ["processes"],
+      invalidatesTags: ['processes'],
     }),
-    delProcess: builder.mutation<Process, string>({
+    deleteProcessChain: builder.mutation<Process, string>({
       query: (id) => ({
-        url: `/api/process/delete/${id}`,
-        method: "DELETE",
+        url: `/process/delete/${id}`,
+        method: 'DELETE',
         body: {},
       }),
-      invalidatesTags: ["processes"],
+      invalidatesTags: ['processes'],
     }),
-    createProcess: builder.mutation<Process, string>({
+    createProcessChain: builder.mutation<Process, string>({
       query: (body) => ({
-        url: "/api/process",
-        method: "POST",
+        url: '/process',
+        method: 'POST',
         body: body,
       }),
-      invalidatesTags: ["processes"],
+      invalidatesTags: ['processes'],
     }),
   }),
 });
@@ -56,10 +49,10 @@ export const processApi = createApi({
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
-  useFindAllQuery,
-  useFindOneQuery,
-  useRunProcessMutation,
-  useCreateProcessMutation,
-  useEditAccessMutation,
-  useDelProcessMutation,
+  useGetProcessChainsQuery,
+  useGetProcessChainByIdQuery,
+  useRunProcessChainMutation,
+  useCreateProcessChainMutation,
+  useUpdateProcessChainActionMutation,
+  useDeleteProcessChainMutation,
 } = processApi;
