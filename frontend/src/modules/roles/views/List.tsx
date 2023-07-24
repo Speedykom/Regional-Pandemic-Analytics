@@ -1,243 +1,265 @@
-import { IGADTable } from "@/common/components/common/table";
-import { Button, Form, Input, Modal } from "antd";
-import { useRoles } from "../hooks";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { IRole } from "../interface";
-import secureLocalStorage from "react-secure-storage";
-import { OpenNotification } from "@/common/utils/notify";
-import { PlusOutlined, DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
-import getConfig from 'next/config'
-import { useRouter } from "next/router";
- 
-const { publicRuntimeConfig } = getConfig()
-
-enum OPERATION_TYPES {
-	CREATE,
-	UPDATE,
-	NONE,
-}
+import {
+	Badge,
+	Button,
+	Card,
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeaderCell,
+	TableRow,
+	Text,
+	TextInput,
+} from "@tremor/react";
+import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import MediaQuery from "react-responsive";
+import { useGetRolesQuery, useUpdateRoleMutation } from "../role";
+import { Fragment, useState } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { useForm } from "react-hook-form";
+import { Role } from "../interface";
+import { toast } from "react-toastify";
 
 export const RoleList = () => {
-	const router = useRouter();
-	const del = () => {};
-	const [form] = Form.useForm();
-
-	const [token, setToken] = useState<string>("");
-	const [loading, setLoading] = useState<boolean>(true);
-
-	const [data, setData] = useState<Array<IRole>>([]);
-
-	const [roleId, setRoleId] = useState<string>();
-
-	const fetchRoles = async () => {
-		try {
-			setLoading(true);
-			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/role`;
-			await axios
-				.get(url, {
-					headers: {
-						"Content-Type": `application/json`,
-					},
-				})
-				.then((res) => {
-					setLoading(false);
-					setData(res?.data);
-				});
-		} catch (error) {
-			console.error("Error:", error);
-		}
-	};
-
-	const refetch = () => {
-		fetchRoles();
-	};
-
-	const formItemLayout = {
-		labelCol: {
-			xs: { span: 24 },
-			sm: { span: 8 },
-		},
-		wrapperCol: {
-			xs: { span: 24 },
-			sm: { span: 16 },
-		},
-	};
-
+	const { data, refetch } = useGetRolesQuery();
+	const [updateRole] = useUpdateRoleMutation();
 	const [open, setOpen] = useState(false);
+	const [id, setId] = useState("");
+	const [loading, setLoading] = useState(false);
+	const [roleData, setRoleData] = useState<any>(null);
+	const {
+		register,
+		handleSubmit,
+		reset,
+		formState: { errors },
+	} = useForm();
 
-	const edit = (id: string, name: string, description: string) => {
-		setRoleId(id);
-		setOpertaionType(OPERATION_TYPES.UPDATE);
-		form.setFieldValue("name", name);
-		form.setFieldValue("description", description);
-		setOpen(true);
-	};
-
-	const view = (id: string) => {
-		router.push(`/roles/${id}`);
-	};
-
-	const showModal = () => {
-		setOpertaionType(OPERATION_TYPES.CREATE);
-		setOpen(true);
-	};
-
-	const [operationType, setOpertaionType] = useState<OPERATION_TYPES>(
-		OPERATION_TYPES.NONE
-	);
-
-	const onFinish = async (values: any) => {
-		let url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/role`;
-		url = operationType == OPERATION_TYPES.CREATE ? url : url + `/${roleId}`;
-		let method = operationType == OPERATION_TYPES.CREATE ? "POST" : "PUT";
-
-		await axios({
-			url,
-			method: method,
-			data: values,
-			headers: {
-				"Content-Type": "application/json",
-			},
-		})
-			.then((res) => {
-				OpenNotification(res?.data?.message, "topRight", "success");
-				form.resetFields();
-				setOpen(false);
+	const onSubmit = (role: Role) => {
+		setLoading(true);
+		role.id = id;
+		updateRole(role)
+			.then((res: any) => {
+				setLoading(false);
 				refetch();
+				setOpen(false)
+				toast.success(res?.data?.message, {
+					position: "top-right",
+				});
+				reset();
 			})
-			.catch((err) => {
-				OpenNotification(err.response?.data, "topRight", "error");
+			.catch((error: any) => {
+				setLoading(false);
+				toast.error(error?.response?.data?.message, {
+					position: "top-right",
+				});
 			});
 	};
 
-	const handleCancel = () => {
-		setOpen(false);
-	};
-
-	useEffect(() => {
-		fetchRoles();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	const { columns } = useRoles({ edit, view, del, refetch });
-	// @ts-ignore
-
-	const userRole: any = secureLocalStorage.getItem("user_role");
-	const permits = userRole?.attributes;
 	return (
 		<div className="">
-			<nav>
-				<div className="flex justify-between">
-					<div>
-						<h2 className="text-3xl">App Roles</h2>
-						<p className="my-2 text-gray-600">
-							View and manage settings related to app roles.
-						</p>
-					</div>
-					{permits?.Role && permits?.Role?.create && (
-						<div>
-							<Button
-								type="primary"
-								size="large"
-								icon={<PlusOutlined />}
-								onClick={showModal}
-							>
-								New Role
-							</Button>
-						</div>
-					)}
+			<nav className="mb-5 flex justify-between items-center">
+				<div>
+					<h2 className="text-3xl">App Accounts</h2>
+					<p className="my-2 text-gray-600">
+						View and manage settings related to app users.
+					</p>
 				</div>
 			</nav>
-			<section className="mt-5">
-				<div className="py-2">
-					<IGADTable
-						key={"id"}
-						loading={loading}
-						rows={data}
-						columns={columns}
-					/>
-				</div>
-			</section>
-			<Modal
-				open={open}
-				title={
-					operationType == OPERATION_TYPES.CREATE
-						? "Create Role"
-						: operationType == OPERATION_TYPES.UPDATE && "Update Role"
-				}
-				onCancel={handleCancel}
-				footer={
-					<Form form={form} onFinish={onFinish}>
-						<Form.Item>
-							<div className="flex space-x-2 justify-end">
-								<Button
-									className="focus:outline-none px-6 py-2 text-gray-700 font-medium flex items-center"
-									style={{
-										backgroundColor: "#48328526",
-										border: "1px solid #48328526",
-									}}
-									type="primary"
-									icon={<DeleteColumnOutlined />}
-									onClick={handleCancel}
-								>
-									Cancel
-								</Button>
-								<Button
-									type="primary"
-									className="flex items-center"
-									icon={<SaveOutlined />}
-									style={{
-										backgroundColor: "#087757",
-										border: "1px solid #e65e01",
-									}}
-									htmlType="submit"
-								>
-									{operationType == OPERATION_TYPES.CREATE
-										? "Save Role"
-										: operationType == OPERATION_TYPES.UPDATE && "Save Changes"}
-								</Button>
-							</div>
-						</Form.Item>
-					</Form>
-				}
-			>
-				<Form
-					{...formItemLayout}
-					form={form}
-					name="register"
-					onFinish={onFinish}
-					scrollToFirstError
-					size="large"
-					className="w-full"
+			<div>
+				<Card className="bg-white">
+					<Table>
+						<TableHead>
+							<TableRow>
+								<TableHeaderCell>Role Name</TableHeaderCell>
+								<MediaQuery minWidth={1090}>
+									<TableHeaderCell className="">Description</TableHeaderCell>
+								</MediaQuery>
+								<MediaQuery minWidth={1420}>
+									<TableHeaderCell className="">Composite</TableHeaderCell>
+								</MediaQuery>
+								<MediaQuery minWidth={1620}>
+									<TableHeaderCell className="">Client Role</TableHeaderCell>
+								</MediaQuery>
+								<TableHeaderCell></TableHeaderCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							{(data || []).map((item, index) => (
+								<TableRow key={index}>
+									<TableCell>
+										<Text className="font-sans">{item.name}</Text>
+									</TableCell>
+									<MediaQuery minWidth={1090}>
+										<TableCell className="">
+											<Text>{item.description}</Text>
+										</TableCell>
+									</MediaQuery>
+									<MediaQuery minWidth={1420}>
+										<TableCell className="">
+											{item.composite ? (
+												<Badge
+													className="flex items-center space-x-1"
+													icon={CheckIcon}
+													color="indigo"
+												>
+													True
+												</Badge>
+											) : (
+												<Badge icon={XMarkIcon} color="neutral">
+													False
+												</Badge>
+											)}{" "}
+										</TableCell>
+									</MediaQuery>
+									<MediaQuery minWidth={1620}>
+										<TableCell className="">
+											{item.clientRole ? (
+												<Badge
+													className="flex items-center space-x-1"
+													color="green"
+													icon={CheckIcon}
+												>
+													True
+												</Badge>
+											) : (
+												<Badge color="red" icon={XMarkIcon}>
+													False
+												</Badge>
+											)}{" "}
+										</TableCell>
+									</MediaQuery>
+									<TableCell>
+										<div className="flex space-x-2 justify-end">
+											<Button
+												variant="primary"
+												className="shadow-md"
+												onClick={() => {
+													setId(item.name);
+													setRoleData(item);
+													setOpen(true);
+												}}
+											>
+												<Text>Edit</Text>
+											</Button>
+										</div>
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</Card>
+			</div>
+			<Transition appear show={open} as={Fragment}>
+				<Dialog
+					as="div"
+					className="relative z-10"
+					onClose={() => setOpen(false)}
 				>
-					<Form.Item
-						name="name"
-						label="Role Name"
-						className="w-full"
-						rules={[
-							{
-								required: true,
-								message: "Please input role name",
-							},
-						]}
+					<Transition.Child
+						as={Fragment}
+						enter="ease-out duration-300"
+						enterFrom="opacity-0"
+						enterTo="opacity-100"
+						leave="ease-in duration-200"
+						leaveFrom="opacity-100"
+						leaveTo="opacity-0"
 					>
-						<Input className="w-full" />
-					</Form.Item>
-					<Form.Item
-						name="description"
-						label="Description"
-						rules={[
-							{
-								required: true,
-								message: "Please input role description",
-							},
-						]}
-					>
-						<Input />
-					</Form.Item>
-				</Form>
-			</Modal>
+						<div className="fixed inset-0 bg-black bg-opacity-25" />
+					</Transition.Child>
+
+					<div className="fixed inset-0 overflow-y-auto">
+						<div className="flex min-h-full items-center justify-center p-4 text-center">
+							<Transition.Child
+								as={Fragment}
+								enter="ease-out duration-300"
+								enterFrom="opacity-0 scale-95"
+								enterTo="opacity-100 scale-100"
+								leave="ease-in duration-200"
+								leaveFrom="opacity-100 scale-100"
+								leaveTo="opacity-0 scale-95"
+							>
+								<Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-gray-100 p-6 text-left align-middle shadow-xl transition-all">
+									<Dialog.Title
+										as="h3"
+										className="text-lg font-medium leading-6 text-gray-900"
+									>
+										Update Role
+									</Dialog.Title>
+									<div className="mt-5 flex-auto px-4 py-10 pt-0">
+										<form
+											onSubmit={handleSubmit((data: any) => onSubmit(data))}
+										>
+											<div className="relative w-full mb-3">
+												<label
+													className="block text-blueGray-600 text-xs font-bold mb-2"
+													htmlFor="name"
+												>
+													Role Name
+												</label>
+												<TextInput
+													defaultValue={roleData?.name}
+													{...register("name", {
+														required: true,
+													})}
+													placeholder="John"
+													type="text"
+													className="bg-white"
+												/>
+												{errors.name && (
+													<span className="text-sm text-red-600">
+														role name is required
+													</span>
+												)}
+											</div>
+											<div className="relative w-full mb-3">
+												<label
+													className="block text-blueGray-600 text-xs font-bold mb-2"
+													htmlFor="descriptiond"
+												>
+													Description
+												</label>
+												<TextInput
+													defaultValue={roleData?.description}
+													{...register("description", {
+														required: true,
+													})}
+													placeholder="John"
+													type="text"
+													className="bg-white"
+												/>
+												{errors.description && (
+													<span className="text-sm text-red-600">
+														provide role description
+													</span>
+												)}
+											</div>
+											<div className="mt-16 flex justify-end space-x-2">
+												<Button
+													type="button"
+													className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+													onClick={() => {
+														reset(["name", "description"])
+														setOpen(false)
+													}}
+												>
+													Cancel
+												</Button>
+												<Button
+													loading={loading}
+													type="submit"
+													className="inline-flex justify-center rounded-md border border-transparent bg-prim px-4 py-2 text-sm font-medium text-white hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+												>
+													Save Changes
+												</Button>
+											</div>
+										</form>
+									</div>
+								</Dialog.Panel>
+							</Transition.Child>
+						</div>
+					</div>
+				</Dialog>
+			</Transition>
 		</div>
 	);
 };
