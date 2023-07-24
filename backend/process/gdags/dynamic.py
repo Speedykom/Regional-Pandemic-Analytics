@@ -12,6 +12,8 @@ class DynamicDag:
         new_filename = self.output + dag_name + ".py"
         shutil.copyfile(self.template, new_filename)
 
+        fine_name = parquet_path.replace("/minio_temp/")
+
         path = "$" + "{" + "PROJECT_HOME" + "}" + pipeline_path
 
         with fileinput.input(new_filename, inplace=True) as file:
@@ -19,6 +21,7 @@ class DynamicDag:
                 new_line = (
                     line.replace("dag_id", "'{}'".format(dag_id))
                         .replace("parquet_path", "'{}'".format(parquet_path))
+                        .replace("fine_name", "'{}'".format(fine_name))
                         .replace("data_source_name", "'{}'".format(data_source_name))
                         .replace("scheduleinterval", "'{}'".format(schedule_interval))
                         .replace("pipeline_path", "'{}'".format(path))

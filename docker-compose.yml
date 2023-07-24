@@ -22,7 +22,8 @@ x-druid-common: &druid
     - druid_processing_numMergeBuffers=${DRUID_druid_processing_numMergeBuffers}
     - DRUID_LOG4J=${DRUID_DRUID_LOG4J}
 x-airflow-common: &airflow
-  image: apache/airflow:2.5.2
+  build:
+    context: ./airflow
   user: "0:0"
   environment:
     - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_AIRFLOW__CORE__FERNET_KEY}
@@ -33,6 +34,7 @@ x-airflow-common: &airflow
     - AIRFLOW_UID=${AIRFLOW_AIRFLOW_UID}
     - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=${AIRFLOW_AIRFLOW__DATABASE__SQL_ALCHEMY_CONN}
     - AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS=${AIRFLOW_AIRFLOW__DATABASE__LOAD_DEFAULT_CONNECTIONS}
+    - PIPELINE_BUCKET_NAME=${AIRFLOW_PIPELINE_BUCKET_NAME}
     - _AIRFLOW_DB_UPGRADE=${AIRFLOW__AIRFLOW_DB_UPGRADE}
     - _AIRFLOW_WWW_USER_CREATE=${AIRFLOW__AIRFLOW_WWW_USER_CREATE}
     - _AIRFLOW_WWW_USER_USERNAME=${AIRFLOW__AIRFLOW_WWW_USER_USERNAME}
@@ -48,10 +50,14 @@ x-airflow-common: &airflow
     - AUTH_USER_REGISTRATION_ROLE=${AIRFLOW_AUTH_USER_REGISTRATION_ROLE}
     - AUTH_ROLES_SYNC_AT_LOGIN=${AIRFLOW_AUTH_ROLES_SYNC_AT_LOGIN}
     - ENVIRONMENT=${AIRFLOW_ENVIRONMENT}
+    - MINIO_ACCESS_KEY=${APP_CLIENT_ID}
+    - MINIO_SECRET_KEY=${APP_CLIENT_SECRET}
+    - MINIO_BUCKET=${MINIO_BUCKET}
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
     - ./airflow/plugins:/opt/airflow/plugins
+    - ./storage:/minio_temp
     - ./airflow/webserver_config.py:/opt/airflow/webserver_config.py
     - ./airflow/user_auth.py:/opt/airflow/user_auth.py
     - ./airflow/airflow.cfg:/opt/airflow/airflow.cfg
@@ -85,7 +91,7 @@ services:
       - MINIO_SERVER_URL=${MINIO_SERVER_URL}
       - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL}
     ports:
-      - "9001:9000"
+      - "9000:9000"
       - "8887:9090"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
@@ -366,9 +372,9 @@ services:
     environment:
       - HOP_KEYCLOAK_URL=${HOP_KEYCLOAK_URL}
 
-    # =======
-    # Airflow
-    # =======
+  # =======
+  # Airflow
+  # =======
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg
@@ -398,11 +404,13 @@ services:
   airflow-webserver:
     <<: *airflow
     depends_on:
+      storage:
+        condition: service_healthy
       airflow-pg:
         condition: service_healthy
-      keycloak:
-        condition: service_healthy
-        restart: true
+      # keycloak:
+      #   condition: service_healthy
+      #   restart: true
     container_name: airflow-webserver
     restart: always
     command: webserver
@@ -519,7 +527,6 @@ services:
   # =====
   #  OpenHIM
   # =====
-
   mongo-db:
     container_name: mongo-db
     image: mongo:4.0

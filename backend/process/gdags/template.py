@@ -5,6 +5,7 @@ from airflow.operators.bash import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
 from docker.types import Mount
+from minio import Minio
 import requests
 import os
 
@@ -27,91 +28,83 @@ default_args = {
     'retry_delay': timedelta(minutes=5)
 }
 
+# Upload parquet_path
+def upload_to_minio():
+    MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
+    MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
+    MINIO_BUCKET = os.getenv("MINIO_BUCKET")
+
+    client = Minio(
+        "storage:9000",
+        access_key=MINIO_ACCESS_KEY,
+        secret_key=MINIO_SECRET_KEY,
+        secure=False
+    )
+
+    # Make 'asiatrip' bucket if not exist.
+    found = client.bucket_exists(MINIO_BUCKET)
+
+    if not found:
+        client.make_bucket(MINIO_BUCKET)
+    else:
+        print("Bucket {} already exists".format(MINIO_BUCKET))
+
+    res = client.fput_object(
+        MINIO_BUCKET, fine_name, parquet_path
+    )
+    print(res, "Parquet file uploaded successfully !!!")
+
 # Ingest to druid
-def ingest():
+def ingest_druid_data():
     url = "{}/druid/indexer/v1/task".format(DRUID_COORDINATOR_URL)
+    
     payload = {
-      "type": "index_parallel",
-      "spec": {
-        "ioConfig": {
-          "type": "index_parallel",
-          "inputSource": {
-            "type": "local",
-            "baseDir": parquet_path,
-            "filter": "*.parquet"
-          },
-          "inputFormat": {
-            "type": "parquet"
-          }
-        },
-        "tuningConfig": {
-          "type": "index_parallel",
-          "partitionsSpec": {
-            "type": "dynamic"
-          }
-        },
-        "dataSchema": {
-          "dataSource": data_source_name,
-          "timestampSpec": {
-            "column": "Date",
-            "format": "millis"
-          },
-          "dimensionsSpec": {
-            "dimensions": [
-              "FullyVaccinated",
-              {
-                "type": "long",
-                "name": "NewDeaths"
-              },
-              "STATE",
-              "Latitude",
-              {
-                "type": "long",
-                "name": "NewRecoveries"
-              },
-              {
-                "type": "long",
-                "name": "TotalCases"
-              },
-              "Code",
-              "Longitude",
-              "TotalDoses",
-              {
-                "type": "long",
-                "name": "TotalRecoveries"
-              },
-              "Population",
-              {
-                "type": "long",
-                "name": "NewCases"
-              },
-              {
-                "type": "long",
-                "name": "TotalDeaths"
-              },
-              {
-                "type": "long",
-                "name": "DailyTests"
-              }
-            ]
-          },
-          "granularitySpec": {
-            "queryGranularity": "none",
-            "rollup": False,
-            "segmentGranularity": "day"
-          }
+        "type": "index_parallel",
+        "spec": {
+            "ioConfig": {
+                "type": "index_parallel",
+                "inputSource": {
+                    "type": "local",
+                    "baseDir": parquet_path,
+                    "filter": "*.parquet"
+                },
+                "inputFormat": {
+                    "type": "parquet"
+                }
+            },
+            "tuningConfig": {
+                "type": "index_parallel",
+                "partitionsSpec": {
+                    "type": "dynamic"
+                }
+            },
+            "dataSchema": {
+                "dataSource": data_source_name,
+                "timestampSpec": {
+                    "column": "Date",
+                    "format": "millis"
+                },
+                "dimensionsSpec": {
+                    "dimensions": []
+                },
+                "granularitySpec": {
+                    "queryGranularity": "none",
+                    "rollup": False,
+                    "segmentGranularity": "day"
+                }
+            }
         }
-      }
     }
-    client = requests.post(url, json = payload)
-    print("Done!")
+    client = requests.post(url, json=payload)
+    print("Done!!!")
+
 
 with DAG(dag_id, default_args=default_args, schedule_interval=scheduleinterval, catchup=False, is_paused_upon_creation=False) as dag:
     start_task = DummyOperator(
         task_id='start_task'
     )
     # Run Hop pipeline
-    hop = DockerOperator(
+    hop_task = DockerOperator(
         task_id='hop_task',
         image='apache/hop',
         container_name=dag_id,
@@ -119,8 +112,8 @@ with DAG(dag_id, default_args=default_args, schedule_interval=scheduleinterval, 
         auto_remove=True,
         host_tmp_dir='/files',
         mount_tmp_dir=False,
-        user = '0:0',
-        privileged = True,
+        user='0:0',
+        privileged=True,
         environment={
             'HOP_LOG_LEVEL': 'Basic',
             'HOP_FILE_PATH': pipeline_path,
@@ -132,20 +125,25 @@ with DAG(dag_id, default_args=default_args, schedule_interval=scheduleinterval, 
         },
         docker_url='unix://var/run/docker.sock',
         network_mode='host',
-        mounts = [
-          Mount(source=storage, target='/home', type='bind'),
-          Mount(source=pipelines, target='/files', type='bind'),
-          Mount(source=plugins, target='/opt/hop/hop/plugins/transforms/googlesheets', type='bind'), 
-          Mount(source=config, target='/opt/hop/hop/config/hop-config.json', type='bind')
+        mounts=[
+            Mount(source=storage, target='/home', type='bind'),
+            Mount(source=pipelines, target='/files', type='bind'),
+            Mount(source=plugins,
+                  target='/opt/hop/hop/plugins/transforms/googlesheets', type='bind'),
+            Mount(source=config,
+                  target='/opt/hop/hop/config/hop-config.json', type='bind')
         ],
-        force_pull = False
+        force_pull=False
     )
-    # Run Druid ingection
-    druid_dag = PythonOperator(
-        task_id='druid_dag',
-        python_callable=ingest
+    inject_task = PythonOperator(
+        task_id='inject_task',
+        python_callable=ingest_druid_data
+    )
+    upload_task = PythonOperator(
+        task_id='upload_task',
+        python_callable=upload_to_minio
     )
     end_task = DummyOperator(
         task_id='end_task'
     )
-    start_task >> hop >> druid_dag >> end_task
+    start_task >> hop_task >> upload_task >> inject_task >> end_task
