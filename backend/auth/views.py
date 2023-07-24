@@ -67,7 +67,7 @@ class Logout (APIView):
     """
     API to logout user
     """
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         reqToken: str = request.META.get('HTTP_AUTHORIZATION')
 
         if reqToken is None:
@@ -84,7 +84,7 @@ class Logout (APIView):
         response = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/logout",
                             data=form_data)
 
-        if response.status_code != 204:
+        if not response.ok:
             return Response(response.json(), status=response.status_code)
         
         return Response({'message': 'Logout was successful', 'success': True}, status=status.HTTP_200_OK)    
