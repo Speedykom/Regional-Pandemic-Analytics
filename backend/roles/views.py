@@ -6,10 +6,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from roles.utils import (
-    User_pers, FALSE_User_pers, Role_pers, FALSE_Role_pers, Dashboard_pers, FALSE_dashboard_pers, Chart_pers, FALSE_chart_pers,
-    Data_pers, FALSE_data_pers, Process_chain_pers, FALSE_process_chain_pers
-)
 from utils.keycloak_auth import keycloak_admin_login
 from utils.env_configs import (
     APP_REALM, APP_USER_ROLES, BASE_URL, APP_CLIENT_UUID)
