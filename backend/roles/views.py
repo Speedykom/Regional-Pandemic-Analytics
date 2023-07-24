@@ -33,7 +33,7 @@ class CreateViewRoles(APIView):
             'cache-control': "no-cache"
         }
 
-        response = requests.get(f"{BASE_URL}/admin/realms/{APP_REALM}/clients/{APP_CLIENT_UUID}/roles", headers=headers)
+        response = requests.get(f"{BASE_URL}/admin/realms/{APP_REALM}/clients/8c05cf5e-56fd-4d53-b7e0-5f8e42ea1217/roles", headers=headers)
 
         if response.status_code != 200:
             print(response.json())
@@ -155,7 +155,7 @@ class GetEditRole(APIView):
         }
 
         res = requests.put(
-            f"{BASE_URL}/admin/realms/{APP_REALM}/clients/{APP_CLIENT_UUID}/roles/{kwargs['id']}", json=form_data, headers=headers)
+            f"{BASE_URL}/admin/realms/{APP_REALM}/clients/8c05cf5e-56fd-4d53-b7e0-5f8e42ea1217/roles/{kwargs['id']}", json=form_data, headers=headers)
 
         if not res.ok:
             return Response(res.reason, status=res.status_code)
