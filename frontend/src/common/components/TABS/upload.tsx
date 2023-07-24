@@ -15,7 +15,7 @@ interface prop {
 }
 
 export default function LoadData({ dag, state, onClose }: prop) {
-  const [fileName, setFIleName] = useState<string>("");
+  const [fileName, setFileName] = useState<string>("");
   const user = useSelector(selectCurrentUser);
   const email = user?.email || '';
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
@@ -120,7 +120,7 @@ export default function LoadData({ dag, state, onClose }: prop) {
                             onChange={(
                               e: React.ChangeEvent<HTMLInputElement>
                             ) => {
-                              setFIleName(e.target.value);
+                              setFileName(e.target.value);
                             }}
                           />
                           <span className="text-xs tracking-wide text-red-600"></span>
