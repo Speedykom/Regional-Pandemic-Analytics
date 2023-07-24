@@ -1,20 +1,16 @@
 import { Dialog, Switch, Transition } from "@headlessui/react";
 
 import React, { Fragment, useEffect, useState, useCallback } from "react";
-import { Dropdown, DropdownItem } from "@tremor/react";
 import { Flex, TextInput } from "@tremor/react";
 import { DagType } from "../TABS/interface";
 import {
   ArrowUpOnSquareIcon,
   DocumentTextIcon,
-  CubeIcon,
-  CubeTransparentIcon,
 } from "@heroicons/react/24/outline";
 import {toast} from "react-toastify";
 import axios from 'axios'
 import secureLocalStorage from "react-secure-storage";
 import {useDropzone} from "react-dropzone";
-
 
 interface IDag {
   [key: string]: unknown;
