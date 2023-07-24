@@ -12,7 +12,7 @@ from roles.utils import (
 )
 from utils.keycloak_auth import keycloak_admin_login
 from utils.env_configs import (
-    APP_REALM, APP_USER_ROLES, BASE_URL)
+    APP_REALM, APP_USER_ROLES, BASE_URL, APP_CLIENT_UUID)
 
 #Api to create and list all roles
 class CreateViewRoles(APIView):
@@ -33,12 +33,11 @@ class CreateViewRoles(APIView):
             'cache-control': "no-cache"
         }
 
-        response = requests.get(f"{APP_USER_ROLES}/", headers=headers)
+        response = requests.get(f"{BASE_URL}/admin/realms/{APP_REALM}/clients/{APP_CLIENT_UUID}/roles", headers=headers)
 
         if response.status_code != 200:
             print(response.json())
             return Response(response.reason, status=response.status_code)
-
 
         role_data = response.json()
         return Response(role_data, status=status.HTTP_200_OK)
@@ -141,32 +140,7 @@ class GetEditRole(APIView):
         form_data = {
             "name": request.data.get("name", None),
             "description": request.data.get("description", None),
-            "attributes": {}
-        }
-        
-        if kwargs['id'] == '37a81fed-6f5a-4e7b-b539-adff6db8d0b0':                  #admin
-            form_data['attributes']['User'] = [json.dumps(User_pers)]
-            form_data['attributes']['Role'] = [json.dumps(Role_pers)]
-            form_data['attributes']['Dashboard'] = [json.dumps(FALSE_dashboard_pers)]
-            form_data['attributes']['Chart'] = [json.dumps(FALSE_chart_pers)]
-            form_data['attributes']['Data'] = [json.dumps(FALSE_data_pers)]
-            form_data['attributes']['ProcessChain'] = [json.dumps(FALSE_process_chain_pers)]
-            
-        if  kwargs['id'] == 'c3aed598-9ad0-45ed-8e56-1cc32bb8aa9a':                 #m&e
-            form_data['attributes']['User'] = [json.dumps(FALSE_User_pers)]
-            form_data['attributes']['Role'] = [json.dumps(FALSE_Role_pers)]
-            form_data['attributes']['Dashboard'] = [json.dumps(Dashboard_pers)]
-            form_data['attributes']['Chart'] = [json.dumps(Chart_pers)]
-            form_data['attributes']['Data'] = [json.dumps(FALSE_data_pers)]
-            form_data['attributes']['ProcessChain'] = [json.dumps(FALSE_process_chain_pers)]    
-            
-        if  kwargs['id'] == '3de87a0f-965f-4dc9-8065-51df66cfb01f':                 #dho
-            form_data['attributes']['User'] = [json.dumps(FALSE_User_pers)]
-            form_data['attributes']['Role'] = [json.dumps(FALSE_Role_pers)]
-            form_data['attributes']['Dashboard'] = [json.dumps(Dashboard_pers)]
-            form_data['attributes']['Chart'] = [json.dumps(Chart_pers)]
-            form_data['attributes']['Data'] = [json.dumps(Data_pers)]
-            form_data['attributes']['ProcessChain'] = [json.dumps(Process_chain_pers)]      
+        } 
 
         # Login to admin
         admin_login = keycloak_admin_login()
@@ -181,9 +155,9 @@ class GetEditRole(APIView):
         }
 
         res = requests.put(
-            f"{BASE_URL}/admin/realms/{APP_REALM}/roles-by-id/{kwargs['id']}", json=form_data, headers=headers)
+            f"{BASE_URL}/admin/realms/{APP_REALM}/clients/{APP_CLIENT_UUID}/roles/{kwargs['id']}", json=form_data, headers=headers)
 
-        if res.status_code != 204:
+        if not res.ok:
             return Response(res.reason, status=res.status_code)
 
         return Response({'message': 'Role update was successful'}, status=status.HTTP_200_OK)    
