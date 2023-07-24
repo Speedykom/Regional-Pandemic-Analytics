@@ -4,6 +4,7 @@ import { processApi } from "../../modules/process/process";
 import authReducer, { AuthApi } from "../../modules/auth/auth";
 import { pipelineApi } from "@/modules/pipeline/pipeline";
 import { UserApi } from "@/modules/user/user";
+import { RoleApi } from "@/modules/roles/role";
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     [pipelineApi.reducerPath]: pipelineApi.reducer,
     [AuthApi.reducerPath]: AuthApi.reducer,
     [UserApi.reducerPath]: UserApi.reducer,
+    [RoleApi.reducerPath]: RoleApi.reducer,
     auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -22,7 +24,8 @@ export const store = configureStore({
       .concat(processApi.middleware)
       .concat(AuthApi.middleware)
       .concat(pipelineApi.middleware)
-      .concat(UserApi.middleware),
+      .concat(UserApi.middleware)
+      .concat(RoleApi.middleware),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
