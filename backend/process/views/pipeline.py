@@ -37,7 +37,7 @@ class CreatePipeline(APIView):
 
         pipeline_name = "../hop/pipelines/{}.hpl".format(name)
         pipeline_path = "{}.hpl".format(name)
-        parquet_path = "/opt/shared/{}.parquet".format(name)
+        parquet_path = "/minio_temp/{}.parquet".format(name)
 
         pipeline = open(pipeline_name, "w")
         pipeline.write(file.read())

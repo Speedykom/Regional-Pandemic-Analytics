@@ -16,6 +16,8 @@ api = os.getenv("AIRFLOW_API")
 username = os.getenv("AIRFLOW_USER")
 password = os.getenv("AIRFLOW_PASSWORD")
 
+druid_api = os.getenv("DRUID_API")
+
 class DeleteProcess(APIView):
 
     permission_classes = [AllowAny]
@@ -150,15 +152,52 @@ class RunProcess(APIView):
         if (res_status == 404): return Response({'status': 'success', "message": "No process found for this dag_id {}".format(id)}, status=res_status)
         else: return Response({'status': 'success', "message": "{} process start running!".format(id)}, status=res_status)
 
-class RunDetailsProcessChain(APIView):
+class DruidDetailsProcessChain(APIView):
 
     permission_classes = [AllowAny]
 
     def get(self, request, id=None):
-        route = "{}/dags/{}/dagRuns".format(api, id)
-        client = requests.get(route, json={}, auth=(username, password))
+        snippet = ProcessChain.objects.filter(id=id)
+        
+        if (len(snippet) <= 0): return Response({'status': 'success', "message": "No process found for this dag_id {}".format(id)}, status=404)
+
+        serializer = ProcessChainSerializer(snippet[0])
+
+        process = serializer.data
+
+        data_source = process['data_source_name']
+
+        route = "{}/druid/coordinator/v1/datasources/{}?full".format(druid_api, data_source)
+        client = requests.get(route)
+
+        respose = client.json()
+        
+        if (respose['name']): return Response({'status': 'success', "message": "No data found!!"}, status=404)
+
+        process['druid'] = respose
+
+        return Response({'status': 'success', "data": process}, status=200)
+
+class OrchestrationDetailsProcessChain(APIView):
+
+    permission_classes = [AllowAny]
+
+    def get(self, request, id=None):
+        process = ProcessChain.objects.filter(dag_id=id)
+        
+        if (len(process) <= 0): return Response({'status': 'success', "message": "No process found for this dag_id {}".format(id)}, status=404)
+
+        route = "{}/dags/{}".format(api, id)
+        client = requests.get(route, auth=(username, password))
 
         res_status = client.status_code
         
         if (res_status == 404): return Response({'status': 'success', "message": client.json()['detail']}, status=res_status)
-        else: return Response({'status': 'success', "message": client.json()['dag_runs'].format(id)}, status=200)
+
+        route = "{}/dags/{}/dagRuns".format(api, id)
+        runs = requests.get(route, json={}, auth=(username, password))
+
+        respose = client.json()
+        respose['runs'] = runs.json()['dag_runs']
+
+        return Response({'status': 'success', "data": respose}, status=200)
