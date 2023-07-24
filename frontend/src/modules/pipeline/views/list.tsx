@@ -1,23 +1,13 @@
 import { IGADTable } from "@/common/components/common/table";
-import { DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Modal, message, Upload } from "antd";
+import { Button } from "antd";
 import { useTemplate } from "../hooks";
 import { useState } from "react";
-import axios from "axios";
-import { useRouter } from "next/router";
-
-import { UploadOutlined } from "@ant-design/icons";
-import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import TemplateModal from "./templates";
 import { AddPipeline } from "./add";
-
-enum OPERATION_TYPES {
-  CREATE,
-  UPDATE,
-  NONE,
-}
+import { usePermission } from "@/common/hooks/use-permission";
 
 export const MyPipelineList = () => {
+  const { hasPermission } = usePermission();
   const [temp, setTemp] = useState<boolean>(false);
   const [template, setTemplate] = useState<any>();
   const [drawer, setDrawer] = useState<boolean>(false);
@@ -39,7 +29,6 @@ export const MyPipelineList = () => {
     setTemp(false);
   };
 
-  // @ts-ignore
   return (
     <div className="">
       <nav>
@@ -49,9 +38,9 @@ export const MyPipelineList = () => {
             <p className="my-2 text-gray-600">Create your hop pipeline</p>
           </div>
           <div>
-            <Button type="primary" size="large" onClick={() => setTemp(true)}>
+            {hasPermission('pipeline:add') && <Button type="primary" size="large" onClick={() => setTemp(true)}>
               Create Pipeline
-            </Button>
+            </Button>}
           </div>
         </div>
       </nav>
