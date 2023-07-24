@@ -70,7 +70,7 @@ const categories: Array<AnalyticsType> = [
 
 export default function AnalyticsCard() {
   return (
-    <Grid numColsSm={2} numColsLg={3} className="gap-6">
+    <Grid numItemsMd={2} numItemsLg={3} className="gap-6">
       {categories.map((item) => (
         <Card key={item.title}>
           <Flex alignItems="start">
