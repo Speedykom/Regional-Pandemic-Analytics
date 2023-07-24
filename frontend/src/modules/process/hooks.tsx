@@ -1,10 +1,10 @@
 import { Button, Popover } from "antd";
 import { ColumnsType } from "antd/es/table";
 import {
-  useDelProcessMutation,
-  useEditAccessMutation,
-  useFindAllQuery,
-  useRunProcessMutation,
+  useDeleteProcessChainMutation,
+  useUpdateProcessChainActionMutation,
+  useGetProcessChainsQuery,
+  useRunProcessChainMutation,
 } from "./process";
 import { ShowMessage } from "@/common/components/ShowMessage";
 import { useState } from "react";
@@ -16,7 +16,7 @@ interface Props {
 }
 
 const ViewButton = ({ id }: { id: string }) => {
-  const [editAccess] = useEditAccessMutation();
+  const [editAccess] = useUpdateProcessChainActionMutation();
 
   const [loading, setLoading] = useState(false);
 
@@ -45,7 +45,7 @@ const ViewButton = ({ id }: { id: string }) => {
 };
 
 const DelButton = ({ id }: { id: string }) => {
-  const [delProcess] = useDelProcessMutation();
+  const [delProcess] = useDeleteProcessChainMutation();
 
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState(false);
@@ -104,7 +104,7 @@ const DelButton = ({ id }: { id: string }) => {
 };
 
 const RunButton = ({ id }: { id: string }) => {
-  const [runPipeline] = useRunProcessMutation();
+  const [runPipeline] = useRunProcessChainMutation();
   const [loading, setLoading] = useState(false);
 
   const run = () => {
@@ -139,7 +139,7 @@ const RunButton = ({ id }: { id: string }) => {
 };
 
 export const useProcessChainList = () => {
-  const { data: data, isLoading: loading } = useFindAllQuery();
+  const { data: data, isLoading: loading } = useGetProcessChainsQuery();
 
   const columns: ColumnsType<any> = [
     // {
@@ -205,7 +205,7 @@ export const useProcessChainList = () => {
 };
 
 export const useProcessDagRuns = () => {
-  const { data: data, isLoading: loading } = useFindAllQuery();
+  const { data: data, isLoading: loading } = useGetProcessChainsQuery();
 
   const columns: ColumnsType<any> = [
     {
