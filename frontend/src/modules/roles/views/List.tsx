@@ -1,4 +1,3 @@
-import { useRouter } from "next/router";
 import {
 	Badge,
 	Button,
@@ -31,7 +30,6 @@ export const RoleList = () => {
 	const {
 		register,
 		handleSubmit,
-		setValue,
 		reset,
 		formState: { errors },
 	} = useForm();
