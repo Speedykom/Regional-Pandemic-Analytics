@@ -3,7 +3,7 @@ import { Button, Form, Input, Modal } from "antd";
 import { useRoles } from "../hooks";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { IRole } from "../interface";
+import { Role } from "../interface";
 import secureLocalStorage from "react-secure-storage";
 import { OpenNotification } from "@/common/utils/notify";
 import { PlusOutlined, DeleteColumnOutlined, SaveOutlined } from "@ant-design/icons";
@@ -26,7 +26,7 @@ export const RoleList = () => {
 	const [token, setToken] = useState<string>("");
 	const [loading, setLoading] = useState<boolean>(true);
 
-	const [data, setData] = useState<Array<IRole>>([]);
+	const [data, setData] = useState<Array<Role>>([]);
 
 	const [roleId, setRoleId] = useState<string>();
 
