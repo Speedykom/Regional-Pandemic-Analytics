@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+import { useRouter } from "next/router";
+>>>>>>> cf5e802 (manage client roles instead of realm, role list refactor, role update redux mutation, tremor update fix errors)
 import {
 	Badge,
 	Button,
@@ -30,6 +34,10 @@ export const RoleList = () => {
 	const {
 		register,
 		handleSubmit,
+<<<<<<< HEAD
+=======
+		setValue,
+>>>>>>> cf5e802 (manage client roles instead of realm, role list refactor, role update redux mutation, tremor update fix errors)
 		reset,
 		formState: { errors },
 	} = useForm();
@@ -40,6 +48,13 @@ export const RoleList = () => {
 		updateRole(role)
 			.then((res: any) => {
 				setLoading(false);
+<<<<<<< HEAD
+=======
+				toast.success(res?.data?.message, {
+					position: "top-right",
+				});
+				reset();
+>>>>>>> cf5e802 (manage client roles instead of realm, role list refactor, role update redux mutation, tremor update fix errors)
 				refetch();
 				setOpen(false)
 				toast.success(res?.data?.message, {
@@ -245,11 +260,18 @@ export const RoleList = () => {
 													Cancel
 												</Button>
 												<Button
+<<<<<<< HEAD
 													loading={loading}
 													type="submit"
 													className="inline-flex justify-center rounded-md border border-transparent bg-prim px-4 py-2 text-sm font-medium text-white hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
 												>
 													Save Changes
+=======
+													type="submit"
+													className="inline-flex justify-center rounded-md border border-transparent bg-prim px-4 py-2 text-sm font-medium text-white hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+												>
+													Cancel
+>>>>>>> cf5e802 (manage client roles instead of realm, role list refactor, role update redux mutation, tremor update fix errors)
 												</Button>
 											</div>
 										</form>
