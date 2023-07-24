@@ -13,9 +13,15 @@ export const store = configureStore({
     [processApi.reducerPath]: processApi.reducer,
     [pipelineApi.reducerPath]: pipelineApi.reducer,
     [AuthApi.reducerPath]: AuthApi.reducer,
+<<<<<<< HEAD
     [UserApi.reducerPath]: UserApi.reducer,
     [RoleApi.reducerPath]: RoleApi.reducer,
     auth: authReducer,
+=======
+    [LogoutApi.reducerPath]: LogoutApi.reducer,
+    [UserApi.reducerPath]: UserApi.reducer,
+    [RoleApi.reducerPath]: RoleApi.reducer
+>>>>>>> cf5e802 (manage client roles instead of realm, role list refactor, role update redux mutation, tremor update fix errors)
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
