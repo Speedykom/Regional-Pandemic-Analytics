@@ -1,14 +1,13 @@
-import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
-import { MyPipelineList } from "@/modules/pipeline/views/list";
-
-export const LoadHops = () => {
-  return (
-    <DashboardFrame title="My Pipeline">
-      <MyPipelineList />
-    </DashboardFrame>
-  );
-};
+import { Unauthorized } from '@/common/components/common/unauth';
+import DashboardFrame from '@/common/components/Dashboard/DashboardFrame';
+import { usePermission } from '@/common/hooks/use-permission';
+import { MyPipelineList } from '@/modules/pipeline/views/list';
 
 export default function Hops() {
-  return <LoadHops />;
+  const { hasPermission } = usePermission();
+  return (
+    <DashboardFrame title="My Pipeline">
+      {hasPermission('pipeline:read') ? <MyPipelineList /> : <Unauthorized />}
+    </DashboardFrame>
+  );
 }
