@@ -15,10 +15,10 @@ from utils.env_configs import (
     APP_REALM, APP_USER_ROLES, BASE_URL, APP_CLIENT_UUID)
 
 #Api to create and list all roles
-class CreateViewRoles(APIView):
+class RoleApiView(APIView):
     permission_classes = [AllowAny, ]
     
-    """_api view to get realm roles_
+    """_api view to get client roles_
     """
     def get(self, request, *args, **kwargs):
         # Login to admin
@@ -33,7 +33,7 @@ class CreateViewRoles(APIView):
             'cache-control': "no-cache"
         }
 
-        response = requests.get(f"{BASE_URL}/admin/realms/{APP_REALM}/clients/8c05cf5e-56fd-4d53-b7e0-5f8e42ea1217/roles", headers=headers)
+        response = requests.get(f"{BASE_URL}/admin/realms/{APP_REALM}/clients/{APP_CLIENT_UUID}/roles", headers=headers)
 
         if response.status_code != 200:
             print(response.json())
@@ -41,18 +41,19 @@ class CreateViewRoles(APIView):
 
         role_data = response.json()
         return Response(role_data, status=status.HTTP_200_OK)
-
-    """_api view to create realm roles_
+    
     """
-    def post(self, request):
+    API view to update Keycloak client role
+    """
+    def put(self, request, *args, **kwargs):
         form_data = {
             "name": request.data.get("name", None),
             "description": request.data.get("description", None),
-        }
-        
+        } 
+
         # Login to admin
         admin_login = keycloak_admin_login()
-
+        
         if admin_login["status"] != 200:
             return Response(admin_login["data"], status=admin_login["status"])
 
@@ -62,40 +63,16 @@ class CreateViewRoles(APIView):
             'cache-control': "no-cache"
         }
 
-        res = requests.post(f"{APP_USER_ROLES}",
-                            json=form_data, headers=headers)
+        res = requests.put(
+            f"{BASE_URL}/admin/realms/{APP_REALM}/clients/{APP_CLIENT_UUID}/roles/{kwargs['id']}", json=form_data, headers=headers)
 
-        if res.status_code != 201:
+        if not res.ok:
             return Response(res.reason, status=res.status_code)
 
-        return Response({'message': f'{form_data["name"]} role created successfully'}, status=status.HTTP_200_OK)
-    
+        return Response({'message': 'Role update was successful'}, status=status.HTTP_200_OK)    
 
 class GetEditRole(APIView):
     permission_classes = [AllowAny, ]
-    
-    """_api view to delete realm roles_
-    """
-    def delete(self, request, *args, **kwargs):
-        # Login to admin
-        admin_login = keycloak_admin_login()
-        
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
-            'Content-Type': "application/json",
-            'cache-control': "no-cache"
-        }
-
-        res = requests.delete(
-            f"{BASE_URL}/admin/realms/{APP_REALM}/roles-by-id/{kwargs['id']}", headers=headers)
-
-        if res.status_code != 204:
-            return Response(res.reason, status=res.status_code)
-
-        return Response({'message': 'Role deletion was successful'}, status=status.HTTP_200_OK)
     
     def get(self, request, *args, **kwargs):
         # Login to admin
@@ -132,32 +109,4 @@ class GetEditRole(APIView):
         
         role = response.json()
         return Response({'status': 'success', 'role': role}, status=status.HTTP_200_OK)
-    
-    """
-    API view to update Keycloak roles
-    """
-    def put(self, request, *args, **kwargs):
-        form_data = {
-            "name": request.data.get("name", None),
-            "description": request.data.get("description", None),
-        } 
-
-        # Login to admin
-        admin_login = keycloak_admin_login()
-        
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
-            'Content-Type': "application/json",
-            'cache-control': "no-cache"
-        }
-
-        res = requests.put(
-            f"{BASE_URL}/admin/realms/{APP_REALM}/clients/8c05cf5e-56fd-4d53-b7e0-5f8e42ea1217/roles/{kwargs['id']}", json=form_data, headers=headers)
-
-        if not res.ok:
-            return Response(res.reason, status=res.status_code)
-
-        return Response({'message': 'Role update was successful'}, status=status.HTTP_200_OK)    
+      
