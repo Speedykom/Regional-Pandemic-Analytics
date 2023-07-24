@@ -7,10 +7,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Provider } from 'react-redux';
 import { ConfigProvider } from 'antd';
 import { store } from '@/common/redux/store';
-import { PermissionProvider } from '@/common/hooks/use-permission';
-import { ModalProvider } from "@/common/hooks/use-modal";
+import { ModalProvider } from '@/common/hooks/use-modal';
+import dynamic from 'next/dynamic';
 
-export default function App({ Component, pageProps }: AppProps) {
+function CsrApp({ Component, pageProps }: AppProps) {
   return (
     <SWRConfig
       value={{
@@ -30,13 +30,21 @@ export default function App({ Component, pageProps }: AppProps) {
               },
             }}
           >
-            <PermissionProvider>
-              <Component {...pageProps} />
-              <ToastContainer />
-            </PermissionProvider>
+            <Component {...pageProps} />
+            <ToastContainer />
           </ConfigProvider>
         </Provider>
       </ModalProvider>
     </SWRConfig>
   );
 }
+
+// We are disabling the SSR for the whole app since the rendering
+// depends mainly on the current user status (logged in or not)
+// Since the user token is stored in the browser local storage, the CSR / SSR rendering 
+// will be different.
+//
+// See more info here: https://nextjs.org/docs/messages/react-hydration-error
+const App = dynamic(async () => CsrApp, { ssr: false });
+
+export default App;
