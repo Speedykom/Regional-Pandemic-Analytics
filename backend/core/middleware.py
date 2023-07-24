@@ -204,10 +204,16 @@ class KeycloakMiddleware(MiddlewareMixin, KeycloakHelper):
             return JsonResponse({"detail": AuthenticationFailed.default_detail},
                                 status=AuthenticationFailed.status_code)
 
+        has_scope_permission = False
         for perm in user_permissions:
             if required_scope in perm.scopes:
-                return None
+                has_scope_permission = True
 
-        # User Permission Denied
-        return JsonResponse({"detail": PermissionDenied.default_detail},
-                            status=PermissionDenied.status_code)
+        if has_scope_permission:
+            # Add to userinfo to the view
+            request.userinfo = self.keycloak.userinfo(token)
+            return None
+        else:
+            # User Permission Denied
+            return JsonResponse({"detail": PermissionDenied.default_detail},
+                                status=PermissionDenied.status_code)
