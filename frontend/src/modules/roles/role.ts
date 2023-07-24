@@ -11,7 +11,7 @@ export const RoleApi = createApi({
     }),
     updateRole: builder.mutation<{message: string}, Pick<Role, 'id' | 'name' | 'description'>> ({
       query: ({ id, ...patch }) => ({
-        url: `/role/${id}`,
+        url: `/role/${id}/update`,
         method: 'PUT',
         body: patch
       })
