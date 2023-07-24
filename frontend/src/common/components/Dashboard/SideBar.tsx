@@ -102,7 +102,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
             <p>Account(s)</p>
           </NavLink>
         )}
-        {permits?.Role && permits?.Role?.read && (
+        {hasPermission('user:read') && (
           <NavLink
             href="/roles"
             activeClassName="bg-prim text-white"
