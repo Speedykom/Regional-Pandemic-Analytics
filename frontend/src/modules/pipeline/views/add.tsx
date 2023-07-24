@@ -1,18 +1,16 @@
 import { AppDrawer } from "@/common/components/AppDrawer";
 import { ShowMessage } from "@/common/components/ShowMessage";
-import { schedule_intervals } from "@/common/utils/processs";
-import { useCreateProcessMutation } from "@/modules/process/process";
-import { Button, Form, Input, Select } from "antd";
+import { Button, Form, Input } from "antd";
 import { useState } from "react";
 import { useCreatePipelineMutation } from "../pipeline";
 
-interface Props {
+interface AddPipelineProps {
   state: boolean;
   onClose: () => void;
   template: any;
 }
 
-export const AddPipeline = ({ state, onClose, template }: Props) => {
+export const AddPipeline = ({ state, onClose, template }: AddPipelineProps) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [addPipeline] = useCreatePipelineMutation();

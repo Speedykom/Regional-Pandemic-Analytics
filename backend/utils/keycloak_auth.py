@@ -1,8 +1,5 @@
-import os
 import jwt
 import requests
-from rest_framework.response import Response
-from rest_framework import status
 
 from utils.env_configs import (
     KEYCLOAK_ADMIN_AUTH_URL,
@@ -12,12 +9,9 @@ from utils.env_configs import (
     KEYCLOAK_ADMIN_PASSWORD,
     APP_USER_BASE_URL,
     APP_CLIENT_SECRET,
-    APP_REALM,
-    BASE_URL,
-    APP_CLIENT_ID
 )
 
-
+# @todo : use python-keycloak instead (see core/middleware.py)
 def keycloak_admin_login():
     form_data = {
         "username": KEYCLOAK_ADMIN_USERNAME,
@@ -55,35 +49,6 @@ def decode_auth_token(token: str):
         return {'message': 'expired', 'payload': None, 'status': 401}
     except jwt.InvalidTokenError:
         return {'message': 'invalid', 'payload': None, 'status': 498}
-
-
-def me(request):
-    try:
-        token: str = request.headers['AUTHORIZATION']
-
-        if token is None:
-            return {'is_authenticated': False, 'message': 'auth header is required', 'payload': None, 'status': status.HTTP_400_BAD_REQUEST}
-
-        serialToken = token.replace("Bearer ", "")
-
-        form_data = {
-            "client_id": os.getenv("CLIENT_ID"),
-            "client_secret": os.getenv("CLIENT_SECRET"),
-            "token": serialToken
-        }
-
-        response = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/token/introspect",
-                                 data=form_data)
-
-        data = response.json()
-
-        if data['active'] == False:
-            return {'is_authenticated': False, 'message': 'Unauthorized', 'payload': None, 'status': status.HTTP_401_UNAUTHORIZED}
-
-        return {'is_authenticated': True, 'message': 'Success', 'payload': response.json(), 'status': status.HTTP_200_OK}
-    except:
-        return {'is_authenticated': False, 'message': 'Unauthorized', 'payload': None, 'status': status.HTTP_401_UNAUTHORIZED}
-
 
 def role_assign(userId: str, role_object: dict[str, str], headers: dict[str, str]):
     form_data = [role_object]
