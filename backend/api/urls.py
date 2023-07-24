@@ -2,9 +2,8 @@ from . import views
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
-from django.urls import include, re_path, path
-from process.views.pipeline import CreatePipeline, GetPipeline, RequestEditPipeline
-from process.views.process import GetProcess, RunProcess, CreateProcess, DeleteProcess
+from django.urls import re_path, path
+from process.views import process as process_views, pipeline as pipeline_views
 from data.views import DataUploadAPI
 from accounts import views
 
@@ -70,16 +69,16 @@ urlpatterns = [
     path('superset/dashboard/embed/<str:id>', superset_view.GetEmbeddable.as_view()),  # get embedded dashboard
     
     # ---------------------- Piepline  Endpoints ------------------------------------------
-    path('pipeline', CreatePipeline.as_view()),
-    path('pipeline/list', GetPipeline.as_view()),
-    path('pipeline/access/<str:id>', RequestEditPipeline.as_view()),
+    path('pipeline', pipeline_views.PipelineListView.as_view()),
+    path('pipeline/list', pipeline_views.PipelineListView.as_view()),
+    path('pipeline/access/<str:id>', pipeline_views.PipelineDetailView.as_view()),
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
-    path('process', CreateProcess.as_view()),
-    path('process/list', GetProcess.as_view()),
-    path('process/run/<str:id>', RunProcess.as_view()),
-    path('process/delete/<str:dag_id>', DeleteProcess.as_view()),
-    path('process/one/<str:dag_id>', GetProcess.as_view()),
+    path('process', process_views.ProcessListView.as_view()),
+    path('process/list', process_views.ProcessListView.as_view()),
+    path('process/run/<str:id>', process_views.ProcessDetailView.as_view()),
+    path('process/delete/<str:dag_id>', process_views.ProcessDetailView.as_view()),
+    path('process/one/<str:dag_id>', process_views.ProcessDetailView.as_view()),
 
     # ---------------------- Data upload Endpoints ------------------------------------------
 
