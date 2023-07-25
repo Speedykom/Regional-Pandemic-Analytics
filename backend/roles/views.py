@@ -1,5 +1,4 @@
 import os
-from keycloak import KeycloakAdmin
 import requests
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -31,7 +30,7 @@ class RoleApiView(APIView):
         id_response = requests.get(f"{BASE_URL}/admin/realms/{APP_REALM}/clients?clientId={os.getenv('CLIENT_ID')}", headers=headers)
         
         if not id_response.ok:
-            return Response(response.reason, status=response.status_code)
+            return Response(id_response.reason, status=id_response.status_code)
         
         client_uuid = id_response.json()[0]['id']
 
@@ -63,9 +62,16 @@ class RoleApiView(APIView):
             'Content-Type': "application/json",
             'cache-control': "no-cache"
         }
+        
+        id_response = requests.get(f"{BASE_URL}/admin/realms/{APP_REALM}/clients?clientId={os.getenv('CLIENT_ID')}", headers=headers)
+        
+        if not id_response.ok:
+            return Response(id_response.reason, status=id_response.status_code)
+        
+        client_uuid = id_response.json()[0]['id']
 
         res = requests.put(
-            f"{BASE_URL}/admin/realms/{APP_REALM}/clients/{APP_CLIENT_UUID}/roles/{kwargs['id']}", json=form_data, headers=headers)
+            f"{BASE_URL}/admin/realms/{APP_REALM}/clients/{client_uuid}/roles/{kwargs['id']}", json=form_data, headers=headers)
 
         if not res.ok:
             return Response(res.reason, status=res.status_code)
