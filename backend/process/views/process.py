@@ -152,8 +152,6 @@ class ProcessDetailView(APIView):
 
 class OrchestrationDetailsProcessChain(APIView):
 
-    permission_classes = [AllowAny]
-
     def get(self, request, id=None):
         process = ProcessChain.objects.filter(dag_id=id)
         
@@ -168,20 +166,3 @@ class OrchestrationDetailsProcessChain(APIView):
             return Response({'status': 'success', "message": client.json()['detail']}, status=res_status)
         else:
             return Response({'status': 'success', "message": client.json()['dag_runs'].format(id)}, status=200)
-
-    def post(self, request, id=None):
-        route = "{}/dags/{}/dagRuns".format(api, id)
-        client = requests.post(route, json={}, auth=(username, password))
-
-        res_status = client.status_code
-
-        if (res_status == 404):
-            return Response({'status': 'success', "message": "No process found for this dag_id {}".format(id)}, status=res_status)
-        else:
-            return Response({'status': 'success', "message": "{} process start running!".format(id)}, status=res_status)
-
-    def delete(self, request, dag_id=None):
-        process = ProcessChain.objects.get(dag_id=dag_id)
-        process.state = 'inactive'
-        process.save()
-        return Response({"status": "success", "data": "Record Deleted"})
