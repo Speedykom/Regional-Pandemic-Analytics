@@ -1,7 +1,6 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import { countries } from "@/common/utils/countries";
 import { OpenNotification } from "@/common/utils/notify";
-
 import {
 	DeleteColumnOutlined,
 	EditOutlined,
@@ -30,6 +29,9 @@ import axios from "axios";
 import { useState } from "react";
 import secureLocalStorage from "react-secure-storage";
 import getConfig from 'next/config'
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/modules/auth/auth";
+import { UserProfile } from "@/modules/auth/interface";
  
 const { publicRuntimeConfig } = getConfig()
 
@@ -40,18 +42,6 @@ const getBase64 = (file: RcFile): Promise<string> =>
 		reader.onload = () => resolve(reader.result as string);
 		reader.onerror = (error) => reject(error);
 	});
-
-const beforeUpload = (file: RcFile) => {
-	const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
-	if (!isJpgOrPng) {
-		message.error("You can only upload JPG/PNG file!");
-	}
-	const isLt2M = file.size / 1024 / 1024 < 2;
-	if (!isLt2M) {
-		message.error("Image must smaller than 2MB!");
-	}
-	return isJpgOrPng && isLt2M;
-};
 
 const genderOptions = [
 	{ label: "Male", value: "Male" },
@@ -79,9 +69,8 @@ export const ProfileSettings = () => {
 	const [passwordForm] = Form.useForm();
 	const [visible, setVisible] = useState(false);
 	const [changePassword, setChangePassword] = useState(false);
-	// const [user, setUser] = useState<any>();
+	const user = useSelector(selectCurrentUser);
 
-	const user: any = secureLocalStorage.getItem("user") as string;
 	const imageList: UploadFile[] = [
 		{
 			uid: "0",
@@ -142,7 +131,7 @@ export const ProfileSettings = () => {
 	const handleDetailsEdit = async (values: any) => {
 		await axios
 			.put(
-				`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/update`,
+				`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.id}/update`,
 				values,
 				{
 					headers: {
@@ -151,8 +140,7 @@ export const ProfileSettings = () => {
 				}
 			)
 			.then((res) => {
-				let newUserData = user;
-				secureLocalStorage.removeItem("user");
+				let newUserData = user as UserProfile;
 				newUserData.given_name = values["firstName"];
 				newUserData.family_name = values["lastName"];
 				newUserData.phone = values["phone"];
@@ -160,7 +148,6 @@ export const ProfileSettings = () => {
 				newUserData.country = values["country"];
 				newUserData.gender = values["gender"];
 				newUserData.name = `${values["firstName"]} ${values["lastName"]}`;
-				secureLocalStorage.setItem("user", newUserData);
 				OpenNotification(res?.data?.message, "topRight", "success");
 				form.resetFields();
 			})
@@ -184,7 +171,7 @@ export const ProfileSettings = () => {
 				.put(
 					`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/auth/password`,
 					{
-						id: user?.sub,
+						id: user?.id,
 						newPassword: values["newPassword"],
 						confirmPassword: values["confirmPassword"],
 					},
@@ -231,7 +218,7 @@ export const ProfileSettings = () => {
 										onPreview={handlePreview}
 										showUploadList={{ showRemoveIcon: false }}
 										maxCount={1}
-										action={`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.sub}/avatar-upload1`}
+										action={`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.id}/avatar-upload1`}
 										customRequest={(options) => {
 											const data = new FormData();
 											data.append("file", options.file);
@@ -243,10 +230,8 @@ export const ProfileSettings = () => {
 											axios
 												.post(options.action, data, config)
 												.then((resp) => {
-													let newUserData = user;
+													let newUserData = user as UserProfile;
 													newUserData.avatar = resp?.data?.avatarUrl;
-													secureLocalStorage.removeItem("user");
-													secureLocalStorage.setItem("user", newUserData);
 													const newList: UploadFile[] = [
 														{
 															uid: "0",
