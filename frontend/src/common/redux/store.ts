@@ -1,9 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { DashboardApi, ChartApi } from "../../modules/superset/superset";
 import { processApi } from "../../modules/process/process";
-import { AuthApi } from "../../modules/auth/auth";
+import authReducer, { AuthApi } from "../../modules/auth/auth";
 import { pipelineApi } from "@/modules/pipeline/pipeline";
-import { LogoutApi } from "@/modules/auth/logout";
 import { UserApi } from "@/modules/user/user";
 
 export const store = configureStore({
@@ -13,8 +12,8 @@ export const store = configureStore({
     [processApi.reducerPath]: processApi.reducer,
     [pipelineApi.reducerPath]: pipelineApi.reducer,
     [AuthApi.reducerPath]: AuthApi.reducer,
-    [LogoutApi.reducerPath]: LogoutApi.reducer,
-    [UserApi.reducerPath]: UserApi.reducer
+    [UserApi.reducerPath]: UserApi.reducer,
+    auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -22,7 +21,6 @@ export const store = configureStore({
       .concat(ChartApi.middleware)
       .concat(processApi.middleware)
       .concat(AuthApi.middleware)
-      .concat(LogoutApi.middleware)
       .concat(pipelineApi.middleware)
       .concat(UserApi.middleware),
 });

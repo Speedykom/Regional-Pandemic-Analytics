@@ -8,23 +8,24 @@ import {
   BiTable,
 } from "react-icons/bi";
 import {
-  useDelProcessMutation,
-  useEditAccessMutation,
-  useRunProcessMutation,
+  useDeleteProcessChainMutation,
+  useUpdateProcessChainActionMutation,
+  useRunProcessChainMutation,
 } from "../process";
 import { useState } from "react";
 import Router from "next/router";
 import { AiOutlineSchedule } from "react-icons/ai";
+import { usePermission } from "@/common/hooks/use-permission";
 
-interface props {
+interface ProcessCardProps {
   process: any;
   onLoad: (process: any) => void;
 }
 
-const LoadButton = ({ id, onClick }: { id: string; onClick: () => void }) => {
+const LoadButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <Button
-      onClick={() => onClick()}
+      onClick={onClick}
       className="dag-btn border-gray-500 text-gray-500 rounded-md hover:bg-gray-500 hover:text-white focus:outline-none focus:bg-gray-500 focus:text-white"
     >
       Load Data
@@ -33,7 +34,7 @@ const LoadButton = ({ id, onClick }: { id: string; onClick: () => void }) => {
 };
 
 const ViewButton = ({ id }: { id: string }) => {
-  const [editAccess] = useEditAccessMutation();
+  const [editAccess] = useUpdateProcessChainActionMutation();
 
   const [loading, setLoading] = useState(false);
 
@@ -61,15 +62,15 @@ const ViewButton = ({ id }: { id: string }) => {
   );
 };
 
-const DelButton = ({ id }: { id: string }) => {
-  const [delProcess] = useDelProcessMutation();
+const DeleteButton = ({ id }: { id: string }) => {
+  const [deleteProcessChain] = useDeleteProcessChainMutation();
 
   const [loading, setLoading] = useState(false);
   const [state, setState] = useState(false);
 
-  const del = () => {
+  const remove = () => {
     setLoading(true);
-    delProcess(id).then((res: any) => {
+    deleteProcessChain(id).then((res: any) => {
       if (res.error) {
         ShowMessage("error", res.error.message);
         return;
@@ -95,7 +96,7 @@ const DelButton = ({ id }: { id: string }) => {
             Are you sure to delete <br /> this process?
           </p>
           <div className="flex border-t mt-2 items-center space-x-2 pt-2">
-            <Button loading={loading} onClick={del} type="text">
+            <Button loading={loading} onClick={remove} type="text">
               Yes
             </Button>
             <p>/</p>
@@ -117,7 +118,7 @@ const DelButton = ({ id }: { id: string }) => {
 };
 
 const RunButton = ({ id }: { id: string }) => {
-  const [runPipeline] = useRunProcessMutation();
+  const [runPipeline] = useRunProcessChainMutation();
   const [loading, setLoading] = useState(false);
 
   const run = () => {
@@ -151,7 +152,8 @@ const RunButton = ({ id }: { id: string }) => {
   );
 };
 
-export const ProcessCard = ({ process, onLoad }: props) => {
+export const ProcessCard = ({ process, onLoad }: ProcessCardProps) => {
+  const { hasPermission } = usePermission();
   const steps = [
     {
       title: "Data Source Selection",
@@ -207,20 +209,20 @@ export const ProcessCard = ({ process, onLoad }: props) => {
               )}
             </div>
           </div>
-          <div className="flex space-x-2 justify-end">
-            {/* {process.state === "active" ? (
-              <LoadButton onClick={() => onLoad(process)} id={process.dag_id} />
-            ) : null} */}
-            {process.airflow && process.state === "active" ? (
+          {process.state === "active" && <div className="flex space-x-2 justify-end">
+            {hasPermission('process:update') && (
+              <LoadButton onClick={() => onLoad(process)} />
+            )}
+            {hasPermission('process:run') && process.airflow && (
               <RunButton id={process.dag_id} />
-            ) : null}
-            {/* {process.airflow && process.state === "active" ? (
+            )}
+            {hasPermission('process:read') && process.airflow && (
               <ViewButton id={process.dag_id} />
-            ) : null} */}
-            {process.state === "active" ? (
-              <DelButton id={process.dag_id} />
-            ) : null}
-          </div>
+            )}
+            {hasPermission('process:delete') &&  (
+              <DeleteButton id={process.dag_id} />
+            )}
+          </div>}
         </div>
         <div className="w-1/3 flex justify-end">
           {state ? (

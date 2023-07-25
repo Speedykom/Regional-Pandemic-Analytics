@@ -4,7 +4,7 @@ import getConfig from "next/config"
  
 const { publicRuntimeConfig } = getConfig()
 
-export const getUserRole = async (roles: []) => {
+export const getUserRole = async (roles: string[]) => {
     const rolee = roles.find(item => item != 'default-roles-stack')
     return await axios.get(`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/role/${rolee}?type=name`).then((res) => {
         let newRole = res?.data?.role;

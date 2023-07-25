@@ -1,28 +1,29 @@
-import requests
-import os
 import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
 from rest_framework import status
-from django.shortcuts import get_object_or_404
 from ..models import Pipeline
 from ..serializers import PipelineSerializer
-from ..gdags.dynamic import DynamicDag
 from ..gdags.hop import EditAccessProcess
-from utils.keycloak_auth import me
 
-class CreatePipeline(APIView):
+class PipelineListView(APIView):
+    keycloak_scopes = {
+        'POST': 'pipeline:add',
+        'GET': 'pipeline:read',
+    }
 
-    permission_classes = [AllowAny]
+    def get(self, request):
+        cur_user = request.userinfo
+        user_id = cur_user['sub']
+
+        snippets = Pipeline.objects.filter(user_id=user_id)
+        pipelines = PipelineSerializer(snippets, many=True)
+
+        return Response({"status": "success", "data": pipelines.data}, status=status.HTTP_200_OK)
 
     def post(self, request):
-        cur_user = me(request)
-
-        if (cur_user['is_authenticated'] == False):
-            return Response(cur_user, status=cur_user["status"])
-
-        user_id = cur_user['payload']['sub']
+        cur_user = request.userinfo
+        user_id = cur_user['sub']
 
         path = request.data['path']
         name = request.data['name'].replace(
@@ -59,28 +60,10 @@ class CreatePipeline(APIView):
         else:
             return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-
-class GetPipeline(APIView):
-
-    permission_classes = [AllowAny]
-
-    def get(self, request):
-        cur_user = me(request)
-
-        if (cur_user['is_authenticated'] == False):
-            return Response(cur_user, status=cur_user["status"])
-
-        user_id = cur_user['payload']['sub']
-
-        snippets = Pipeline.objects.filter(user_id=user_id)
-        pipelines = PipelineSerializer(snippets, many=True)
-
-        return Response({"status": "success", "data": pipelines.data}, status=status.HTTP_200_OK)
-
-# Request edit access
-class RequestEditPipeline(APIView):
-
-    permission_classes = [AllowAny]
+class PipelineDetailView(APIView):
+    keycloak_scopes = {
+        'GET': 'pipeline:read',
+    }
 
     # dynamic dag output
     file = "../hop/data-orch.list"

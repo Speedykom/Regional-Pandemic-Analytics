@@ -1,24 +1,17 @@
 import { Dialog, Switch, Transition } from "@headlessui/react";
 
-import React, { Fragment, useEffect, useState, useCallback } from "react";
-import { Dropdown, DropdownItem } from "@tremor/react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Flex, TextInput } from "@tremor/react";
 import { DagType } from "../TABS/interface";
 import {
   ArrowUpOnSquareIcon,
   DocumentTextIcon,
-  CubeIcon,
-  CubeTransparentIcon,
 } from "@heroicons/react/24/outline";
 import {toast} from "react-toastify";
 import axios from 'axios'
-import secureLocalStorage from "react-secure-storage";
 import {useDropzone} from "react-dropzone";
-
-
-interface IDag {
-  [key: string]: unknown;
-}
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/modules/auth/auth";
 
 interface Props {
   dag: DagType;
@@ -28,10 +21,8 @@ export default function DagList({ dag }: Props) {
   const [enabled, setEnabled] = useState(false);
   const [open, setOpen] = useState(false);
   const [fileName, setFIleName] = useState<string>("")
-  const [fileType, setFileType] = useState<string>("")
-  //const [file, setFile] = useState<File>()
-
-  const [username, setUsername] = useState<string>("")
+  const user = useSelector(selectCurrentUser);
+  const email = user?.email || '';
 
   const {acceptedFiles, getRootProps, getInputProps} = useDropzone({});
 
@@ -40,12 +31,6 @@ export default function DagList({ dag }: Props) {
         {file.name} - {file.size} bytes
       </li>
   ));
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.localStorage){
-      setUsername(secureLocalStorage.getItem("sue") as string)
-    }
-  }, [])
 
   useEffect(() => {
     setEnabled(dag?.is_active);
@@ -72,7 +57,7 @@ export default function DagList({ dag }: Props) {
 
     const formData = new FormData()
 
-    formData.append("username", username)
+    formData.append("username", email)
     formData.append('file_name', fileName)
 
     acceptedFiles.forEach((file,index) => {

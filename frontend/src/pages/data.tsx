@@ -3,18 +3,13 @@ import ListData from "@/common/components/Data/ListData";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import {IData} from "@/common/components/Data/ListData";
-import secureLocalStorage from "react-secure-storage";
+import { useSelector } from "react-redux";
+import { selectCurrentUser } from "@/modules/auth/auth";
 
 export default function DataPage() {
     const [data, setData] = useState<IData[]>([]); // Specify the type as an array of IData objects
-
-    const [username, setUsername] = useState<string>("")
-
-    useEffect(() => {
-        if(typeof window !== undefined && window.localStorage){
-            setUsername(secureLocalStorage.getItem("sue") as string)
-        }
-    }, [])
+    const user = useSelector(selectCurrentUser);
+    const email = user?.email;
 
     useEffect(() => {
         const fetchUploads = async () => {
@@ -22,7 +17,7 @@ export default function DataPage() {
                 const url = "/api/data/get-list-of-uploads/";
                 const response = await axios.get<IData[]>(url, {
                     params:{
-                        username,
+                        username: email,
                     }
                 });
                 // @ts-ignore
@@ -31,10 +26,10 @@ export default function DataPage() {
                 console.error("Error:", error);
             }
         };
-        if(username) {
+        if(email) {
             fetchUploads();
         }
-    }, [username]);
+    }, [email]);
 
     return (
         <DashboardFrame title="List(s) of Uploaded files">

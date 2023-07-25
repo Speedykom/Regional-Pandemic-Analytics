@@ -20,7 +20,6 @@ export const PreviewUser = ({ openDrawer, closeDrawer, userId }: props) => {
 	const fetchUser = async () => {
 		try {
 			const url = `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${userId}`;
-			console.log({userId})
 			const response = await axios.get(url, {
 				headers: {
 					"Content-Type": "application/json",

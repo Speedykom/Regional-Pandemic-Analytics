@@ -2,7 +2,7 @@ import { AppDrawer } from "@/common/components/AppDrawer";
 import { ShowMessage } from "@/common/components/ShowMessage";
 import { schedule_intervals } from "@/common/utils/processs";
 import { useFindAllQuery as usePipelinesQuery } from "@/modules/pipeline/pipeline";
-import { useCreateProcessMutation } from "@/modules/process/process";
+import { useCreateProcessChainMutation } from "@/modules/process/process";
 import { Button, Form, Input, Select } from "antd";
 import { useState } from "react";
 
@@ -14,7 +14,7 @@ interface Props {
 export const AddProcess = ({ state, onClose }: Props) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [addProcess] = useCreateProcessMutation();
+  const [addProcess] = useCreateProcessChainMutation();
 
   const { data: res } = usePipelinesQuery();
 

@@ -1,5 +1,4 @@
 import { Ref, forwardRef } from 'react';
-import Link from 'next/link';
 import {
   BiChart,
   BiData,
@@ -9,16 +8,11 @@ import {
   BiLock,
   BiUser,
 } from 'react-icons/bi';
-import { useRouter } from 'next/router';
 import secureLocalStorage from 'react-secure-storage';
 import { NavLink } from '../link';
 import { usePermission } from '@/common/hooks/use-permission';
 
-interface props {
-  showNav?: boolean;
-}
-
-const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
+const SideBar = forwardRef((_props, ref: Ref<any>) => {
   const { hasPermission } = usePermission();
   const userRole: any = secureLocalStorage.getItem('user_role');
   const permits = userRole?.attributes;
@@ -64,7 +58,7 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
             <p>Chart(s)</p>
           </NavLink>
         )}
-        {permits?.ProcessChain && permits?.ProcessChain?.read && (
+        {hasPermission('process:read') && (
           <NavLink
             href="/process-chains"
             activeClassName="bg-prim text-white"
@@ -84,14 +78,16 @@ const SideBar = forwardRef(({ showNav }: props, ref: Ref<any>) => {
             <p>Data</p>
           </NavLink>
         )}
-        <NavLink
-          href="/my-pipeline"
-          activeClassName="bg-prim text-white"
-          className="px-3.5 text-gray-400 py-3 mx-5 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
-        >
-          <BiGitMerge className="text-xl" />
-          <p>My Pipeline(s)</p>
-        </NavLink>
+        {hasPermission('pipeline:read') && (
+          <NavLink
+            href="/my-pipeline"
+            activeClassName="bg-prim text-white"
+            className="px-3.5 text-gray-400 py-3 mx-5 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
+          >
+            <BiGitMerge className="text-xl" />
+            <p>My Pipeline(s)</p>
+          </NavLink>
+        )}
         {hasPermission('user:read') && (
           <NavLink
             href="/users"

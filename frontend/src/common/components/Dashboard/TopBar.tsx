@@ -15,11 +15,11 @@ import {
 import { BellIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { Menu, Transition, Popover } from "@headlessui/react";
 import Link from "next/link";
-import secureLocalStorage from "react-secure-storage";
 import { useRouter } from "next/router";
 import { PreviewUser } from "@/modules/user/views/Preview";
-import { useLogoutMutation } from "@/modules/auth/logout";
 import { ShowMessage } from "../ShowMessage";
+import { useDispatch, useSelector } from "react-redux";
+import { clearCredentials, selectCurrentUser, useLogoutMutation } from "@/modules/auth/auth";
 
 interface props {
   showNav: boolean;
@@ -28,46 +28,22 @@ interface props {
 
 export default function TopBar({ showNav, setShowNav }: props) {
   const router = useRouter();
-  const [username, setUsername] = useState<string | null>();
-  const [myId, setMyId] = useState<string>();
+  const dispatch = useDispatch();
   const [logout] = useLogoutMutation();
+  const currentUser = useSelector(selectCurrentUser);
+  const myId = currentUser?.id;
+  const username = currentUser?.given_name;
 
   const [view, setView] = useState<boolean>(false);
 
-  const viewPro = () => {
-    setView(true);
-  };
   const onCloseView = () => {
     setView(false);
   };
 
-  const profile: any = secureLocalStorage.getItem("user") as object;
-
-  useEffect(() => {
-    if (typeof window !== undefined && window.localStorage) {
-      const user: string | null = secureLocalStorage.getItem(
-        "username"
-      ) as string;
-      const userId: string = secureLocalStorage.getItem("userId") as string;
-      setUsername(user);
-      setMyId(userId);
-    }
-  }, []);
-
   const handleLogout = async () => {
-    logout()
+    logout({})
       .then(() => {
-        secureLocalStorage.removeItem("tokens");
-        secureLocalStorage.removeItem("permissions");
-        // @todo : remove if not needed anymore
-        secureLocalStorage.removeItem("user_role");
-        secureLocalStorage.removeItem("username");
-        secureLocalStorage.removeItem("sue");
-        secureLocalStorage.removeItem("userId");
-        secureLocalStorage.removeItem("user");
-        secureLocalStorage.removeItem("passcode");
-        secureLocalStorage.removeItem("sua");
-
+        dispatch(clearCredentials())
         router.push("/");
       })
       .catch(() => {
@@ -174,7 +150,7 @@ export default function TopBar({ showNav, setShowNav }: props) {
               <picture>
                 <img
                   src={
-                    profile && profile?.avatar ? profile?.avatar : "/avater.png"
+                    currentUser && currentUser?.avatar ? currentUser?.avatar : "/avater.png"
                   }
                   className="rounded-full h-8 md:mr-4 border-2 border-white shadow-sm"
                   alt="avat"

@@ -51,6 +51,30 @@
         "scopes": "[\"chart:read\"]",
         "applyPolicies": "[\"admin-policy\"]"
       }
+    },
+    {
+      "id": "c2e774b2-898e-4d53-838d-9806e2537075",
+      "name": "Process Chain Management",
+      "description": "",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"process:delete\",\"process:run\",\"process:add\",\"process:update\",\"process:read\"]",
+        "applyPolicies": "[\"admin-policy\"]"
+      }
+    },
+    {
+      "id": "8c2609a4-2ba0-4034-9146-2cf369f6a671",
+      "name": "Pipeline Management",
+      "description": "",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"pipeline:read\",\"pipeline:update\",\"pipeline:add\",\"pipeline:delete\"]",
+        "applyPolicies": "[\"admin-policy\"]"
+      }
     }
   ],
   "scopes": [
@@ -89,6 +113,60 @@
       "name": "chart:read",
       "iconUri": "",
       "displayName": "View Charts"
+    },
+    {
+      "id": "3fb3037d-2266-459b-a68b-f4d5c3aea0a8",
+      "name": "process:add",
+      "iconUri": "",
+      "displayName": "Create a process chain"
+    },
+    {
+      "id": "d378369d-c159-4ffe-8223-1134b4a459c4",
+      "name": "process:read",
+      "iconUri": "",
+      "displayName": "Read process chains"
+    },
+    {
+      "id": "4c168d83-3343-4fd2-b3c1-a06778e42c9d",
+      "name": "process:update",
+      "iconUri": "",
+      "displayName": "Update a process chain"
+    },
+    {
+      "id": "4c8f27ca-2c92-4fda-9723-6a469e3b7942",
+      "name": "process:delete",
+      "iconUri": "",
+      "displayName": "Delete a process chain"
+    },
+    {
+      "id": "3472c08b-2545-49ef-91fe-745d4973190c",
+      "name": "process:run",
+      "iconUri": "",
+      "displayName": "Run a Process Chain"
+    },
+    {
+      "id": "deab4778-7082-4859-833d-a89e01c443b1",
+      "name": "pipeline:add",
+      "iconUri": "",
+      "displayName": "Add a pipeline"
+    },
+    {
+      "id": "f1603cda-dffc-4b05-bf58-7f320ed23574",
+      "name": "pipeline:read",
+      "iconUri": "",
+      "displayName": "View pipelines"
+    },
+    {
+      "id": "3e488a76-95f5-4924-b4bc-f08f6beb190b",
+      "name": "pipeline:update",
+      "iconUri": "",
+      "displayName": "Update a pipeline"
+    },
+    {
+      "id": "2e03520b-81cb-4d13-88a4-bda53d2f01cc",
+      "name": "pipeline:delete",
+      "iconUri": "",
+      "displayName": "Delete a pipeline"
     }
   ],
   "decisionStrategy": "UNANIMOUS"
