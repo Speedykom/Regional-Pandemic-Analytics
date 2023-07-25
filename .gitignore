@@ -1,8 +1,10 @@
 .idea
 .DS_Store
 /data
+/airflow/dags/*.py
 /hop/pipelines/watchDirLog.txt
 /hop/pipelines/watchRuns.txt
+/hop/pipelines/*.hpl
 
 /storage
 frontend/.env

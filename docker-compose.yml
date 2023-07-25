@@ -21,9 +21,9 @@ x-druid-common: &druid
     - druid_processing_numThreads=${DRUID_druid_processing_numThreads}
     - druid_processing_numMergeBuffers=${DRUID_druid_processing_numMergeBuffers}
     - DRUID_LOG4J=${DRUID_DRUID_LOG4J}
+
 x-airflow-common: &airflow
-  build:
-    context: ./airflow
+  image: apache/airflow:2.6.3
   user: "0:0"
   environment:
     - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_AIRFLOW__CORE__FERNET_KEY}

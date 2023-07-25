@@ -13,8 +13,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({result:"No username specified"})
     }
 
-    console.log(username)
-
     if(req.method != "GET"){
         return res.status(405).send(`Method ${req.method} not allowed`);
     }
