@@ -59,17 +59,3 @@ def role_assign(userId: str, role_object: dict[str, str], headers: dict[str, str
     requests.post(url=f"{APP_USER_BASE_URL}/{userId}/role-mappings/realm",
                   json=form_data, headers=headers)
     return True
-
-def get_keycloak_connection ():
-    keycloak_connection = KeycloakOpenIDConnection(
-        server_url=BASE_URL,
-        username=KEYCLOAK_ADMIN_USERNAME,
-        password=KEYCLOAK_ADMIN_PASSWORD,
-        realm_name="master",
-        # user_realm_name="only_if_other_realm_than_master",
-        client_id=KEYCLOAK_ADMIN_CLIENT_ID,
-        client_secret_key=KEYCLOAK_ADMIN_CLIENT_SECRET,
-        verify=True
-    )
-    
-    return keycloak_connection
