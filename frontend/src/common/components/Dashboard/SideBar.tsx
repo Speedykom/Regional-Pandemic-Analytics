@@ -11,18 +11,21 @@ import {
 import secureLocalStorage from 'react-secure-storage';
 import { NavLink } from '../link';
 import { usePermission } from '@/common/hooks/use-permission';
+import { useMediaQuery } from 'react-responsive';
 
 const SideBar = forwardRef((_props, ref: Ref<any>) => {
   const { hasPermission } = usePermission();
-  const userRole: any = secureLocalStorage.getItem('user_role');
-  const permits = userRole?.attributes;
+
+  const isDesktopOrLaptop = useMediaQuery({ minWidth: 1224 })
+  const isBigScreen = useMediaQuery({ minWidth: 1824 })
+  const isTabletOrMobile = useMediaQuery({ maxWidth: 1223 })
 
   return (
-    <div ref={ref} className="fixed z-50 w-64 h-full bg-white border-r">
+    <div ref={ref} className={`fixed z-50 h-full bg-white border-r ${isBigScreen && isDesktopOrLaptop ? "w-64" : isTabletOrMobile ? "w-28" : ""}`}>
       <div className="flex justify-center mt-6 mb-14">
         <picture>
           <img
-            className="w-32 h-auto"
+            className={`h-auto ${isTabletOrMobile ? "w-20" : "w-32"}`}
             src="/images/igad_logo.jpeg"
             alt="company logo"
           />
@@ -33,9 +36,9 @@ const SideBar = forwardRef((_props, ref: Ref<any>) => {
         <NavLink
           href="/home"
           activeClassName="bg-prim text-white"
-          className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
+          className={`px-3.5 py-3 mx-5 text-gray-400 rounded-xl cursor-pointer mb-3 transition-colors flex items-center text-center space-x-4`}
         >
-          <BiHome className="text-xl" />
+          <p><BiHome className="text-xl" /></p>
           <p>Home</p>
         </NavLink>
         {hasPermission('dashboard:read') && (
@@ -92,7 +95,7 @@ const SideBar = forwardRef((_props, ref: Ref<any>) => {
           <NavLink
             href="/users"
             activeClassName="bg-prim text-white"
-            className="px-3.5 text-gray-400 py-3 mx-5 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
+            className="px-3.5 text-gray-400 py-3 mx-5 space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
           >
             <BiUser className="text-xl" />
             <p>Account(s)</p>
