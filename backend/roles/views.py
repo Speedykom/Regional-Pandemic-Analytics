@@ -38,8 +38,6 @@ class RoleApiView(APIView):
 
         if not response.ok:
             return Response(response.reason, status=response.status_code)
-        
-        client_uuid = id_response.json()[0]['id']
 
         role_data = response.json()
         return Response(role_data, status=status.HTTP_200_OK)
