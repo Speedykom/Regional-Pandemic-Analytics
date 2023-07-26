@@ -20,6 +20,7 @@ import { PreviewUser } from "@/modules/user/views/Preview";
 import { ShowMessage } from "../ShowMessage";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCredentials, selectCurrentUser, useLogoutMutation } from "@/modules/auth/auth";
+import { useMediaQuery } from "react-responsive";
 
 interface props {
   showNav: boolean;
@@ -51,11 +52,15 @@ export default function TopBar({ showNav, setShowNav }: props) {
       });
   };
 
+  const isDesktopOrLaptop = useMediaQuery({ minWidth: 1224 })
+  const isBigScreen = useMediaQuery({ minWidth: 1824 })
+  const isTabletOrMobile = useMediaQuery({ maxWidth: 1223 })
+
   return (
     <div
       className={`fixed bg-white w-full h-16 z-50 flex justify-between items-center transition-all duration-[400ms] border-b ${
-        showNav ? "pl-56" : ""
-      }`}
+        showNav && isBigScreen ? "pl-44" : showNav && isDesktopOrLaptop ? "pl-44" : showNav && isTabletOrMobile ? "pl-14" : ""
+      } `}
     >
       <div className="pl-4 md:pl-16 flex items-center space-x-5">
         <Bars3CenterLeftIcon
