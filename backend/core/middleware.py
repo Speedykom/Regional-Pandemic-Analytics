@@ -52,7 +52,7 @@ class KeycloakHelper(object):
         self.keycloak_authorization_config = self.config.get('KEYCLOAK_AUTHORIZATION_CONFIG', None)
 
         # Create Keycloak instance
-        self.keycloak = KeycloakOpenID(server_url=self.server_url,
+        self.keycloak = KeycloakOpenID(server_url=self.config['KEYCLOAK_INTERNAL_SERVER_URL'] + "/auth", # We use internal since nginx does not start unless the backend is UP
                                        client_id=self.client_id,
                                        realm_name=self.realm,
                                        client_secret_key=self.client_secret_key,
