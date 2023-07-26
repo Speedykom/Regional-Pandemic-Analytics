@@ -132,6 +132,11 @@ services:
       - POSTGRES_PASSWORD=igad
       - POSTGRES_USER=igad
       - POSTGRES_DB=igad
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
 
   backend:
     container_name: backend
@@ -140,8 +145,10 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     depends_on:
-      - backend_db
-      - keycloak
+      backend_db:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
     ports:
       - "8000:8000"
     volumes:
