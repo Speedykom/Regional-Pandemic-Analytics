@@ -1,9 +1,11 @@
+import os
+from keycloak import KeycloakAdmin
 import requests
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from utils.keycloak_auth import keycloak_admin_login
+from utils.keycloak_auth import keycloak_admin_login, get_keycloak_connection
 from utils.env_configs import (
     APP_REALM, APP_USER_ROLES, BASE_URL, APP_CLIENT_UUID)
 
@@ -19,6 +21,14 @@ class RoleApiView(APIView):
         
         if admin_login["status"] != 200:
             return Response(admin_login["data"], status=admin_login["status"])
+        
+        keycloak_admin = KeycloakAdmin(connection=get_keycloak_connection)
+
+        # Get client - id (not client-id) from client by name
+        client_id = keycloak_admin.get_client_id(os.getenv())
+
+        # Get all roles for the client
+        client_roles = keycloak_admin.get_client_roles(client_id)
 
         headers = {
             'Authorization': f"Bearer {admin_login['data']['access_token']}",
