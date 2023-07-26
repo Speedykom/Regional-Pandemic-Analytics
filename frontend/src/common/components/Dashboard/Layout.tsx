@@ -48,7 +48,7 @@ export default function Layout({ children }: props) {
       </Transition>
       <main
         className={`pt-16 transition-all duration-[400ms] ${
-          showNav && !isMobile ? "pl-56" : ""
+          showNav && !isMobile ? "pl-44" : ""
         }`}
       >
         <div className="px-4 md:px-16 bg-gray-100 h-screen">{children}</div>
