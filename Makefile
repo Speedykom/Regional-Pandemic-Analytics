@@ -9,10 +9,10 @@ endif
 start:
 ifdef service
 	@docker stop $(service) && docker rm $(service)
-	@docker compose --env-file ./.env -f docker-compose.yml -f docker-compose.dev.yml up -d $(service)
+	@docker compose --env-file ./.env -f docker-compose.yml -f docker-compose.dev.yml up -d --build --force-recreate $(service)
 else
 	@docker compose --env-file ./.env -f docker-compose.yml -f docker-compose.dev.yml down --remove-orphans
-	@docker compose --env-file ./.env -f docker-compose.yml -f docker-compose.dev.yml up -d
+	@docker compose --env-file ./.env -f docker-compose.yml -f docker-compose.dev.yml up -d --build --force-recreate
 endif
 
 destroy-local:
