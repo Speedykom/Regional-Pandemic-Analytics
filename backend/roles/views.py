@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from utils.keycloak_auth import keycloak_admin_login, get_keycloak_connection
+from utils.keycloak_auth import keycloak_admin_login
 from utils.env_configs import (
     APP_REALM, APP_USER_ROLES, BASE_URL, APP_CLIENT_UUID)
 
@@ -21,25 +21,23 @@ class RoleApiView(APIView):
         
         if admin_login["status"] != 200:
             return Response(admin_login["data"], status=admin_login["status"])
-        
-        keycloak_admin = KeycloakAdmin(connection=get_keycloak_connection)
-
-        # Get client - id (not client-id) from client by name
-        client_id = keycloak_admin.get_client_id(os.getenv())
-
-        # Get all roles for the client
-        client_roles = keycloak_admin.get_client_roles(client_id)
 
         headers = {
             'Authorization': f"Bearer {admin_login['data']['access_token']}",
             'Content-Type': "application/json",
             'cache-control': "no-cache"
         }
+        
+        id_response = requests.get(f"{BASE_URL}/admin/realms/{APP_REALM}/clients?clientId={os.getenv('CLIENT_ID')}", headers=headers)
+        
+        if not id_response.ok:
+            return Response(response.reason, status=response.status_code)
+        
+        client_uuid = id_response.json()[0]['id']
 
-        response = requests.get(f"{BASE_URL}/admin/realms/{APP_REALM}/clients/{APP_CLIENT_UUID}/roles", headers=headers)
+        response = requests.get(f"{BASE_URL}/admin/realms/{APP_REALM}/clients/{client_uuid}/roles", headers=headers)
 
-        if response.status_code != 200:
-            print(response.json())
+        if not response.ok:
             return Response(response.reason, status=response.status_code)
 
         role_data = response.json()
