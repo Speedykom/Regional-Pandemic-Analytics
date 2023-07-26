@@ -8,7 +8,6 @@ import {
   BiLock,
   BiUser,
 } from 'react-icons/bi';
-import secureLocalStorage from 'react-secure-storage';
 import { NavLink } from '../link';
 import { usePermission } from '@/common/hooks/use-permission';
 import { useMediaQuery } from 'react-responsive';
@@ -36,79 +35,79 @@ const SideBar = forwardRef((_props, ref: Ref<any>) => {
         <NavLink
           href="/home"
           activeClassName="bg-prim text-white"
-          className={`px-3.5 py-3 mx-5 text-gray-400 rounded-xl cursor-pointer mb-3 transition-colors flex items-center text-center space-x-4`}
+          className={`px-3.5 py-3 text-gray-400 cursor-pointer mb-3 transition-colors flex items-center text-center space-x-4`}
         >
-          <p><BiHome className="text-xl" /></p>
-          <p>Home</p>
+          {/* <BiHome className="text-xl" /> */}
+          <div className={`${isTabletOrMobile ? "text-center items-center justify-center": ""}`}><BiHome className="text-xl text-center" />Home</div>
         </NavLink>
         {hasPermission('dashboard:read') && (
           <NavLink
             href="/dashboards"
             activeClassName="bg-prim text-white"
-            className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
+            className="px-3.5 py-3 text-gray-400 space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
           >
-            <BiChart className="text-xl" />
-            <p>Dashboard</p>
+            {/* <BiChart className="text-xl" /> */}
+            <div className={`${isTabletOrMobile ? "text-center items-center justify-center": ""}`}><BiChart className="text-xl text-center" />Dashboard</div>
           </NavLink>
         )}
         {hasPermission('chart:read') && (
           <NavLink
             href="/charts"
             activeClassName="bg-prim text-white"
-            className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
+            className="px-3.5 py-3 text-gray-400 space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
           >
-            <BiChart className="text-xl" />
-            <p>Chart(s)</p>
+            {/* <BiChart className="text-xl" /> */}
+            <div className={`${isTabletOrMobile ? "items-center justify-center": ""}`}><BiChart className="text-xl text-center" />Chart(s)</div>
           </NavLink>
         )}
         {hasPermission('process:read') && (
           <NavLink
             href="/process-chains"
             activeClassName="bg-prim text-white"
-            className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
+            className="px-3.5 py-3 text-gray-400 space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
           >
-            <BiGitPullRequest className="text-xl" />
-            <p>Process Chain(s)</p>
+            {/* <BiGitPullRequest className="text-xl" /> */}
+            <div className={`${isTabletOrMobile ? "items-center justify-center": ""}`}><BiGitPullRequest className="text-xl text-center" />Processes</div>
           </NavLink>
         )}
         {hasPermission('data:read') && (
           <NavLink
             href="/data"
             activeClassName="bg-prim text-white"
-            className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
+            className="px-3.5 py-3 mx-5 text-gray-400 space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
           >
-            <BiData className="text-xl" />
-            <p>Data</p>
+            {/* <BiData className="text-xl" /> */}
+            <div className={`${isTabletOrMobile ? "items-center justify-center": ""}`}><BiData className="text-xl text-center" />Data</div>
           </NavLink>
         )}
         {hasPermission('pipeline:read') && (
           <NavLink
             href="/my-pipeline"
             activeClassName="bg-prim text-white"
-            className="px-3.5 text-gray-400 py-3 mx-5 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
+            className="px-3.5 text-gray-400 py-3 space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
           >
-            <BiGitMerge className="text-xl" />
-            <p>My Pipeline(s)</p>
+            {/* <BiGitMerge className="text-xl" /> */}
+            <div className={`${isTabletOrMobile ? "items-center justify-center": ""}`}><BiGitMerge className="text-xl text-center" />Pipeline(s)</div>
           </NavLink>
         )}
         {hasPermission('user:read') && (
           <NavLink
             href="/users"
             activeClassName="bg-prim text-white"
-            className="px-3.5 text-gray-400 py-3 mx-5 space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
+            className="px-3.5 text-gray-400 py-3 space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
           >
-            <BiUser className="text-xl" />
-            <p>Account(s)</p>
+            {/* <BiUser className="text-xl" /> */}
+            <div className={`${isTabletOrMobile ? "items-center justify-center": ""}`}><BiUser className="text-xl text-center" />Account(s)</div>
           </NavLink>
         )}
         {hasPermission('user:read') && (
           <NavLink
             href="/roles"
             activeClassName="bg-prim text-white"
-            className="px-3.5 text-gray-400 py-3 mx-5 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
+            className="px-3.5 text-gray-400 py-3 space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
           >
-            <BiLock className="text-xl" />
-            <p>Roles</p>
+            {/* <BiLock className="text-xl" /> */}
+            <div className={`${isTabletOrMobile ? "items-center justify-center": ""}`}><BiLock className="text-xl text-center" />Roles</div>
           </NavLink>
         )}
       </div>
