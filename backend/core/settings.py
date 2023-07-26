@@ -182,6 +182,7 @@ KEYCLOAK_CONFIG = {
     'KEYCLOAK_AUTHORIZATION_CONFIG': os.path.join(CONFIG_DIR , 'authorization-config.json'),
     'KEYCLOAK_METHOD_VALIDATE_TOKEN': 'DECODE',
     'KEYCLOAK_SERVER_URL': os.getenv("KEYCLOAK_SERVER_URL"),
+    'KEYCLOAK_INTERNAL_SERVER_URL': os.getenv("BASE_URL"), # @todo : rename env var BASE_URL
     'KEYCLOAK_CLIENT_SECRET_KEY': os.getenv("CLIENT_SECRET"),
 }
 
