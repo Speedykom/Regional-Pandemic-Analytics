@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from utils.keycloak_auth import keycloak_admin_login
 from utils.env_configs import (
-    APP_REALM, APP_USER_ROLES, BASE_URL, APP_CLIENT_UUID)
+    APP_REALM, APP_USER_ROLES, BASE_URL)
 
 #Api to create and list all roles
 class RoleApiView(APIView):
