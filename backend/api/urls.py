@@ -4,7 +4,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import re_path, path
 from process.views import process as process_views, pipeline as pipeline_views
-from data.views import DataUploadAPI
+from data.views import DataUploadAPIView
 from accounts import views
 
 from hop.views import (
@@ -83,7 +83,7 @@ urlpatterns = [
     # ---------------------- Data upload Endpoints ------------------------------------------
 
     # endpoint for uploading data
-    path('data/upload/', DataUploadAPI.as_view()),
+    path('data/upload/', DataUploadAPIView.as_view()),
 
     # ---------------------- Hop Endpoints ------------------------------------------
 
