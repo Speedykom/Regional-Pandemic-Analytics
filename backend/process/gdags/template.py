@@ -57,43 +57,7 @@ def ingest():
             "format": "millis"
           },
           "dimensionsSpec": {
-            "dimensions": [
-              "FullyVaccinated",
-              {
-                "type": "long",
-                "name": "NewDeaths"
-              },
-              "STATE",
-              "Latitude",
-              {
-                "type": "long",
-                "name": "NewRecoveries"
-              },
-              {
-                "type": "long",
-                "name": "TotalCases"
-              },
-              "Code",
-              "Longitude",
-              "TotalDoses",
-              {
-                "type": "long",
-                "name": "TotalRecoveries"
-              },
-              "Population",
-              {
-                "type": "long",
-                "name": "NewCases"
-              },
-              {
-                "type": "long",
-                "name": "TotalDeaths"
-              },
-              {
-                "type": "long",
-                "name": "DailyTests"
-              }
-            ]
+            "dimensions": []
           },
           "granularitySpec": {
             "queryGranularity": "none",
