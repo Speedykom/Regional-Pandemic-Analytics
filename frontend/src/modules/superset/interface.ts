@@ -154,4 +154,4 @@ export interface Table {
 }
 
 export type DashboardList = SupersetListResponse<DashboardListResult>;
-export type ChartList = SupersetListResponse<DashboardListResult>;
+export type ChartList = SupersetListResponse<ChartListResult>;
