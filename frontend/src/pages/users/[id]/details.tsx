@@ -10,7 +10,6 @@ import {
 import { usePermission } from "@/common/hooks/use-permission";
 import { Badge } from "@tremor/react";
 import { useGetUserQuery } from "@/modules/user/user";
-import { useEffect } from "react";
 
 export const UserDetails = () => {
 	const userId: any = location.href.split("/").slice(-2)[0];
