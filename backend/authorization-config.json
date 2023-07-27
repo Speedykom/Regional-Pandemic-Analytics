@@ -75,6 +75,18 @@
         "scopes": "[\"pipeline:read\",\"pipeline:update\",\"pipeline:add\",\"pipeline:delete\"]",
         "applyPolicies": "[\"admin-policy\"]"
       }
+    },
+    {
+      "id": "96a64f44-871c-4457-b1b8-32a44d7796de",
+      "name": "Data Management",
+      "description": "",
+      "type": "scope",
+      "logic": "POSITIVE",
+      "decisionStrategy": "UNANIMOUS",
+      "config": {
+        "scopes": "[\"data:read\",\"data:add\"]",
+        "applyPolicies": "[\"admin-policy\"]"
+      }
     }
   ],
   "scopes": [
@@ -167,6 +179,16 @@
       "name": "pipeline:delete",
       "iconUri": "",
       "displayName": "Delete a pipeline"
+    },
+    {
+      "id": "69fdbe1f-06a8-4a83-b379-5b6803c60262",
+      "name": "data:read",
+      "iconUri": ""
+    },
+    {
+      "id": "8b067647-9450-4b91-a27f-d9d2eaf46964",
+      "name": "data:add",
+      "iconUri": ""
     }
   ],
   "decisionStrategy": "UNANIMOUS"
