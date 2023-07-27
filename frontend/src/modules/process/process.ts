@@ -4,8 +4,8 @@ import { Process } from '../../common/redux/interface/process';
 import { baseQuery } from '@/common/redux/api';
 
 // Define a service using a base URL and expected endpoints
-export const processApi = createApi({
-  reducerPath: 'processApi',
+export const ProcessApi = createApi({
+  reducerPath: 'ProcessApi',
   baseQuery,
   tagTypes: ['processes'],
   endpoints: (builder) => ({
@@ -55,4 +55,4 @@ export const {
   useCreateProcessChainMutation,
   useUpdateProcessChainActionMutation,
   useDeleteProcessChainMutation,
-} = processApi;
+} = ProcessApi;
