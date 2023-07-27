@@ -1,17 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { DashboardApi, ChartApi } from "../../modules/superset/superset";
-import { processApi } from "../../modules/process/process";
-import authReducer, { AuthApi } from "../../modules/auth/auth";
-import { pipelineApi } from "@/modules/pipeline/pipeline";
+import { DashboardApi, ChartApi } from "@/modules/superset/superset";
+import { ProcessApi } from "@/modules/process/process";
+import authReducer, { AuthApi } from "@/modules/auth/auth";
+import { PipelineApi } from "@/modules/pipeline/pipeline";
 import { UserApi } from "@/modules/user/user";
 import { RoleApi } from "@/modules/roles/role";
+import { DataApi } from "@/modules/data/data";
 
 export const store = configureStore({
   reducer: {
     [DashboardApi.reducerPath]: DashboardApi.reducer,
     [ChartApi.reducerPath]: ChartApi.reducer,
-    [processApi.reducerPath]: processApi.reducer,
-    [pipelineApi.reducerPath]: pipelineApi.reducer,
+    [ProcessApi.reducerPath]: ProcessApi.reducer,
+    [DataApi.reducerPath]: DataApi.reducer,
+    [PipelineApi.reducerPath]: PipelineApi.reducer,
     [AuthApi.reducerPath]: AuthApi.reducer,
     [UserApi.reducerPath]: UserApi.reducer,
     [RoleApi.reducerPath]: RoleApi.reducer,
@@ -21,9 +23,10 @@ export const store = configureStore({
     getDefaultMiddleware()
       .concat(DashboardApi.middleware)
       .concat(ChartApi.middleware)
-      .concat(processApi.middleware)
+      .concat(ProcessApi.middleware)
+      .concat(DataApi.middleware)
       .concat(AuthApi.middleware)
-      .concat(pipelineApi.middleware)
+      .concat(PipelineApi.middleware)
       .concat(UserApi.middleware)
       .concat(RoleApi.middleware),
 });

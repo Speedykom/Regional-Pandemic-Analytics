@@ -68,7 +68,7 @@ const SideBar = forwardRef((_props, ref: Ref<any>) => {
             <p>Process Chain(s)</p>
           </NavLink>
         )}
-        {permits?.Data && permits?.Data?.read && (
+        {hasPermission('data:read') && (
           <NavLink
             href="/data"
             activeClassName="bg-prim text-white"
