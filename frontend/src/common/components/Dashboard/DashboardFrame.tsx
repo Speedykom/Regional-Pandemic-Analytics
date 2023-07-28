@@ -23,7 +23,7 @@ export default function DashboardFrame({ children }: Props) {
 
   return (
     <Layout>
-      <div className="py-10">{children}</div>
+      <div className="container mx-auto py-10 pl-11">{children}</div>
     </Layout>
   );
 }
