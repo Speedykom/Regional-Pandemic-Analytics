@@ -20,7 +20,6 @@ import { PreviewUser } from "@/modules/user/views/Preview";
 import { ShowMessage } from "../ShowMessage";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCredentials, selectCurrentUser, useLogoutMutation } from "@/modules/auth/auth";
-import { useMediaQuery } from "react-responsive";
 
 interface props {
   showNav: boolean;
@@ -52,15 +51,11 @@ export default function TopBar({ showNav, setShowNav }: props) {
       });
   };
 
-  const isDesktopOrLaptop = useMediaQuery({ minWidth: 1224 })
-  const isBigScreen = useMediaQuery({ minWidth: 1824 })
-  const isTabletOrMobile = useMediaQuery({ maxWidth: 1223 })
-
   return (
     <div
       className={`fixed bg-white w-full h-16 z-50 flex justify-between items-center transition-all duration-[400ms] border-b ${
-        showNav && isBigScreen ? "pl-44" : showNav && isDesktopOrLaptop ? "pl-44" : showNav && isTabletOrMobile ? "pl-14" : ""
-      } `}
+        showNav ? "pl-56" : "pl-16"
+      }`}
     >
       <div className="pl-4 md:pl-16 flex items-center space-x-5">
         <Bars3CenterLeftIcon
@@ -92,45 +87,6 @@ export default function TopBar({ showNav, setShowNav }: props) {
                   </a>
                 </div>
                 <div className="mt-4 grid gap-4 grid-cols-1 overflow-hidden">
-                  <div className="flex">
-                    <div className="rounded-full shrink-0 bg-green-200 h-8 w-8 flex items-center justify-center">
-                      <CheckIcon className="h-4 w-4 text-green-600" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="font-medium text-gray-700">
-                        RePAN Notification
-                      </p>
-                      <p className="text-sm text-gray-500 truncate">
-                        Test Notification text
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex">
-                    <div className="rounded-full shrink-0 bg-green-200 h-8 w-8 flex items-center justify-center">
-                      <CheckIcon className="h-4 w-4 text-green-600" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="font-medium text-gray-700">
-                        RePAN Notification
-                      </p>
-                      <p className="text-sm text-gray-500 truncate">
-                        Test Notification text
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex">
-                    <div className="rounded-full shrink-0 bg-green-200 h-8 w-8 flex items-center justify-center">
-                      <CheckIcon className="h-4 w-4 text-green-600" />
-                    </div>
-                    <div className="ml-4">
-                      <p className="font-medium text-gray-700">
-                        RePAN Notification
-                      </p>
-                      <p className="text-sm text-gray-500 truncate">
-                        Test Notification text
-                      </p>
-                    </div>
-                  </div>
                   <div className="flex">
                     <div className="rounded-full shrink-0 bg-green-200 h-8 w-8 flex items-center justify-center">
                       <CheckIcon className="h-4 w-4 text-green-600" />
