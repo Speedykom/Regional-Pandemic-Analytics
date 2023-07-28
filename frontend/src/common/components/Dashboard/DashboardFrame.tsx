@@ -14,13 +14,11 @@ interface Props {
 export default function DashboardFrame({ children }: Props) {
   const router = useRouter();
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const currentUser = useSelector(selectCurrentUser)
 
   useEffect(() => {
     if (!isAuthenticated) {
       router.push("/");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
