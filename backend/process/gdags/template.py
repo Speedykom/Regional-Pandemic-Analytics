@@ -4,17 +4,11 @@ from airflow.operators.docker_operator import DockerOperator
 from airflow.operators.bash import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.operators.python_operator import PythonOperator
+from airflow_hop.operators import HopPipelineOperator
 from docker.types import Mount
 import requests
 import os
 
-ENVIRONMENT = os.getenv("ENVIRONMENT")
-DRUID_COORDINATOR_URL = os.getenv("DRUID_COORDINATOR_URL")
-
-pipelines = "{}/hop/pipelines".format(ENVIRONMENT)
-storage = "{}/storage".format(ENVIRONMENT)
-config = "{}/hop/hop-config.json".format(ENVIRONMENT)
-plugins = "{}/hop/plugins/transforms/googlesheets".format(ENVIRONMENT)
 
 default_args = {
     'owner': 'airflow',
@@ -74,35 +68,13 @@ with DAG(dag_id, default_args=default_args, schedule_interval=scheduleinterval, 
     start_task = DummyOperator(
         task_id='start_task'
     )
-    # Run Hop pipeline
-    hop = DockerOperator(
-        task_id='hop_task',
-        image='apache/hop',
-        container_name=dag_id,
-        api_version='auto',
-        auto_remove=True,
-        host_tmp_dir='/files',
-        mount_tmp_dir=False,
-        user = '0:0',
-        privileged = True,
-        environment={
-            'HOP_LOG_LEVEL': 'Basic',
-            'HOP_FILE_PATH': pipeline_path,
-            'HOP_PROJECT_FOLDER': '/files',
-            'HOP_PROJECT_NAME': 'igad',
-            'HOP_ENVIRONMENT_NAME': 'prod',
-            'HOP_ENVIRONMENT_CONFIG_FILE_NAME_PATHS': '/files/prod-config.json',
-            'HOP_RUN_CONFIG': 'local',
-        },
-        docker_url='unix://var/run/docker.sock',
-        network_mode='host',
-        mounts = [
-          Mount(source=storage, target='/home', type='bind'),
-          Mount(source=pipelines, target='/files', type='bind'),
-          Mount(source=plugins, target='/opt/hop/hop/plugins/transforms/googlesheets', type='bind'), 
-          Mount(source=config, target='/opt/hop/hop/config/hop-config.json', type='bind')
-        ],
-        force_pull = False
+    # Run Hop pipeline    
+    hop = HopPipelineOperator(
+      task_id=pipeline_name,
+      pipeline=pipeline_path,
+      pipe_config='remote hop server',
+      project_name='default',
+      log_level='Basic'
     )
     # Run Druid ingection
     druid_dag = PythonOperator(
