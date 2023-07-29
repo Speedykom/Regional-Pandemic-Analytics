@@ -23,7 +23,8 @@ x-druid-common: &druid
     - DRUID_LOG4J=${DRUID_DRUID_LOG4J}
 
 x-airflow-common: &airflow
-  image: apache/airflow:2.6.3
+  build:
+    context: ./airflow
   user: "0:0"
   environment:
     - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW_AIRFLOW__CORE__FERNET_KEY}
@@ -58,6 +59,7 @@ x-airflow-common: &airflow
     - ./airflow/user_auth.py:/opt/airflow/user_auth.py
     - ./airflow/airflow.cfg:/opt/airflow/airflow.cfg
     - /var/run/docker.sock:/var/run/docker.sock
+    - ./hop:/hop
 
 volumes:
   superset_data: {}
@@ -134,7 +136,11 @@ services:
       - POSTGRES_USER=igad
       - POSTGRES_DB=igad
     healthcheck:
-      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"]
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+        ]
       interval: 10s
       timeout: 3s
       retries: 3
@@ -191,6 +197,8 @@ services:
       - AIRFLOW_API=${BACKEND_AIRFLOW_API}
       - AIRFLOW_USER=${BACKEND_AIRFLOW_USER}
       - AIRFLOW_PASSWORD=${BACKEND_AIRFLOW_PASSWORD}
+      - AIRFLOW_HOP_PIPELINES_TEMPLATES=${AIRFLOW_HOP_PIPELINES_TEMPLATES}
+      - AIRFLOW_HOP_PIPELINES=${AIRFLOW_HOP_PIPELINES}
       - DB_NAME=${BACKEND_DB_NAME}
       - DB_ENGINE=${BACKEND_DB_ENGINE}
       - DB_USER=${BACKEND_DB_USER}
@@ -374,6 +382,17 @@ services:
     environment:
       - HOP_KEYCLOAK_URL=${HOP_KEYCLOAK_URL}
 
+  hop-server:
+    image: apache/hop:2.4.0
+    container_name: hop-server
+    environment:
+      HOP_SERVER_USER: admin
+      HOP_SERVER_PASS: admin
+      HOP_SERVER_PORT: 8080
+      HOP_SERVER_HOSTNAME: 0.0.0.0
+    volumes:
+      - ./hop/plugins/transforms/:/opt/hop/plugins/transforms/
+      - ./hop/pipelines:/files
     # =======
     # Airflow
     # =======
