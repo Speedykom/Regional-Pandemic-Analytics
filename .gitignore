@@ -5,6 +5,7 @@
 /hop/pipelines/watchDirLog.txt
 /hop/pipelines/watchRuns.txt
 /hop/pipelines/*.hpl
+/hop/config/projects/default/*.hpl
 
 /storage
 frontend/.env
