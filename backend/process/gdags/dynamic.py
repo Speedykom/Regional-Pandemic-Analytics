@@ -8,11 +8,11 @@ class DynamicDag:
         self.output = output
         self.template = template
 
-    def new_dag(self, dag_name, dag_id, parquet_path, data_source_name, schedule_interval, pipeline_path):
+    def new_dag(self, dag_name, dag_id, parquet_path, data_source_name, schedule_interval, pipeline_name):
         new_filename = self.output + dag_name + ".py"
         shutil.copyfile(self.template, new_filename)
 
-        path = "$" + "{" + "PROJECT_HOME" + "}" + pipeline_path
+        # path = f"{AIRFLOW_HOP_PIPELINES}/{pipeline_name}"
 
         with fileinput.input(new_filename, inplace=True) as file:
             for line in file:
@@ -21,6 +21,7 @@ class DynamicDag:
                         .replace("parquet_path", "'{}'".format(parquet_path))
                         .replace("data_source_name", "'{}'".format(data_source_name))
                         .replace("scheduleinterval", "'{}'".format(schedule_interval))
-                        .replace("pipeline_path", "'{}'".format(path))
+                        .replace("pipeline_name", "'{}'".format(pipeline_name))
+                        .replace("pipeline_path", "'{}'".format(pipeline_name))
                 )
                 print(new_line, end="")
