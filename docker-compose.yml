@@ -51,6 +51,7 @@ x-airflow-common: &airflow
     - AUTH_ROLES_SYNC_AT_LOGIN=${AIRFLOW_AUTH_ROLES_SYNC_AT_LOGIN}
     - ENVIRONMENT=${AIRFLOW_ENVIRONMENT}
     - DRUID_COORDINATOR_URL={DRUID_COORDINATOR_URL}
+    - AIRFLOW_CONN_HOP_DEFAULT=${AIRFLOW_CONN_HOP_DEFAULT}
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/logs:/opt/airflow/logs
