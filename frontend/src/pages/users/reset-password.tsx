@@ -1,29 +1,34 @@
-import { OpenNotification } from "@/common/utils/notify";
-
-import { Button, Form, Input } from "antd";
-import axios from "axios";
 import { useRouter } from "next/router";
-import getConfig from "next/config"
- 
-const { publicRuntimeConfig } = getConfig()
+import { Button, TextInput } from "@tremor/react";
+import { useForm } from "react-hook-form";
+import { useResetPasswordMutation } from "@/modules/user/user";
+import { toast } from "react-toastify";
+import { ResetRequest } from "@/modules/user/interface";
 
 export const ResetPassword = () => {
 	const router = useRouter();
-	const [form] = Form.useForm();
-	const onFinish = async (values: any) => {
-		console.log({ values });
-		await axios
-			.post(`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/auth/request-verify`, values, {
-				headers: {
-					"Content-Type": "application/json",
-				},
-			})
-			.then((res) => {
-				OpenNotification(res.data?.message, "topRight", "success");
+	const [restPassword, { isLoading, error }] = useResetPasswordMutation();
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<ResetRequest>();
+
+	const onFinish = async (data: ResetRequest) => {
+		restPassword(data)
+			.unwrap()
+			.then((payload) => {
+				toast.success(payload.message, {
+					position: "top-center",
+					delay: 200,
+				});
 				router.push("/");
 			})
-			.catch((err) => {
-				OpenNotification(err.response?.data?.errorMessage, "topRight", "error");
+			.catch((error) => {
+				toast.error(error?.data?.errorMessage, {
+					position: "top-center",
+					delay: 300,
+				});
 			});
 	};
 
@@ -45,9 +50,8 @@ export const ResetPassword = () => {
 								and we'll send you a link to reset your password!
 							</p>
 						</div>
-						<Form
-							form={form}
-							onFinish={onFinish}
+						<form
+							onSubmit={handleSubmit((data) => onFinish(data))}
 							className="px-8 pt-6 pb-8 mb-4 bg-white rounded"
 						>
 							<div className="mb-4">
@@ -55,57 +59,45 @@ export const ResetPassword = () => {
 									className="block mb-2 text-sm font-bold text-gray-700"
 									htmlFor="email"
 								>
-									Email
+									Email*
 								</label>
-								<Form.Item
-									name="email"
-									rules={[
-										{
-											type: "email",
-											message: "The input is not valid E-mail!",
-										},
-										{
-											required: true,
-											message: "Please input your E-mail!",
-										},
-									]}
-								>
-									<Input
-										className="w-full px-3 py-2 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
-										id="email"
-										type="email"
-										size="large"
-										placeholder="Enter Email Address..."
-									/>
-								</Form.Item>
+								<TextInput
+									{...register("email", {
+										required: true,
+									})}
+									error={errors.email ? true : false}
+									errorMessage={
+										errors.email ? "Please input a valid email" : ""
+									}
+									className="w-full px-3 text-sm leading-tight text-gray-700 border rounded shadow appearance-none focus:outline-none focus:shadow-outline"
+									id="email"
+									type="email"
+									placeholder="Enter Email Address..."
+								/>
 							</div>
 							<div className="mb-6 text-center">
-								<Form.Item>
-									<Button
-										className="w-full px-4 py-2 font-bold text-white bg-red-500 rounded-full hover:bg-red-700 focus:outline-none focus:shadow-outline"
-										htmlType="submit"
-										size="large"
-									>
-										Reset Password
-									</Button>
-								</Form.Item>
+								<Button
+									className="w-full px-4 py-2 font-bold text-white bg-red-500 rounded-full hover:bg-red-700 focus:outline-none focus:shadow-outline"
+									type="submit"
+									size="lg"
+									loading={isLoading}
+								>
+									Reset Password
+								</Button>
 							</div>
 							<hr className="mb-6 border-t" />
 							<div className="text-center">
-								<Form.Item>
-									<p>
-										Remember your password?{" "}
-										<Button
-											type="link"
-											className="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800"
-											onClick={() => router.push("/")}
-										>
-											Login here!
-										</Button>
-									</p>
-								</Form.Item>
+								<p>
+									Remember your password?{" "}
+									<Button
+										className="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800 shadow-none border-0"
+										onClick={() => router.push("/")}
+									>
+										Login here!
+									</Button>
+								</p>
 							</div>
-						</Form>
+						</form>
 					</div>
 				</div>
 			</div>

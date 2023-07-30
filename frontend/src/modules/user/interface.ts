@@ -53,3 +53,6 @@ export interface UserResponse {
   mesage: string,
   user: SerialUser
 }
+export type ResetRequest = {
+  email: string;
+}
