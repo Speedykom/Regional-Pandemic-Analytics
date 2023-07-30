@@ -1,7 +1,7 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from '@/common/redux/api';
-import { SerialUser, User, UserResponse, Users } from './interface';
+import { ResetRequest, SerialUser, User, UserResponse, Users } from './interface';
 
 interface DisableResponse {
   message: string
@@ -31,6 +31,13 @@ export const UserApi = createApi({
         method: 'POST',
         body
       })
+    }),
+    resetPassword: builder.mutation<{ message: string }, ResetRequest>({
+      query: (body) => ({
+        url: '/auth/request-verify',
+        method: 'POST',
+        body: body
+      })
     })
   }),
 });
@@ -39,5 +46,6 @@ export const {
   useGetUsersQuery,
   useGetUserQuery,
   useDisableUserMutation,
-  useAddUserMutation
+  useAddUserMutation,
+  useResetPasswordMutation
 } = UserApi;
