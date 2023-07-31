@@ -22,10 +22,9 @@ import { toast } from "react-toastify";
 
 export const RoleList = () => {
 	const { data, refetch } = useGetRolesQuery();
-	const [updateRole] = useUpdateRoleMutation();
+	const [updateRole, { isLoading }] = useUpdateRoleMutation();
 	const [open, setOpen] = useState(false);
 	const [id, setId] = useState("");
-	const [loading, setLoading] = useState(false);
 	const [roleData, setRoleData] = useState<any>(null);
 	const {
 		register,
@@ -35,24 +34,20 @@ export const RoleList = () => {
 	} = useForm();
 
 	const onSubmit = (role: Role) => {
-		setLoading(true);
 		role.id = id;
 		updateRole(role)
 			.then((res: any) => {
-				setLoading(false)
 				toast.success(res?.data?.message, {
 					position: "top-right",
 				});
-				reset();
-				refetch();
 				setOpen(false)
 				toast.success(res?.data?.message, {
 					position: "top-right",
 				});
+				refetch();
 				reset();
 			})
 			.catch((error: any) => {
-				setLoading(false);
 				toast.error(error?.response?.data?.message, {
 					position: "top-right",
 				});
@@ -136,7 +131,7 @@ export const RoleList = () => {
 										<div className="flex space-x-2 justify-end">
 											<Button
 												variant="primary"
-												className="shadow-md"
+												className="shadow-md text-shite"
 												onClick={() => {
 													setId(item.name);
 													setRoleData(item);
@@ -249,7 +244,7 @@ export const RoleList = () => {
 													Cancel
 												</Button>
 												<Button
-													loading={loading}
+													loading={isLoading}
 													type="submit"
 													className="inline-flex justify-center rounded-md border border-transparent bg-prim px-4 py-2 text-sm font-medium text-white hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
 												>
