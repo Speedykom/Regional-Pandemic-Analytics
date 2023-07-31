@@ -1,3 +1,4 @@
+import os
 import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -36,7 +37,8 @@ class PipelineListView(APIView):
 
         file = open(path, "r")
 
-        pipeline_name = "../hop/pipelines/{}.hpl".format(name)
+        AIRFLOW_HOP_PIPELINES=os.getenv("AIRFLOW_HOP_PIPELINES")
+        pipeline_name = f"..{AIRFLOW_HOP_PIPELINES}/{name}.hpl"
         pipeline_path = "{}.hpl".format(name)
         parquet_path = "/opt/shared/{}.parquet".format(name)
 
