@@ -16,29 +16,16 @@ import { BellIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { Menu, Transition, Popover } from "@headlessui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { PreviewUser } from "@/modules/user/views/Preview";
 import { ShowMessage } from "../ShowMessage";
 import { useDispatch, useSelector } from "react-redux";
 import { clearCredentials, selectCurrentUser, useLogoutMutation } from "@/modules/auth/auth";
 
-interface props {
-  showNav: boolean;
-  setShowNav: Dispatch<SetStateAction<boolean>>;
-}
-
-export default function TopBar({ showNav, setShowNav }: props) {
+export default function TopBar() {
   const router = useRouter();
   const dispatch = useDispatch();
   const [logout] = useLogoutMutation();
   const currentUser = useSelector(selectCurrentUser);
-  const myId = currentUser?.id;
   const username = currentUser?.given_name;
-
-  const [view, setView] = useState<boolean>(false);
-
-  const onCloseView = () => {
-    setView(false);
-  };
 
   const handleLogout = async () => {
     logout({})
@@ -53,15 +40,9 @@ export default function TopBar({ showNav, setShowNav }: props) {
 
   return (
     <div
-      className={`fixed bg-white w-full h-16 z-50 flex justify-between items-center transition-all duration-[400ms] border-b ${
-        showNav ? "pl-56" : "pl-16"
-      }`}
+      className={`fixed bg-white w-full h-16 flex justify-between items-center transition-all duration-[400ms] border-b border-gray-400/70 `}
     >
-      <div className="pl-4 md:pl-16 flex items-center space-x-5">
-        <Bars3CenterLeftIcon
-          className="h-8 w-8 text-gray-700 cursor-pointer"
-          onClick={() => setShowNav(!showNav)}
-        />
+      <div className="pl-8 flex items-center space-x-5">
         <p className="text-xl">Regional Pandemic Analytics</p>
       </div>
       <div className="flex pr-4 md:pr-16 items-center">
@@ -169,15 +150,10 @@ export default function TopBar({ showNav, setShowNav }: props) {
           </Transition>
         </Menu>
       </div>
-      {view && myId && (
-        <div>
-          <PreviewUser
-            openDrawer={view}
-            closeDrawer={onCloseView}
-            userId={String(myId)}
-          />
-        </div>
-      )}
     </div>
   );
 }
+
+// ${
+//   showNav ? "pl-56" : "pl-16"
+// }`
