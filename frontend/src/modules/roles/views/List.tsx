@@ -40,7 +40,7 @@ export const RoleList = () => {
 				toast.success(res?.data?.message, {
 					position: "top-right",
 				});
-				setOpen(false)
+				setOpen(false);
 				toast.success(res?.data?.message, {
 					position: "top-right",
 				});
@@ -58,9 +58,9 @@ export const RoleList = () => {
 		<div className="">
 			<nav className="mb-5 flex justify-between items-center">
 				<div>
-					<h2 className="text-3xl">App Accounts</h2>
+					<h2 className="text-3xl">App Roles</h2>
 					<p className="my-2 text-gray-600">
-						View and manage settings related to app users.
+						View and manage settings related to app roles.
 					</p>
 				</div>
 			</nav>
@@ -131,7 +131,7 @@ export const RoleList = () => {
 										<div className="flex space-x-2 justify-end">
 											<Button
 												variant="primary"
-												className="shadow-md text-shite"
+												className="shadow-md text-white"
 												onClick={() => {
 													setId(item.name);
 													setRoleData(item);
@@ -237,8 +237,8 @@ export const RoleList = () => {
 													type="button"
 													className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
 													onClick={() => {
-														reset(["name", "description"])
-														setOpen(false)
+														reset(["name", "description"]);
+														setOpen(false);
 													}}
 												>
 													Cancel
