@@ -2,7 +2,7 @@ import jwt
 import requests
 from keycloak import KeycloakAdmin
 from keycloak import KeycloakOpenIDConnection
-
+from django.conf import settings
 from utils.env_configs import (
     KEYCLOAK_ADMIN_AUTH_URL,
     KEYCLOAK_ADMIN_CLIENT_ID,
@@ -38,6 +38,16 @@ def keycloak_admin_login():
     }
 
     return serverResponse
+
+def get_keycloak_admin():
+    config = settings.KEYCLOAK_CONFIG
+    return KeycloakAdmin(
+        server_url=config['KEYCLOAK_INTERNAL_SERVER_URL'] + "/auth",
+        username=config['KEYCLOAK_ADMIN_USERNAME'],
+        password=config['KEYCLOAK_ADMIN_PASSWORD'],
+        realm_name=config['KEYCLOAK_REALM'],
+        user_realm_name="master",
+        verify=False)
 
 def decode_auth_token(token: str):
     try:
