@@ -10,80 +10,134 @@ import {
 	BiUser,
 } from "react-icons/bi";
 import { NavLink } from "../link";
-import { boolean } from "zod";
+import { motion, useAnimation, AnimationControls } from "framer-motion";
+import { usePermission } from "@/common/hooks/use-permission";
 
 interface MenuProps {
-	title: string;
-	href: string;
-	icon: ReactNode;
-	scope: string;
-	isOpen: boolean;
+	controlstextopacity: AnimationControls;
+	controlstext: AnimationControls;
 }
 
-export const Menus: Array<Omit<MenuProps, "isOpen">> = [
+export const MenuData = [
 	{
-		title: "Home",
-		href: "/home",
-		icon: <BiHome className="text-xl" />,
-		scope: "",
+		name: "Dashboard",
+		items: [
+			{
+				title: "Home",
+				href: "/home",
+				icon: BiHome,
+				scope: "",
+			},
+			{
+				title: "Dashboards",
+				href: "/dashboards",
+				icon: BiTable,
+				scope: "dashboard:read",
+			},
+			{
+				title: "Chart(s)",
+				href: "/charts",
+				icon: BiChart,
+				scope: "chart:read",
+			},
+		],
 	},
 	{
-		title: "Dashboard(s)",
-		href: "/dashboards",
-		icon: <BiTable className="text-xl" />,
-		scope: "dashboard:read",
+		name: "Manage",
+		items: [
+			{
+				title: "Process Chains",
+				href: "/process-chains",
+				icon: BiGitPullRequest,
+				scope: "process:read",
+			},
+			{
+				title: "Data",
+				href: "/data",
+				icon: BiData,
+				scope: "data:read",
+			},
+			{
+				title: "My Pipelines",
+				href: "/my-pipeline",
+				icon: BiGitMerge,
+				scope: "pipeline:read",
+			},
+		],
 	},
 	{
-		title: "Chart(s)",
-		href: "/charts",
-		icon: <BiChart className="text-xl" />,
-		scope: "chart:read",
-	},
-	{
-		title: "Process Chain(s)",
-		href: "/process-chains",
-		icon: <BiGitPullRequest className="text-xl" />,
-		scope: "process:read",
-	},
-	{
-		title: "Data",
-		href: "/data",
-		icon: <BiData className="text-xl" />,
-		scope: "data:read",
-	},
-	{
-		title: "My Pipeline(s)",
-		href: "/my-pipelines",
-		icon: <BiGitMerge className="text-xl" />,
-		scope: "pipeline:read",
-	},
-	{
-		title: "Account(s)",
-		href: "/users",
-		icon: <BiUser className="text-xl" />,
-		scope: "user:read",
-	},
-	{
-		title: "Role(s)",
-		href: "/roles",
-		icon: <BiLock className="text-xl" />,
-		scope: "user:read",
+		name: "Settings",
+		items: [
+			{
+				title: "Role",
+				href: "/roles",
+				icon: BiLock,
+				scope: "user:read",
+			},
+			{
+				title: "Account",
+				href: "/users",
+				icon: BiUser,
+				scope: "user:read",
+			},
+		],
 	},
 ];
 
 export const SideNavLinks = (prop: MenuProps) => {
+	const { hasPermission } = usePermission();
 	return (
-		<NavLink
-			href={prop.href}
-			activeClassName="bg-prim text-white"
-			className={`px-3.5 py-3 text-gray-400 text-center cursor-pointer mb-3 transition-colors items-center ${
-				prop.isOpen && "flex items-center mx-5 space-x-4"
-			}`}
-		>
-			<span className="text-xl">{prop.icon}</span>
-			<span className={`origin-left duration-200 ${!prop.isOpen && "hidden"}`}>
-				{prop.title}
-			</span>
-		</NavLink>
+		<>
+			{MenuData.map((group, index) => (
+				<div key={index} className="my-4 flex flex-col">
+					<motion.p
+						animate={prop.controlstextopacity}
+						className="text-gray-500 ml-4 text-sm font-bold mb-2"
+					>
+						{group.name}
+					</motion.p>
+
+					{group.items.map((item, index2) => (
+						<>
+							{item.title == "Home" ? (
+								<NavLink
+									href={item.href}
+									activeClassName="bg-prim text-gray-200"
+									className="hover:bg-gray-400/40 px-4 py-1 flex w-full cursor-pointer"
+								>
+									<item.icon className="text-gray-500 hover:text-gray-300 text-lg" />
+
+									<motion.p
+										animate={prop.controlstext}
+										className="text-gray-400 ml-4 text-sm font-bold"
+									>
+										{" "}
+										{item.title}
+									</motion.p>
+								</NavLink>
+							) : (
+								hasPermission(item.scope) && (
+									<NavLink
+											href={item.href}
+											activeClassName="bg-prim text-gray-500"
+										className="hover:bg-gray-400/40 px-4 py-1 flex w-full cursor-pointer"
+									>
+										<item.icon className="text-gray-500 hover:text-gray-300 text-lg" />
+
+										<motion.p
+											animate={prop.controlstext}
+											className="text-gray-400 ml-4 text-sm font-bold"
+										>
+											{" "}
+											{item.title}
+										</motion.p>
+									</NavLink>
+								)
+							)}
+						</>
+					))}
+				</div>
+			))}
+		</>
 	);
 };
