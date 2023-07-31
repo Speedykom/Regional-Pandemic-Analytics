@@ -113,8 +113,8 @@ export default function LoginForm() {
 																? "Please input your password"
 																: ""
 														}
-														placeholder="John"
-														type="text"
+														placeholder="John-Dode"
+														type="password"
 														className="bg-white"
 													/>
 												</div>
@@ -134,7 +134,6 @@ export default function LoginForm() {
 														</a>
 													</div>
 												</div>
-
 												<div className="mb-5">
 													<Button
 														type="submit"
