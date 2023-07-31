@@ -57,10 +57,10 @@ export default function Dashboard() {
   return (
     <>
       <Metric className="mt-5">Covid19 - Global Stats</Metric>
-      <Grid numColsMd={1} numColsLg={1}>
+      <Grid numItemsMd={1} numItemsLg={1}>
         <div id="igad-covid-dashboard" style={{ width: "100%" }} />
       </Grid>
-      <Grid numColsMd={2} numColsLg={6} className="mt-6 gap-6">
+      <Grid numItemsMd={2} numItemsLg={6} className="mt-6 gap-6">
         <MetricsCards
           title="New Confirmed"
           count={metrics?.new_confirmed ?? 0}

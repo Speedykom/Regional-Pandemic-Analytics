@@ -3,14 +3,15 @@ from rest_framework.response import Response
 from rest_framework import status
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser
 from data.serializers import FileUploadSerializer, FileListSerializer
 from data.models import FileUpload
-from rest_framework.permissions import AllowAny
 
-
-class DataUploadAPI(APIView):
-    permission_classes = [AllowAny, ]
+class DataUploadAPIView(APIView):
+    keycloak_scopes = {
+        'GET': 'data:read',
+        'POST': 'data:add',
+    }
     parser = [MultiPartParser]
 
     @swagger_auto_schema(request_body=openapi.Schema(

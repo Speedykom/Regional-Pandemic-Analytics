@@ -1,5 +1,5 @@
-export interface IRole {
-    id?: string;
+export interface Role {
+    id: string;
     name: string;
     description: string;
     composite: boolean;
@@ -8,12 +8,4 @@ export interface IRole {
     attributes: any;
 }
 
-export interface IAttribute {
-	key: string;
-    value: {
-        create: boolean;
-        read: boolean;
-        update: boolean;
-        delete: boolean;
-    };
-}
+export type Roles = Array<Role>;
