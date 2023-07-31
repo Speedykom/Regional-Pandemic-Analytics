@@ -1,7 +1,6 @@
 import { useState, useEffect, Fragment, ReactNode } from "react";
 import SideBar from "./SideBar";
 import TopBar from "./TopBar";
-import { Transition } from "@headlessui/react";
 
 interface props {
 	children: ReactNode;
@@ -13,10 +12,8 @@ export default function Layout({ children }: props) {
 
 	function handleResize() {
 		if (innerWidth <= 640) {
-			setShowNav(false);
 			setIsMobile(true);
 		} else {
-			setShowNav(true);
 			setIsMobile(false);
 		}
 	}
@@ -33,15 +30,22 @@ export default function Layout({ children }: props) {
 
 	return (
 		<>
-			<TopBar showNav={showNav} setShowNav={setShowNav} />
-			<SideBar open={showNav} />
-			<main
-				className={`pt-16 transition-all duration-[400ms] ${
-					showNav && !isMobile ? "pl-56" : ""
-				}`}
-			>
-				<div className="px-4 md:px-16 bg-gray-100 h-screen">{children}</div>
+			<TopBar />
+			<main className="flex">
+					<div className={`${isMobile && "hidden"} mt-16`}>
+						<SideBar />
+						{/* <SideBar open={showNav} setOpen={setShowNav} /> */}
+					</div>
+				<div
+					className={`w-full pt-16 transition-all duration-[400ms]`}
+				>
+					<div className="px-4 bg-gray-100 h-screen">{children}</div>
+				</div>
 			</main>
 		</>
 	);
 }
+
+// ${
+// 	showNav ? "pl-56" : ""
+// }
