@@ -12,7 +12,6 @@ class DynamicDag:
         new_filename = self.output + dag_name + ".py"
         shutil.copyfile(self.template, new_filename)
 
-        # path = f"{AIRFLOW_HOP_PIPELINES}/{pipeline_name}"
 
         with fileinput.input(new_filename, inplace=True) as file:
             for line in file:
