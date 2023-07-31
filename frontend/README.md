@@ -36,3 +36,19 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Scope-Based Permissions using keycloak
+
+Once authenticated, the API will return the access and refresh tokens as well as the permissions. These credentials are stored in the state using Redux Toolkit as well as the secure local storage. The hook `usePermission()`, which is located in `common/hooks` folder, allows the developer to display component depending on the available authorization scopes. 
+
+Example :
+```react
+export const Users = () => {
+  const { hasPermission } = usePermission();
+  return (
+    <DashboardFrame>
+      {hasPermission('user:read') ? <UserList /> : <Unauthorized />}
+    </DashboardFrame>
+  );
+};
+```
