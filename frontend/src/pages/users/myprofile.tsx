@@ -1,710 +1,424 @@
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 import { countries } from "@/common/utils/countries";
-import { OpenNotification } from "@/common/utils/notify";
-import {
-	DeleteColumnOutlined,
-	EditOutlined,
-	ProfileOutlined,
-	SaveOutlined,
-	UploadOutlined,
-} from "@ant-design/icons";
-import {
-	Button,
-	Divider,
-	Form,
-	Input,
-	Modal,
-	Radio,
-	Select,
-	SelectProps,
-	Tag,
-	message,
-	Upload,
-} from "antd";
-import ImgCrop from "antd-img-crop";
-import { RcFile } from "antd/es/upload";
-import type { UploadFile, UploadProps } from "antd/es/upload/interface";
 
-import axios from "axios";
-import { useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import secureLocalStorage from "react-secure-storage";
-import getConfig from 'next/config'
-import { useSelector } from "react-redux";
+import {
+	Badge,
+	Button,
+	Card,
+	Divider,
+	NumberInput,
+	SearchSelect,
+	SearchSelectItem,
+	Text,
+	TextInput,
+} from "@tremor/react";
+import { useGetUserQuery } from "@/modules/user/user";
+import {
+	CheckIcon,
+	PencilSquareIcon,
+	PlusCircleIcon,
+	SignalSlashIcon,
+	WifiIcon,
+	XMarkIcon,
+} from "@heroicons/react/24/outline";
+import { useForm } from "react-hook-form";
+import { Dialog, Transition } from "@headlessui/react";
 import { selectCurrentUser } from "@/modules/auth/auth";
-import { UserProfile } from "@/modules/auth/interface";
- 
-const { publicRuntimeConfig } = getConfig()
-
-const getBase64 = (file: RcFile): Promise<string> =>
-	new Promise((resolve, reject) => {
-		const reader = new FileReader();
-		reader.readAsDataURL(file);
-		reader.onload = () => resolve(reader.result as string);
-		reader.onerror = (error) => reject(error);
-	});
-
-const genderOptions = [
-	{ label: "Male", value: "Male" },
-	{ label: "Female", value: "Female" },
-];
-
-const myCodeOptions: SelectProps["options"] = [];
-const countryOptions: SelectProps["options"] = [];
-
-countries.forEach((item, index) => {
-	myCodeOptions.push({
-		key: index,
-		value: item.code,
-		label: item.code,
-	});
-	countryOptions.push({
-		key: index,
-		value: item.name,
-		label: item.name,
-	});
-});
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 export const ProfileSettings = () => {
-	const [form] = Form.useForm();
-	const [passwordForm] = Form.useForm();
-	const [visible, setVisible] = useState(false);
 	const [changePassword, setChangePassword] = useState(false);
-	const user = useSelector(selectCurrentUser);
+	const currentUser = useSelector(selectCurrentUser);
 
-	const imageList: UploadFile[] = [
-		{
-			uid: "0",
-			name: "profile-avatar.png",
-			status: "done",
-			url: user?.avatar ? user?.avatar : "/avater.png",
-		},
-	];
+	const myId: any = currentUser?.id;
+	const { data } = useGetUserQuery(myId);
+
+	const [country, setCountry] = useState<string>();
+	const [gender, setGender] = useState<string>();
+	const [firstName, setFirstName] = useState(currentUser?.given_name);
+	const [lastName, setLastName] = useState(currentUser?.family_name);
+	const [phone, setPhone] = useState<string>();
+	const [avatar, setAvatar] = useState(currentUser?.avatar);
 
 	const [newPass, setNewPass] = useState<string>("");
-	const [passwordVisible, setPasswordVisible] = useState(false);
-	const [previewOpen, setPreviewOpen] = useState(false);
-	const [previewImage, setPreviewImage] = useState("");
-
-	const [fileList, setFileList] = useState<UploadFile[]>(imageList);
 
 	const onChange = (e?: string) => {
 		setNewPass(String(e));
 	};
 
-	const [code, setCode] = useState<string>("");
+	const {
+		register,
+		handleSubmit,
+		setValue,
+		formState: { errors },
+	} = useForm();
 
 	const triggerPasswordChange = () => {
 		setChangePassword(!changePassword);
 	};
 
-	const handleCancel = () => setPreviewOpen(false);
-
-	const triggerEdit = () => {
-		setVisible(true);
-		form.setFieldValue("firstName", user?.given_name);
-		form.setFieldValue("lastName", user?.family_name);
-		form.setFieldValue("country", user?.country);
-		form.setFieldValue("gender", user?.gender);
-		form.setFieldValue("phone", user?.phone);
-		form.setFieldValue("code", user?.code);
-	};
-	const cancelEdit = () => {
-		form.resetFields();
-		setVisible(false);
-	};
-
-	const onChangeImage: UploadProps["onChange"] = async ({
-		fileList: newFileList,
-	}) => {
-		setFileList(newFileList);
-	};
-
-	const handlePreview = async (file: UploadFile) => {
-		if (!file.url && !file.preview) {
-			file.preview = await getBase64(file.originFileObj as RcFile);
-		}
-
-		setPreviewImage(file.url || (file.preview as string));
-		setPreviewOpen(true);
-	};
-
-	const handleDetailsEdit = async (values: any) => {
-		await axios
-			.put(
-				`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.id}/update`,
-				values,
-				{
-					headers: {
-						"Content-Type": "application/json",
-					},
-				}
-			)
-			.then((res) => {
-				let newUserData = user as UserProfile;
-				newUserData.given_name = values["firstName"];
-				newUserData.family_name = values["lastName"];
-				newUserData.phone = values["phone"];
-				newUserData.code = values["code"];
-				newUserData.country = values["country"];
-				newUserData.gender = values["gender"];
-				newUserData.name = `${values["firstName"]} ${values["lastName"]}`;
-				OpenNotification(res?.data?.message, "topRight", "success");
-				form.resetFields();
-			})
-			.catch((err) => {
-				OpenNotification(err.response?.data?.errorMessage, "topRight", "error");
-			});
-	};
+	const handleDetailsEdit = async (values: any) => {};
 
 	const password: string = secureLocalStorage.getItem("passcode") as string;
+
+	useEffect(() => {
+		if (typeof window != undefined) {
+			setGender(data?.attributes?.gender[0])
+			setCountry(data?.attributes?.country[0])
+			setPhone(data?.attributes?.phone[0])
+    }
+	}, [])
 
 	const handlePasswordChange = async (values: any) => {
 		const decode = Buffer.from(password, "base64").toString("ascii");
 		if (values["currentPassword"] !== decode) {
-			OpenNotification(
-				"Current password entered is invalid",
-				"topRight",
-				"error"
-			);
+			toast.error("Current password entered is invalid", {
+				position: "top-right",
+			});
 		} else {
-			await axios
-				.put(
-					`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/auth/password`,
-					{
-						id: user?.id,
-						newPassword: values["newPassword"],
-						confirmPassword: values["confirmPassword"],
-					},
-					{
-						headers: {
-							"Content-Type": "application/json",
-						},
-					}
-				)
-				.then((res) => {
-					secureLocalStorage.removeItem("passcode");
-					secureLocalStorage.setItem(
-						"passcode",
-						Buffer.from(values["newPassword"]).toString("base64")
-					);
-					OpenNotification(res.data?.message, "topRight", "success");
-					passwordForm.resetFields();
-				})
-				.catch((err) => {
-					OpenNotification(
-						err?.response?.data?.errorMessage,
-						"topRight",
-						"error"
-					);
-				});
+			toast.info("Clicked", { position: "top-right" });
 		}
 	};
 
 	return (
-		<div className="my-5">
+		<div className="my-5 w-full lg:w-8/12 px-4 mx-auto">
 			<div className="md:flex no-wrap">
 				{/* Left Side */}
-				<div className="w-full md:w-1/3">
+				<div className="w-full md:w-2/3">
 					{/* Profile Card */}
-					<div className="mb-6">
-						<div className="bg-white border p-5 rounded-md border-gray-400">
-							<div className="flex">
-								<ImgCrop rotationSlider>
-									<Upload
-										className=""
-										listType="picture-card"
-										onChange={onChangeImage}
-										fileList={fileList}
-										onPreview={handlePreview}
-										showUploadList={{ showRemoveIcon: false }}
-										maxCount={1}
-										action={`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/account/user/${user?.id}/avatar-upload1`}
-										customRequest={(options) => {
-											const data = new FormData();
-											data.append("file", options.file);
-											const config = {
-												headers: {
-													"content-type": "multipart/form-data",
-												},
-											};
-											axios
-												.post(options.action, data, config)
-												.then((resp) => {
-													let newUserData = user as UserProfile;
-													newUserData.avatar = resp?.data?.avatarUrl;
-													const newList: UploadFile[] = [
-														{
-															uid: "0",
-															name: "profile-avatare.png",
-															status: "done",
-															url: resp?.data?.avatarUrl,
-														},
-													];
-
-													setFileList(newList);
-												})
-												.catch((err: Error) => {
-													message.error("error");
-												});
-										}}
-									>
-										<Button type="link" className="flex items-center px-2">
-											<UploadOutlined /> Upload Avatar
-										</Button>
-									</Upload>
-								</ImgCrop>
-								{/* <img
-									className="h-32 w-32 rounded-md"
-									src={previewImage}
-									alt=""
-								/>
-								<Button type="link">Upload Avatar</Button> */}
-							</div>
-							<div className="">
-								<h1 className="text-gray-900 font-bold text-xl leading-8 my-1">
-									{user?.name}
-								</h1>
-							</div>
+					<Card className="mb-6 bg-white p-5">
+						<div className="flex ">
+							<img className="h-32 w-32 rounded-md" src={avatar ? avatar : "/avater.png"} alt="" />
+							<input type="file" style={{ display: "none" }} />
+						</div>
+						<div className="">
+							<h1 className="text-gray-900 font-bold text-xl leading-8 my-1">
+								{data?.firstName} {data?.lastName}
+							</h1>
+						</div>
+						<div>
+							<span className="text-gray-500 leading-8 my-1">
+								Email Address
+							</span>
+							<p id="emailId" className="">
+								{data?.email}
+							</p>
+						</div>
+						<div className="mt-5">
+							<span className="text-gray-500 leading-8 my-1">Phone Number</span>
+							<p id="emailId" className="">
+								{data?.attributes?.phone}
+							</p>
+						</div>
+						<div className="mt-5">
+							<span className="text-gray-500 leading-8 my-1">Username</span>
+							<p id="emailId" className="">
+								{data?.username}
+							</p>
+						</div>
+						<div className="mt-5">
+							<span className="text-gray-500 leading-8 my-1">Gender</span>
+							<p id="emailId" className="">
+								{data?.attributes?.gender}
+							</p>
+						</div>
+						<div className="mt-5 mb-8">
+							<span className="text-gray-500 leading-8 my-1">Country</span>
+							<p id="emailId" className="">
+								{data?.attributes?.country}
+							</p>
+						</div>
+						<div className="">
+							<span className="text-gray-500 leading-8 my-1">Access Roles</span>
 							<div>
-								<span className="text-gray-500 leading-8 my-1">
-									Email Address
-								</span>
-								<p id="emailId" className="">
-									{user?.email}
-								</p>
-							</div>
-							<div className="mt-5">
-								<span className="text-gray-500 leading-8 my-1">
-									Phone Number
-								</span>
-								<p id="emailId" className="">
-									{user?.code} {user?.phone}
-								</p>
-							</div>
-							<div className="mt-5">
-								<span className="text-gray-500 leading-8 my-1">Username</span>
-								<p id="emailId" className="">
-									{user?.preferred_username}
-								</p>
-							</div>
-							<div className="mt-5">
-								<span className="text-gray-500 leading-8 my-1">Gender</span>
-								<p id="emailId" className="">
-									{user?.gender}
-								</p>
-							</div>
-							<div className="mt-5">
-								<span className="text-gray-500 leading-8 my-1">Country</span>
-								<p id="emailId" className="">
-									{user?.country}
-								</p>
-							</div>
-						</div>
-					</div>
-					<div className="mb-6">
-						<div className="bg-white border border-gray-400 p-5 rounded-md">
-							<div className="mt-3">
-								<h1 className="text-xl font-bold">App Roles</h1>
-							</div>
-							<div className="text-2xl mt-3">
-								<Tag color="gold" className="text-xl">
-									Dashboard
-								</Tag>
-								<Tag color="gold" className="text-xl">
-									Superset
-								</Tag>
-								<Tag color="gold" className="text-xl">
-									Hop
-								</Tag>
-								<Tag color="gold" className="text-xl">
-									Druid
-								</Tag>
-								<Tag color="gold" className="text-xl">
-									My Profile
-								</Tag>
-								<Tag color="gold" className="text-xl">
-									Manage Users
-								</Tag>
-								<Tag color="gold" className="text-xl">
-									Manage Roles
-								</Tag>
-							</div>
-						</div>
-					</div>
-					<div className="mb-6">
-						<div className="bg-white border border-gray-400 p-5 rounded-md">
-							<div className="mt-3">
-								<h1 className="text-xl font-bold">Status</h1>
-							</div>
-							<div className="text-lg mt-3">
-								<div className="flex space-x-28 mb-3">
-									<p>Email Verified</p>
-									<Tag color="error" className="text-xl">
-										{user?.email_verified ? "True" : "False"}
-									</Tag>
-								</div>
-								<div className="flex  space-x-28">
-									<p>User Enabled</p>
-									<Tag color="success" className="text-xl item-start">
-										True
-									</Tag>
+								<div className="flex">
+									{data?.roles.map((role, index) => (
+										<Text
+											className="bg-gray-200 px-2 text-black rounded-md"
+											key={index}
+										>
+											{role?.name}
+										</Text>
+									))}
 								</div>
 							</div>
 						</div>
-					</div>
+						<div className="mt-5">
+							<span className="text-gray-500 leading-8 my-1">Email Status</span>
+							<p>
+								{data?.emailVerified ? (
+									<Badge color="indigo" icon={CheckIcon}>
+										Enable
+									</Badge>
+								) : (
+									<Badge color="red" icon={XMarkIcon}>
+										Disabled
+									</Badge>
+								)}
+							</p>
+						</div>
+						<div className="mt-5">
+							<span className="text-gray-500 leading-8 my-1">My Status</span>
+							<p>
+								{data?.enabled ? (
+									<Badge color="green" icon={WifiIcon}>
+										Active
+									</Badge>
+								) : (
+									<Badge color="red" icon={SignalSlashIcon}>
+										Inactive
+									</Badge>
+								)}
+							</p>
+						</div>
+					</Card>
 				</div>
 				{/* Right Side */}
-				<div className="w-full md:w-2/3 md:mx-2">
-					<div className="mb-6">
-						<div className="bg-white border border-gray-400 p-5 rounded-md">
-							<div className="border-b-2 mb-6 flex items-center justify-between">
-								<p className="flex items-center">
-									<ProfileOutlined className="pr-2" /> Edit Profile
-								</p>
-								<Button
-									type="link"
-									onClick={triggerEdit}
-									className="flex items-center space-x-1"
-								>
-									<EditOutlined />
-									<span>Update Details</span>
-								</Button>
+				<div className="w-full md:w-full md:mx-2">
+					<Card className="bg-white mb-8">
+						<div className="border-b-2 mb-6 flex items-center justify-between">
+							<p className="flex items-center">Edit Profile</p>
+						</div>
+						<div className="lg:col-span-2">
+							<div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
+								<div className="md:col-span-5">
+									<label htmlFor="firstName">Given Names*</label>
+									<TextInput
+										value={firstName}
+										className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+									/>
+								</div>
+								<div className="md:col-span-5">
+									<label htmlFor="lastName">Last Name*</label>
+									<TextInput
+										value={lastName}
+										className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+									/>
+								</div>
+								<div className="md:col-span-5">
+									<label htmlFor="phone">Phone Number*</label>
+									<NumberInput
+										enableStepper={false}
+										onInput={(e: any) => setPhone(e.target.value)}
+										value={phone}
+										defaultValue={phone}
+										className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+										placeholder={phone ? phone : "phone"}
+									/>
+								</div>
+								<div className="md:col-span-3">
+									<label htmlFor="country">Country*</label>
+									<SearchSelect
+										onValueChange={(e) => {
+											setCountry(e);
+										}}
+										className="bg-white"
+										value={country}
+									>
+										{countries.map((item, index) => (
+											<SearchSelectItem
+												className="bg-white cursor-pointer"
+												key={index}
+												value={item.name}
+											>
+												{item.name}
+											</SearchSelectItem>
+										))}
+									</SearchSelect>
+								</div>
+								<div className="md:col-span-2 w-full">
+									<label htmlFor="gender">Gender*</label>
+									<div className="flex">
+										<Button
+											onClick={() => setGender("Male")}
+											className={`rounded-l ${
+												gender == "Male" ? "bg-indigo-400 text-white" : ""
+											}`}
+										>
+											Male
+										</Button>
+										<Button
+											onClick={() => setGender("Female")}
+											className={`rounded-r ${
+												gender == "Female" && "bg-indigo-400 text-white"
+											}`}
+										>
+											Female
+										</Button>
+									</div>
+								</div>
 							</div>
-							<Form
-								form={form}
-								name="edit"
-								onFinish={handleDetailsEdit}
-								scrollToFirstError
+						</div>
+						<div className="mt-8">
+							<Divider className="border border-gray-200" />
+							<div>
+								<div className="flex space-x-2 items-end justify-end">
+									<Button
+										type="submit"
+										className="flex items-center bg-prim text-white"
+										icon={PlusCircleIcon}
+									>
+										Save Changes
+									</Button>
+								</div>
+							</div>
+						</div>
+					</Card>
+					<Card className="bg-white">
+						<div className="mt-1 border-b-2 mb-6 flex items-center justify-between">
+							<h1 className="">Credential Settings</h1>
+							<Button
+								onClick={triggerPasswordChange}
+								className="flex items-center border-0"
+								icon={PencilSquareIcon}
 							>
-								<div className="lg:col-span-2">
-									<div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
-										<div className="md:col-span-5">
-											<label htmlFor="firstName">Given Names*</label>
-											<Form.Item
-												name={"firstName"}
-												initialValue={user?.given_name}
-												rules={[
-													{
-														required: true,
-														message: "Please input your given names",
-													},
-												]}
-											>
-												<Input
-													className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-													placeholder={user?.given_name}
-												/>
-											</Form.Item>
-										</div>
-
-										<div className="md:col-span-5">
-											<label htmlFor="lastName">Last Name*</label>
-											<Form.Item
-												name={"lastName"}
-												initialValue={user?.family_name}
-												rules={[
-													{
-														required: true,
-														message: "Please input your family name",
-													},
-												]}
-											>
-												<Input
-													className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-													placeholder={user?.family_name}
-												/>
-											</Form.Item>
-										</div>
-
-										<div className="md:col-span-3">
-											<label htmlFor="phone">Phone Number*</label>
-											<div className="flex items-center">
-												<Form.Item
-													name="code"
-													className="w-1/14"
-													initialValue={user?.code}
-													rules={[
-														{
-															required: true,
-															message: "Please select country code",
-														},
-													]}
-												>
-													<Select
-														value={code}
-														onChange={setCode}
-														showSearch
-														placeholder={user?.code}
-														options={myCodeOptions}
-														className="mt-1"
-														size="large"
-													/>
-												</Form.Item>
-												<Form.Item
-													className="w-full"
-													name={"phone"}
-													initialValue={user?.phone}
-													rules={[
-														{
-															required: true,
-															message: "Please input your number",
-														},
-													]}
-												>
-													<Input
-														// addonBefore={selectBefore}
-														size="large"
-														placeholder={user?.phone}
-														className="mt-1 bg-gray-50 w-full"
-													/>
-												</Form.Item>
-											</div>
-										</div>
-
-										<div className="md:col-span-2">
-											<label htmlFor="country">Country*</label>
-											<Form.Item
-												name={"country"}
-												initialValue={user?.country}
-												rules={[
-													{
-														required: true,
-														message: "Please select your country",
-													},
-												]}
-											>
-												<Select
-													showSearch
-													id="country"
-													placeholder={user?.country}
-													size="large"
-													className="h-10 w-full mt-1 bg-gray-50"
-													options={countryOptions}
-												/>
-											</Form.Item>
-										</div>
-
-										<div className="md:col-span-2">
-											<label htmlFor="gender">Gender*</label>
-											<Form.Item
-												name={"gender"}
-												initialValue={user?.gender}
-												rules={[
-													{
-														required: true,
-														message: "Please select gender",
-													},
-												]}
-											>
-												<Radio.Group
-													options={genderOptions}
-													// onChange={onGenderChange}
-													className="h-10 mt-1 w-full"
-													optionType="button"
-													buttonStyle="solid"
-												/>
-											</Form.Item>
-										</div>
-									</div>
-								</div>
-								{visible && (
-									<div>
-										<Divider style={{ border: "1px solid gray" }} />
-										<div>
-											<Form.Item>
-												<div className="flex space-x-2 items-end justify-end">
-													<Button
-														className="focus:outline-none px-6 py-2 text-gray-700 font-medium flex items-center"
-														style={{
-															backgroundColor: "#48328526",
-															border: "1px solid #48328526",
-														}}
-														type="primary"
-														size="large"
-														onClick={cancelEdit}
-													>
-														<DeleteColumnOutlined /> Cancel
-													</Button>
-													<Button
-														type="primary"
-														className="flex items-center"
-														style={{
-															backgroundColor: "#087757",
-															border: "1px solid #e65e01",
-														}}
-														size="large"
-														htmlType="submit"
-													>
-														<SaveOutlined /> Save Changes
-													</Button>
-												</div>
-											</Form.Item>
-										</div>
-									</div>
-								)}
-							</Form>
+								Change Password
+							</Button>
 						</div>
-					</div>
-					<div className="mb-6">
-						<div className="bg-white border border-gray-400 p-5 rounded-md">
-							<div className="mt-3 border-b-2 mb-6 flex items-center justify-between">
-								<h1 className="">Credential Settings</h1>
-								<Button
-									type="link"
-									onClick={triggerPasswordChange}
-									className="flex items-center space-x-1"
-								>
-									<EditOutlined /> <span>Change Password</span>
-								</Button>
+						<div className="mt-3">
+							<div className="flex mb-3 space-x-1 md:justify-between">
+								<p>Email</p>
+								<p>{data?.email}</p>
 							</div>
-							<div className="mt-3">
-								<div className="flex space-x-28 mb-3 justify-between">
-									<p>Email</p>
-									<p>{user?.email}</p>
-								</div>
-								<div className="flex space-x-28 mb-3 justify-between">
-									<p>Username</p>
-									<p>{user?.preferred_username}</p>
-								</div>
-								<div className="flex space-x-28 mb-3 justify-between">
-									<p>Password</p>
-									<p>*****************</p>
-								</div>
+							<div className="flex space-x-2 mb-3 md:justify-between">
+								<p>Username</p>
+								<p>{data?.username}</p>
 							</div>
-							{changePassword && (
-								<div className="border border-1 p-5 flex flex-col ">
-									<Divider type="horizontal">
-										<p className="text-lg mb-5">Create New Password</p>
-									</Divider>
-									<Form form={passwordForm} onFinish={handlePasswordChange}>
-										<div className="flex">
-											<div className="w-1/2">
-												<div className="">
-													<label htmlFor="currentPassword">
-														Current Password*
-													</label>
-													<Form.Item
-														name={"currentPassword"}
-														rules={[
-															{
-																required: true,
-																message: "Please input currentPassword",
-															},
-														]}
-													>
-														<Input.Password
-															size="large"
-															placeholder="current password"
-															className="mt-1 bg-gray-50"
-														/>
-													</Form.Item>
-												</div>
-												<div className="">
-													<label htmlFor="newPassword">New Password*</label>
-													<Form.Item
-														name={"newPassword"}
-														rules={[
-															{
-																required: true,
-																message: "Please input currentPassword",
-															},
-														]}
-													>
-														<Input.Password
-															type="password"
-															visibilityToggle={{
-																visible: passwordVisible,
-																onVisibleChange: setPasswordVisible,
-															}}
-															value={newPass}
-															onChange={(e) => {
-																onChange(e.currentTarget.value);
-															}}
-															size="large"
-															placeholder="new password"
-															className="mt-1 bg-gray-50"
-														/>
-													</Form.Item>
-												</div>
-												<div className="">
-													<label htmlFor="confirmPassword">
-														Confirm Password*
-													</label>
-													<Form.Item
-														name={"confirmPassword"}
-														rules={[
-															{
-																required: true,
-																validator(rule, value, callback) {
-																	if (value === "") {
-																		callback("This field is required");
-																	} else if (value !== newPass) {
-																		callback("Passwords do not match!");
-																	} else {
-																		callback();
-																	}
-																},
-															},
-														]}
-													>
-														<Input.Password
-															type="password"
-															size="large"
-															placeholder="confirm password"
-															className="mt-1 bg-gray-50"
-														/>
-													</Form.Item>
-												</div>
-												<div>
-													<Divider style={{ border: "1px solid gray" }} />
-													<div>
-														<Form.Item>
-															<div className="flex space-x-2 items-end justify-end">
-																<Button
-																	className="focus:outline-none px-6 py-2 text-gray-700 font-medium flex items-center"
-																	style={{
-																		backgroundColor: "#48328526",
-																		border: "1px solid #48328526",
-																	}}
-																	type="primary"
-																	size="large"
-																	onClick={triggerPasswordChange}
-																>
-																	<DeleteColumnOutlined /> Cancel
-																</Button>
-																<Button
-																	type="primary"
-																	className="flex items-center"
-																	style={{
-																		backgroundColor: "#087757",
-																		border: "1px solid #e65e01",
-																	}}
-																	size="large"
-																	htmlType="submit"
-																>
-																	<SaveOutlined /> Save Changes
-																</Button>
-															</div>
-														</Form.Item>
-													</div>
-												</div>
-											</div>
-										</div>
-									</Form>
-								</div>
-							)}
+							<div className="flex mb-3 justify-between">
+								<p>Password</p>
+								<p>*************</p>
+							</div>
 						</div>
-					</div>
+					</Card>
 				</div>
+				<Transition appear show={changePassword} as={Fragment}>
+					<Dialog
+						as="div"
+						className="relative z-10"
+						onClose={() => setChangePassword(false)}
+					>
+						<Transition.Child
+							as={Fragment}
+							enter="ease-out duration-300"
+							enterFrom="opacity-0"
+							enterTo="opacity-100"
+							leave="ease-in duration-200"
+							leaveFrom="opacity-100"
+							leaveTo="opacity-0"
+						>
+							<div className="fixed inset-0 bg-black bg-opacity-25" />
+						</Transition.Child>
+
+						<div className="fixed inset-0 overflow-y-auto">
+							<div className="flex min-h-full items-center justify-center p-4 text-center">
+								<Transition.Child
+									as={Fragment}
+									enter="ease-out duration-300"
+									enterFrom="opacity-0 scale-95"
+									enterTo="opacity-100 scale-100"
+									leave="ease-in duration-200"
+									leaveFrom="opacity-100 scale-100"
+									leaveTo="opacity-0 scale-95"
+								>
+									<Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-gray-100 p-6 text-left align-middle shadow-xl transition-all">
+										<Dialog.Title
+											as="h3"
+											className="text-lg font-medium leading-6 text-gray-900"
+										>
+											Change Password
+										</Dialog.Title>
+										<div className="mt-5 flex-auto px-4 py-10 pt-0">
+											<form
+											// onSubmit={handleSubmit((data: any) => onSubmit(data))}
+											>
+												<div className="relative w-full mb-3">
+													<label
+														className="block text-blueGray-600 text-xs font-bold mb-2"
+														htmlFor="name"
+													>
+														Current Password
+													</label>
+													<TextInput
+														type="password"
+														placeholder="current password"
+														className="mt-1 bg-gray-50"
+													/>
+													{errors.name && (
+														<span className="text-sm text-red-600">
+															role name is required
+														</span>
+													)}
+												</div>
+												<div className="relative w-full mb-3">
+													<label
+														className="block text-blueGray-600 text-xs font-bold mb-2"
+														htmlFor="descriptiond"
+													>
+														New Password
+													</label>
+													<TextInput
+														type="password"
+														value={newPass}
+														onChange={(e) => {
+															onChange(e.currentTarget.value);
+														}}
+														placeholder="new password"
+														className="mt-1 bg-gray-50"
+													/>
+													{errors.description && (
+														<span className="text-sm text-red-600">
+															provide role description
+														</span>
+													)}
+												</div>
+												<div className="relative w-full mb-3">
+													<label
+														className="block text-blueGray-600 text-xs font-bold mb-2"
+														htmlFor="descriptiond"
+													>
+														Confirm Password
+													</label>
+													<TextInput
+														type="password"
+														placeholder="confirm password"
+														className="mt-1 bg-gray-50"
+													/>
+													{errors.description && (
+														<span className="text-sm text-red-600">
+															provide role description
+														</span>
+													)}
+												</div>
+												<div className="mt-16 flex justify-end space-x-2">
+													<Button
+														type="button"
+														className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+														onClick={() => {
+															setChangePassword(false);
+														}}
+													>
+														Cancel
+													</Button>
+													<Button
+														// loading={loading}
+														type="submit"
+														className="inline-flex justify-center rounded-md border border-transparent bg-prim px-4 py-2 text-sm font-medium text-white hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+													>
+														Save Changes
+													</Button>
+												</div>
+											</form>
+										</div>
+									</Dialog.Panel>
+								</Transition.Child>
+							</div>
+						</div>
+					</Dialog>
+				</Transition>
 			</div>
-			<Modal
-				open={previewOpen}
-				title="Profile image"
-				footer={null}
-				onCancel={handleCancel}
-			>
-				<img alt="example" style={{ width: "100%" }} src={previewImage} />
-			</Modal>
 		</div>
 	);
 };
