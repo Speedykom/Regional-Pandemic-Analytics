@@ -1,5 +1,7 @@
 import jwt
 import requests
+from keycloak import KeycloakAdmin
+from keycloak import KeycloakOpenIDConnection
 
 from utils.env_configs import (
     KEYCLOAK_ADMIN_AUTH_URL,
@@ -9,6 +11,8 @@ from utils.env_configs import (
     KEYCLOAK_ADMIN_PASSWORD,
     APP_USER_BASE_URL,
     APP_CLIENT_SECRET,
+    BASE_URL,
+    APP_CLIENT_ID
 )
 
 # @todo : use python-keycloak instead (see core/middleware.py)

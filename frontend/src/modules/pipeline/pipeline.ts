@@ -6,8 +6,8 @@ import getConfig from "next/config";
 const { publicRuntimeConfig } = getConfig();
 
 // Define a service using a base URL and expected endpoints
-export const pipelineApi = createApi({
-  reducerPath: "pipelineApi",
+export const PipelineApi = createApi({
+  reducerPath: "PipelineApi",
   baseQuery: fetchBaseQuery({
     baseUrl: publicRuntimeConfig.NEXT_PUBLIC_BASE_URL,
     prepareHeaders,
@@ -38,4 +38,4 @@ export const pipelineApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useFindAllQuery, useTemplatesQuery, useCreatePipelineMutation, useEditAccessMutation } = pipelineApi;
+export const { useFindAllQuery, useTemplatesQuery, useCreatePipelineMutation, useEditAccessMutation } = PipelineApi;

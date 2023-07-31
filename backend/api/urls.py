@@ -4,7 +4,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import re_path, path
 from process.views import process as process_views, pipeline as pipeline_views
-from data.views import DataUploadAPI
+from data.views import DataUploadAPIView
 from accounts import views
 
 from hop.views import (
@@ -57,8 +57,9 @@ urlpatterns = [
     path('account/user/avatar/get', views.UserAvatarView.as_view()), # download avatar
     
     # ---------------------- API Role Endpoints --------------------------
-    path('role/', role_view.CreateViewRoles.as_view()),  # create role
+    path('role/', role_view.RoleApiView.as_view()),  # create role
     path('role/<str:id>', role_view.GetEditRole.as_view()),  # get role
+    path('role/<str:id>/update', role_view.RoleApiView.as_view()),  # get role
     
     # ---------------------- API Superset Endpoints --------------------------
     path('superset/list', superset_view.ListDashboardsAPI.as_view()),  # list dashboards
@@ -83,7 +84,7 @@ urlpatterns = [
     # ---------------------- Data upload Endpoints ------------------------------------------
 
     # endpoint for uploading data
-    path('data/upload/', DataUploadAPI.as_view()),
+    path('data/upload/', DataUploadAPIView.as_view()),
 
     # ---------------------- Hop Endpoints ------------------------------------------
 

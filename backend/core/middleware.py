@@ -21,11 +21,9 @@ import logging
 from django.conf import settings
 from django.http.response import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
-from keycloak import KeycloakOpenID
-from keycloak.exceptions import KeycloakInvalidTokenError,\
-    raise_error_from_response, KeycloakGetError
+from keycloak import KeycloakOpenID, KeycloakOpenIDConnection, KeycloakAdmin
+from keycloak.exceptions import KeycloakInvalidTokenError
 from rest_framework.exceptions import PermissionDenied, AuthenticationFailed, NotAuthenticated
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -57,11 +55,20 @@ class KeycloakHelper(object):
                                        realm_name=self.realm,
                                        client_secret_key=self.client_secret_key,
                                        verify=False) # @todo : add env var for local dev
-
+        
         self.client_public_key = "-----BEGIN PUBLIC KEY-----\n" + self.keycloak.public_key() + "\n-----END PUBLIC KEY-----"
-        # Read policies
-        if self.keycloak_authorization_config:
-            self.keycloak.load_authorization_config(self.keycloak_authorization_config)
+       
+        self.keycloak_admin = KeycloakAdmin(
+                        server_url=self.config['KEYCLOAK_INTERNAL_SERVER_URL'] + "/auth",
+                        username=self.config['KEYCLOAK_ADMIN_USERNAME'],
+                        password=self.config['KEYCLOAK_ADMIN_PASSWORD'],
+                        realm_name=self.realm,
+                        user_realm_name="master",
+                        verify=False)
+        client_id = self.keycloak_admin.get_client_id(self.client_id)
+        client_authz_settings = self.keycloak_admin.get_client_authz_settings(client_id=client_id)
+
+        self.keycloak.authorization.load_config(client_authz_settings)
     
     @property
     def keycloak(self):
