@@ -26,8 +26,9 @@ To run the cluster, on local environment:
 1. run `sudo ./add-local-hosts
 ` to add containers domain name to your /etc/hosts
 2. generate ssl self-signed certificates with `./gen-local-certs`
-3. run `make start-local` to start the cluster
-4. open keycloak interface and add a new user
+3. If the output from the previous command tells you so, install the `myCA.pem` certificate into your system's certificate store
+4. run `make start-local` to start the cluster
+5. open keycloak interface and add a new user
 
 ## Domain Names
 
