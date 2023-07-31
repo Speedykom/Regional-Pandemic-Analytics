@@ -20,7 +20,7 @@ export const ChartList = () => {
 				<div>
 					<h2 className="text-3xl">Superset Charts</h2>
 					<p className="mt-2 text-gray-600">
-						Chat list created on Apache Superset.
+						Chart list created on Apache Superset.
 					</p>
 				</div>
 			</nav>
