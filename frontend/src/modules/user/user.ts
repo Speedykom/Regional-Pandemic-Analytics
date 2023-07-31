@@ -7,10 +7,6 @@ interface DisableResponse {
   message: string
 }
 
-interface DisableResponse {
-  message: string
-}
-
 export const UserApi = createApi({
   reducerPath: 'UserApi',
   baseQuery,
