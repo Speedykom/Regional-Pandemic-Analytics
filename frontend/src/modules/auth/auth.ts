@@ -55,6 +55,7 @@ const parseAccessToken = (accessToken: string | null): UserProfile | null => {
     given_name,
     family_name,
     email,
+    gender,
   } = jwt_decode(accessToken) as Jwt;
 
   return {
@@ -67,6 +68,7 @@ const parseAccessToken = (accessToken: string | null): UserProfile | null => {
     given_name,
     family_name,
     email,
+    gender,
   };
 };
 

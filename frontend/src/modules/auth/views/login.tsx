@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { ShowMessage } from '@/common/components/ShowMessage';
 import secureLocalStorage from 'react-secure-storage';
-import { getUserRole } from '@/common/utils/auth';
 import { setCredentials, useLoginMutation } from '../auth';
 import { useDispatch } from 'react-redux';
 import jwt_decode from 'jwt-decode';
@@ -30,11 +29,6 @@ export default function LoginForm() {
           refreshToken: res.data.refresh_token,
         })
       );
-
-      // @todo : this needs cleaning in another PR, remove once not needed anymore
-      const { realm_access } = jwt_decode(res.data.access_token) as Jwt;
-      const role = await getUserRole(realm_access?.roles);
-      secureLocalStorage.setItem('user_role', role);
 
       // @todo : seek a better way to handle this
       secureLocalStorage.setItem(

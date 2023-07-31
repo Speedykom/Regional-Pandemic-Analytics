@@ -38,6 +38,7 @@ export interface JwtInfos {
   given_name: string;
   family_name: string;
   email: string;
+  gender?: string;
 }
 
 export interface Jwt extends JwtInfos {

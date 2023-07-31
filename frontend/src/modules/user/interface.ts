@@ -1,3 +1,5 @@
+import { Role } from "../roles/interface";
+
 export interface User {
   id: string;
   createdTimestamp: number;
@@ -25,6 +27,7 @@ export interface User {
     impersonate: boolean;
     manage: boolean;
   };
+  roles: Array<Role>
 }
 
 export type Users = User[];
