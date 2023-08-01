@@ -39,7 +39,7 @@ export const UserList = () => {
 				toast.success(res?.data?.message, {
 					position: "top-right",
 				});
-				refetch()
+				refetch();
 			}
 		});
 	};
