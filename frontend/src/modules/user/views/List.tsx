@@ -34,7 +34,6 @@ export const UserList = () => {
 				toast.error(res?.response?.data?.message, {
 					position: "top-right",
 				});
-				console.log({ error: res.error });
 				return;
 			} else {
 				toast.success(res?.data?.message, {
