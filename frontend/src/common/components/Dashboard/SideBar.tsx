@@ -1,22 +1,9 @@
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import {
-	BsPlusSquareFill,
-	BsSearch,
-	BsEyeFill,
-	BsBookmarkFill,
-	BsFillArrowLeftSquareFill,
-} from "react-icons/bs";
-import { AiFillFire, AiFillMessage } from "react-icons/ai";
-import { IoMdArrowRoundUp } from "react-icons/io";
-import { MdNightlightRound } from "react-icons/md";
-import { FaCog } from "react-icons/fa";
+import { BsFillArrowLeftSquareFill } from "react-icons/bs";
 
 import { motion, useAnimation } from "framer-motion";
-import { NavLink } from "../link";
-import Image from "next/image";
-import { MenuData, SideNavLinks } from "./Menu";
-import { Card } from "@tremor/react";
+import { SideNavLinks } from "./Menu";
 
 export default function CusSideNav() {
 	const controls = useAnimation();
