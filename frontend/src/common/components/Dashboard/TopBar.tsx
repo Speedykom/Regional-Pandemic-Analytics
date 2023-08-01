@@ -13,21 +13,21 @@ import {
 import { Menu, Transition, Popover } from "@headlessui/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { ShowMessage } from "../ShowMessage";
 import { useDispatch, useSelector } from "react-redux";
 import {
 	clearCredentials,
 	selectCurrentUser,
 	useLogoutMutation,
 } from "@/modules/auth/auth";
+import { toast } from "react-toastify";
 
 interface props {
-  isMobile: boolean;
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
+  isTabletOrMobile: boolean;
 }
 
-export default function TopBar({ isMobile, isOpen, setIsOpen }: props) {
+export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
 	const router = useRouter();
 	const dispatch = useDispatch();
 	const [logout] = useLogoutMutation();
@@ -41,7 +41,7 @@ export default function TopBar({ isMobile, isOpen, setIsOpen }: props) {
 				router.push("/");
 			})
 			.catch(() => {
-				ShowMessage("error", "Something went wrong!");
+				toast.error("Something went wrong!", { position: "top-right" });
 			});
 	};
 
@@ -50,7 +50,7 @@ export default function TopBar({ isMobile, isOpen, setIsOpen }: props) {
 			className={`fixed bg-white w-full h-16 flex z-50 justify-between items-center transition-all duration-[400ms] border-b border-gray-400/70 `}
 		>
 			<div className="pl-8 flex items-center space-x-5">
-				{isMobile && (
+				{isTabletOrMobile && (
 					<Bars3CenterLeftIcon
 						className="h-8 w-8 text-gray-700 cursor-pointer"
 						onClick={() => setIsOpen(!isOpen)}
