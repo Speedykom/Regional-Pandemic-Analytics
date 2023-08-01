@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import {
 	BiChart,
 	BiData,
@@ -14,8 +13,8 @@ import { motion, useAnimation, AnimationControls } from "framer-motion";
 import { usePermission } from "@/common/hooks/use-permission";
 
 interface MenuProps {
-	controlstextopacity: AnimationControls;
-	controlstext: AnimationControls;
+	controlstextopacity?: AnimationControls;
+	controlstext?: AnimationControls;
 }
 
 export const MenuData = [
@@ -35,7 +34,7 @@ export const MenuData = [
 				scope: "dashboard:read",
 			},
 			{
-				title: "Chart(s)",
+				title: "Charts",
 				href: "/charts",
 				icon: BiChart,
 				scope: "chart:read",
@@ -69,13 +68,13 @@ export const MenuData = [
 		name: "Settings",
 		items: [
 			{
-				title: "Role",
+				title: "Roles",
 				href: "/roles",
 				icon: BiLock,
 				scope: "user:read",
 			},
 			{
-				title: "Account",
+				title: "Accounts",
 				href: "/users",
 				icon: BiUser,
 				scope: "user:read",
@@ -102,14 +101,14 @@ export const SideNavLinks = (prop: MenuProps) => {
 							{item.title == "Home" ? (
 								<NavLink
 									href={item.href}
-									activeClassName="bg-prim text-gray-200"
-									className="hover:bg-gray-400/40 px-4 py-1 flex w-full cursor-pointer"
+									activeClassName="bg-prim text-white"
+									className="hover:bg-gray-400/40 px-4 py-3 flex w-full cursor-pointer"
 								>
-									<item.icon className="text-gray-500 hover:text-gray-300 text-lg" />
+									<item.icon className="text-lg" />
 
 									<motion.p
 										animate={prop.controlstext}
-										className="text-gray-400 ml-4 text-sm font-bold"
+										className="ml-4 text-sm"
 									>
 										{" "}
 										{item.title}
@@ -118,15 +117,15 @@ export const SideNavLinks = (prop: MenuProps) => {
 							) : (
 								hasPermission(item.scope) && (
 									<NavLink
-											href={item.href}
-											activeClassName="bg-prim text-gray-500"
-										className="hover:bg-gray-400/40 px-4 py-1 flex w-full cursor-pointer"
+										href={item.href}
+										activeClassName="bg-prim text-white"
+										className="hover:bg-gray-400/40 px-4 py-3 flex w-full cursor-pointer"
 									>
-										<item.icon className="text-gray-500 hover:text-gray-300 text-lg" />
+										<item.icon className="text-lg" />
 
 										<motion.p
 											animate={prop.controlstext}
-											className="text-gray-400 ml-4 text-sm font-bold"
+											className="ml-4 text-sm"
 										>
 											{" "}
 											{item.title}
