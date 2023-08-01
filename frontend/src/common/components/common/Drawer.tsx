@@ -1,38 +1,99 @@
-import { Dispatch, ReactNode, SetStateAction } from "react";
+import React, { ReactNode, useEffect, useRef } from "react";
+import ReactDom from "react-dom";
+import { FiX } from "react-icons/fi";
 
 interface props {
-  children: ReactNode;
-  isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
+	children: ReactNode;
+	title: string;
+	isOpen: boolean;
+	onClose: () => void;
+  placement?: string;
 }
 
-export default function Drawer({ children, isOpen, setIsOpen }: props) {
-  return (
-    <main
-      className={
-        " fixed overflow-hidden z-10 bg-gray-900 bg-opacity-25 inset-0 transform ease-in-out " +
-        (isOpen
-          ? " transition-opacity opacity-100 duration-500 translate-x-0  "
-          : " transition-all delay-500 opacity-0 translate-x-full ")
-      }
-    >
-      <section
-        className={
-          " max-w-xs left-0 fixed bg-white h-full shadow-xl delay-400 duration-500 ease-in-out transition transform  " +
-          (isOpen ? " translate-x-0 " : " translate-x-full ")
-        }
-      >
-        <article className="relative max-w-xs pb-10 flex flex-col space-y-6 overflow-y-scroll h-full">
-          <header className="p-4 font-bold text-lg">Header</header>
-          {children}
-        </article>
-      </section>
-      <section
-        className=" w-screen h-full cursor-pointer "
-        onClick={() => {
-          setIsOpen(false);
-        }}
-      ></section>
-    </main>
-  );
-}
+const Portal = ({ children }: Pick<props, "children">) => {
+	return ReactDom.createPortal(children, document.body);
+};
+
+const Drawer = ({
+	children,
+	title,
+	isOpen,
+	onClose,
+  placement = "left",
+}: props) => {
+	const drawerRef = useRef<any>();
+
+	useEffect(() => {
+		if (!isOpen) return;
+		document.body.style.overflow = "hidden";
+		return () => (document.body.style.overflow = "auto");
+	}, [isOpen]);
+
+	const checkAndCloseDrawer = (e: any) => {
+		if (drawerRef?.current?.contains(e.target)) return;
+		onClose();
+	};
+
+	const wrapperClasses = () => {
+		if (isOpen) return "top-0 bottom-0 left-0 right-0";
+
+		switch (placement) {
+			case "right":
+				return "w-0 top-0 bottom-0 right-0";
+			case "left":
+				return "w-0 top-0 bottom-0 left-0";
+			case "top":
+				return "h-0 left-0 right-0 top-0";
+			case "bottom":
+				return "h-0 left-0 right-0 bottom-0";
+		}
+	};
+
+	const drawerClasses = () => {
+		switch (placement) {
+			case "right":
+				return (
+					"right-0 w-[300px] h-full " + (!isOpen ? " translate-x-full" : "")
+				);
+			case "left":
+				return (
+					"left-0 w-[220px] h-full " + (!isOpen ? " -translate-x-full" : "")
+				);
+			case "top":
+				return (
+					"top-0 h-[300px] w-full " + (!isOpen ? " -translate-y-full" : "")
+				);
+			case "bottom":
+				return (
+					"bottom-0 h-[300px] w-full " + (!isOpen ? " translate-y-full" : "")
+				);
+		}
+	};
+
+	return (
+		<>
+			<Portal>
+				<div
+					className={`fixed z-[1000] mt-16 ${wrapperClasses()}`}
+					onClick={checkAndCloseDrawer}
+				>
+					<div className="absolute w-full h-full bg-black bg-opacity-30"></div>
+					<div
+						ref={drawerRef}
+						className={`absolute bg-white transition duration-500 overflow-auto ${drawerClasses()}`}
+					>
+						<div className="flex justify-start items-center p-4">
+              <button className="w-8 h-8" onClick={onClose}>
+                <FiX />
+							</button>
+							<div>RePAN</div>
+						</div>
+						{children}
+					</div>
+				</div>
+			</Portal>
+		</>
+	);
+};
+
+export default Drawer;
