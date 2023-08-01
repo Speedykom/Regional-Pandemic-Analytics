@@ -167,12 +167,6 @@ class UserDetailView(APIView):
     def delete(self, request, **kwargs):
         try:
             keycloak_admin = get_keycloak_admin()
-            # user = keycloak_admin.get_user(kwargs['id'])
-            # if 'attributes' not in user:
-            #     user['attributes'] = {}
-            
-            # user['attributes']['status'] = "Archived"
-            # user['enabled'] = False
             user_data = {
                 'attributes': {
                     'status': "Archived"
