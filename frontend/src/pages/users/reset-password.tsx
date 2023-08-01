@@ -77,7 +77,7 @@ export const ResetPassword = () => {
 							</div>
 							<div className="mb-6 text-center">
 								<Button
-									className="w-full px-4 py-2 font-bold text-white bg-red-500 rounded-full hover:bg-red-700 focus:outline-none focus:shadow-outline"
+									className="w-full px-4 py-2 border-0 font-bold text-white bg-red-500 rounded-full hover:bg-green-700 focus:outline-none focus:shadow-outline"
 									type="submit"
 									size="lg"
 									loading={isLoading}
@@ -90,6 +90,7 @@ export const ResetPassword = () => {
 								<p>
 									Remember your password?{" "}
 									<Button
+										variant="light"
 										className="inline-block text-sm text-blue-500 align-baseline hover:text-blue-800 shadow-none border-0"
 										onClick={() => router.push("/")}
 									>
