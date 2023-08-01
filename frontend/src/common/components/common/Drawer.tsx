@@ -23,12 +23,6 @@ const Drawer = ({
 }: props) => {
 	const drawerRef = useRef<any>();
 
-	useEffect(() => {
-		if (!isOpen) return;
-		document.body.style.overflow = "hidden";
-		return () => (document.body.style.overflow = "auto");
-	}, [isOpen]);
-
 	const checkAndCloseDrawer = (e: any) => {
 		if (drawerRef?.current?.contains(e.target)) return;
 		onClose();
@@ -82,11 +76,11 @@ const Drawer = ({
 						ref={drawerRef}
 						className={`absolute bg-white transition duration-500 overflow-auto ${drawerClasses()}`}
 					>
-						<div className="flex justify-start items-center p-4">
-              <button className="w-8 h-8" onClick={onClose}>
+						<div className="flex justify-between items-center p-4">
+							<div>{title}</div>
+							<button className="w-8 h-8" onClick={onClose}>
                 <FiX />
 							</button>
-							<div>RePAN</div>
 						</div>
 						{children}
 					</div>
