@@ -428,6 +428,50 @@
           "attributes": {}
         }
       ],
+      "minio": [
+        {
+          "id": "ce50cd1b-16bd-496b-bfe4-eac3369ca4fb",
+          "name": "consoleAdmin",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "9f30f37a-6a84-446d-a65f-4ab3e4b18c85",
+          "attributes": {}
+        },
+        {
+          "id": "68a9285d-264c-4ece-a683-13b6773d0f7e",
+          "name": "readonly",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "9f30f37a-6a84-446d-a65f-4ab3e4b18c85",
+          "attributes": {}
+        },
+        {
+          "id": "4f20ca28-d744-43ac-951e-14b8022820b6",
+          "name": "diagnostics",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "9f30f37a-6a84-446d-a65f-4ab3e4b18c85",
+          "attributes": {}
+        },
+        {
+          "id": "0c38b18b-5312-4752-ae0b-3f634d767f0f",
+          "name": "writeonly",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "9f30f37a-6a84-446d-a65f-4ab3e4b18c85",
+          "attributes": {}
+        },
+        {
+          "id": "40e7ac0a-4a2a-4c2f-b401-4cd323b222c2",
+          "name": "readwrite",
+          "description": "",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "9f30f37a-6a84-446d-a65f-4ab3e4b18c85",
+          "attributes": {}
+        }
+      ],
       "hop": [
         {
           "id": "b0320b6d-5a4d-452a-a37e-92326957ec18",
@@ -1035,6 +1079,73 @@
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": false,
       "nodeReRegistrationTimeout": 0,
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "roles",
+        "profile",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "id": "9f30f37a-6a84-446d-a65f-4ab3e4b18c85",
+      "clientId": "${MINIO_KEYCLOAK_CLIENT_ID}",
+      "name": "",
+      "description": "",
+      "rootUrl": "${MINIO_KEYCLOAK_ROOT_URL}",
+      "adminUrl": "",
+      "baseUrl": "${MINIO_KEYCLOAK_ROOT_URL}",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${MINIO_KEYCLOAK_SECRET}",
+      "redirectUris": ["${MINIO_KEYCLOAK_ROOT_URL}*"],
+      "webOrigins": [],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "oidc.ciba.grant.enabled": "false",
+        "client.secret.creation.time": "1690813085",
+        "backchannel.logout.session.required": "true",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "display.on.consent.screen": "false",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "name": "client roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-client-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "false",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "${MINIO_KEYCLOAK_CLAIM_NAME}",
+            "jsonType.label": "String",
+            "usermodel.clientRoleMapping.clientId": "minio"
+          }
+        }
+      ],
       "defaultClientScopes": [
         "web-origins",
         "acr",
