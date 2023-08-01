@@ -110,6 +110,24 @@ services:
       keycloak:
         condition: service_healthy
         restart: true
+  minio-mc:
+    image: minio/mc
+    container_name: minio-mc
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        chmod +x /tmp/setup.sh
+        ./tmp/setup.sh
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_REMOTE_SERVER_URL=${MINIO_REMOTE_SERVER_URL}
+    volumes:
+      - ./minio/setup.sh:/tmp/setup.sh
+    depends_on:
+      storage:
+        condition: service_healthy
+        restart: true
 
   # ========
   # Frontend
