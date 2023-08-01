@@ -91,7 +91,6 @@ export default function LoginForm() {
 																? "Please input your username or email"
 																: ""
 														}
-														placeholder="Username or Email"
 														type="text"
 														className="bg-white"
 													/>
@@ -113,7 +112,6 @@ export default function LoginForm() {
 																? "Please input your password"
 																: ""
 														}
-														placeholder="John-Dode"
 														type="password"
 														className="bg-white"
 													/>
@@ -138,7 +136,7 @@ export default function LoginForm() {
 													<Button
 														type="submit"
 														loading={isLoading}
-														className="w-full bg-prim text-white rounded-md"
+														className="w-full bg-prim text-white rounded-md border-0 hover:bg-green-700"
 														size="lg"
 													>
 														Login

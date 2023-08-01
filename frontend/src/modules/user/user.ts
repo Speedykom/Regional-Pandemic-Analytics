@@ -30,15 +30,15 @@ export const UserApi = createApi({
         url: 'account/user',
         method: 'POST',
         body
-      })
+      }),
     }),
     resetPassword: builder.mutation<{ message: string }, ResetRequest>({
       query: (body) => ({
         url: '/auth/request-verify',
         method: 'POST',
         body: body
-      })
-    })
+      }),
+    }),
   }),
 });
 
