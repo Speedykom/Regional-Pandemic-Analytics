@@ -21,7 +21,7 @@ import MediaQuery from "react-responsive";
 import { FiDelete, FiEdit, FiEye } from "react-icons/fi";
 import { useDisableUserMutation, useGetUsersQuery } from "../user";
 import { toast } from "react-toastify";
-import Popconfirm from "@/common/components/common/Popconfirm";
+import Popconfirm from "@/common/components/common/popconfirm";
 
 export const UserList = () => {
 	const { data, refetch } = useGetUsersQuery();
