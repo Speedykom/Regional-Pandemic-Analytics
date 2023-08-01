@@ -1,4 +1,3 @@
-import requests
 import os
 from django.http import HttpResponse
 from rest_framework.response import Response
@@ -8,7 +7,6 @@ from rest_framework.parsers import MultiPartParser
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from utils.filename import gen_filename
-from utils.env_configs import APP_USER_BASE_URL
 
 from utils.minio import upload_file_to_minio, download_file
 from django.utils.datastructures import MultiValueDictKeyError
@@ -17,7 +15,7 @@ from .serializers import *
 from .models import *
 
 from utils.generators import get_random_secret
-from utils.keycloak_auth import keycloak_admin_login, role_assign, get_keycloak_admin
+from utils.keycloak_auth import get_keycloak_admin
 from django.conf import settings
 
 
@@ -89,7 +87,7 @@ class UserListView(APIView):
             # Assign role to user
             user_id = keycloak_admin.get_user_id(form_data["username"])
             role = request.data.get("role", {})
-            client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG.config['KEYCLOAK_CLIENT_ID'])
+            client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
             keycloak_admin.assign_client_role(client_id=client_id, user_id=user_id, roles=[role])
 
             user = {
@@ -106,7 +104,6 @@ class UserListView(APIView):
 
             return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_201_CREATED)
         except Exception as err:
-            print(err)
             return Response({'errorMessage': 'Unable to create a new user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserDetailView(APIView):
@@ -120,37 +117,15 @@ class UserDetailView(APIView):
     }
 
     def get(self, request, **kwargs):
-        # Login to admin
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"Bearer {admin_login['data']['access_token']}",
-            'Content-Type': "application/json"
-        }
-
-        response = requests.get(
-            url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
-
-        if not response.ok:
-            return Response(response.reason, status=response.status_code)
-
-        userRoles = requests.get(
-            url=f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings", headers=headers)
-
-        print(userRoles)
-        user = response.json()
-
-        if 'clientMappings' not in userRoles.json():
-            user['roles'] = []
-        else:
-            clientRoles = userRoles.json(
-            )['clientMappings'][os.getenv('CLIENT_ID')]['mappings']
-            user['roles'] = clientRoles
-
-        return Response(user, status=status.HTTP_200_OK)
+        try:
+            keycloak_admin = get_keycloak_admin()
+            user = keycloak_admin.get_user(kwargs['id'])
+            client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
+            roles = keycloak_admin.get_client_roles_of_user(user_id=kwargs['id'], client_id=client_id)
+            user["roles"] = roles
+            return Response(user, status=status.HTTP_200_OK)
+        except Exception as err:
+            return Response({'errorMessage': 'Unable to retrieve the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
@@ -179,86 +154,35 @@ class UserDetailView(APIView):
             }
         }
 
-        # Login to admin
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
-            'Content-Type': "application/json",
-            'cache-control': "no-cache"
-        }
-
-        checkUser = requests.get(
-            url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
-
-        if not checkUser.ok:
-            return Response({'errorMessage': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        user = checkUser.json()
-
-        if 'attributes' not in user:
-            user['attributes'] = {}
-
-        if "avatar" in user["attributes"]:
-            form_data["attributes"]["avatar"] = user["attributes"]["avatar"]
-
-        if "status" in user["attributes"]:
-            form_data["attributes"]["status"] = user["attributes"]["status"]
-
-        res = requests.put(
-            f"{APP_USER_BASE_URL}/{kwargs['id']}", json=form_data, headers=headers)
-
-        if not res.ok:
-            return Response(res.reason, status=res.status_code)
-
-        _ = role_assign(kwargs['id'], request.data.get(
-            "role", dict[str, str]), headers)
-
-        return Response({'message': 'Account details updated successfully'}, status=status.HTTP_200_OK)
+        try:
+            keycloak_admin = get_keycloak_admin()
+            keycloak_admin.update_user(kwargs['id'], form_data)
+            role = request.data.get("role", {})
+            client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
+            keycloak_admin.assign_client_role(client_id=client_id, user_id=kwargs['id'], roles=[role])
+            return Response({'message': 'Account details updated successfully'}, status=status.HTTP_200_OK)
+        except Exception as err:
+            return Response({'errorMessage': 'Unable to update the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request, **kwargs):
-        # Login to admin
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"Bearer {admin_login['data']['access_token']}",
-            'Content-Type': "application/json"
-        }
-
-        checkUser = requests.get(
-            url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
-        if checkUser.status_code != 200:
-            return Response({'errorMessage': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        user: dict = checkUser.json()
-
-        if 'attributes' not in user:
-            user['attributes'] = {}
-            user['attributes']['status'] = "Archived"
-
-        else:
-            user['attributes']['status'] = "Archived"
-
-        user['enabled'] = False
-        # user_data = {
-
-        #     'attributes': user['attributes']
-        # }
-
-        response = requests.put(
-            url=f"{APP_USER_BASE_URL}/{kwargs['id']}", json=user, headers=headers)
-
-        if not response.ok:
-            return Response(response.reason, status=response.status_code)
-
-        return Response({'message': 'User archived successfully'}, status=status.HTTP_200_OK)
-
+        try:
+            keycloak_admin = get_keycloak_admin()
+            # user = keycloak_admin.get_user(kwargs['id'])
+            # if 'attributes' not in user:
+            #     user['attributes'] = {}
+            
+            # user['attributes']['status'] = "Archived"
+            # user['enabled'] = False
+            user_data = {
+                'attributes': {
+                    'status': "Archived"
+                },
+                'enabled': False
+            }
+            keycloak_admin.update_user(kwargs['id'], user_data)
+            return Response({'message': 'User archived successfully'}, status=status.HTTP_200_OK)
+        except Exception as err:
+            return Response({'errorMessage': 'Unable to archive the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserRolesView(APIView):
     """
@@ -281,47 +205,23 @@ class UserRolesView(APIView):
         }
     ))
     def put(self, request, **kwargs):
-        form_data = {
-            'roles': request.data.get("roles", [self.roleObject])
-        }
-        # Login to admin
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"Bearer {admin_login['data']['access_token']}",
-            'Content-Type': "application/json"
-        }
-
-        response = requests.post(
-            url=f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings/realm", json=form_data, headers=headers)
-
-        if not response.ok:
-            return Response(response.reason, status=response.status_code)
-
-        return Response({'message': 'Roles has been assigned successfully'}, status=status.HTTP_200_OK)
+        try:
+            keycloak_admin = get_keycloak_admin()
+            roles = request.data.get("roles", [self.roleObject])
+            client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
+            keycloak_admin.assign_client_role(client_id=client_id, user_id=kwargs['id'], roles=roles)
+            return Response({'message': 'Roles has been assigned successfully'}, status=status.HTTP_200_OK)
+        except Exception as err:
+            return Response({'errorMessage': 'Unable to assign roles to the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request, **kwargs):
-        # Login to admin
-        admin_login = keycloak_admin_login()
-
-        if admin_login["status"] != 200:
-            return Response(admin_login["data"], status=admin_login["status"])
-
-        headers = {
-            'Authorization': f"Bearer {admin_login['data']['access_token']}",
-            'Content-Type': "application/json"
-        }
-
-        response = requests.get(
-            url=f"{APP_USER_BASE_URL}/{kwargs['id']}/role-mappings", headers=headers)
-
-        if not response.ok:
-            return Response(response.reason, status=response.status_code)
-
-        return Response(response.json(), status=status.HTTP_200_OK)
+        try:
+            keycloak_admin = get_keycloak_admin()
+            client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
+            roles = keycloak_admin.get_client_roles_of_user(user_id=kwargs['id'], client_id=client_id)
+            return Response(roles, status=status.HTTP_200_OK)
+        except Exception as err:
+            return Response({'errorMessage': 'Unable to retrieve the user roles'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UserAvatarView(APIView):
@@ -337,9 +237,6 @@ class UserAvatarView(APIView):
     def get(self, request, **kwargs):
         filename = request.query_params['filename']
         url = download_file('avatars', filename)
-        headers = {
-            'transfer-encoding': 'chunked'
-        }
         return Response(url.read(), content_type='binary/octet-stream')
 
     def post(self, request, **kwargs):
@@ -353,45 +250,16 @@ class UserAvatarView(APIView):
             # check that a filename is passed
             upload_file_to_minio("avatars", file_obj)
 
-            admin_login = keycloak_admin_login()
-
-            if admin_login["status"] != 200:
-                return Response(admin_login["data"], status=admin_login["status"])
-
-            headers = {
-                'Authorization': f"{admin_login['data']['token_type']} {admin_login['data']['access_token']}",
-                'Content-Type': "application/json",
-                'cache-control': "no-cache"
-            }
-
-            response = requests.get(
-                url=f"{APP_USER_BASE_URL}/{kwargs['id']}", headers=headers)
-
-            if not response.ok:
-                return Response(response.reason, status=response.status_code)
-
-            user: dict = response.json()
-
-            # date = datetime.now().strftime("%Y-%-m-%-d")
-
-            if 'attributes' not in user:
-                user['attributes'] = {}
-                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{file_obj.name}'
-
-            else:
-                user['attributes']['avatar'] = f'{os.getenv("AVATAR_BASE_URL")}{file_obj.name}'
-
-            user_data = {
-                'attributes': user['attributes']
-            }
-
-            res = requests.put(
-                f"{APP_USER_BASE_URL}/{kwargs['id']}", json=user_data, headers=headers)
-
-            if not res.ok:
-                return Response({'reason': res.reason, 'message': res.text, 'user': user_data}, status=res.status_code)
-
-            return Response({'status': 'success', "message": "Avatar uploaded successfully"}, status=200)
-
+            try:
+                keycloak_admin = get_keycloak_admin()
+                user_data = {
+                    'attributes': {
+                        'avatar': f'{os.getenv("AVATAR_BASE_URL")}{file_obj.name}'
+                    }
+                }
+                keycloak_admin.update_user(kwargs['id'], user_data)
+                return Response({'message': 'Avatar uploaded successfully'}, status=status.HTTP_200_OK)
+            except Exception as err:
+                return Response({'errorMessage': 'Unable to update the user avatar'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except MultiValueDictKeyError:
             return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)

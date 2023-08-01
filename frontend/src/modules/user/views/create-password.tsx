@@ -68,7 +68,6 @@ export const CreatePassword = ({ mail, token }: props) => {
 					`${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/auth/password`,
 					{
 						newPassword: values["password"],
-						confirmPassword: values["confirmPassword"],
 						token: token,
 					},
 					{
