@@ -1,4 +1,4 @@
-get_bucket(){
+create_bucket(){
     # $1 for the alias 
     # $2 for the name of the bucket 
 
@@ -20,5 +20,5 @@ get_bucket(){
 mc alias set minio-remote $MINIO_REMOTE_SERVER_URL $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD
 
 # create minio buckets 
-get_bucket "minio-remote" "pipelines"
-get_bucket "minio-remote" "repan-bucket"
+create_bucket "minio-remote" "pipelines"
+create_bucket "minio-remote" "repan-bucket"
