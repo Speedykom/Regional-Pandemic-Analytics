@@ -81,7 +81,7 @@ export default function CusSideNav() {
 							showLess();
 						}
 					}}
-					className={`cursor-pointer group-hover:block animate duration-300 absolute bg-prim border-0 text-white text-3xl -right-4 top-2 rounded-full border-r border-gray-400/70  ${!active && "rotate-180"}`}
+					className={`cursor-pointer group-hover:block animate duration-300 absolute bg-prim text-white text-3xl -right-4 top-2 rounded-full border border-gray-400/70  ${!active && "rotate-180"}`}
 				/>
 
 				<motion.div
