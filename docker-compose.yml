@@ -422,9 +422,9 @@ services:
     volumes:
       - ./hop/plugins/transforms/:/opt/hop/plugins/transforms/
       - ./hop/pipelines:/files
-    # =======
-    # Airflow
-    # =======
+  #   # =======
+  #   # Airflow
+  #   # =======
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg
