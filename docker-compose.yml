@@ -121,7 +121,7 @@ services:
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-      - MINIO_REMOTE_SERVER_URL=${MINIO_REMOTE_SERVER_URL}
+      - MINIO_MC_REMOTE_SERVER_URL=${MINIO_MC_REMOTE_SERVER_URL}
     volumes:
       - ./minio/setup.sh:/tmp/setup.sh
     depends_on:
