@@ -24,7 +24,7 @@ export default function Layout({ children }: props) {
 				<div className={`mt-16`}>
 					{!isTabletOrMobile && <SideBar />}
 					<Drawer
-						title=""
+						title="RePAN"
 						placement="left"
 						isOpen={showMobileNav}
 						onClose={() => setShowMobileNav(false)}
