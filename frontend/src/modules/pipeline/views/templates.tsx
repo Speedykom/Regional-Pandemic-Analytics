@@ -1,7 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
-import React, { useState } from "react";
-import { Button, Modal, Card, Col, Row, Tooltip } from "antd";
+import React, { Fragment, useState } from "react";
 import { useTemplatesQuery } from "../pipeline";
+import { Dialog, Transition } from "@headlessui/react";
+import { Button, Card } from "@tremor/react";
 
 type Props = {
 	state: boolean;
@@ -65,66 +66,95 @@ const TemplateModal = ({ state, onSelect }: Props) => {
 		setSelected(templateObject); // this keep track of the select only in this component to show it as active
 	};
 
-	return (
-		<>
-			<Modal
-				open={state}
-				title="Hop Template"
-				width={800}
-				onOk={handleOk}
-				onCancel={handleCancel}
-				footer={[
-					<Button key="back" onClick={handleCancel}>
-						Cancel
-					</Button>,
-					<Button
-						disabled={!selected}
-						key="submit"
-						type="primary"
-						onClick={handleOk}
+  return (
+    <>
+      <Transition appear show={state} as={Fragment}>
+				<Dialog as="div" className="relative z-10" onClose={handleCancel}>
+					<Transition.Child
+						as={Fragment}
+						enter="ease-out duration-300"
+						enterFrom="opacity-0"
+						enterTo="opacity-100"
+						leave="ease-in duration-200"
+						leaveFrom="opacity-100"
+						leaveTo="opacity-0"
 					>
-						Continue
-					</Button>,
-				]}
-			>
-				<div className="border-t border-b">
-					<p className="bg-yellow-200 px-3 py-2 rounded-md mt-3 text-gray-500">
-						Note: select your template you want to create from and press
-						continue
-					</p>
-					<Row gutter={[16, 16]} className="my-3">
-						{res?.data?.map((data: any, index: number) => (
-							<Col key={index} span={8}>
-								<Tooltip title={data?.name}>
-									<Card
-										title={data?.name}
-										bordered={true}
-										headStyle={{ color: "#16a34a" }}
-										hoverable
-										size="small"
-										onClick={() => handleCardClick(data)}
-										className={`border-2 ${
-											selected?.name === data?.name
-												? `border-green-800`
-												: `border-gray-300 hover:border-green-800`
-										} cursor-pointer`}
+						<div className="fixed inset-0 bg-black bg-opacity-25" />
+					</Transition.Child>
+
+					<div className="fixed inset-0 overflow-y-auto w-auto h-auto">
+						<div className="flex min-h-full items-center justify-center p-4 text-center">
+							<Transition.Child
+								as={Fragment}
+								enter="ease-out duration-300"
+								enterFrom="opacity-0 scale-95"
+								enterTo="opacity-100 scale-100"
+								leave="ease-in duration-200"
+								leaveFrom="opacity-100 scale-100"
+								leaveTo="opacity-0 scale-95"
+							>
+								<Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-gray-100 p-6 text-left align-middle shadow-xl transition-all">
+									<Dialog.Title
+										as="h3"
+										className="text-lg font-medium leading-6 text-gray-900"
 									>
-										<div className="flex justify-center p-3">
-											<img
-												className="h-16"
-												src={getIcon(data?.name)}
-												alt="icon"
-											/>
+										Hop Template
+									</Dialog.Title>
+									<div className="border-t border-b">
+										<p className="bg-yellow-200 px-3 py-2 rounded-md mt-3 text-gray-500 w-full">
+											Note: select your template you want to create from and
+											press continue
+										</p>
+										<div className="grid grid-cols-3 gap-4 my-3">
+											{res?.data?.map((data: any, index: number) => (
+												<div key={index} className="">
+													{/* <Tooltip title={data?.name}> */}
+													<Card
+														title={data?.name}
+														onClick={() => handleCardClick(data)}
+														className={`border-2 ${
+															selected?.name === data?.name
+																? `border-green-800`
+																: `border-gray-300 hover:border-green-800`
+														} cursor-pointer`}
+													>
+														<div className="flex justify-center p-3">
+															<img
+																className="h-16"
+																src={getIcon(data?.name)}
+																alt="icon"
+															/>
+														</div>
+													</Card>
+													{/* </Tooltip> */}
+												</div>
+											))}
 										</div>
-									</Card>
-								</Tooltip>
-							</Col>
-						))}
-					</Row>
-				</div>
-			</Modal>
-		</>
-	);
+										<div className="mt-16 flex justify-end space-x-2">
+											<Button
+												type="button"
+												className=" bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
+												onClick={handleCancel}
+											>
+												Cancel
+											</Button>
+											<Button
+												disabled={!selected}
+												onClick={handleOk}
+												className="bg-prim text-white border-0 text-sm"
+											>
+												Continue
+											</Button>
+										</div>
+									</div>
+								</Dialog.Panel>
+							</Transition.Child>
+						</div>
+					</div>
+				</Dialog>
+			</Transition>
+    </>
+  );
 };
 
 export default TemplateModal;

@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useRef } from "react";
+import React, { ReactNode, useRef } from "react";
 import ReactDom from "react-dom";
 import { FiX } from "react-icons/fi";
 
@@ -8,6 +8,7 @@ interface props {
 	isOpen: boolean;
 	onClose: () => void;
   placement?: string;
+  width?: number;
 }
 
 const Portal = ({ children }: Pick<props, "children">) => {
@@ -20,6 +21,7 @@ const Drawer = ({
 	isOpen,
 	onClose,
   placement = "left",
+  width = 300
 }: props) => {
 	const drawerRef = useRef<any>();
 
@@ -47,19 +49,19 @@ const Drawer = ({
 		switch (placement) {
 			case "right":
 				return (
-					"right-0 w-[300px] h-full " + (!isOpen ? " translate-x-full" : "")
+					`right-0 w-[${width}px] h-full ` + (!isOpen ? " translate-x-full" : "")
 				);
 			case "left":
 				return (
-					"left-0 w-[220px] h-full " + (!isOpen ? " -translate-x-full" : "")
+					`left-0 w-[${width}px] h-full ` + (!isOpen ? " -translate-x-full" : "")
 				);
 			case "top":
 				return (
-					"top-0 h-[300px] w-full " + (!isOpen ? " -translate-y-full" : "")
+					`top-0 h-[${width}px] w-full ` + (!isOpen ? " -translate-y-full" : "")
 				);
 			case "bottom":
 				return (
-					"bottom-0 h-[300px] w-full " + (!isOpen ? " translate-y-full" : "")
+					`bottom-0 h-[${width}px] w-full ` + (!isOpen ? " translate-y-full" : "")
 				);
 		}
 	};
