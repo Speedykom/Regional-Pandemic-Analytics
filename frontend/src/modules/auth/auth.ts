@@ -1,27 +1,46 @@
 // Need to use the React-specific entry point to import createApi
-import { baseQuery } from '@/common/redux/api';
-import { createSlice } from '@reduxjs/toolkit';
-import { createApi } from '@reduxjs/toolkit/query/react';
-import secureLocalStorage from 'react-secure-storage';
-import { Credentials, UserProfile, LoginParams, Permissions, Jwt } from './interface';
-import jwt_decode from 'jwt-decode';
+import { baseQuery } from "@/common/redux/api";
+import { createSlice } from "@reduxjs/toolkit";
+import { createApi } from "@reduxjs/toolkit/query/react";
+import secureLocalStorage from "react-secure-storage";
+import {
+  Credentials,
+  UserProfile,
+  LoginParams,
+  Permissions,
+  Jwt,
+} from "./interface";
+import jwt_decode from "jwt-decode";
+
+interface Me {
+  active: boolean;
+  error: boolean;
+}
 
 // Define a service using a base URL and expected endpoints
 export const AuthApi = createApi({
-  reducerPath: 'AuthApi',
+  reducerPath: "AuthApi",
   baseQuery,
+  refetchOnReconnect: true,
   endpoints: (builder) => ({
     login: builder.mutation<Credentials, LoginParams>({
       query: (body) => ({
-        url: '/auth/key-auth',
-        method: 'POST',
+        url: "/auth/key-auth",
+        method: "POST",
         body: body,
+      }),
+    }),
+    me: builder.query<Me, void>({
+      query: () => ({
+        url: "/auth/me",
+        method: "GET",
+        cache: "reload"
       }),
     }),
     logout: builder.mutation({
       query: () => ({
-        url: '/auth/logout',
-        method: 'POST',
+        url: "/auth/logout",
+        method: "POST",
       }),
     }),
   }),
@@ -29,7 +48,7 @@ export const AuthApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useLoginMutation, useLogoutMutation } = AuthApi;
+export const { useLoginMutation, useLogoutMutation, useMeQuery } = AuthApi;
 
 type UserAuth = {
   user: null | UserProfile; // for user object
@@ -74,22 +93,23 @@ const parseAccessToken = (accessToken: string | null): UserProfile | null => {
 
 const loadAccessToken = () => {
   if (typeof window !== undefined) {
-    const tokens = secureLocalStorage.getItem('tokens') as {
+    const tokens = secureLocalStorage.getItem("tokens") as {
       accessToken: string;
     };
-    return tokens?.accessToken
+    return tokens?.accessToken;
   }
-  return null
-}
-
+  return null;
+};
 
 const loadPermissions = () => {
   if (typeof window !== undefined) {
-    const permissions = secureLocalStorage.getItem('permissions') as Permissions;
-    return permissions || []
+    const permissions = secureLocalStorage.getItem(
+      "permissions"
+    ) as Permissions;
+    return permissions || [];
   }
-  return []
-}
+  return [];
+};
 
 const initialState: UserAuth = {
   user: parseAccessToken(loadAccessToken()), // for user object
@@ -97,7 +117,7 @@ const initialState: UserAuth = {
 };
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState: initialState,
   reducers: {
     clearCredentials: (state: UserAuth) => {
@@ -117,11 +137,11 @@ const authSlice = createSlice({
     ) => {
       const { accessToken, refreshToken, permissions } = action.payload;
 
-      secureLocalStorage.setItem('tokens', {
+      secureLocalStorage.setItem("tokens", {
         accessToken,
         refreshToken,
       });
-      secureLocalStorage.setItem('permissions', permissions);
+      secureLocalStorage.setItem("permissions", permissions);
 
       state.user = parseAccessToken(accessToken);
       state.permissions = permissions;
@@ -138,4 +158,4 @@ export const selectCurrentUser = (state: UserAuthState) => state.auth.user;
 export const selectIsAuthenticated = (state: UserAuthState) =>
   !!state.auth.user;
 export const selectCurrentUserPermissions = (state: UserAuthState) =>
-  state.auth.permissions;
+  typeof state.auth.permissions !== "string" ? state.auth.permissions : [];
