@@ -7,31 +7,25 @@ from flask_login import login_user
 from airflow.utils.airflow_flask_app import get_airflow_app
 from airflow.www.fab_security.sqla.models import User
 import logging
-import jwt
-import requests
 import os
-from base64 import b64decode
-from cryptography.hazmat.primitives import serialization
+from keycloak import KeycloakOpenID
 
 CLIENT_AUTH: tuple[str, str] | Any | None = None
 log = logging.getLogger(__name__)
 
-CLIENT_ID = os.getenv("CLIENT_ID")
-OIDC_ISSUER = os.getenv("OIDC_ISSUER")
 
-req = requests.get(OIDC_ISSUER)
-key_der_base64 = req.json()["public_key"]
-key_der = b64decode(key_der_base64.encode())
-public_key = serialization.load_der_public_key(key_der)
+AIRFLOW_KEYCLOAK_APP_REALM=os.getenv('AIRFLOW_KEYCLOAK_APP_REALM', 'regional-pandemic-analytics')
+AIRFLOW_KEYCLOAK_CLIENT_ID=os.getenv('AIRFLOW_KEYCLOAK_CLIENT_ID')
+AIRFLOW_KEYCLOAK_CLIENT_SECRET=os.getenv('AIRFLOW_KEYCLOAK_CLIENT_SECRET')
+AIRFLOW_KEYCLOAK_EXTERNAL_URL=os.getenv('AIRFLOW_KEYCLOAK_EXTERNAL_URL')
+AIRFLOW_KEYCLOAK_INTERNAL_URL=os.getenv('AIRFLOW_KEYCLOAK_INTERNAL_URL')
 
 def init_app(_):
     """Initializes authentication backend"""
 
 T = TypeVar("T", bound=Callable)
-
 def auth_current_user() -> User | None:
     """Authenticate and set current user if Authorization header exists"""
-    
     ab_security_manager = get_airflow_app().appbuilder.sm
     user = None
 
@@ -40,7 +34,14 @@ def auth_current_user() -> User | None:
             return None
         
         token = str.replace(str(request.headers['Authorization']), 'Bearer ', '')
-        me = jwt.decode(token, public_key, algorithms=['HS256', 'RS256'], audience=CLIENT_ID)
+
+        # Configure client
+        keycloak_openid = KeycloakOpenID(server_url=AIRFLOW_KEYCLOAK_INTERNAL_URL,
+                                        client_id=AIRFLOW_KEYCLOAK_CLIENT_ID,
+                                        realm_name=AIRFLOW_KEYCLOAK_APP_REALM,
+                                        client_secret_key=AIRFLOW_KEYCLOAK_CLIENT_SECRET)
+
+        me = keycloak_openid.introspect(token)
         groups = me["resource_access"]["airflow"]["roles"] # unsafe
 
         if len(groups) < 1:
@@ -48,6 +49,9 @@ def auth_current_user() -> User | None:
         else:
             groups = [str for str in groups if "airflow" in str]
 
+        log.error(
+            "OAUTH userinfo does not have username or email {0}".format(me)
+        )
         userinfo = {
             "username": me.get("preferred_username"),
             "email": me.get("email"),
