@@ -22,9 +22,9 @@ import {
 import { toast } from "react-toastify";
 
 interface props {
-  isOpen: boolean;
-  setIsOpen: Dispatch<SetStateAction<boolean>>;
-  isTabletOrMobile: boolean;
+	isOpen: boolean;
+	setIsOpen: Dispatch<SetStateAction<boolean>>;
+	isTabletOrMobile: boolean;
 }
 
 export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
