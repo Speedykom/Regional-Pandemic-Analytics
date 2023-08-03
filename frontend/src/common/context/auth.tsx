@@ -71,23 +71,6 @@ export const AuthProvider = ({ children }: any) => {
 
 export const useAuth: any = () => useContext(AuthContext);
 
-interface Props {
-  children: ReactNode;
-}
-
-export const ProtectRoute = ({ children }: Props) => {
-  const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) return <Loading />;
-  else if (!isAuthenticated && window.location.pathname !== "/login") {
-    router.push("/login");
-    return <Loading />;
-  }
-
-  return children;
-};
-
 export const handleError = (err: any) => {
   const { response, code } = err;
 
@@ -102,5 +85,5 @@ export const handleError = (err: any) => {
     data,
     statusText,
   };
-  
+
 };

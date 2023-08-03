@@ -9,7 +9,8 @@ import { ConfigProvider } from "antd";
 import { store } from "@/common/redux/store";
 import { ModalProvider } from "@/common/hooks/use-modal";
 import dynamic from "next/dynamic";
-import { AuthProvider, ProtectRoute } from "@/common/context/auth";
+import { AuthProvider } from "@/common/context/auth";
+import { ProtectRoute } from "@/common/context/protuction";
 
 function CsrApp({ Component, pageProps }: AppProps) {
   return (
