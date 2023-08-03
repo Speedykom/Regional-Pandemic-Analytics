@@ -48,7 +48,7 @@ export const MyPipelineList = () => {
 				</div>
 				<div>
 					{hasPermission("pipeline:add") && (
-						<Button className="bg-prim border-0" onClick={() => setTemp(true)}>Create Pipeline</Button>
+						<Button className="bg-prim hover:bg-prim-hover border-0" onClick={() => setTemp(true)}>Create Pipeline</Button>
 					)}
 				</div>
 			</nav>
