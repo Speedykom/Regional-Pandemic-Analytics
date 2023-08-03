@@ -24,7 +24,7 @@ import { toast } from "react-toastify";
 import Popconfirm from "@/common/components/common/popconfirm";
 
 export const UserList = () => {
-	const { data } = useGetUsersQuery();
+	const { data, refetch } = useGetUsersQuery();
 	const [disableUser, { isLoading }] = useDisableUserMutation();
 	const router = useRouter();
 
@@ -34,12 +34,12 @@ export const UserList = () => {
 				toast.error(res?.response?.data?.message, {
 					position: "top-right",
 				});
-				console.log({ error: res.error });
 				return;
 			} else {
 				toast.success(res?.data?.message, {
 					position: "top-right",
 				});
+				refetch();
 			}
 		});
 	};
