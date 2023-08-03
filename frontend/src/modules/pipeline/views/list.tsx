@@ -7,7 +7,7 @@ import {
 	TableHead,
 	TableHeaderCell,
 	TableRow,
-	Text
+	Text,
 } from "@tremor/react";
 import MediaQuery from "react-responsive";
 import { useState } from "react";
@@ -25,18 +25,18 @@ export const MyPipelineList = () => {
 	const [drawer, setDrawer] = useState<boolean>(false);
 
 	const close = () => {
-    setDrawer(false);
-    setTemplate(null);
-  };
+		setDrawer(false);
+		setTemplate(null);
+	};
 
-  const open = () => {
-    setDrawer(true);
-  };
+	const open = () => {
+		setDrawer(true);
+	};
 
 	const onSelect = (res: any) => {
-    if (res) open();
-    setTemplate(res);
-    setTemp(false);
+		if (res) open();
+		setTemplate(res);
+		setTemp(false);
 	};
 
 	return (
@@ -48,7 +48,12 @@ export const MyPipelineList = () => {
 				</div>
 				<div>
 					{hasPermission("pipeline:add") && (
-						<Button className="bg-prim hover:bg-prim-hover border-0" onClick={() => setTemp(true)}>Create Pipeline</Button>
+						<Button
+							className="bg-prim hover:bg-prim-hover border-0"
+							onClick={() => setTemp(true)}
+						>
+							Create Pipeline
+						</Button>
 					)}
 				</div>
 			</nav>
@@ -87,7 +92,12 @@ export const MyPipelineList = () => {
 				</Card>
 			</div>
 			<TemplateModal state={temp} onSelect={onSelect} />
-			<AddPipeline state={drawer} template={template} onClose={close} refetch={refetch} />
+			<AddPipeline
+				state={drawer}
+				template={template}
+				onClose={close}
+				refetch={refetch}
+			/>
 		</div>
 	);
 };
