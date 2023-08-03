@@ -1,4 +1,5 @@
 import os
+import re
 from flask_appbuilder.security.manager import AUTH_OAUTH
 from superset.security import SupersetSecurityManager
 from flask_appbuilder.security.sqla.models import (
@@ -9,13 +10,14 @@ from flask_appbuilder.views import expose
 from werkzeug.wrappers import Response as WerkzeugResponse
 from flask import flash, redirect, request, session
 from flask_appbuilder._compat import as_unicode
-from flask_login import login_user
+from flask_login import login_user, logout_user
 from flask_appbuilder.utils.base import get_safe_redirect
 from flask_appbuilder.security.views import AuthOAuthView
 import jwt
 from typing import Optional
 import logging
 from keycloak import KeycloakOpenID
+from urllib.parse import quote
 
 log = logging.getLogger(__name__)
 
@@ -142,6 +144,13 @@ class CustomAuthOAuthView(AuthOAuthView):
             if "next" in state and len(state["next"]) > 0:
                 next_url = get_safe_redirect(state["next"][0])
             return redirect(next_url)
+    
+    @expose("/logout/")
+    def logout(self):
+        logout_user()
+        redirect_url = request.url_root.strip('/') + self.appbuilder.get_url_for_login
+        return redirect(f"{SUPERSET_KEYCLOAK_EXTERNAL_URL}/realms/{SUPERSET_KEYCLOAK_APP_REALM}/protocol/openid-connect/logout?redirect_uri={quote(redirect_url)}")
+
 
 class CustomSupersetSecurityManager(SupersetSecurityManager):
     authoauthview = CustomAuthOAuthView
@@ -177,7 +186,7 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
                 "first_name": data.get("given_name", ""),
                 "last_name": data.get("family_name", ""),
                 "email": data.get("email", ""),
-                "role_keys": full_data["resource_access"]["superset"]["roles"]
+                "role_keys": full_data["resource_access"][SUPERSET_KEYCLOAK_CLIENT_ID]["roles"]
             }
         else:
             return {}
