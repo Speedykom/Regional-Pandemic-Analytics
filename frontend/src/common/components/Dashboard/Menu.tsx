@@ -9,7 +9,7 @@ import {
 	BiUser,
 } from "react-icons/bi";
 import { NavLink } from "../link";
-import { motion, useAnimation, AnimationControls } from "framer-motion";
+import { motion, AnimationControls } from "framer-motion";
 import { usePermission } from "@/common/hooks/use-permission";
 
 interface MenuProps {
