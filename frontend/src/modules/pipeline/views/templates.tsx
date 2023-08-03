@@ -2,7 +2,8 @@
 import React, { Fragment, useState } from "react";
 import { useTemplatesQuery } from "../pipeline";
 import { Dialog, Transition } from "@headlessui/react";
-import { Button, Card } from "@tremor/react";
+import { Button, Card, Title } from "@tremor/react";
+import Tooltip from "@/common/components/common/Tooltip";
 
 type Props = {
 	state: boolean;
@@ -66,10 +67,10 @@ const TemplateModal = ({ state, onSelect }: Props) => {
 		setSelected(templateObject); // this keep track of the select only in this component to show it as active
 	};
 
-  return (
-    <>
-      <Transition appear show={state} as={Fragment}>
-				<Dialog as="div" className="relative z-10" onClose={handleCancel}>
+	return (
+		<>
+			<Transition appear show={state} as={Fragment}>
+				<Dialog as="div" className="relative z-50" onClose={handleCancel}>
 					<Transition.Child
 						as={Fragment}
 						enter="ease-out duration-300"
@@ -93,14 +94,14 @@ const TemplateModal = ({ state, onSelect }: Props) => {
 								leaveFrom="opacity-100 scale-100"
 								leaveTo="opacity-0 scale-95"
 							>
-								<Dialog.Panel className="w-full max-w-xl transform overflow-hidden rounded-2xl bg-gray-100 p-6 text-left align-middle shadow-xl transition-all">
+								<Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-gray-100 p-6 text-left align-middle shadow-xl transition-all">
 									<Dialog.Title
 										as="h3"
 										className="text-lg font-medium leading-6 text-gray-900"
 									>
 										Hop Template
 									</Dialog.Title>
-									<div className="border-t border-b">
+									<div className="border-t">
 										<p className="bg-yellow-200 px-3 py-2 rounded-md mt-3 text-gray-500 w-full">
 											Note: select your template you want to create from and
 											press continue
@@ -108,29 +109,36 @@ const TemplateModal = ({ state, onSelect }: Props) => {
 										<div className="grid grid-cols-3 gap-4 my-3">
 											{res?.data?.map((data: any, index: number) => (
 												<div key={index} className="">
-													{/* <Tooltip title={data?.name}> */}
-													<Card
-														title={data?.name}
-														onClick={() => handleCardClick(data)}
-														className={`border-2 ${
-															selected?.name === data?.name
-																? `border-green-800`
-																: `border-gray-300 hover:border-green-800`
-														} cursor-pointer`}
-													>
-														<div className="flex justify-center p-3">
-															<img
-																className="h-16"
-																src={getIcon(data?.name)}
-																alt="icon"
-															/>
-														</div>
-													</Card>
-													{/* </Tooltip> */}
+													<Tooltip position="top" fontSize="16px">
+														<Card
+															title={data?.name}
+															onClick={() => handleCardClick(data)}
+															className={`border-2 ${
+																selected?.name === data?.name
+																	? `border-green-800`
+																	: `border-gray-300 hover:border-green-800`
+															} cursor-pointer`}
+														>
+															<div>
+																<div className="">
+																	<Title className="w-full border-b text-sm font-normal text-prim whitespace-nowrap overflow-hidden text-ellipsis">
+																		{data?.name}
+																	</Title>
+																</div>
+																<div className="flex justify-center p-3">
+																	<img
+																		className="h-16"
+																		src={getIcon(data?.name)}
+																		alt="icon"
+																	/>
+																</div>
+															</div>
+														</Card>
+													</Tooltip>
 												</div>
 											))}
 										</div>
-										<div className="mt-16 flex justify-end space-x-2">
+										<div className="mt-10 flex justify-end space-x-2">
 											<Button
 												type="button"
 												className=" bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
@@ -153,8 +161,8 @@ const TemplateModal = ({ state, onSelect }: Props) => {
 					</div>
 				</Dialog>
 			</Transition>
-    </>
-  );
+		</>
+	);
 };
 
 export default TemplateModal;
