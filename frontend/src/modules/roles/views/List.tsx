@@ -40,10 +40,10 @@ export const RoleList = () => {
 				toast.success(res?.data?.message, {
 					position: "top-right",
 				});
-				setOpen(false);
 				toast.success(res?.data?.message, {
 					position: "top-right",
 				});
+				setOpen(false);
 				refetch();
 				reset();
 			})
@@ -131,7 +131,6 @@ export const RoleList = () => {
 										<div className="flex space-x-2 justify-end">
 											<Button
 												variant="primary"
-												className="shadow-md text-white"
 												onClick={() => {
 													setId(item.name);
 													setRoleData(item);
