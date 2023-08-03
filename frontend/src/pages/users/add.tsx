@@ -351,7 +351,7 @@ export const AddUser = () => {
 							<div className="px-4 text-right mt-2">
 								<Button
 									type="submit"
-									className="bg-prim p-3  text-white"
+									className="bg-prim hover:bg-prim-hover p-3  text-white"
 									loading={isLoading}
 								>
 									Save User

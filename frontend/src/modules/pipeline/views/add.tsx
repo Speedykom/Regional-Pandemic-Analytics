@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useCreatePipelineMutation } from "../pipeline";
 import Drawer from "@/common/components/common/Drawer";
 import { Button, TextInput } from "@tremor/react";
@@ -8,11 +7,16 @@ import { useForm } from "react-hook-form";
 interface AddPipelineProps {
 	state: boolean;
 	onClose: () => void;
-  template: any;
-  refetch: () => void;
+	template: any;
+	refetch: () => void;
 }
 
-export const AddPipeline = ({ state, onClose, template, refetch }: AddPipelineProps) => {
+export const AddPipeline = ({
+	state,
+	onClose,
+	template,
+	refetch,
+}: AddPipelineProps) => {
 	const {
 		register,
 		handleSubmit,
@@ -32,8 +36,8 @@ export const AddPipeline = ({ state, onClose, template, refetch }: AddPipelinePr
 			}
 
 			toast.success("Process created successfully", { position: "top-right" });
-      cancel();
-      refetch();
+			cancel();
+			refetch();
 		});
 	};
 
@@ -42,6 +46,25 @@ export const AddPipeline = ({ state, onClose, template, refetch }: AddPipelinePr
 		onClose();
 	};
 
+	const footer = (
+		<div className="flex justify-end space-x-2 px-3 mb-3">
+			<Button
+				type="submit"
+				loading={isLoading}
+				className="bg-prim text-white border-0 hover:bg-prim-hover"
+				onClick={handleSubmit((values: any) => onFinish(values))}
+			>
+				Submit
+			</Button>
+			<Button
+				onClick={cancel}
+				className="bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
+			>
+				Cancel
+			</Button>
+		</div>
+	);
+
 	return (
 		<Drawer
 			title={"Add Pipeline"}
@@ -49,12 +72,10 @@ export const AddPipeline = ({ state, onClose, template, refetch }: AddPipelinePr
 			onClose={cancel}
 			placement="right"
 			width={350}
+			footer={footer}
 		>
 			<div className="w-96 px-3">
-				<form
-					name="add-pipeline"
-					onSubmit={handleSubmit((values: any) => onFinish(values))}
-				>
+				<form name="add-pipeline">
 					<div className="relative w-full mb-3">
 						<label
 							className="block text-blueGray-600 text-xs font-bold mb-2"
@@ -105,21 +126,6 @@ export const AddPipeline = ({ state, onClose, template, refetch }: AddPipelinePr
 							className="w-full h-12"
 							placeholder="Enter Description"
 						/>
-					</div>
-					<div className="flex space-x-2 p-2">
-						<Button
-							type="submit"
-							loading={isLoading}
-							className="bg-prim text-white border-0"
-						>
-							Submit
-						</Button>
-						<Button
-							onClick={cancel}
-							className="bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
-						>
-							Cancel
-						</Button>
 					</div>
 				</form>
 			</div>
