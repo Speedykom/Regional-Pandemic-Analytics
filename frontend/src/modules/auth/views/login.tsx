@@ -136,7 +136,7 @@ export default function LoginForm() {
 													<Button
 														type="submit"
 														loading={isLoading}
-														className="w-full bg-prim text-white rounded-md border-0 hover:bg-green-700"
+														className="w-full bg-prim hover:bg-prim-hover text-white rounded-md border-0 hover:bg-green-700"
 														size="lg"
 													>
 														Login

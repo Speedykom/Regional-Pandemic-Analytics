@@ -8,7 +8,8 @@ interface props {
 	isOpen: boolean;
 	onClose: () => void;
   placement?: string;
-  width?: number;
+	width?: number;
+	footer?: ReactNode
 }
 
 const Portal = ({ children }: Pick<props, "children">) => {
@@ -21,7 +22,8 @@ const Drawer = ({
 	isOpen,
 	onClose,
   placement = "left",
-  width = 300
+	width = 300,
+	footer
 }: props) => {
 	const drawerRef = useRef<any>();
 
@@ -76,7 +78,7 @@ const Drawer = ({
 					<div className="absolute w-full h-full bg-black bg-opacity-30"></div>
 					<div
 						ref={drawerRef}
-						className={`absolute bg-white transition duration-500 overflow-auto ${drawerClasses()}`}
+						className={`absolute flex flex-col bg-white transition duration-500 overflow-auto ${drawerClasses()}`}
 					>
 						<div className="flex justify-between items-center p-4">
 							<div>{title}</div>
@@ -84,7 +86,8 @@ const Drawer = ({
                 <FiX />
 							</button>
 						</div>
-						{children}
+						<div>{children}</div>
+						<footer className="mt-auto border-t py-2">{footer}</footer>
 					</div>
 				</div>
 			</Portal>
