@@ -5,7 +5,7 @@ import { BsFillArrowLeftSquareFill } from "react-icons/bs";
 import { motion, useAnimation } from "framer-motion";
 import { SideNavLinks } from "./Menu";
 
-export default function CusSideNav() {
+export default function SideBar() {
 	const controls = useAnimation();
 	const controlstext = useAnimation();
 	const controlstextopacity = useAnimation();
