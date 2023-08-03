@@ -35,7 +35,7 @@ export const LinkExpired = () => {
 						</div>
 						<div className="px-8 mb-10 mt-10">
 							<Button
-								className="w-full px-4 py-2 font-bold text-white bg-prim hover:bg-red-700 focus:outline-none focus:shadow-outline"
+								className="w-full px-4 py-2 font-bold text-white bg-prim hover:bg-prim-hover focus:outline-none focus:shadow-outline"
 								onClick={() => router.push("/users/reset-password")}
 							>
 								Reset Password
