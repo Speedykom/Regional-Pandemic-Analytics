@@ -1,5 +1,5 @@
 import React, {
-  MutableRefObject,
+	MutableRefObject,
 	ReactElement,
 	useCallback,
 	useEffect,
@@ -10,9 +10,9 @@ import ReactDOM from "react-dom";
 import { getTooltipPoint, getArrowBoxPoint, getClosestAncestor } from "./utils";
 
 type renderTooltipParams = {
-  element: MutableRefObject<any>
-  title: string;
-}
+	element: MutableRefObject<any>;
+	title: string;
+};
 
 interface props {
 	children: ReactElement;
