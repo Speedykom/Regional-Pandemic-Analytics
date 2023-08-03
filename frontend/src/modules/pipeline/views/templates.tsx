@@ -149,7 +149,7 @@ const TemplateModal = ({ state, onSelect }: Props) => {
 											<Button
 												disabled={!selected}
 												onClick={handleOk}
-												className="bg-prim text-white border-0 text-sm"
+												className="bg-prim hover:bg-prim-hover text-white border-0 text-sm"
 											>
 												Continue
 											</Button>
