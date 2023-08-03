@@ -3,7 +3,7 @@ import React, { Fragment, useState } from "react";
 import { useTemplatesQuery } from "../pipeline";
 import { Dialog, Transition } from "@headlessui/react";
 import { Button, Card, Title } from "@tremor/react";
-import Tooltip from "@/common/components/common/Tooltip";
+import Tooltip from "@/common/components/common/tooltip";
 
 type Props = {
 	state: boolean;
