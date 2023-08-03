@@ -44,7 +44,7 @@ export default function TopBar({ showNav, setShowNav }: props) {
     logout({})
       .then(() => {
         dispatch(clearCredentials())
-        router.push("/");
+        window.location.assign("/login");
       })
       .catch(() => {
         ShowMessage("error", "Something went wrong!");

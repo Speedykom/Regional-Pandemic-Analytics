@@ -1,7 +1,9 @@
-import LoginForm from "@/modules/auth/views/login";
+import HomeView from "@/modules/home/view";
 
-const LoginPage = () => {
-	return <LoginForm />;
-};
-
-export default LoginPage;
+export default function Home() {
+  return (
+    <>
+      <HomeView />
+    </>
+  );
+}

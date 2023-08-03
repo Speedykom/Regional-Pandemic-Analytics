@@ -31,7 +31,7 @@ const SideBar = forwardRef((_props, ref: Ref<any>) => {
 
       <div className="flex flex-col">
         <NavLink
-          href="/home"
+          href="/"
           activeClassName="bg-prim text-white"
           className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
         >

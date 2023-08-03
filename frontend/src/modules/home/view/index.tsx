@@ -4,9 +4,7 @@ import AnalyticsCard from "@/common/components/Dashboard/AnalyticsCard";
 import TimeSeries from "@/common/components/Dashboard/TimeSeries";
 import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
 
-const inter = Inter({ subsets: ["latin"] });
-
-export default function Home() {
+export default function HomeView() {
   return (
     <>
       <Head>
