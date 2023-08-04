@@ -23,7 +23,7 @@ export const MenuData = [
 		items: [
 			{
 				title: "Home",
-				href: "/home",
+				href: "/",
 				icon: BiHome,
 				scope: "",
 			},
