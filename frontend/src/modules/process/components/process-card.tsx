@@ -1,5 +1,5 @@
 import { ShowMessage } from "@/common/components/ShowMessage";
-import { Button, Popover, Steps } from "antd";
+import { Button, Popover, StepProps, Steps } from "antd";
 import {
   BiChart,
   BiChevronDown,
@@ -16,6 +16,12 @@ import { useState } from "react";
 import Router from "next/router";
 import { AiOutlineSchedule } from "react-icons/ai";
 import { usePermission } from "@/common/hooks/use-permission";
+import { Card } from "@tremor/react";
+import { ChainStepper } from "./chain-stepper";
+import { AirflowModal } from "./airflow";
+import { HopModal } from "./hop";
+import { SupersetModal } from "./superset";
+import { DruidModal } from "./druid";
 
 interface ProcessCardProps {
   process: any;
@@ -110,7 +116,10 @@ const DeleteButton = ({ id }: { id: string }) => {
       open={state}
       onOpenChange={open}
     >
-      <Button loading={loading} className="dag-btn border-red-500 text-red-500 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:bg-red-500 focus:text-white">
+      <Button
+        loading={loading}
+        className="dag-btn border-red-500 text-red-500 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:bg-red-500 focus:text-white"
+      >
         Disable
       </Button>
     </Popover>
@@ -154,95 +163,136 @@ const RunButton = ({ id }: { id: string }) => {
 
 export const ProcessCard = ({ process, onLoad }: ProcessCardProps) => {
   const { hasPermission } = usePermission();
-  const steps = [
+
+  const [airflow, setAirflow] = useState(false);
+  const [hop, setHop] = useState(false);
+  const [superset, setSuperset] = useState(false);
+  const [druid, setDruid] = useState(false);
+
+  const steps: StepProps[] = [
     {
       title: "Data Source Selection",
       icon: <BiGitMerge />,
+      onClick: () => {
+        setHop(true);
+      },
     },
     {
       title: "Orchestration",
       icon: <AiOutlineSchedule />,
+      onClick: () => {
+        setAirflow(true);
+      },
     },
     {
       title: "Analytics Data Model",
       icon: <BiTable />,
+      onClick: () => {
+        setDruid(true);
+      },
     },
     {
       title: "Charts",
       icon: <BiChart />,
+      onClick: () => {
+        setSuperset(true);
+      },
     },
   ];
 
-  const items = steps.map((item: any) => ({ ...item, key: item.title }));
-
   const [state, setState] = useState(false);
 
-  const [current, setCurrent] = useState(0);
-
   return (
-    <div className="bg-white mb-5 shadow border rounded-3xl p-5 px-8">
-      <div className="flex justify-between items-center">
-        <div className="flex justify-between flex-1 items-center">
-          <div className="flex justify-between space-x-10">
-            <div className="text-sm flex flex-col items-center">
-              <p className="mb-2 text-xs font-bold">Process Name</p>
-              <p className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                {process.name}
-              </p>
-            </div>
-            <div className="text-sm flex flex-col items-center">
-              <p className="mb-2 text-xs font-bold">Schedule</p>
-              <p className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                {process.schedule_interval}
-              </p>
-            </div>
-            <div className="text-sm flex flex-col items-center">
-              <p className="mb-2 text-xs font-bold">State</p>
-              {process.state === "active" ? (
-                <p className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                  Active
+    <>
+      <Card className="bg-white">
+        <div className="flex justify-between items-center">
+          <div className="flex justify-between flex-1 items-center">
+            <div className="flex justify-between space-x-10">
+              <div className="text-sm flex flex-col">
+                <p className="mb-3 text-xs font-bold">Process Name</p>
+                <p className="bg-gray-100 text-prim rounded-md p-1 px-3">
+                  {process.name}
                 </p>
-              ) : (
-                <p className="bg-red-100 text-red-500 rounded-full p-1 px-3">
-                  Inactive
+              </div>
+              <div className="text-sm flex flex-col">
+                <p className="mb-3 text-xs font-bold">Schedule</p>
+                <p className="bg-gray-100 text-prim rounded-md p-1 px-3">
+                  {process.schedule_interval}
                 </p>
-              )}
+              </div>
+              <div className="text-sm flex flex-col">
+                <p className="mb-3 text-xs font-bold">State</p>
+                {process.state === "active" ? (
+                  <p className="bg-gray-100 text-prim rounded-md p-1 px-3">
+                    Active
+                  </p>
+                ) : (
+                  <p className="bg-red-100 text-red-500 rounded-md p-1 px-3">
+                    Inactive
+                  </p>
+                )}
+              </div>
+            </div>
+            {process.state === "active" && (
+              <div className="flex space-x-2 justify-end">
+                {hasPermission("process:update") && (
+                  <LoadButton onClick={() => onLoad(process)} />
+                )}
+                {hasPermission("process:run") && process.airflow && (
+                  <RunButton id={process.dag_id} />
+                )}
+                {hasPermission("process:read") && process.airflow && (
+                  <ViewButton id={process.dag_id} />
+                )}
+                {hasPermission("process:delete") && (
+                  <DeleteButton id={process.dag_id} />
+                )}
+              </div>
+            )}
+          </div>
+          <div className="w-1/3 flex justify-end">
+            {state ? (
+              <button
+                className="border p-1 rounded-md"
+                onClick={() => setState(false)}
+              >
+                <BiChevronUp className="text-2xl text-prim" />
+              </button>
+            ) : (
+              <button
+                className="border p-1 rounded-md"
+                onClick={() => setState(true)}
+              >
+                <BiChevronDown className="text-2xl text-prim" />
+              </button>
+            )}
+          </div>
+        </div>
+        {state ? (
+          <div className="pt-14 pb-5 flex justify-center">
+            <div className="w-2/3">
+              <ChainStepper steps={steps} />
             </div>
           </div>
-          {process.state === "active" && <div className="flex space-x-2 justify-end">
-            {hasPermission('process:update') && (
-              <LoadButton onClick={() => onLoad(process)} />
-            )}
-            {hasPermission('process:run') && process.airflow && (
-              <RunButton id={process.dag_id} />
-            )}
-            {hasPermission('process:read') && process.airflow && (
-              <ViewButton id={process.dag_id} />
-            )}
-            {hasPermission('process:delete') &&  (
-              <DeleteButton id={process.dag_id} />
-            )}
-          </div>}
-        </div>
-        <div className="w-1/3 flex justify-end">
-          {state ? (
-            <button onClick={() => setState(false)}>
-              <BiChevronUp className="text-4xl text-prim" />
-            </button>
-          ) : (
-            <button onClick={() => setState(true)}>
-              <BiChevronDown className="text-4xl text-prim" />
-            </button>
-          )}
-        </div>
-      </div>
-      {state ? (
-        <div className="pt-14 pb-5 flex justify-center">
-          <div className="w-2/3">
-            <Steps current={current} items={items} />
-          </div>
-        </div>
-      ) : null}
-    </div>
+        ) : null}
+      </Card>
+      <AirflowModal
+        process={process}
+        state={airflow}
+        onClose={() => setAirflow(false)}
+      />
+      <HopModal process={process} state={hop} onClose={() => setHop(false)} />
+      <HopModal process={process} state={hop} onClose={() => setHop(false)} />
+      <SupersetModal
+        process={process}
+        state={superset}
+        onClose={() => setSuperset(false)}
+      />
+      <DruidModal
+        process={process}
+        state={druid}
+        onClose={() => setDruid(false)}
+      />
+    </>
   );
 };

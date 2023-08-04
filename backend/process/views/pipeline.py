@@ -7,20 +7,27 @@ from ..models import Pipeline
 from ..serializers import PipelineSerializer
 from ..gdags.hop import EditAccessProcess
 
+
 class PipelineListView(APIView):
     keycloak_scopes = {
         'POST': 'pipeline:add',
         'GET': 'pipeline:read',
     }
 
-    def get(self, request):
-        cur_user = request.userinfo
-        user_id = cur_user['sub']
+    def get(self, request, id=None):
+        if id:
+            snippets = Pipeline.objects.filter(id=id)
+            pipelines = PipelineSerializer(snippets[0])
 
-        snippets = Pipeline.objects.filter(user_id=user_id)
-        pipelines = PipelineSerializer(snippets, many=True)
+            return Response({"status": "success", "data": pipelines.data}, status=status.HTTP_200_OK)
+        else:
+            cur_user = request.userinfo
+            user_id = cur_user['sub']
 
-        return Response({"status": "success", "data": pipelines.data}, status=status.HTTP_200_OK)
+            snippets = Pipeline.objects.filter(user_id=user_id)
+            pipelines = PipelineSerializer(snippets, many=True)
+
+            return Response({"status": "success", "data": pipelines.data}, status=status.HTTP_200_OK)
 
     def post(self, request):
         cur_user = request.userinfo
@@ -37,7 +44,7 @@ class PipelineListView(APIView):
 
         file = open(path, "r")
 
-        AIRFLOW_HOP_PIPELINES=os.getenv("AIRFLOW_HOP_PIPELINES")
+        AIRFLOW_HOP_PIPELINES = os.getenv("AIRFLOW_HOP_PIPELINES")
         pipeline_name = f"..{AIRFLOW_HOP_PIPELINES}/{name}.hpl"
         pipeline_path = "{}.hpl".format(name)
         parquet_path = "/opt/shared/{}.parquet".format(name)
@@ -62,6 +69,7 @@ class PipelineListView(APIView):
         else:
             return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+
 class PipelineDetailView(APIView):
     keycloak_scopes = {
         'GET': 'pipeline:read',
@@ -73,7 +81,8 @@ class PipelineDetailView(APIView):
     def get(self, request, id=None):
         pipeline = Pipeline.objects.filter(id=id)
 
-        if (len(pipeline) <= 0): return Response({'status': 'success', "message": "No pipeline found for this id {}".format(id)}, status=404)
+        if (len(pipeline) <= 0):
+            return Response({'status': 'success', "message": "No pipeline found for this id {}".format(id)}, status=404)
 
         file_path = 'file:///files/{}'.format(pipeline[0].path)
         payload = {"names": [file_path]}

@@ -1,6 +1,6 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { Process } from '../../common/redux/interface/process';
+import { AirflowRuns, Process } from '../../common/redux/interface/process';
 import { baseQuery } from '@/common/redux/api';
 
 // Define a service using a base URL and expected endpoints
@@ -15,6 +15,12 @@ export const ProcessApi = createApi({
     }),
     getProcessChainById: builder.query<Process, string>({
       query: (id) => `/process/one/${id}`,
+    }),
+    getAirflowChain: builder.mutation<AirflowRuns, string>({
+      query: (id) => `/process/one/airflow/${id}`
+    }),
+    getHopChain: builder.mutation<AirflowRuns, string>({
+      query: (id) => `/pipeline/one/${id}`
     }),
     updateProcessChainAction: builder.mutation<Process, string>({
       query: (id) => `/process/access/${id}`,
@@ -55,4 +61,6 @@ export const {
   useCreateProcessChainMutation,
   useUpdateProcessChainActionMutation,
   useDeleteProcessChainMutation,
+  useGetAirflowChainMutation,
+  useGetHopChainMutation
 } = ProcessApi;

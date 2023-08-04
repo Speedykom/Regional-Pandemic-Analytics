@@ -12,7 +12,6 @@ api = os.getenv("AIRFLOW_API")
 username = os.getenv("AIRFLOW_USER")
 password = os.getenv("AIRFLOW_PASSWORD")
 
-
 class ProcessListView(APIView):
     keycloak_scopes = {
         'GET': 'process:read',
@@ -155,3 +154,22 @@ class ProcessDetailView(APIView):
         process.state = 'inactive'
         process.save()
         return Response({"status": "success", "data": "Record Deleted"})
+
+
+class AirflowDetailView(APIView):
+    keycloak_scopes = {
+        'GET': 'process:read',
+        'POST': 'process:run',
+        'DELETE': 'process:delete'
+    }
+
+    def get(self, request, dag_id=None):
+        route = "{}/dags/{}/dagRuns".format(api, dag_id)
+        client = requests.get(route, json={}, auth=(username, password))
+
+        res_status = client.status_code
+
+        if (res_status == 404):
+            return Response({'status': 'success', "message": client.json()['detail']}, status=res_status)
+        else:
+            return Response({'status': 'success', "runs": client.json()['dag_runs']}, status=200)

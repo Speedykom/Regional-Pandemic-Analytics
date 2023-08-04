@@ -7,6 +7,10 @@ body {
   font-size: 15px;
 }
 
+.bg-modal {
+  background-color: #00000079;
+}
+
 .bg-prim {
   background: #007b38;
 }
