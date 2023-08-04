@@ -1,14 +1,4 @@
-import {
-  Badge,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-  Text,
-} from "@tremor/react";
-import { Modal, Table } from "antd";
-import MediaQuery from "react-responsive";
+import { Modal } from "antd";
 import { useGetAirflowChainMutation } from "../process";
 import { useEffect, useState } from "react";
 
@@ -25,8 +15,10 @@ export const AirflowModal = ({ state, onClose, process }: Props) => {
   useEffect(() => {
     if (state) {
       getRuns(process?.airflow.dag_id).then(({ data }: any) => {
-        const { runs } = data;
-        setRuns(runs);
+        if (data) {
+          const { runs } = data;
+          setRuns(runs);
+        }
       });
     }
   }, [state]);
@@ -81,7 +73,9 @@ export const AirflowModal = ({ state, onClose, process }: Props) => {
             <div className="border-b py-2" key={index}>
               <div className="mb-1 flex space-x-3">
                 <p>Execution date:</p>
-                <p className="font-semibold">{new Date(run.execution_date).toUTCString()}</p>
+                <p className="font-semibold">
+                  {new Date(run.execution_date).toUTCString()}
+                </p>
               </div>
               <div className="mb-1 flex space-x-3">
                 <p>Type:</p>
