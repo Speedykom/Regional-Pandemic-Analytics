@@ -1,118 +1,112 @@
-import { Ref, forwardRef } from 'react';
-import {
-  BiChart,
-  BiData,
-  BiGitMerge,
-  BiGitPullRequest,
-  BiHome,
-  BiLock,
-  BiUser,
-} from 'react-icons/bi';
-import secureLocalStorage from 'react-secure-storage';
-import { NavLink } from '../link';
-import { usePermission } from '@/common/hooks/use-permission';
+/* eslint-disable @next/next/no-img-element */
+import { useEffect, useState } from "react";
+import Head from "next/head";
+import { BsFillArrowLeftSquareFill } from "react-icons/bs";
 
-const SideBar = forwardRef((_props, ref: Ref<any>) => {
-  const { hasPermission } = usePermission();
-  const userRole: any = secureLocalStorage.getItem('user_role');
-  const permits = userRole?.attributes;
+import { motion, useAnimation } from "framer-motion";
+import { SideNavLinks } from "./Menu";
 
-  return (
-    <div ref={ref} className="fixed z-50 w-64 h-full bg-white border-r">
-      <div className="flex justify-center mt-6 mb-14">
-        <picture>
-          <img
-            className="w-32 h-auto"
-            src="/images/igad_logo.jpeg"
-            alt="company logo"
-          />
-        </picture>
-      </div>
+export default function SideBar() {
+	const controls = useAnimation();
+	const controlstext = useAnimation();
+	const controlstextopacity = useAnimation();
+	const controlsfeed = useAnimation();
+	const reversecontrolsfeed = useAnimation();
+	const [active, setActive] = useState(true);
 
-      <div className="flex flex-col">
-        <NavLink
-          href="/"
-          activeClassName="bg-prim text-white"
-          className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
-        >
-          <BiHome className="text-xl" />
-          <p>Home</p>
-        </NavLink>
-        {hasPermission('dashboard:read') && (
-          <NavLink
-            href="/dashboards"
-            activeClassName="bg-prim text-white"
-            className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
-          >
-            <BiChart className="text-xl" />
-            <p>Dashboard</p>
-          </NavLink>
-        )}
-        {hasPermission('chart:read') && (
-          <NavLink
-            href="/charts"
-            activeClassName="bg-prim text-white"
-            className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
-          >
-            <BiChart className="text-xl" />
-            <p>Chart(s)</p>
-          </NavLink>
-        )}
-        {hasPermission('process:read') && (
-          <NavLink
-            href="/process-chains"
-            activeClassName="bg-prim text-white"
-            className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
-          >
-            <BiGitPullRequest className="text-xl" />
-            <p>Process Chain(s)</p>
-          </NavLink>
-        )}
-        {hasPermission('data:read') && (
-          <NavLink
-            href="/data"
-            activeClassName="bg-prim text-white"
-            className="px-3.5 py-3 mx-5 text-gray-400 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
-          >
-            <BiData className="text-xl" />
-            <p>Data</p>
-          </NavLink>
-        )}
-        {hasPermission('pipeline:read') && (
-          <NavLink
-            href="/my-pipeline"
-            activeClassName="bg-prim text-white"
-            className="px-3.5 text-gray-400 py-3 mx-5 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
-          >
-            <BiGitMerge className="text-xl" />
-            <p>My Pipeline(s)</p>
-          </NavLink>
-        )}
-        {hasPermission('user:read') && (
-          <NavLink
-            href="/users"
-            activeClassName="bg-prim text-white"
-            className="px-3.5 text-gray-400 py-3 mx-5 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
-          >
-            <BiUser className="text-xl" />
-            <p>Account(s)</p>
-          </NavLink>
-        )}
-        {hasPermission('user:read') && (
-          <NavLink
-            href="/roles"
-            activeClassName="bg-prim text-white"
-            className="px-3.5 text-gray-400 py-3 mx-5 rounded-xl space-x-4 text-center cursor-pointer mb-3 flex items-center transition-colors"
-          >
-            <BiLock className="text-xl" />
-            <p>Roles</p>
-          </NavLink>
-        )}
-      </div>
-    </div>
-  );
-});
+	const showMore = () => {
+		controls.start({
+			width: "200px",
+			transition: { duration: 0.001 },
+		});
+		controlstextopacity.start({
+			opacity: 1,
+			transition: { delay: 0.3 },
+		});
+		controlstext.start({
+			opacity: 1,
+			display: "block",
+			transition: { delay: 0.3 },
+		});
 
-SideBar.displayName = 'SideBar';
+		controlsfeed.start({
+			display: "flex",
+		});
+		reversecontrolsfeed.start({
+			display: "none",
+		});
 
-export default SideBar;
+		setActive(true);
+	};
+
+	const showLess = () => {
+		controls.start({
+			width: "55px",
+			transition: { duration: 0.001 },
+		});
+		controlsfeed.start({
+			display: "none",
+		});
+		reversecontrolsfeed.start({
+			display: "flex",
+		});
+		controlstextopacity.start({
+			opacity: 0,
+		});
+		controlstext.start({
+			opacity: 0,
+			display: "none",
+		});
+		setActive(false);
+	};
+
+	useEffect(() => {}, [active]);
+
+	return (
+		<div
+			className={`bg-white ${
+				active && "w-full"
+			} h-full border-r border-gray-400/70`}
+		>
+			<Head>
+				<title>RePan Sidebar</title>
+				<meta name="description" content="Generated by create next app" />
+				<link rel="icon" href="/favicon.ico" />
+			</Head>
+
+			<motion.div
+				animate={controls}
+				className={`animation w-full duration-500 h-full group pt-10 relative shadow-xl text-gray-500 `}
+			>
+				<BsFillArrowLeftSquareFill
+					onClick={() => {
+						if (!active) {
+							showMore();
+						} else {
+							showLess();
+						}
+					}}
+					className={`cursor-pointer group-hover:block animate duration-300 absolute bg-prim text-white text-3xl -right-4 top-2 rounded-full border border-gray-400/70  ${
+						!active && "rotate-180"
+					}`}
+				/>
+
+				<motion.div
+					// animate={reversecontrolsfeed}
+					className="px-4 flex items-center justify-center flex-col mx-4 my-auto"
+				>
+					<img
+						className={`w-32 h-auto ${!active && "w-10"}`}
+						src="/images/igad_logo.jpeg"
+						alt="company logo"
+					/>
+				</motion.div>
+
+				<SideNavLinks
+					controlstext={controlstext}
+					controlstextopacity={controlstextopacity}
+				/>
+			</motion.div>
+		</div>
+	);
+}
