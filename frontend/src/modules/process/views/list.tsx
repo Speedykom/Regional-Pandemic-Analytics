@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
-import { AddProcess } from '@/modules/process/views/add';
-import { Button } from 'antd';
-import { useProcessChainList } from '../hooks';
-import { ProcessCard } from '../components/process-card';
-import { Loader } from '@/common/components/Loader';
-import LoadData from '@/common/components/TABS/upload';
-import { usePermission } from '@/common/hooks/use-permission';
+import React, { useState } from "react";
+import { AddProcess } from "@/modules/process/views/add";
+import { Button } from "antd";
+import { useProcessChainList } from "../hooks";
+import { ProcessCard } from "../components/process-card";
+import { Loader } from "@/common/components/Loader";
+import LoadData from "@/common/components/TABS/upload";
+import { usePermission } from "@/common/hooks/use-permission";
+import { Card } from "@tremor/react";
+
+const Empty = () => (
+  <Card className="bg-white h-72 flex justify-center items-center">
+    <p className="text-gray-400">No process chain</p>
+  </Card>
+);
 
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();
@@ -43,7 +50,7 @@ export default function ProcessChainList() {
           </p>
         </div>
         <div>
-          {hasPermission('process:add') && (
+          {hasPermission("process:add") && (
             <Button onClick={() => openAdd()} type="primary" size="large">
               Add Process Chain
             </Button>
@@ -57,7 +64,7 @@ export default function ProcessChainList() {
               <Loader />
             </div>
           </div>
-        ) : (
+        ) : rows.length > 0 ? (
           <>
             {rows.map((process) => (
               <ProcessCard
@@ -67,6 +74,8 @@ export default function ProcessChainList() {
               />
             ))}
           </>
+        ) : (
+          <Empty />
         )}
       </div>
       <AddProcess onClose={closeAdd} state={addProcess} />

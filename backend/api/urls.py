@@ -73,6 +73,7 @@ urlpatterns = [
     path('pipeline', pipeline_views.PipelineListView.as_view()),
     path('pipeline/list', pipeline_views.PipelineListView.as_view()),
     path('pipeline/access/<str:id>', pipeline_views.PipelineDetailView.as_view()),
+    path('pipeline/one/<str:id>', pipeline_views.PipelineListView.as_view()),
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
     path('process', process_views.ProcessListView.as_view()),
@@ -80,6 +81,7 @@ urlpatterns = [
     path('process/run/<str:id>', process_views.ProcessDetailView.as_view()),
     path('process/delete/<str:dag_id>', process_views.ProcessDetailView.as_view()),
     path('process/one/<str:dag_id>', process_views.ProcessDetailView.as_view()),
+    path('process/one/airflow/<str:dag_id>', process_views.AirflowDetailView.as_view()),
 
     # ---------------------- Data upload Endpoints ------------------------------------------
 
