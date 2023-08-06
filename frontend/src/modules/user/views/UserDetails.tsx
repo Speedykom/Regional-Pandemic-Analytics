@@ -69,7 +69,7 @@ export const UserDetails = () => {
 										Gender
 									</label>
 									<Text className="text-black px-2">
-										{data?.attributes.gender}
+										{data?.attributes?.gender}
 									</Text>
 								</fieldset>
 							</div>
@@ -82,7 +82,7 @@ export const UserDetails = () => {
 										Country
 									</label>
 									<Text className="text-black px-2">
-										{data?.attributes.country}
+										{data?.attributes?.country}
 									</Text>
 								</div>
 							</div>
@@ -95,7 +95,7 @@ export const UserDetails = () => {
 										Contact Number
 									</label>
 									<Text className="text-black px-2">
-										{data?.attributes.phone}
+										{data?.attributes?.phone}
 									</Text>
 								</div>
 							</div>
