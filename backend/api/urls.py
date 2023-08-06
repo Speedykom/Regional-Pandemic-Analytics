@@ -58,8 +58,7 @@ urlpatterns = [
     
     # ---------------------- API Role Endpoints --------------------------
     path('role/', role_view.RoleApiView.as_view()),  # create role
-    path('role/<str:id>', role_view.GetEditRole.as_view()),  # get role
-    path('role/<str:id>/update', role_view.RoleApiView.as_view()),  # get role
+    path('role/<str:name>/update', role_view.RoleApiView.as_view()),  # get role
     
     # ---------------------- API Superset Endpoints --------------------------
     path('superset/list', superset_view.ListDashboardsAPI.as_view()),  # list dashboards
