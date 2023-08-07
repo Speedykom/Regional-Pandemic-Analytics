@@ -11,20 +11,18 @@ import {
 } from "@tremor/react";
 import MediaQuery from "react-responsive";
 import { useState } from "react";
-import { useFindAllQuery, useTemplatesQuery } from "../pipeline";
+import { useFindAllQuery } from "../pipeline";
 import ViewButton from "./ViewButton";
 import { usePermission } from "@/common/hooks/use-permission";
-import TemplateModal from "./templates";
 import { AddPipeline } from "./add";
-import { useTemplateModal } from "./template-modal";
+import { TemplateModal } from "./template-modal";
+import { useModal } from "@/common/hooks/use-modal";
 
-export const MyPipelineList = () => {
+export const MyPipelines = () => {
 	const { data, refetch } = useFindAllQuery();
 	const { hasPermission } = usePermission();
-	const [temp, setTemp] = useState<boolean>(false);
 	const [template, setTemplate] = useState<any>();
 	const [drawer, setDrawer] = useState<boolean>(false);
-	const { data: res } = useTemplatesQuery();
 
 	const close = () => {
 		setDrawer(false);
@@ -40,7 +38,19 @@ export const MyPipelineList = () => {
 		setTemplate(res);
 	};
 
-	const { showTemplateModal } = useTemplateModal({ onSelect: onSelect });
+	const { showModal, hideModal } = useModal();
+
+	const showConfirmModal = () =>
+		showModal({
+			title: "Hop Template",
+			Component: () => (
+				<div data-testid="delete-chart-modal">
+					<div className="mb-6">
+						<TemplateModal onSelect={onSelect} hideModal={hideModal} />
+					</div>
+				</div>
+			),
+		});
 
 	return (
 		<div className="">
@@ -53,10 +63,7 @@ export const MyPipelineList = () => {
 					{hasPermission("pipeline:add") && (
 						<Button
 							className="bg-prim hover:bg-prim-hover border-0"
-							onClick={() => {
-								setTemp(true)
-								// showTemplateModal()
-							}}
+							onClick={showConfirmModal}
 						>
 							Create Pipeline
 						</Button>
@@ -97,7 +104,6 @@ export const MyPipelineList = () => {
 					</Table>
 				</Card>
 			</div>
-			<TemplateModal state={temp} onSelect={onSelect} />
 			<AddPipeline
 				state={drawer}
 				template={template}
