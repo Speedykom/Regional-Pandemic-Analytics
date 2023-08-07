@@ -77,7 +77,7 @@ services:
   # ========
 
   airflow-webserver:
-    container_name: airflow-scheduler
+    container_name: airflow-webserver
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
