@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Head from "next/head";
 import { BsFillArrowLeftSquareFill } from "react-icons/bs";
 
-import { AnimationControls, motion, useAnimation } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 import { SideNavLinks } from "./Menu";
 import { useDispatch } from "react-redux";
 import { closeSidebar, openSidebar } from "./SidebarSlice";
