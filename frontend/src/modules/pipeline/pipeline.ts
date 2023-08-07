@@ -1,7 +1,7 @@
 // Need to use the React-specific entry point to import createApi
 import { baseQuery } from "@/common/redux/api";
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { PipelineList } from "./interface";
+import { PipelineList, TemplateList } from "./interface";
 
 export const PipelineApi = createApi({
   reducerPath: 'PipelineApi',
@@ -12,7 +12,7 @@ export const PipelineApi = createApi({
       query: () => '/pipeline/list',
       providesTags: ['pipelines'],
     }),
-    templates: builder.query<any, void>({
+    templates: builder.query<TemplateList, void>({
       query: () => '/hop'
     }),
     editAccess: builder.mutation<any, string>({

@@ -11,11 +11,12 @@ import {
 } from "@tremor/react";
 import MediaQuery from "react-responsive";
 import { useState } from "react";
-import { useFindAllQuery } from "../pipeline";
+import { useFindAllQuery, useTemplatesQuery } from "../pipeline";
 import ViewButton from "./ViewButton";
 import { usePermission } from "@/common/hooks/use-permission";
 import TemplateModal from "./templates";
 import { AddPipeline } from "./add";
+import { useTemplateModal } from "./template-modal";
 
 export const MyPipelineList = () => {
 	const { data, refetch } = useFindAllQuery();
@@ -23,6 +24,7 @@ export const MyPipelineList = () => {
 	const [temp, setTemp] = useState<boolean>(false);
 	const [template, setTemplate] = useState<any>();
 	const [drawer, setDrawer] = useState<boolean>(false);
+	const { data: res } = useTemplatesQuery();
 
 	const close = () => {
 		setDrawer(false);
@@ -36,8 +38,9 @@ export const MyPipelineList = () => {
 	const onSelect = (res: any) => {
 		if (res) open();
 		setTemplate(res);
-		setTemp(false);
 	};
+
+	const { showTemplateModal } = useTemplateModal({ onSelect: onSelect });
 
 	return (
 		<div className="">
@@ -50,7 +53,10 @@ export const MyPipelineList = () => {
 					{hasPermission("pipeline:add") && (
 						<Button
 							className="bg-prim hover:bg-prim-hover border-0"
-							onClick={() => setTemp(true)}
+							onClick={() => {
+								setTemp(true)
+								// showTemplateModal()
+							}}
 						>
 							Create Pipeline
 						</Button>

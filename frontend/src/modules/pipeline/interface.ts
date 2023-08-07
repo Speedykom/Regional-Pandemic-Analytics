@@ -12,4 +12,14 @@ export type PipelineList = {
     data: Array<PipelineData>
 }
 
+export interface Template {
+    name: string;
+    path: string;
+}
+
+export type TemplateList = {
+    status: string;
+    data: Array<Template>;
+}
+
 

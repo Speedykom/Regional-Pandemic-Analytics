@@ -4,6 +4,7 @@ import { useTemplatesQuery } from "../pipeline";
 import { Dialog, Transition } from "@headlessui/react";
 import { Button, Card, Title } from "@tremor/react";
 import Tooltip from "@/common/components/common/Tooltip";
+import { Template } from "../interface";
 
 type Props = {
 	state: boolean;
@@ -49,13 +50,13 @@ const TemplateModal = ({ state, onSelect }: Props) => {
 
 	const { data: res } = useTemplatesQuery();
 
-	const [selected, setSelected] = useState<any>(null);
+	const [selected, setSelected] = useState<Template>();
 
 	const handleOk = () => {
 		// only continue if the select exist
 		if (selected != null) {
 			onSelect(selected); // return the select template to the process chain
-			setSelected(null); // clear the state and ready for incoming data
+			// setSelected(null); // clear the state and ready for incoming data
 		}
 	};
 
@@ -63,7 +64,7 @@ const TemplateModal = ({ state, onSelect }: Props) => {
 		onSelect(false); // send false to the parent to close the modal
 	};
 
-	const handleCardClick = (templateObject: any) => {
+	const handleCardClick = (templateObject: Template) => {
 		setSelected(templateObject); // this keep track of the select only in this component to show it as active
 	};
 
@@ -107,7 +108,7 @@ const TemplateModal = ({ state, onSelect }: Props) => {
 											press continue
 										</p>
 										<div className="grid grid-cols-3 gap-4 my-3">
-											{res?.data?.map((data: any, index: number) => (
+											{(res?.data || []).map((data, index) => (
 												<div key={index} className="">
 													<Tooltip position="top" fontSize="16px">
 														<Card
