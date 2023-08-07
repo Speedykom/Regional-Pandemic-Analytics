@@ -14,17 +14,18 @@ import { useState } from "react";
 import { useFindAllQuery, useTemplatesQuery } from "../pipeline";
 import ViewButton from "./ViewButton";
 import { usePermission } from "@/common/hooks/use-permission";
-import TemplateModal from "./templates";
 import { AddPipeline } from "./add";
-import { useTemplateModal } from "./template-modal";
+import { UseTemplateModal } from "./template-modal";
+import { useDispatch, useSelector } from "react-redux";
+import { openModal } from "@/common/components/common/utils";
 
-export const MyPipelineList = () => {
+export const MyPipelines = () => {
 	const { data, refetch } = useFindAllQuery();
 	const { hasPermission } = usePermission();
-	const [temp, setTemp] = useState<boolean>(false);
 	const [template, setTemplate] = useState<any>();
 	const [drawer, setDrawer] = useState<boolean>(false);
-	const { data: res } = useTemplatesQuery();
+	const { show } = useSelector((state: any) => state?.modal);
+	const dispatch = useDispatch();
 
 	const close = () => {
 		setDrawer(false);
@@ -40,8 +41,6 @@ export const MyPipelineList = () => {
 		setTemplate(res);
 	};
 
-	const { showTemplateModal } = useTemplateModal({ onSelect: onSelect });
-
 	return (
 		<div className="">
 			<nav className="mb-5 flex justify-between items-center">
@@ -54,8 +53,7 @@ export const MyPipelineList = () => {
 						<Button
 							className="bg-prim hover:bg-prim-hover border-0"
 							onClick={() => {
-								setTemp(true)
-								// showTemplateModal()
+								dispatch(openModal());
 							}}
 						>
 							Create Pipeline
@@ -97,7 +95,7 @@ export const MyPipelineList = () => {
 					</Table>
 				</Card>
 			</div>
-			<TemplateModal state={temp} onSelect={onSelect} />
+			<UseTemplateModal show={show} onSelect={onSelect} />
 			<AddPipeline
 				state={drawer}
 				template={template}
