@@ -60,28 +60,20 @@ export const ProfileSettings = () => {
 		setChangePassword(!changePassword);
 	};
 
-	const handleDetailsEdit = async (values: any) => {};
-
 	const password: string = secureLocalStorage.getItem("passcode") as string;
 
 	useEffect(() => {
 		if (typeof window != undefined) {
-			setGender(data?.attributes?.gender[0])
-			setCountry(data?.attributes?.country[0])
-			setPhone(data?.attributes?.phone[0])
-    }
+			const attributes = data?.attributes;
+			if (attributes) {
+				const { gender, country, phone } = attributes;
+				gender && setGender(gender[0])
+				country && setCountry(country[0])
+				phone && setPhone(phone[0])
+			}
+    	}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
-
-	const handlePasswordChange = async (values: any) => {
-		const decode = Buffer.from(password, "base64").toString("ascii");
-		if (values["currentPassword"] !== decode) {
-			toast.error("Current password entered is invalid", {
-				position: "top-right",
-			});
-		} else {
-			toast.info("Clicked", { position: "top-right" });
-		}
-	};
 
 	return (
 		<div className="my-5 w-full lg:w-8/12 px-4 mx-auto">
