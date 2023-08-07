@@ -65,7 +65,7 @@ const ModalProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
   const hideModal = () => {
     dispatch({ type: 'hideModal' });
-    props.onClose && props.onClose();
+    props?.onClose && props?.onClose();
   };
 
   return (
@@ -77,7 +77,7 @@ const ModalProvider: FC<{ children: ReactNode }> = ({ children }) => {
           className="relative z-50"
           open={isVisible}
           onClose={hideModal}
-          static={true}
+          // static={true}
         >
           {/* The backdrop, rendered as a fixed sibling to the panel container */}
           <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
@@ -101,7 +101,7 @@ const ModalProvider: FC<{ children: ReactNode }> = ({ children }) => {
                   </Dialog.Title>
                 )}
                 {Component && (
-                  <div className="w-full h-full overflow-y-auto scroll-smooth p-2 max-h-[80vh]">
+                  <div className="w-full h-full overflow-y-auto scroll-smooth p-2 max-h-[90vh]">
                     <Component {...props} />
                   </div>
                 )}
