@@ -2,10 +2,6 @@ import os
 import re
 from flask_appbuilder.security.manager import AUTH_OAUTH
 from airflow.www.security import AirflowSecurityManager
-from flask_appbuilder.security.sqla.models import (
-    User
-)
-from flask import Request
 from flask_appbuilder.views import expose
 from werkzeug.wrappers import Response as WerkzeugResponse
 from flask import flash, redirect, request, session, g
