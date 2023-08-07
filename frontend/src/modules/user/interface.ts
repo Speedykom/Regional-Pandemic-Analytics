@@ -11,11 +11,11 @@ export interface User {
   lastName: string;
   email: string;
   attributes: {
-    avatar: string[];
-    code: string[];
-    phone: string[];
-    country: string[];
-    gender: string[];
+    avatar?: string[];
+    code?: string[];
+    phone?: string[];
+    country?: string[];
+    gender?: string[];
   };
   disableableCredentialTypes: string[];
   requiredActions: string[];
