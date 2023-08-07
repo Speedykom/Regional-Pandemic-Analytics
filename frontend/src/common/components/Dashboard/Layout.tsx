@@ -16,8 +16,6 @@ export default function Layout({ children }: props) {
 
 	const { isOpen } = useSelector((store: any) => store.sidebar);
 
-	console.log({isOpen})
-
 	return (
 		<>
 			<TopBar
