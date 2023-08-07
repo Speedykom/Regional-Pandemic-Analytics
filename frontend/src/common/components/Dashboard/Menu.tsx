@@ -15,6 +15,7 @@ import { usePermission } from "@/common/hooks/use-permission";
 interface MenuProps {
 	controlstextopacity?: AnimationControls;
 	controlstext?: AnimationControls;
+	isOpen: boolean
 }
 
 export const MenuData = [
@@ -93,7 +94,7 @@ export const SideNavLinks = (prop: MenuProps) => {
 						animate={prop.controlstextopacity}
 						className="text-gray-500 ml-4 text-sm font-bold mb-2"
 					>
-						{group.name}
+						{prop?.isOpen ? group?.name : ""}
 					</motion.p>
 
 					{group.items.map((item, index2) => (
@@ -110,8 +111,7 @@ export const SideNavLinks = (prop: MenuProps) => {
 										animate={prop.controlstext}
 										className="ml-4 text-sm"
 									>
-										{" "}
-										{item.title}
+										{prop?.isOpen ? item?.title : ""}
 									</motion.p>
 								</NavLink>
 							) : (
@@ -124,11 +124,10 @@ export const SideNavLinks = (prop: MenuProps) => {
 										<item.icon className="text-lg" />
 
 										<motion.p
-											animate={prop.controlstext}
+											animate={prop?.controlstext}
 											className="ml-4 text-sm"
 										>
-											{" "}
-											{item.title}
+											{prop?.isOpen ? item?.title : ""}
 										</motion.p>
 									</NavLink>
 								)
@@ -140,3 +139,4 @@ export const SideNavLinks = (prop: MenuProps) => {
 		</>
 	);
 };
+
