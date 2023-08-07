@@ -2,7 +2,7 @@ import Layout from "@/common/components/Dashboard/Layout";
 import { ReactNode, useEffect } from "react";
 import { useRouter } from "next/router";
 import { useSelector } from "react-redux";
-import { selectCurrentUser, selectIsAuthenticated } from "@/modules/auth/auth";
+import { selectIsAuthenticated } from "@/modules/auth/auth";
 
 interface Props {
   title?: string;
@@ -23,7 +23,7 @@ export default function DashboardFrame({ children }: Props) {
 
   return (
     <Layout>
-      <div className="py-10">{children}</div>
+      <div className="mx-16 py-10">{children}</div>
     </Layout>
   );
 }
