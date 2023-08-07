@@ -1,20 +1,22 @@
 import os
-import logging
 import re
-import jwt
-
-from flask_appbuilder import expose
 from flask_appbuilder.security.manager import AUTH_OAUTH
-from flask_appbuilder.security.views import AuthOAuthView
-from flask_appbuilder.utils.base import get_safe_redirect
-from werkzeug.wrappers import Response as WerkzeugResponse
-from flask import flash, redirect, request, session
-from flask_appbuilder._compat import as_unicode
-
 from airflow.www.security import AirflowSecurityManager
-from flask_login import login_user, logout_user
-from keycloak import KeycloakOpenID
-from urllib.parse import quote
+from flask_appbuilder.security.sqla.models import (
+    User
+)
+from flask import Request
+from flask_appbuilder.views import expose
+from werkzeug.wrappers import Response as WerkzeugResponse
+from flask import flash, redirect, request, session, g
+from flask_appbuilder._compat import as_unicode
+from flask_login import login_user, logout_user, current_user
+from flask_appbuilder.utils.base import get_safe_redirect
+from flask_appbuilder.security.views import AuthOAuthView
+import time
+import jwt
+import logging
+from keycloak import KeycloakOpenID, KeycloakAdmin
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 log = logging.getLogger(__name__)
@@ -26,6 +28,8 @@ AIRFLOW_KEYCLOAK_CLIENT_ID=os.getenv('AIRFLOW_KEYCLOAK_CLIENT_ID')
 AIRFLOW_KEYCLOAK_CLIENT_SECRET=os.getenv('AIRFLOW_KEYCLOAK_CLIENT_SECRET')
 AIRFLOW_KEYCLOAK_EXTERNAL_URL=os.getenv('AIRFLOW_KEYCLOAK_EXTERNAL_URL')
 AIRFLOW_KEYCLOAK_INTERNAL_URL=os.getenv('AIRFLOW_KEYCLOAK_INTERNAL_URL')
+AIRFLOW_KEYCLOAK_ADMIN_USERNAME=os.getenv('AIRFLOW_KEYCLOAK_ADMIN_USERNAME')
+AIRFLOW_KEYCLOAK_ADMIN_PASSWORD=os.getenv('AIRFLOW_KEYCLOAK_ADMIN_PASSWORD')
 
 AUTH_TYPE = AUTH_OAUTH
 AUTH_USER_REGISTRATION = os.getenv("AUTH_USER_REGISTRATION")
@@ -114,7 +118,6 @@ class CustomAuthRemoteUserView(AuthOAuthView):
                     return redirect(self.appbuilder.get_url_for_login)
             else:
                 log.debug("No whitelist for OAuth provider")
-            print(userinfo)
             user = self.appbuilder.sm.auth_user_oauth(userinfo)
 
         if user is None:
@@ -135,12 +138,6 @@ class CustomAuthRemoteUserView(AuthOAuthView):
             if "next" in state and len(state["next"]) > 0:
                 next_url = get_safe_redirect(state["next"][0])
             return redirect(next_url)
-    
-    @expose("/logout/")
-    def logout(self):
-        logout_user()
-        redirect_url = request.url_root.strip('/') + self.appbuilder.get_url_for_login
-        return redirect(f"{AIRFLOW_KEYCLOAK_EXTERNAL_URL}/realms/{AIRFLOW_KEYCLOAK_APP_REALM}/protocol/openid-connect/logout?redirect_uri={quote(redirect_url)}")
 
 class CustomSecurityManager(AirflowSecurityManager):
     authoauthview = CustomAuthRemoteUserView
@@ -152,7 +149,6 @@ class CustomSecurityManager(AirflowSecurityManager):
         """
         # for Keycloak
         if provider in ["keycloak", "keycloak_before_17"]:
-            log.info("BREAKPOINT %s", provider)
             me = self.appbuilder.sm.oauth_remotes[provider].get(
                 f"{AIRFLOW_KEYCLOAK_EXTERNAL_URL}/realms/{AIRFLOW_KEYCLOAK_APP_REALM}/protocol/openid-connect/userinfo",
                 verify=False
@@ -180,5 +176,39 @@ class CustomSecurityManager(AirflowSecurityManager):
             }
         else:
             return {}
+
+    @staticmethod
+    def before_request():
+        g.user = current_user
+        if current_user.is_authenticated:
+            access_token, _ = session.get('oauth', "")
+            ts = time.time()
+            last_check = session.get('last_sso_check', None)
+            # Check if user has active session every 10 sec, else logout
+            if access_token and (last_check is None or (ts - last_check) > 10):
+                keycloak_openid = KeycloakOpenID(server_url=AIRFLOW_KEYCLOAK_EXTERNAL_URL,
+                                                 client_id=AIRFLOW_KEYCLOAK_CLIENT_ID,
+                                                 realm_name=AIRFLOW_KEYCLOAK_APP_REALM,
+                                                 client_secret_key=AIRFLOW_KEYCLOAK_CLIENT_SECRET,
+                                                 verify=False)  # @todo : add env var for local dev
+                KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" + \
+                    keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
+                options = {"verify_signature": True,
+                           "verify_aud": False, "verify_exp": True}
+                full_data = keycloak_openid.decode_token(access_token, key=KEYCLOAK_PUBLIC_KEY, options=options)
+                keycloak_admin = KeycloakAdmin(
+                        server_url=AIRFLOW_KEYCLOAK_EXTERNAL_URL + "/auth",
+                        username=AIRFLOW_KEYCLOAK_ADMIN_USERNAME,
+                        password=AIRFLOW_KEYCLOAK_ADMIN_PASSWORD,
+                        realm_name=AIRFLOW_KEYCLOAK_APP_REALM,
+                        user_realm_name="master",
+                        verify=False)
+                sessions = keycloak_admin.get_sessions(user_id=full_data["sub"])
+
+                if (len(sessions) > 0):
+                    session["last_sso_check"] = ts
+                else:
+                    logout_user()
+                    redirect("/")
 
 SECURITY_MANAGER_CLASS = CustomSecurityManager
