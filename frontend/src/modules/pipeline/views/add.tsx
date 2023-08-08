@@ -47,7 +47,7 @@ export const AddPipeline = ({
 	};
 
 	const footer = (
-		<div className="flex justify-end space-x-2 px-3 mb-3">
+		<div className="flex justify-start space-x-2 px-3 mb-3">
 			<Button
 				type="submit"
 				loading={isLoading}

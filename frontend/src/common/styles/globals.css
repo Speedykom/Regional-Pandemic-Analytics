@@ -12,8 +12,7 @@ body {
 }
 
 .bg-prim-hover {
-  --tw-bg-opacity: 1;
-  background-color: rgb(249 115 22 / var(--tw-bg-opacity));
+  background-color: #f97315;
 }
 
 .text-prim {

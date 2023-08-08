@@ -8,12 +8,12 @@ import { Modal } from "@/common/components/common/modal";
 import { useTemplatesQuery } from "../pipeline";
 import { closeModal } from "@/common/components/common/utils";
 
-type Props = {
+type TemplateModalProps = {
 	show: boolean;
 	onSelect: (value: any) => void;
 };
 
-export const UseTemplateModal = ({ show, onSelect }: Props) => {
+export const TemplateModal = ({ show, onSelect }: TemplateModalProps) => {
 	const { data: templates } = useTemplatesQuery();
 	let [selected, setSelected] = useState<Template>();
 	const dispatch = useDispatch();
@@ -58,14 +58,14 @@ export const UseTemplateModal = ({ show, onSelect }: Props) => {
 		if (selected != undefined) {
 			onSelect(selected); // return the select template to the process chain
 			setSelected(undefined);
+			dispatch(closeModal())
 		}
 	};
 
 	const handleCancle = () => {
-		dispatch(closeModal());
 		onSelect(false);
 		setSelected(undefined);
-	}
+	};
 
 	const handleCardClick = (templateObject: Template) => {
 		setSelected(templateObject); // this keep track of the select only in this component to show it as active
@@ -122,7 +122,6 @@ export const UseTemplateModal = ({ show, onSelect }: Props) => {
 						disabled={selected == undefined}
 						onClick={() => {
 							handleOk();
-							dispatch(closeModal());
 						}}
 						className="bg-prim hover:bg-prim-hover text-white border-0 text-sm"
 					>
