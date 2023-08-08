@@ -4,14 +4,19 @@ import { Fragment, ReactNode } from "react";
 import { useDispatch } from "react-redux";
 import { closeModal } from "./utils";
 
-interface props {
+interface ModalProps {
 	title: string;
 	show: boolean;
-  children: ReactNode;
-  onClose: () => void;
+	children: ReactNode;
+	onClose?: () => void;
 }
-export const Modal = ({ title, show, children, onClose }: props) => {
+export const Modal = ({ title, show, children, onClose }: ModalProps) => {
 	const dispatch = useDispatch();
+
+	const handleClose = () => {
+		if (onClose !== undefined) onClose();
+		dispatch(closeModal());
+	};
 
 	return (
 		<Transition appear show={show} as={Fragment}>
@@ -19,7 +24,7 @@ export const Modal = ({ title, show, children, onClose }: props) => {
 				as="div"
 				className="relative z-50"
 				open={show}
-				onClose={onClose}
+				onClose={handleClose}
 				static={true}
 			>
 				{/* The backdrop, rendered as a fixed sibling to the panel container */}
@@ -29,7 +34,7 @@ export const Modal = ({ title, show, children, onClose }: props) => {
 						<Dialog.Panel className="relative p-5 mx-auto w-2/4	rounded bg-white">
 							<div className="absolute top-0 right-0 cursor-pointer">
 								<XCircleIcon
-									onClick={onClose}
+									onClick={handleClose}
 									data-testid="hideModal-button"
 									className="m-2 h-8 w-8 text-red-800"
 								/>

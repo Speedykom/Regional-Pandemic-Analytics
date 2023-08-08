@@ -15,7 +15,7 @@ import { useFindAllQuery, useTemplatesQuery } from "../pipeline";
 import ViewButton from "./ViewButton";
 import { usePermission } from "@/common/hooks/use-permission";
 import { AddPipeline } from "./add";
-import { UseTemplateModal } from "./template-modal";
+import { TemplateModal } from "./template-modal";
 import { useDispatch, useSelector } from "react-redux";
 import { openModal } from "@/common/components/common/utils";
 
@@ -95,7 +95,7 @@ export const MyPipelines = () => {
 					</Table>
 				</Card>
 			</div>
-			<UseTemplateModal show={show} onSelect={onSelect} />
+			<TemplateModal show={show} onSelect={onSelect} />
 			<AddPipeline
 				state={drawer}
 				template={template}
