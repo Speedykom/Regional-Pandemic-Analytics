@@ -6,11 +6,11 @@ import { SideNavLinks } from "./Menu";
 import { useMediaQuery } from "react-responsive";
 import { useSelector } from "react-redux";
 
-interface props {
+interface LayoutProps {
 	children: ReactNode;
 }
 
-export default function Layout({ children }: props) {
+export default function Layout({ children }: LayoutProps) {
 	const [showMobileNav, setShowMobileNav] = useState(false);
 	const isTabletOrMobile = useMediaQuery({ query: "(max-width: 1024px)" });
 

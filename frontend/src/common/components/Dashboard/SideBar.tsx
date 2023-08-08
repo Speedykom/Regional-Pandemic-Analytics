@@ -7,11 +7,11 @@ import { SideNavLinks } from "./Menu";
 import { useDispatch } from "react-redux";
 import { closeSidebar, openSidebar } from "./SidebarSlice";
 
-interface props {
+interface SidebarProps {
 	isOpen: boolean;
 }
 
-export default function SideBar({ isOpen }: props) {
+export default function SideBar({ isOpen }: SidebarProps) {
 	const controls = useAnimation();
 	const controlstext = useAnimation();
 	const controlstextopacity = useAnimation();
