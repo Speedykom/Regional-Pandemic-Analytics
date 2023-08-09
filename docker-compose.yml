@@ -52,8 +52,12 @@ x-airflow-common: &airflow
     - ENVIRONMENT=${AIRFLOW_ENVIRONMENT}
     - DRUID_COORDINATOR_URL={DRUID_COORDINATOR_URL}
     - AIRFLOW_CONN_HOP_DEFAULT=${AIRFLOW_CONN_HOP_DEFAULT}
+    - AIRFLOW_VAR_MINIO_URL=${BACKEND_MINIO_URL}
+    - AIRFLOW_VAR_MINIO_ACCESS_KEY=${BACKEND_MINIO_ACCESS_KEY}
+    - AIRFLOW_VAR_MINIO_SECRET_KEY=${BACKEND_MINIO_SECRET_KEY}
   volumes:
     - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/include:/opt/airflow/include
     - ./airflow/logs:/opt/airflow/logs
     - ./airflow/plugins:/opt/airflow/plugins
     - ./airflow/webserver_config.py:/opt/airflow/webserver_config.py

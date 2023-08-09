@@ -2,10 +2,12 @@
 .DS_Store
 /data
 /airflow/dags/*.py
+!/airflow/dags/dag_factory.py
 /hop/pipelines/watchDirLog.txt
 /hop/pipelines/watchRuns.txt
 /hop/pipelines/*.hpl
 /hop/config/projects/default/*.hpl
+/hop/config/projects/default/*/*.hpl
 
 /storage
 frontend/.env
