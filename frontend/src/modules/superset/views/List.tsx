@@ -114,7 +114,7 @@ export const DashboardList = () => {
 												icon={EyeIcon}
 												title="View Details"
 												variant="primary"
-												className="text-white shadow-md bg-prim"
+												className="text-white shadow-md bg-prim hover:bg-prim-hover"
 												onClick={() => embedDashboard(String(item?.id))}
 											>
 												Preview
