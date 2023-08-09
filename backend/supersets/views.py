@@ -150,3 +150,21 @@ class CsrfTokenApi(APIView):
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
         return Response({'data': response.json()}, status=status.HTTP_200_OK)    
+    
+class GetThumbnail(APIView):
+    """
+    API view to get superset dashboard thumbnail
+    """
+    keycloak_scopes = {
+        'GET': 'dashboard:read',
+    }
+    
+    def get(self, request, *args, **kwargs):
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['id']}/thumbnail"
+        
+        headers = {
+            'Content-Type': "application/json",
+            'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', '')
+        }
+        
+        response = requests.get(url, headers=headers)
