@@ -7,11 +7,21 @@ from rest_framework import status
 from ..models import ProcessChain, Pipeline
 from ..serializers import ProcessChainSerializer, PipelineSerializer
 from ..gdags.dynamic import DynamicDag
+from utils.minio import client
 
-api = os.getenv("AIRFLOW_API")
-username = os.getenv("AIRFLOW_USER")
-password = os.getenv("AIRFLOW_PASSWORD")
-
+class AirflowInstance:
+    url = os.getenv("AIRFLOW_API")
+    username = os.getenv("AIRFLOW_USER")
+    password = os.getenv("AIRFLOW_PASSWORD")
+    
+class DagConfig:
+    factory_id = "FACTORY"
+    def __init__(self,owner,user_id,dag_id,schedule_interval,pipeline_name):
+        self.owner=owner
+        self.user_id=user_id
+        self.dag_id=dag_id
+        self.schedule_interval=schedule_interval
+        self.pipeline_name=pipeline_name
 
 class ProcessListView(APIView):
     keycloak_scopes = {
@@ -19,107 +29,69 @@ class ProcessListView(APIView):
         'POST': 'process:add'
     }
 
-    template = "process/gdags/template.py"
-
-    # dynamic dag output
-    output = "../airflow/dags/"
-
     def get(self, request, dag_id=None):
-
         cur_user = request.userinfo
-        user_id = cur_user['sub']
-
-        if dag_id:
-            process = ProcessChain.objects.filter(
-                dag_id=dag_id, user_id=user_id)
-
-            if (len(process) <= 0):
-                return Response({'status': 'success', "message": "No process found for this dag_id {}".format(dag_id)}, status=404)
-
-            route = "{}/dags/{}".format(api, dag_id)
-            client = requests.get(route, auth=(username, password))
-
-            res_status = client.status_code
-
-            if (res_status == 404):
-                return Response({'status': 'success', "message": client.json()['detail']}, status=res_status)
-
-            route = "{}/dags/{}/dagRuns".format(api, dag_id)
-            runs = requests.get(route, json={}, auth=(username, password))
-
-            respose = client.json()
-            respose['runs'] = runs.json()['dag_runs']
-            respose["data_source_name"] = "ebola-hop-druid"
-
-            return Response({'status': 'success', "dag": respose}, status=200)
+        user_name = cur_user["preferred_username"]
 
         processes = []
-        snippets = ProcessChain.objects.filter(user_id=user_id)
-        serializer = ProcessChainSerializer(snippets, many=True)
 
-        for process in serializer.data:
-            route = "{}/dags/{}".format(api, process['dag_id'])
-            print(route)
-            print(username)
-            print(password)
-            dag = requests.get(route, auth=(username, password))
-            res_status = dag.status_code
+        # Get the list of process chains defined in Airflow over REST API
+        res=requests.get(f"{AirflowInstance.url}/dags", auth=(AirflowInstance.username, AirflowInstance.password)).json()
 
-            if (res_status == 200):
-                process['airflow'] = dag.json()
-            elif (res_status == 404):
-                process['airflow'] = None
-
-            processes.append(process)
-
+        # Only returns the dags which owners flag is the same as the frontend username
+        for dag in res["dags"]:
+            if user_name in dag['owners']:
+                processes.append(
+                    {
+                    "name":dag['dag_id'],
+                    "dag_id":dag['dag_id'],
+                    "data_source_name":dag['dag_id'],
+                    "schedule_interval":dag['schedule_interval']["value"],
+                    "active": dag["is_active"]
+                    }
+                    )
+                
         return Response({'status': 'success', "dags": processes}, status=200)
 
     def post(self, request):
         cur_user = request.userinfo
-
-        pipeline_id = request.data['pipeline']
-        snippets = Pipeline.objects.filter(id=pipeline_id)
-
-        if (len(snippets) < 0):
-            return Response({"status": "Fail", "message": "no pipeline exist with this pipeline id {}".format(pipeline_id)}, status=409)
-
-        pipeline_serializer = PipelineSerializer(snippets[0])
-        pipeline = pipeline_serializer.data
-
-        dag_id = request.data['name'].replace(" ", "-").lower()
         user_id = cur_user['sub']
+        user_name = cur_user["preferred_username"]
 
-        process = ProcessChain.objects.filter(dag_id=dag_id, user_id=user_id)
-
-        if (len(process) > 0):
-            return Response({"status": "Fail", "message": "process already exist with this dag_id {}".format(dag_id)}, status=409)
-
-        request.data['path'] = pipeline['path']
-        request.data['parquet_path'] = pipeline['parquet_path']
-        request.data['dag_id'] = dag_id
-        request.data['dag_name'] = dag_id
-        request.data['user_id'] = user_id
-        request.data['data_source_name'] = dag_id
-
-        serializer = ProcessChainSerializer(data=request.data)
-
-        if serializer.is_valid():
-
-            serializer.save()
-
-            # init dynamic dag class
-            dynamic_dag = DynamicDag(
-                output=self.output, template=self.template)
-
-            # create dag
-            dynamic_dag.new_dag(request.data['dag_id'], request.data['dag_id'], request.data['parquet_path'],
-                                request.data['data_source_name'], request.data['schedule_interval'],
-                                request.data['path'])
-
-            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
+        # Collect Form data
+        dag_id = request.data['name'].replace(" ", "-").lower()
+        pipeline_name = request.data['pipeline']
+        schedule_interval = request.data['schedule_interval']
+        
+        # Create DagConfig object
+        # Object contains config that will be passed to the dag factory to create new dag from templates
+        new_dag_config = DagConfig(
+            owner=user_name,
+            user_id=user_id,
+            dag_id=dag_id,
+            schedule_interval=schedule_interval,
+            pipeline_name=pipeline_name
+            )
+        
+        # Run factory by passing config to create a process chain
+        res=requests.post(
+            f"{AirflowInstance.url}/dags/{DagConfig.factory_id}/dagRuns", 
+            auth=(AirflowInstance.username, AirflowInstance.password), 
+            json={
+                "conf":{
+                    "dag_conf":{
+                        "owner":f"{new_dag_config.owner}",
+                        "user_id":f"{new_dag_config.user_id}",
+                        "dag_id":f"{new_dag_config.dag_id}",
+                        "schedule_interval":f"{new_dag_config.schedule_interval}",
+                        "pipeline_name":f"{new_dag_config.pipeline_name}"
+                    }
+                }
+            })
+        if res.status_code == 200:
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
         else:
-            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response({"status":"failed"}, status=res.status_code)
 
 class ProcessDetailView(APIView):
     keycloak_scopes = {
@@ -129,8 +101,8 @@ class ProcessDetailView(APIView):
     }
 
     def get(self, request, id=None):
-        route = "{}/dags/{}/dagRuns".format(api, id)
-        client = requests.get(route, json={}, auth=(username, password))
+        route = "{}/dags/{}/dagRuns".format(AirflowInstance.url, id)
+        client = requests.get(route, json={}, auth=(AirflowInstance.username, AirflowInstance.password))
 
         res_status = client.status_code
 
@@ -140,8 +112,8 @@ class ProcessDetailView(APIView):
             return Response({'status': 'success', "message": client.json()['dag_runs'].format(id)}, status=200)
 
     def post(self, request, id=None):
-        route = "{}/dags/{}/dagRuns".format(api, id)
-        client = requests.post(route, json={}, auth=(username, password))
+        route = "{}/dags/{}/dagRuns".format(AirflowInstance.url, id)
+        client = requests.post(route, json={}, auth=(AirflowInstance.username, AirflowInstance.password))
 
         res_status = client.status_code
 
