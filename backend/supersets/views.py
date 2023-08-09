@@ -1,3 +1,4 @@
+import random
 import requests
 import os
 from rest_framework.response import Response
@@ -160,7 +161,8 @@ class GetThumbnail(APIView):
     }
     
     def get(self, request, *args, **kwargs):
-        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['id']}/thumbnail"
+        digest = '{0:032x}'.format(random.randrange(16**32))
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['id']}/thumbnail/{digest}"
         
         headers = {
             'Content-Type': "application/json",
@@ -168,3 +170,7 @@ class GetThumbnail(APIView):
         }
         
         response = requests.get(url, headers=headers)
+        
+        if not response.ok :
+            return Response({'errorMessage': response.reason}, status=response.status_code)
+        return Response({ 'thumbnail': response.json()}, status=response.status_code)
