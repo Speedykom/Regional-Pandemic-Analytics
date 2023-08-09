@@ -102,7 +102,7 @@ export const SideNavLinks = (prop: MenuProps) => {
 							{item.title == "Home" ? (
 								<NavLink
 									href={item.href}
-									activeClassName="bg-prim text-white"
+									activeClassName="bg-prim text-white hover:bg-prim-hover"
 									className="hover:bg-gray-400/40 px-4 py-3 flex w-full cursor-pointer"
 								>
 									<item.icon className="text-lg" />
@@ -118,7 +118,7 @@ export const SideNavLinks = (prop: MenuProps) => {
 								hasPermission(item.scope) && (
 									<NavLink
 										href={item.href}
-										activeClassName="bg-prim text-white"
+										activeClassName="bg-prim text-white hover:bg-prim-hover"
 										className="hover:bg-gray-400/40 px-4 py-3 flex w-full cursor-pointer"
 									>
 										<item.icon className="text-lg" />
