@@ -3,20 +3,20 @@ version: "3.4"
 ## This overrides frontend on the docker-compose.yml file when running run.local.sh, this is done so the frontend local container
 ## can be updated in real time while editing frontend code, it only needs to be restarted when changing the env variables
 services:
-  # ========
-  # Frontend
-  # ========
-  frontend:
-    container_name: frontend
-    build:
-      context: ./frontend
-      target: dev
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-      - "superset.igad.local:host-gateway"
-      - "backend.igad.local:host-gateway"
-    volumes:
-      - ./frontend/src/:/frontend/src
+  # # ========
+  # # Frontend
+  # # ========
+  # frontend:
+  #   container_name: frontend
+  #   build:
+  #     context: ./frontend
+  #     target: dev
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  #     - "superset.igad.local:host-gateway"
+  #     - "backend.igad.local:host-gateway"
+  #   volumes:
+  #     - ./frontend/src/:/frontend/src
 
   superset:
     container_name: superset
@@ -58,10 +58,10 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "minio.igad.local:host-gateway"
+  
   # ========
   # Backend
   # ========
-
   backend:
     container_name: backend
     command: python manage.py runserver 0.0.0.0:8000

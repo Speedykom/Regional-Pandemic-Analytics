@@ -17,13 +17,32 @@ export const ProcessApi = createApi({
       query: (id) => `/process/one/${id}`,
     }),
     getAirflowChain: builder.mutation<AirflowRuns, string>({
-      query: (id) => `/process/one/airflow/${id}`
+      query: (id) => `/process/airflow/${id}`
+    }),
+    getDruidChain: builder.mutation<AirflowRuns, string>({
+      query: (id) => `/process/druid/${id}`
     }),
     getHopChain: builder.mutation<AirflowRuns, string>({
       query: (id) => `/pipeline/one/${id}`
     }),
     updateProcessChainAction: builder.mutation<Process, string>({
       query: (id) => `/process/access/${id}`,
+    }),
+    updateHopChain: builder.mutation<any, string>({
+      query: (body: any) => ({
+        url: `/process/hop/edit/${body.id}`,
+        method: 'POST',
+        body: body,
+      }),
+      invalidatesTags: ['processes'],
+    }),
+    updateDruidChain: builder.mutation<any, string>({
+      query: (body: any) => ({
+        url: `/process/druid/edit/${body.id}`,
+        method: 'POST',
+        body: body,
+      }),
+      invalidatesTags: ['processes'],
     }),
     runProcessChain: builder.mutation<Process, string>({
       query: (id) => ({
@@ -62,5 +81,8 @@ export const {
   useUpdateProcessChainActionMutation,
   useDeleteProcessChainMutation,
   useGetAirflowChainMutation,
-  useGetHopChainMutation
+  useGetHopChainMutation,
+  useUpdateHopChainMutation,
+  useGetDruidChainMutation,
+  useUpdateDruidChainMutation
 } = ProcessApi;
