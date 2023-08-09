@@ -1,0 +1,49 @@
+from datetime import datetime, timedelta
+from airflow import DAG
+from airflow.models import Variable
+from airflow.operators.python_operator import PythonOperator
+from airflow_hop.operators import HopPipelineOperator
+from minio import Minio
+
+default_args = {
+    "owner": "{{owner}}",
+    "description": "{{dag_id}}",
+    "depend_on_past": False,
+    "start_date": datetime(2023, 3, 24),
+    "email_on_failure": False,
+    "email_on_retry": False,
+    "retries": 1,
+    "retry_delay": timedelta(minutes=5)
+}
+
+# Download pipeline from minio bucket
+def download_pipeline_minio():
+    minio_url = Variable.get("minio_url")
+    minio_access_key = Variable.get("minio_access_key")
+    minio_secret_key = Variable.get("minio_secret_key")
+
+    client = Minio(minio_url, access_key=minio_access_key , secret_key=minio_secret_key, secure=False)
+    client.fget_object("pipelines","pipelines-created/{{user_id}}/{{pipeline_name}}","/hop/config/projects/default/{{user_id}}/{{pipeline_name}}")
+
+# Ingest to druid
+
+with DAG("{{dag_id}}", default_args=default_args, schedule_interval="{{schedule_interval}}", catchup=False, is_paused_upon_creation=False) as dag:
+    
+    # Download pipeline from minio bucket
+    pipeline_minio = PythonOperator(
+        task_id="pipeline_minio",
+        python_callable=download_pipeline_minio
+        )
+
+    # Run Hop pipeline by sending it over HTTP to Hop server    
+    hop = HopPipelineOperator(
+      task_id="{{pipeline_name}}",
+      pipeline="{{user_id}}/{{pipeline_name}}",
+      pipe_config='remote hop server',
+      project_name='default',
+      log_level='Basic'
+    )
+    # Run Druid ingection
+
+    
+    pipeline_minio >> hop 
