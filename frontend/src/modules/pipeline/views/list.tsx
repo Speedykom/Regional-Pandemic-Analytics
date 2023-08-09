@@ -11,21 +11,19 @@ import {
 } from "@tremor/react";
 import MediaQuery from "react-responsive";
 import { useState } from "react";
-import { useFindAllQuery, useTemplatesQuery } from "../pipeline";
+import { useFindAllQuery } from "../pipeline";
 import ViewButton from "./ViewButton";
 import { usePermission } from "@/common/hooks/use-permission";
 import { AddPipeline } from "./add";
 import { TemplateModal } from "./template-modal";
 import { useDispatch, useSelector } from "react-redux";
-import { openModal } from "@/common/components/common/utils";
+import { useModal } from "@/common/hooks/use-modal";
 
 export const MyPipelines = () => {
 	const { data, refetch } = useFindAllQuery();
 	const { hasPermission } = usePermission();
 	const [template, setTemplate] = useState<any>();
 	const [drawer, setDrawer] = useState<boolean>(false);
-	const { show } = useSelector((state: any) => state?.modal);
-	const dispatch = useDispatch();
 
 	const close = () => {
 		setDrawer(false);
@@ -41,6 +39,20 @@ export const MyPipelines = () => {
 		setTemplate(res);
 	};
 
+	const { showModal, hideModal } = useModal();
+
+	const showConfirmModal = () =>
+		showModal({
+			title: "Hop Template",
+			Component: () => (
+				<div data-testid="delete-chart-modal">
+					<div className="mb-6">
+						<TemplateModal onSelect={onSelect} hideModal={hideModal} />
+					</div>
+				</div>
+			),
+		});
+
 	return (
 		<div className="">
 			<nav className="mb-5 flex justify-between items-center">
@@ -53,7 +65,8 @@ export const MyPipelines = () => {
 						<Button
 							className="bg-prim hover:bg-prim-hover border-0"
 							onClick={() => {
-								dispatch(openModal());
+								showConfirmModal()
+								// dispatch(openModal());
 							}}
 						>
 							Create Pipeline
@@ -95,7 +108,6 @@ export const MyPipelines = () => {
 					</Table>
 				</Card>
 			</div>
-			<TemplateModal show={show} onSelect={onSelect} />
 			<AddPipeline
 				state={drawer}
 				template={template}
