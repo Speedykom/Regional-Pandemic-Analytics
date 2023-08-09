@@ -54,7 +54,7 @@ export const UserList = () => {
 					</p>
 				</div>
 				<Button
-					className="bg-prim text-white border-0"
+					className="bg-prim hover:bg-prim-hover text-white border-0"
 					onClick={() => router.push("/users/add")}
 				>
 					New User
