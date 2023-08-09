@@ -81,7 +81,10 @@ urlpatterns = [
     path('process/run/<str:id>', process_views.ProcessDetailView.as_view()),
     path('process/delete/<str:dag_id>', process_views.ProcessDetailView.as_view()),
     path('process/one/<str:dag_id>', process_views.ProcessDetailView.as_view()),
-    path('process/one/airflow/<str:dag_id>', process_views.AirflowDetailView.as_view()),
+    path('process/airflow/<str:dag_id>', process_views.AirflowDetailView.as_view()),
+    path('process/hop/edit/<str:id>', process_views.UpdateHopChainView.as_view()),
+    path('process/druid/<str:id>', process_views.StepperDruidChainView.as_view()),
+    path('process/druid/edit/<str:id>', process_views.StepperDruidChainView.as_view()),
 
     # ---------------------- Data upload Endpoints ------------------------------------------
 

@@ -12,6 +12,8 @@ api = os.getenv("AIRFLOW_API")
 username = os.getenv("AIRFLOW_USER")
 password = os.getenv("AIRFLOW_PASSWORD")
 
+coordinator_api = os.getenv("COORDINATOR_API")
+
 class ProcessListView(APIView):
     keycloak_scopes = {
         'GET': 'process:read',
@@ -33,7 +35,7 @@ class ProcessListView(APIView):
                 dag_id=dag_id, user_id=user_id)
 
             if (len(process) <= 0):
-                return Response({'status': 'success', "message": "No process found for this dag_id {}".format(dag_id)}, status=404)
+                return Response({'status': 'Fail', "message": "No process found for this dag_id {}".format(dag_id)}, status=404)
 
             route = "{}/dags/{}".format(api, dag_id)
             client = requests.get(route, auth=(username, password))
@@ -41,7 +43,7 @@ class ProcessListView(APIView):
             res_status = client.status_code
 
             if (res_status == 404):
-                return Response({'status': 'success', "message": client.json()['detail']}, status=res_status)
+                return Response({'status': 'Fail', "message": client.json()['detail']}, status=res_status)
 
             route = "{}/dags/{}/dagRuns".format(api, dag_id)
             runs = requests.get(route, json={}, auth=(username, password))
@@ -117,7 +119,7 @@ class ProcessListView(APIView):
 
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         else:
-            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"status": "Fail", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProcessDetailView(APIView):
@@ -134,7 +136,7 @@ class ProcessDetailView(APIView):
         res_status = client.status_code
 
         if (res_status == 404):
-            return Response({'status': 'success', "message": client.json()['detail']}, status=res_status)
+            return Response({'status': 'Fail', "message": client.json()['detail']}, status=res_status)
         else:
             return Response({'status': 'success', "message": client.json()['dag_runs'].format(id)}, status=200)
 
@@ -145,7 +147,7 @@ class ProcessDetailView(APIView):
         res_status = client.status_code
 
         if (res_status == 404):
-            return Response({'status': 'success', "message": "No process found for this dag_id {}".format(id)}, status=res_status)
+            return Response({'status': 'Fail', "message": "No process found for this dag_id {}".format(id)}, status=res_status)
         else:
             return Response({'status': 'success', "message": "{} process start running!".format(id)}, status=res_status)
 
@@ -170,6 +172,102 @@ class AirflowDetailView(APIView):
         res_status = client.status_code
 
         if (res_status == 404):
-            return Response({'status': 'success', "message": client.json()['detail']}, status=res_status)
+            return Response({'status': 'Fail', "message": client.json()['detail']}, status=res_status)
         else:
             return Response({'status': 'success', "runs": client.json()['dag_runs']}, status=200)
+
+
+class UpdateHopChainView(APIView):
+    template = "process/gdags/template.py"
+
+    # dynamic dag output
+    output = "../airflow/dags/"
+
+    # keycloak_scopes = {
+    #     'POST': 'process:edit'
+    # }
+
+    def post(self, request, id=None):
+        process = ProcessChain.objects.get(id=id)
+        serializer = ProcessChainSerializer(process)
+        chain = serializer.data
+
+        # Check if the new pipeline available
+        pipeline_id = request.data['pipeline']
+        pipeline = Pipeline.objects.filter(id=pipeline_id)
+
+        if (len(pipeline) == 0):
+            return Response({'status': 'fail', "message": 'No pipeline found for this id {}'.format(pipeline_id)}, status=404)
+
+        snippets = pipeline[0]
+        serializer = PipelineSerializer(snippets)
+
+        new_pipeline = serializer.data
+
+        # Check for old pipeline
+        pipeline_id = chain['pipeline']
+        pipeline = Pipeline.objects.filter(id=pipeline_id)
+
+        if (len(pipeline) == 0):
+            return Response({'status': 'fail', "message": 'No pipeline found for this id {}'.format(pipeline_id)}, status=404)
+
+        snippets = pipeline[0]
+        serializer = PipelineSerializer(snippets)
+        old_pipeline = serializer.data
+
+        # Save data
+        process_chain = ProcessChain.objects.get(id=id)
+        process_chain.pipeline = new_pipeline['id']
+        process_chain.save()
+
+        # Update dag
+        # init dynamic dag class
+        dynamic_dag = DynamicDag(
+            output=self.output, template=self.template)
+
+        dynamic_dag.change_pipeline(chain['dag_id'], old_pipeline['path'], new_pipeline['path'],
+                                    old_pipeline['parquet_path'], new_pipeline['parquet_path'])
+
+        return Response({'status': 'success', "message": "Pipeline change successfully"}, status=200)
+
+
+class StepperDruidChainView(APIView):
+
+    # keycloak_scopes = {
+    #     'POST': 'process:edit'
+    # }
+    def post(self, request, id=None):
+
+        template = "process/gdags/template.py"
+
+        # dynamic dag output
+        output = "../airflow/dags/"
+
+        process = ProcessChain.objects.get(id=id)
+        serializer = ProcessChainSerializer(process)
+        chain = serializer.data
+
+        # Update dag
+        # init dynamic dag class
+        dynamic_dag = DynamicDag(output, template)
+
+        dynamic_dag.change_druid(
+            chain['dag_id'], request.data['query'], request.data['rollup'],  request.data['segiment'])
+
+        return Response({'status': 'success', "message": "Druid injection change successfully"}, status=200)
+    def get(self, request, id=None):
+        process = ProcessChain.objects.get(id=id)
+        serializer = ProcessChainSerializer(process)
+        chain = serializer.data
+
+        route = "{}/druid/coordinator/v1/datasources/{}?full".format(coordinator_api, chain['data_source_name'])
+        client = requests.get(route, json={})
+
+        druid_state = client.json()
+
+        route = "{}/druid/indexer/v1/tasks?datasource={}&createdTimeInterval=01_2022-01-01".format(coordinator_api, chain['data_source_name'])
+        client = requests.get(route, json={})
+
+        druid_state['tasks'] = client.json()
+
+        return Response({'status': 'success', "data": druid_state}, status=200)

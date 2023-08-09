@@ -1,5 +1,5 @@
 import { ShowMessage } from "@/common/components/ShowMessage";
-import { Button, Popover, StepProps, Steps } from "antd";
+import { Button, Popover, StepProps } from "antd";
 import {
   BiChart,
   BiChevronDown,
@@ -22,6 +22,7 @@ import { AirflowModal } from "./airflow";
 import { HopModal } from "./hop";
 import { SupersetModal } from "./superset";
 import { DruidModal } from "./druid";
+import { toast } from "react-toastify";
 
 interface ProcessCardProps {
   process: any;
@@ -78,10 +79,12 @@ const DeleteButton = ({ id }: { id: string }) => {
     setLoading(true);
     deleteProcessChain(id).then((res: any) => {
       if (res.error) {
-        ShowMessage("error", res.error.message);
+        toast.success(res.error.message, {
+          delay: 200,
+          position: "top-right",
+        });
         return;
       }
-
       close();
     });
   };
