@@ -1,14 +1,14 @@
-import { ToastContainer } from "react-toastify";
-import { SWRConfig } from "swr";
-import axios from "axios";
-import { AppProps } from "next/app";
-import "@/common/styles/globals.css";
-import "react-toastify/dist/ReactToastify.css";
-import { Provider } from "react-redux";
-import { ConfigProvider } from "antd";
-import { store } from "@/common/redux/store";
-import { ModalProvider } from "@/common/hooks/use-modal";
-import dynamic from "next/dynamic";
+import { ToastContainer } from 'react-toastify';
+import { SWRConfig } from 'swr';
+import axios from 'axios';
+import { AppProps } from 'next/app';
+import '@/common/styles/globals.css';
+import 'react-toastify/dist/ReactToastify.css';
+import { Provider } from 'react-redux';
+import { ConfigProvider } from 'antd';
+import { store } from '@/common/redux/store';
+import { ModalProvider } from '@/common/hooks/use-modal';
+import dynamic from 'next/dynamic';
 
 function CsrApp({ Component, pageProps }: AppProps) {
 	return (
@@ -25,7 +25,7 @@ function CsrApp({ Component, pageProps }: AppProps) {
 						theme={{
 							components: {},
 							token: {
-								colorPrimary: "#007b38",
+								colorPrimary: '#007b38',
 								fontSize: 14,
 							},
 						}}
