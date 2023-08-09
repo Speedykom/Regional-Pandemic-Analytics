@@ -130,14 +130,13 @@ export const RoleList = () => {
 									<TableCell>
 										<div className="flex space-x-2 justify-end">
 											<Button
-												variant="primary"
 												onClick={() => {
 													setId(item.name);
 													setRoleData(item);
 													setOpen(true);
 												}}
 											>
-												<Text>Edit</Text>
+												Edit
 											</Button>
 										</div>
 									</TableCell>
