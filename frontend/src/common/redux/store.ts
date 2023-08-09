@@ -6,7 +6,6 @@ import { PipelineApi } from "@/modules/pipeline/pipeline";
 import { UserApi } from "@/modules/user/user";
 import { RoleApi } from "@/modules/roles/role";
 import { DataApi } from "@/modules/data/data";
-import modalSlice from "@/common/components/common/utils"
 
 export const store = configureStore({
   reducer: {
@@ -19,7 +18,6 @@ export const store = configureStore({
     [UserApi.reducerPath]: UserApi.reducer,
     [RoleApi.reducerPath]: RoleApi.reducer,
     auth: authReducer,
-    modal: modalSlice
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
