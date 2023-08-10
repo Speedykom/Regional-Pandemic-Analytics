@@ -4,14 +4,17 @@ import TopBar from "./TopBar";
 import Drawer from "../common/Drawer";
 import { SideNavLinks } from "./Menu";
 import { useMediaQuery } from "react-responsive";
+import { useSelector } from "react-redux";
 
-interface props {
+interface LayoutProps {
 	children: ReactNode;
 }
 
-export default function Layout({ children }: props) {
+export default function Layout({ children }: LayoutProps) {
 	const [showMobileNav, setShowMobileNav] = useState(false);
 	const isTabletOrMobile = useMediaQuery({ query: "(max-width: 1024px)" });
+
+	const { isOpen } = useSelector((store: any) => store.sidebar);
 
 	return (
 		<>
@@ -22,7 +25,7 @@ export default function Layout({ children }: props) {
 			/>
 			<main className="flex">
 				<div className={`mt-16`}>
-					{!isTabletOrMobile && <SideBar />}
+					{!isTabletOrMobile && <SideBar isOpen={isOpen} />}
 					<Drawer
 						title="RePAN"
 						placement="left"
@@ -38,7 +41,7 @@ export default function Layout({ children }: props) {
 										alt="company-logo"
 									/>
 								</div>
-								<SideNavLinks />
+								<SideNavLinks isOpen={true} />
 							</div>
 						</div>
 					</Drawer>
