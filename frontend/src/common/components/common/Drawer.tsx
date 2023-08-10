@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useRef } from "react";
+import React, { ReactNode, useRef } from "react";
 import ReactDom from "react-dom";
 import { FiX } from "react-icons/fi";
 
@@ -8,6 +8,8 @@ interface props {
 	isOpen: boolean;
 	onClose: () => void;
   placement?: string;
+	width?: number;
+	footer?: ReactNode
 }
 
 const Portal = ({ children }: Pick<props, "children">) => {
@@ -20,6 +22,8 @@ const Drawer = ({
 	isOpen,
 	onClose,
   placement = "left",
+	width = 300,
+	footer
 }: props) => {
 	const drawerRef = useRef<any>();
 
@@ -47,19 +51,19 @@ const Drawer = ({
 		switch (placement) {
 			case "right":
 				return (
-					"right-0 w-[300px] h-full " + (!isOpen ? " translate-x-full" : "")
+					`right-0 w-[${width}px] h-full ` + (!isOpen ? " translate-x-full" : "")
 				);
 			case "left":
 				return (
-					"left-0 w-[220px] h-full " + (!isOpen ? " -translate-x-full" : "")
+					`left-0 w-[${width}px] h-full ` + (!isOpen ? " -translate-x-full" : "")
 				);
 			case "top":
 				return (
-					"top-0 h-[300px] w-full " + (!isOpen ? " -translate-y-full" : "")
+					`top-0 h-[${width}px] w-full ` + (!isOpen ? " -translate-y-full" : "")
 				);
 			case "bottom":
 				return (
-					"bottom-0 h-[300px] w-full " + (!isOpen ? " translate-y-full" : "")
+					`bottom-0 h-[${width}px] w-full ` + (!isOpen ? " translate-y-full" : "")
 				);
 		}
 	};
@@ -74,7 +78,7 @@ const Drawer = ({
 					<div className="absolute w-full h-full bg-black bg-opacity-30"></div>
 					<div
 						ref={drawerRef}
-						className={`absolute bg-white transition duration-500 overflow-auto ${drawerClasses()}`}
+						className={`absolute flex flex-col bg-white transition duration-500 overflow-auto ${drawerClasses()}`}
 					>
 						<div className="flex justify-between items-center p-4">
 							<div>{title}</div>
@@ -82,7 +86,8 @@ const Drawer = ({
                 <FiX />
 							</button>
 						</div>
-						{children}
+						<div>{children}</div>
+						<footer className="mt-auto border-t py-2">{footer}</footer>
 					</div>
 				</div>
 			</Portal>
