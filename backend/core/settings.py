@@ -1,15 +1,9 @@
-from typing import List, Tuple
 import os
-import sys
-from datetime import timedelta
-
 import environ
-import dj_database_url
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
 
 env = environ.Env()
-# environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -185,6 +179,7 @@ KEYCLOAK_CONFIG = {
     'KEYCLOAK_CLIENT_SECRET_KEY': os.getenv("CLIENT_SECRET"),
     'KEYCLOAK_ADMIN_USERNAME': os.getenv("KEYCLOAK_ADMIN_USERNAME"),
     'KEYCLOAK_ADMIN_PASSWORD': os.getenv("KEYCLOAK_ADMIN_PASSWORD"),
+    'KEYCLOAK_REDIRECT_URI': os.getenv("KEYCLOAK_REDIRECT_URI")
 }
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
