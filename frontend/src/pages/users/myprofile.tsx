@@ -27,7 +27,6 @@ import { useForm } from "react-hook-form";
 import { Dialog, Transition } from "@headlessui/react";
 import { selectCurrentUser } from "@/modules/auth/auth";
 import { useSelector } from "react-redux";
-import { toast } from "react-toastify";
 
 export const ProfileSettings = () => {
 	const [changePassword, setChangePassword] = useState(false);
@@ -59,8 +58,6 @@ export const ProfileSettings = () => {
 	const triggerPasswordChange = () => {
 		setChangePassword(!changePassword);
 	};
-
-	const password: string = secureLocalStorage.getItem("passcode") as string;
 
 	useEffect(() => {
 		if (typeof window != undefined) {
@@ -326,24 +323,6 @@ export const ProfileSettings = () => {
 											<form
 											// onSubmit={handleSubmit((data: any) => onSubmit(data))}
 											>
-												<div className="relative w-full mb-3">
-													<label
-														className="block text-blueGray-600 text-xs font-bold mb-2"
-														htmlFor="name"
-													>
-														Current Password
-													</label>
-													<TextInput
-														type="password"
-														placeholder="current password"
-														className="mt-1 bg-gray-50"
-													/>
-													{errors.name && (
-														<span className="text-sm text-red-600">
-															role name is required
-														</span>
-													)}
-												</div>
 												<div className="relative w-full mb-3">
 													<label
 														className="block text-blueGray-600 text-xs font-bold mb-2"

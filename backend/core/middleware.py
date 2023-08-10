@@ -21,137 +21,24 @@ import logging
 from django.conf import settings
 from django.http.response import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
-from keycloak import KeycloakOpenID, KeycloakOpenIDConnection, KeycloakAdmin
 from keycloak.exceptions import KeycloakInvalidTokenError
 from rest_framework.exceptions import PermissionDenied, AuthenticationFailed, NotAuthenticated
+from utils.keycloak_auth import get_keycloak_admin, get_keycloak_openid
 
 logger = logging.getLogger(__name__)
 
-
-class KeycloakHelper(object):
-
-    def __init__(self):
-        """
-        :param get_response:
-        """
-        self.config = settings.KEYCLOAK_CONFIG
-
-        # Read configurations
-        try:
-            self.server_url = self.config['KEYCLOAK_SERVER_URL']
-            self.client_id = self.config['KEYCLOAK_CLIENT_ID']
-            self.realm = self.config['KEYCLOAK_REALM']
-        except KeyError as e:
-            raise Exception("KEYCLOAK_SERVER_URL, KEYCLOAK_CLIENT_ID or KEYCLOAK_REALM not found.")
-
-        self.client_secret_key = self.config.get('KEYCLOAK_CLIENT_SECRET_KEY', None)
-        self.default_access = self.config.get('KEYCLOAK_DEFAULT_ACCESS', "DENY")
-        self.method_validate_token = self.config.get('KEYCLOAK_METHOD_VALIDATE_TOKEN', "INTROSPECT")
-        self.keycloak_authorization_config = self.config.get('KEYCLOAK_AUTHORIZATION_CONFIG', None)
-
-        # Create Keycloak instance
-        self.keycloak = KeycloakOpenID(server_url=self.config['KEYCLOAK_INTERNAL_SERVER_URL'] + "/auth", # We use internal since nginx does not start unless the backend is UP
-                                       client_id=self.client_id,
-                                       realm_name=self.realm,
-                                       client_secret_key=self.client_secret_key,
-                                       verify=False) # @todo : add env var for local dev
-        
-        self.client_public_key = "-----BEGIN PUBLIC KEY-----\n" + self.keycloak.public_key() + "\n-----END PUBLIC KEY-----"
-       
-        self.keycloak_admin = KeycloakAdmin(
-                        server_url=self.config['KEYCLOAK_INTERNAL_SERVER_URL'] + "/auth",
-                        username=self.config['KEYCLOAK_ADMIN_USERNAME'],
-                        password=self.config['KEYCLOAK_ADMIN_PASSWORD'],
-                        realm_name=self.realm,
-                        user_realm_name="master",
-                        verify=False)
-        client_id = self.keycloak_admin.get_client_id(self.client_id)
-        client_authz_settings = self.keycloak_admin.get_client_authz_settings(client_id=client_id)
-
-        self.keycloak.authorization.load_config(client_authz_settings)
-    
-    @property
-    def keycloak(self):
-        return self._keycloak
-
-    @keycloak.setter
-    def keycloak(self, value):
-        self._keycloak = value
-
-    @property
-    def config(self):
-        return self._config
-
-    @config.setter
-    def config(self, value):
-        self._config = value
-
-    @property
-    def server_url(self):
-        return self._server_url
-
-    @server_url.setter
-    def server_url(self, value):
-        self._server_url = value
-
-    @property
-    def client_id(self):
-        return self._client_id
-
-    @client_id.setter
-    def client_id(self, value):
-        self._client_id = value
-
-    @property
-    def client_secret_key(self):
-        return self._client_secret_key
-
-    @client_secret_key.setter
-    def client_secret_key(self, value):
-        self._client_secret_key = value
-
-    @property
-    def client_public_key(self):
-        return self._client_public_key
-
-    @client_public_key.setter
-    def client_public_key(self, value):
-        self._client_public_key = value
-
-    @property
-    def realm(self):
-        return self._realm
-
-    @realm.setter
-    def realm(self, value):
-        self._realm = value
-
-    @property
-    def keycloak_authorization_config(self):
-        return self._keycloak_authorization_config
-
-    @keycloak_authorization_config.setter
-    def keycloak_authorization_config(self, value):
-        self._keycloak_authorization_config = value
-
-    @property
-    def method_validate_token(self):
-        return self._method_validate_token
-
-    @method_validate_token.setter
-    def method_validate_token(self, value):
-        self._method_validate_token = value
-
-
-class KeycloakMiddleware(MiddlewareMixin, KeycloakHelper):
+class KeycloakMiddleware(MiddlewareMixin):
 
     def __init__(self, get_response):
         """
         :param get_response:
         """
         # Initialize Keycloak
-        KeycloakHelper.__init__(self)
-        
+        config = settings.KEYCLOAK_CONFIG
+        client_id = config['KEYCLOAK_CLIENT_ID']
+        keycloak_admin = get_keycloak_admin()
+        client_id = keycloak_admin.get_client_id(client_id)
+        self.client_authz_settings = keycloak_admin.get_client_authz_settings(client_id=client_id)
         # Django
         self.get_response = get_response
 
@@ -190,6 +77,13 @@ class KeycloakMiddleware(MiddlewareMixin, KeycloakHelper):
             return JsonResponse({"detail": NotAuthenticated.default_detail},
                                 status=NotAuthenticated.status_code)
 
+        keycloak = get_keycloak_openid(request)
+        keycloak.authorization.load_config(self.client_authz_settings)
+        config = settings.KEYCLOAK_CONFIG
+        default_access = config.get('KEYCLOAK_DEFAULT_ACCESS', "DENY")
+        method_validate_token = config.get('KEYCLOAK_METHOD_VALIDATE_TOKEN', "INTROSPECT")
+        client_public_key = "-----BEGIN PUBLIC KEY-----\n" + keycloak.public_key() + "\n-----END PUBLIC KEY-----"
+
         auth_header = request.META.get('HTTP_AUTHORIZATION').split()
         token = auth_header[1] if len(auth_header) == 2 else auth_header[0]
 
@@ -198,14 +92,14 @@ class KeycloakMiddleware(MiddlewareMixin, KeycloakHelper):
             if view_scopes.get(request.method, None) else view_scopes.get('DEFAULT', None)
 
         # DEFAULT scope not found and DEFAULT_ACCESS is DENY
-        if not required_scope and self.default_access == 'DENY':
+        if not required_scope and default_access == 'DENY':
             return JsonResponse({"detail": PermissionDenied.default_detail},
                                 status=PermissionDenied.status_code)
 
         try:
-            user_permissions = self.keycloak.get_permissions(token,
-                                                             method_token_info=self.method_validate_token.lower(),
-                                                             key=self.client_public_key,
+            user_permissions = keycloak.get_permissions(token,
+                                                             method_token_info=method_validate_token.lower(),
+                                                             key=client_public_key,
                                                              options={"verify_aud": False})
         except KeycloakInvalidTokenError as e:
             return JsonResponse({"detail": AuthenticationFailed.default_detail},
@@ -218,7 +112,7 @@ class KeycloakMiddleware(MiddlewareMixin, KeycloakHelper):
 
         if has_scope_permission:
             # Add to userinfo to the view
-            request.userinfo = self.keycloak.userinfo(token)
+            request.userinfo = keycloak.userinfo(token)
             return None
         else:
             # User Permission Denied
