@@ -3,7 +3,7 @@ import { baseQuery } from '@/common/redux/api';
 import { createSlice } from '@reduxjs/toolkit';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import secureLocalStorage from 'react-secure-storage';
-import { Credentials, UserProfile, LoginParams, Permissions, Jwt } from './interface';
+import { Credentials, UserProfile, Permissions, Jwt, OAuthParams } from './interface';
 import jwt_decode from 'jwt-decode';
 
 // Define a service using a base URL and expected endpoints
@@ -11,7 +11,7 @@ export const AuthApi = createApi({
   reducerPath: 'AuthApi',
   baseQuery,
   endpoints: (builder) => ({
-    login: builder.mutation<Credentials, LoginParams>({
+    login: builder.mutation<Credentials, OAuthParams>({
       query: (body) => ({
         url: '/auth/key-auth',
         method: 'POST',
