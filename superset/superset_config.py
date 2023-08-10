@@ -48,17 +48,9 @@ OAUTH_PROVIDERS = [
             "client_kwargs": {
                 "scope": "openid email profile offline_access roles"
             },
-            # 'access_token_method':'POST',    # HTTP Method to call access_token_url
-            # 'access_token_params':{        # Additional parameters for calls to access_token_url
-            #     'client_id':'myClientId'
-            # },
-            # 'access_token_headers':{    # Additional headers for calls to access_token_url
-            #     'Authorization': 'Basic Base64EncodedClientIdAndSecret'
-            # },
             "access_token_url": f"{SUPERSET_KEYCLOAK_INTERNAL_URL}/realms/{SUPERSET_KEYCLOAK_APP_REALM}/protocol/openid-connect/token",
             "authorize_url": f"{SUPERSET_KEYCLOAK_EXTERNAL_URL}/realms/{SUPERSET_KEYCLOAK_APP_REALM}/protocol/openid-connect/auth",
             "server_metadata_url": f"{SUPERSET_KEYCLOAK_INTERNAL_URL}/realms/{SUPERSET_KEYCLOAK_APP_REALM}/.well-known/openid-configuration"
-            # "request_token_url": None,
         },
     }
 ]
@@ -90,6 +82,7 @@ class CustomAuthOAuthView(AuthOAuthView):
         try:
             resp = self.appbuilder.sm.oauth_remotes[provider].authorize_access_token(claims_options={
                     'iss': {
+                        'essential': True,
                         'values': [
                             f"{SUPERSET_KEYCLOAK_INTERNAL_URL}/realms/{SUPERSET_KEYCLOAK_APP_REALM}",
                             f"{SUPERSET_KEYCLOAK_EXTERNAL_URL}/realms/{SUPERSET_KEYCLOAK_APP_REALM}"
