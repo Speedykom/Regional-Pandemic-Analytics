@@ -1,106 +1,134 @@
-import { AppDrawer } from "@/common/components/AppDrawer";
-import { ShowMessage } from "@/common/components/ShowMessage";
-import { Button, Form, Input } from "antd";
-import { useState } from "react";
 import { useCreatePipelineMutation } from "../pipeline";
+import Drawer from "@/common/components/common/Drawer";
+import { Button, TextInput } from "@tremor/react";
+import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
 
 interface AddPipelineProps {
-  state: boolean;
-  onClose: () => void;
-  template: any;
+	state: boolean;
+	onClose: () => void;
+	template: any;
+	refetch: () => void;
 }
 
-export const AddPipeline = ({ state, onClose, template }: AddPipelineProps) => {
-  const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
-  const [addPipeline] = useCreatePipelineMutation();
+export const AddPipeline = ({
+	state,
+	onClose,
+	template,
+	refetch,
+}: AddPipelineProps) => {
+	const {
+		register,
+		handleSubmit,
+		reset,
+		formState: { errors },
+	} = useForm();
+	const [addPipeline, { isLoading }] = useCreatePipelineMutation();
 
-  const onFinish = (value: any) => {
-    setLoading(true);
+	const onFinish = (value: any) => {
+		addPipeline({ ...value, path: template?.path }).then((res: any) => {
+			if (res.error) {
+				const { data } = res.error;
+				const { message } = data;
 
-    addPipeline({ ...value, path: template?.path })
-      .then((res: any) => {
-        if (res.error) {
-          const { data } = res.error;
-          const { message } = data;
+				toast.error(message, { position: "top-right" });
+				return;
+			}
 
-          ShowMessage("error", message);
-          return;
-        }
+			toast.success("Process created successfully", { position: "top-right" });
+			cancel();
+			refetch();
+		});
+	};
 
-        ShowMessage("success", "Process created successfully");
-        cancel();
-      })
-      .finally(() => setLoading(false));
-  };
+	const cancel = () => {
+		reset();
+		onClose();
+	};
 
-  const cancel = () => {
-    form.resetFields();
-    onClose();
-  };
+	const footer = (
+		<div className="flex justify-start space-x-2 px-3 mb-3">
+			<Button
+				type="submit"
+				loading={isLoading}
+				className="bg-prim text-white border-0 hover:bg-prim-hover"
+				onClick={handleSubmit((values: any) => onFinish(values))}
+			>
+				Submit
+			</Button>
+			<Button
+				onClick={cancel}
+				className="bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
+			>
+				Cancel
+			</Button>
+		</div>
+	);
 
-  const footer = (
-    <div className="space-x-2 p-2">
-      <Button loading={loading} type="primary" onClick={() => form.submit()}>
-        Submit
-      </Button>
-      <Button onClick={cancel} type="default">
-        Cancel
-      </Button>
-    </div>
-  );
-
-  return (
-    <AppDrawer
-      title={"Add Pipeline"}
-      state={state}
-      onClose={cancel}
-      footer={footer}
-    >
-      <Form
-        form={form}
-        name="add-pipeline"
-        onFinish={onFinish}
-        layout="vertical"
-        scrollToFirstError
-      >
-        <Form.Item
-          name="name"
-          label="Name"
-          tooltip="Pipeline Name"
-          rules={[
-            {
-              required: true,
-              message: "Please input your pipeline name",
-            },
-          ]}
-        >
-          <Input placeholder="Enter Name" className="w-full" />
-        </Form.Item>
-        <Form.Item name="path" label="Template" className="w-full">
-          <Input
-            disabled
-            placeholder={template?.name}
-            className="w-full"
-          />
-        </Form.Item>
-        <Form.Item
-          name="description"
-          label="Description"
-          tooltip="Pipeline Description"
-          rules={[
-            {
-              required: true,
-              message: "Please enter your description",
-            },
-          ]}
-        >
-          <Input.TextArea
-            className="w-full"
-            placeholder="Enter Description"
-          />
-        </Form.Item>
-      </Form>
-    </AppDrawer>
-  );
+	return (
+		<Drawer
+			title={"Add Pipeline"}
+			isOpen={state}
+			onClose={cancel}
+			placement="right"
+			width={350}
+			footer={footer}
+		>
+			<div className="w-96 px-3">
+				<form name="add-pipeline">
+					<div className="relative w-full mb-3">
+						<label
+							className="block text-blueGray-600 text-xs font-bold mb-2"
+							htmlFor="descriptiond"
+						>
+							Name*
+						</label>
+						<TextInput
+							{...register("name", {
+								required: true,
+							})}
+							error={errors.name ? true : false}
+							errorMessage={errors.name ? "Please input pipeline name" : ""}
+							type="text"
+							className="w-full h-12"
+							placeholder="Enter Name"
+						/>
+					</div>
+					<div className="relative w-full mb-3">
+						<label
+							className="block text-blueGray-600 text-xs font-bold mb-2"
+							htmlFor="path"
+						>
+							Template
+						</label>
+						<TextInput
+							disabled
+							placeholder={template?.name}
+							className="w-full"
+						/>
+					</div>
+					<div className="relative w-full mb-3">
+						<label
+							className="block text-blueGray-600 text-xs font-bold mb-2"
+							htmlFor="descriptiond"
+						>
+							Description*
+						</label>
+						<TextInput
+							{...register("description", {
+								required: true,
+							})}
+							error={errors.description ? true : false}
+							errorMessage={
+								errors.description ? "Please enter your description" : ""
+							}
+							type="text"
+							className="w-full h-12"
+							placeholder="Enter Description"
+						/>
+					</div>
+				</form>
+			</div>
+		</Drawer>
+	);
 };

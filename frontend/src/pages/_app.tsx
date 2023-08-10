@@ -11,8 +11,8 @@ import { AuthProvider } from '@/common/hooks/use-auth';
 
 function CsrApp({ Component, pageProps }: AppProps) {
   return (
-    <ModalProvider>
-      <Provider store={store}>
+    <Provider store={store}>
+      <ModalProvider>
         <AuthProvider>
           <ConfigProvider
             theme={{
@@ -27,8 +27,8 @@ function CsrApp({ Component, pageProps }: AppProps) {
             <ToastContainer />
           </ConfigProvider>
         </AuthProvider>
-      </Provider>
-    </ModalProvider>
+      </ModalProvider>
+    </Provider>
   );
 }
 

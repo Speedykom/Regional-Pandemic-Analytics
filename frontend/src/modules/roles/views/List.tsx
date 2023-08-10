@@ -130,14 +130,13 @@ export const RoleList = () => {
 									<TableCell>
 										<div className="flex space-x-2 justify-end">
 											<Button
-												variant="primary"
 												onClick={() => {
 													setId(item.name);
 													setRoleData(item);
 													setOpen(true);
 												}}
 											>
-												<Text>Edit</Text>
+												Edit
 											</Button>
 										</div>
 									</TableCell>
@@ -245,7 +244,7 @@ export const RoleList = () => {
 												<Button
 													loading={isLoading}
 													type="submit"
-													className="inline-flex justify-center rounded-md border border-transparent bg-prim px-4 py-2 text-sm font-medium text-white hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+													className="inline-flex justify-center rounded-md border border-transparent bg-prim px-4 py-2 text-sm font-medium text-white hover:bg-prim-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
 												>
 													Save Changes
 												</Button>
