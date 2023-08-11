@@ -40,6 +40,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
+  
   hop-server:
     ports:
       - "9999:8080"
@@ -67,6 +68,16 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend/:/backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "keycloak.igad.local:host-gateway"
+
+  # ========
+  # Airflow
+  # ========
+
+  airflow-webserver:
+    container_name: airflow-webserver
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
