@@ -30,8 +30,6 @@ class Factory(AppBuilderBaseView):
     
 v_appbuilder_view = Factory()
 v_appbuilder_package = {
-    "name":"Factory View",
-    "category":"Factory EndPoint",
     "view": v_appbuilder_view
 }
 
