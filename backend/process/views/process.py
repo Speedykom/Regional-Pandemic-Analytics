@@ -74,20 +74,20 @@ class ProcessListView(APIView):
             )
         
         # Run factory by passing config to create a process chain
+        ariflow_internal_url=AirflowInstance.url.removesuffix("/api/v1")
         res=requests.post(
-            f"{AirflowInstance.url}/dags/{DagConfig.factory_id}/dagRuns", 
+            f"{ariflow_internal_url}/factory", 
             auth=(AirflowInstance.username, AirflowInstance.password), 
-            json={
-                "conf":{
-                    "dag_conf":{
-                        "owner":f"{new_dag_config.owner}",
-                        "user_id":f"{new_dag_config.user_id}",
-                        "dag_id":f"{new_dag_config.dag_id}",
-                        "schedule_interval":f"{new_dag_config.schedule_interval}",
-                        "pipeline_name":f"{new_dag_config.pipeline_name}"
-                    }
+            json={                
+                "dag_conf":{
+                    "owner":f"{new_dag_config.owner}",
+                    "user_id":f"{new_dag_config.user_id}",
+                    "dag_id":f"{new_dag_config.dag_id}",
+                    "schedule_interval":f"{new_dag_config.schedule_interval}",
+                    "pipeline_name":f"{new_dag_config.pipeline_name}"
                 }
             })
+        print(res.text)
         if res.status_code == 200:
             return Response({"status": "success"}, status=status.HTTP_200_OK)
         else:
