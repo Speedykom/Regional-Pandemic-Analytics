@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from ..models import ProcessChain, Pipeline
 from ..serializers import ProcessChainSerializer, PipelineSerializer
+from rest_framework.permissions import AllowAny
 from ..gdags.dynamic import DynamicDag
 
 api = os.getenv("AIRFLOW_API")
@@ -230,7 +231,6 @@ class UpdateHopChainView(APIView):
 
         return Response({'status': 'success', "message": "Pipeline change successfully"}, status=200)
 
-
 class StepperDruidChainView(APIView):
 
     # keycloak_scopes = {
@@ -271,3 +271,12 @@ class StepperDruidChainView(APIView):
         druid_state['tasks'] = client.json()
 
         return Response({'status': 'success', "data": druid_state}, status=200)
+
+class SupersetStepperChainView(APIView):
+    
+    permission_classes = [AllowAny]
+
+    def post(self, request, feed=None):
+        print(request.body, "alert", feed)
+
+        return Response({'status': 'success', "message": "Notify"}, status=200)
