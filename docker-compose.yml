@@ -21,6 +21,14 @@ x-druid-common: &druid
     - druid_processing_numThreads=${DRUID_druid_processing_numThreads}
     - druid_processing_numMergeBuffers=${DRUID_druid_processing_numMergeBuffers}
     - DRUID_LOG4J=${DRUID_DRUID_LOG4J}
+    - druid.monitoring.monitors=[“org.apache.druid.java.util.metrics.JvmMonitor”,“org.apache.druid.java.util.metrics.SysMonitor”, "org.apache.druid.server.emitter.HttpEmittingMonitor", "org.apache.druid.server.metrics.HistoricalMetricsMonitor",“org.apache.druid.server.metrics.TaskCountStatsMonitor”]
+    - druid.monitoring.emissionPeriod=PT1M
+    - druid.emitter=http
+    - druid.emitter.http.timeOut=PT10M
+    - druid.emitter.http.flushMillis=60000
+    - druid.emitter.http.flushCount=500
+    - druid.emitter.http.recipientBaseUrl=http://backend:8000/api/process/druid/alert
+    - druid.emitter.logging.logLevel=info
 
 x-airflow-common: &airflow
   build:
@@ -76,6 +84,7 @@ volumes:
   router_var: {}
   mongo-data:
 
+
 services:
   # ========
   # Minio
@@ -100,7 +109,13 @@ services:
       - "9001:9000"
       - "8887:9090"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:9000/minio/health/live"
+        ]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -113,7 +128,7 @@ services:
   minio-mc:
     image: minio/mc
     container_name: minio-mc
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: [ "/bin/sh", "-c" ]
     command:
       - |
         chmod +x /tmp/setup.sh
@@ -129,29 +144,29 @@ services:
         condition: service_healthy
         restart: true
 
-  # ========
-  # Frontend
-  # ========
-  frontend:
-    container_name: frontend
-    build:
-      context: ./frontend
-      target: runner
-      args:
-        - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
-        - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
-        - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
-        - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
-        - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
-      - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
-      - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
-      - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
-      - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
-    restart: always
+  # # ========
+  # # Frontend
+  # # ========
+  # frontend:
+  #   container_name: frontend
+  #   build:
+  #     context: ./frontend
+  #     target: runner
+  #     args:
+  #       - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
+  #       - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
+  #       - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
+  #       - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
+  #       - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
+  #     - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
+  #     - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
+  #     - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
+  #     - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
+  #   restart: always
 
   # ========
   # Backend
@@ -169,7 +184,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"
         ]
       interval: 10s
       timeout: 3s
@@ -279,6 +294,7 @@ services:
     depends_on:
       - zookeeper
       - db
+      - backend
     ports:
       - "8081:8081"
     command:
@@ -293,6 +309,7 @@ services:
     depends_on:
       - zookeeper
       - db
+      - backend
       - coordinator
     ports:
       - "8082:8082"
@@ -309,6 +326,7 @@ services:
     depends_on:
       - zookeeper
       - db
+      - backend
       - coordinator
     ports:
       - "8083:8083"
@@ -325,6 +343,7 @@ services:
     depends_on:
       - zookeeper
       - db
+      - backend
       - coordinator
     ports:
       - "8091:8091"
@@ -342,12 +361,27 @@ services:
     depends_on:
       - zookeeper
       - db
+      - backend
       - coordinator
     ports:
       - "8884:8888"
     command:
       - router
 
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      
   # =======
   # Superset
   # =======
@@ -378,8 +412,8 @@ services:
       - SUPERSET_KEYCLOAK_EXTERNAL_URL=${SUPERSET_KEYCLOAK_EXTERNAL_URL}
       - SUPERSET_KEYCLOAK_INTERNAL_URL=${SUPERSET_KEYCLOAK_INTERNAL_URL}
       - SUPERSET_FEATURE_EMBEDDED_SUPERSET=True
-    volumes:
-      - ./superset/superset_config.py:/app/pythonpath/superset_config.py
+      # volumes:
+      # - ./superset/superset_config.py:/app/pythonpath/superset_config.py
     ports:
       - 8883:8088
     depends_on:
@@ -423,6 +457,7 @@ services:
     volumes:
       - ./hop/plugins/transforms/:/opt/hop/plugins/transforms/
       - ./hop/pipelines:/files
+
   # =======
   # Airflow
   # =======
@@ -438,7 +473,7 @@ services:
     volumes:
       - airflow_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: [ "CMD", "pg_isready", "-U", "airflow" ]
       interval: 5s
       retries: 5
 
@@ -466,7 +501,13 @@ services:
     ports:
       - "8881:8080"
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "--fail",
+          "http://localhost:8080/health"
+        ]
       interval: 30s
       timeout: 30s
       retries: 5
@@ -529,7 +570,13 @@ services:
       - keycloak-pg
     healthcheck:
       test:
-        ["CMD", "curl", "--head", "-fsS", "http://localhost:8080/health/ready"]
+        [
+          "CMD",
+          "curl",
+          "--head",
+          "-fsS",
+          "http://localhost:8080/health/ready"
+        ]
       interval: 60s
       timeout: 10s
       retries: 10
@@ -576,65 +623,64 @@ services:
       - ./certbot/www:/var/www/certbot
     depends_on:
       - airflow-webserver
+  # # =====
+  # #  OpenHIM
+  # # =====
 
-  # =====
-  #  OpenHIM
-  # =====
+  # mongo-db:
+  #   container_name: mongo-db
+  #   image: mongo:4.0
+  #   volumes:
+  #     - "mongo-data:/data/db"
+  #   restart: unless-stopped
 
-  mongo-db:
-    container_name: mongo-db
-    image: mongo:4.0
-    volumes:
-      - "mongo-data:/data/db"
-    restart: unless-stopped
+  # openhim-core:
+  #   container_name: openhim-core
+  #   image: jembi/openhim-core:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     - mongo_url=mongodb://mongo-db/openhim-development
+  #     - mongo_atnaUrl=mongodb://mongo-db/openhim-development
+  #     - api_authenticationTypes=["token", "basic", "openid", "local"]
+  #     - authentication_enableCustomTokenAuthentication=true
+  #     - api_openid_url=${OPENHIM_KEYCLOAK_FRONTEND_URL}/realms/${OPENHIM_KEYCLOAK_REALM_NAME}
+  #     - api_openid_callbackUrl=${OPENHIM_KEYCLOAK_ROOT_URL}
+  #     - api_openid_clientId=${OPENHIM_KEYCLOAK_CLIENT_ID}
+  #     - api_openid_clientSecret=${OPENHIM_KEYCLOAK_SECRET}
+  #     - NODE_TLS_REJECT_UNAUTHORIZED=0
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  #     - "keycloak.igad.local:host-gateway"
 
-  openhim-core:
-    container_name: openhim-core
-    image: jembi/openhim-core:latest
-    restart: unless-stopped
-    environment:
-      - mongo_url=mongodb://mongo-db/openhim-development
-      - mongo_atnaUrl=mongodb://mongo-db/openhim-development
-      - api_authenticationTypes=["token", "basic", "openid", "local"]
-      - authentication_enableCustomTokenAuthentication=true
-      - api_openid_url=${OPENHIM_KEYCLOAK_FRONTEND_URL}/realms/${OPENHIM_KEYCLOAK_REALM_NAME}
-      - api_openid_callbackUrl=${OPENHIM_KEYCLOAK_ROOT_URL}
-      - api_openid_clientId=${OPENHIM_KEYCLOAK_CLIENT_ID}
-      - api_openid_clientSecret=${OPENHIM_KEYCLOAK_SECRET}
-      - NODE_TLS_REJECT_UNAUTHORIZED=0
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-      - "keycloak.igad.local:host-gateway"
+  #   ports:
+  #     - "8080:8080"
+  #     - "5002:5000"
+  #     - "5001:5001"
+  #   depends_on:
+  #     - mongo-db
+  #   healthcheck:
+  #     test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
+  #     interval: 30s
+  #     timeout: 30s
+  #     retries: 3
 
-    ports:
-      - "8080:8080"
-      - "5002:5000"
-      - "5001:5001"
-    depends_on:
-      - mongo-db
-    healthcheck:
-      test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
-      interval: 30s
-      timeout: 30s
-      retries: 3
-
-  openhim-console:
-    container_name: openhim-console
-    image: jembi/openhim-console:latest
-    ports:
-      - "9000:80"
-    environment:
-      - KC_OPENHIM_SSO_ENABLED=true
-      - KC_OPENHIM_CLIENT_ID=${OPENHIM_KEYCLOAK_CLIENT_ID}
-      - KC_REALM_NAME=${OPENHIM_KEYCLOAK_REALM_NAME}
-      - KC_FRONTEND_URL=${OPENHIM_KEYCLOAK_FRONTEND_URL}
-      - OPENHIM_CORE_MEDIATOR_HOSTNAME=${OPENHIM_CORE_MEDIATOR_HOSTNAME}
-      - OPENHIM_MEDIATOR_API_PORT=${OPENHIM_MEDIATOR_API_PORT}
-    depends_on:
-      - openhim-core
-    restart: unless-stopped
-    healthcheck:
-      test: "curl -sS http://openhim-console || exit 1"
-      interval: 30s
-      timeout: 30s
-      retries: 3
+  # openhim-console:
+  #   container_name: openhim-console
+  #   image: jembi/openhim-console:latest
+  #   ports:
+  #     - "9000:80"
+  #   environment:
+  #     - KC_OPENHIM_SSO_ENABLED=true
+  #     - KC_OPENHIM_CLIENT_ID=${OPENHIM_KEYCLOAK_CLIENT_ID}
+  #     - KC_REALM_NAME=${OPENHIM_KEYCLOAK_REALM_NAME}
+  #     - KC_FRONTEND_URL=${OPENHIM_KEYCLOAK_FRONTEND_URL}
+  #     - OPENHIM_CORE_MEDIATOR_HOSTNAME=${OPENHIM_CORE_MEDIATOR_HOSTNAME}
+  #     - OPENHIM_MEDIATOR_API_PORT=${OPENHIM_MEDIATOR_API_PORT}
+  #   depends_on:
+  #     - openhim-core
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: "curl -sS http://openhim-console || exit 1"
+  #     interval: 30s
+  #     timeout: 30s
+  #     retries: 3
