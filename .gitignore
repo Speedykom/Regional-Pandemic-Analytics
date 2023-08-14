@@ -2,7 +2,6 @@
 .DS_Store
 /data
 /airflow/dags/*.py
-!/airflow/dags/dag_factory.py
 /hop/pipelines/watchDirLog.txt
 /hop/pipelines/watchRuns.txt
 /hop/pipelines/*.hpl
