@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 import requests
 import os
-from core.middleware import KeycloakHelper
 import jwt
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
@@ -12,7 +11,8 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import AllowAny
 from mailer.sender import SendMail
-from utils.keycloak_auth import get_keycloak_admin
+from utils.keycloak_auth import get_keycloak_admin, get_keycloak_openid
+from django.conf import settings
 from utils.env_configs import (
     BASE_URL, APP_SECRET_KEY, APP_REALM, REST_REDIRECT_URI)
 
@@ -87,25 +87,38 @@ class KeyCloakLoginAPI(APIView):
     permission_classes = [AllowAny]
     
     """
-    API for authenticating with Keycloak
+    API for authenticating with Keycloak (exchange code for token)
     """
     @swagger_auto_schema(request_body=openapi.Schema(
         type=openapi.TYPE_OBJECT,
         properties={
-            'username': openapi.Schema(type=openapi.TYPE_STRING),
-            'password': openapi.Schema(type=openapi.TYPE_STRING),
+            'code': openapi.Schema(type=openapi.TYPE_STRING),
         }
     ))
     def post(self, request, *args, **kwargs):
-        keycloakHelper = KeycloakHelper()
-        credentials = keycloakHelper.keycloak.token(request.data.get("username", None), request.data.get("password", None))
-        if credentials:
-            permissions = keycloakHelper.keycloak.get_permissions(credentials['access_token'], method_token_info='introspect')
-            credentials["permissions"] = map(lambda p: { 'name': p.name, 'scopes': p.scopes }, permissions)
-            return Response(credentials, status=status.HTTP_200_OK)
+        try:
+            config = settings.KEYCLOAK_CONFIG
+            keycloak = get_keycloak_openid(request)
+            credentials = keycloak.token(
+                grant_type='authorization_code',
+                code=request.data.get("code", None),
+                redirect_uri=config["KEYCLOAK_REDIRECT_URI"] + "/",
+                scope="openid email profile offline_access roles",
+            )
+            if credentials:
+                keycloak_admin = get_keycloak_admin()
+                client_id = config['KEYCLOAK_CLIENT_ID']
+                client_id = keycloak_admin.get_client_id(client_id)
+                client_authz_settings = keycloak_admin.get_client_authz_settings(client_id=client_id)
+                keycloak.authorization.load_config(client_authz_settings)
+                user_permissions = keycloak.get_permissions(credentials['access_token'])
+                credentials["permissions"] = map(lambda p: {'name': p.name, 'scopes': p.scopes}, user_permissions)
+                return Response(credentials, status=status.HTTP_200_OK)
 
-        return Response({"result": "Login Failed"}, status=status.HTTP_401_UNAUTHORIZED)
-    
+            return Response({"result": "Login Failed"}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            return Response({"result": "Login Failed"}, status=status.HTTP_401_UNAUTHORIZED)
+
     """API to refresh and update keycloak access token
     """
     @swagger_auto_schema(request_body=openapi.Schema(
