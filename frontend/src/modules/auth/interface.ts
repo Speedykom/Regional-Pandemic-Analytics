@@ -3,11 +3,6 @@ export type Permissions = Array<{
   scopes: string[];
 }>;
 
-export type LoginParams = {
-  username: string;
-  password: string;
-};
-
 export type Credentials = {
   access_token: string;
   expires_in: number;
@@ -64,4 +59,10 @@ export interface UserProfile extends JwtInfos {
   phone?: string;
   code?: string;
   name?: string;
+}
+
+export type OAuthParams = {
+  code: string
+  state: string
+  session_state: string
 }
