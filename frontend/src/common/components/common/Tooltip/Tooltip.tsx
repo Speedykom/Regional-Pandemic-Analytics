@@ -5,9 +5,9 @@ import React, {
 	useEffect,
 	useRef,
 	useState,
-} from "react";
-import ReactDOM from "react-dom";
-import { getTooltipPoint, getArrowBoxPoint, getClosestAncestor } from "./utils";
+} from 'react';
+import ReactDOM from 'react-dom';
+import { getTooltipPoint, getArrowBoxPoint, getClosestAncestor } from './utils';
 
 type renderTooltipParams = {
 	element: MutableRefObject<any>;
@@ -28,10 +28,11 @@ interface props {
 	titleAttribute?: string;
 	arrowLength?: number;
 	fontSize?: string;
+	hide?: boolean;
 	renderTooltip?: (params: renderTooltipParams) => void;
 }
 
-const Portal = ({ children }: Pick<props, "children">) => {
+const Portal = ({ children }: Pick<props, 'children'>) => {
 	return ReactDOM.createPortal(children, document.body);
 };
 
@@ -49,7 +50,7 @@ const Portal = ({ children }: Pick<props, "children">) => {
 
 const Tooltip = ({
 	children,
-	position = "bottom",
+	position = 'bottom',
 	space = 5,
 	delayShow = 0,
 	delayHide = 0,
@@ -57,16 +58,17 @@ const Tooltip = ({
 	noTranslateAnimation = false,
 	noOpacityAnimation = false,
 	closeOnEsc = false,
-	scopeSelector = "",
-	titleAttribute = "title",
+	scopeSelector = '',
+	titleAttribute = 'title',
 	arrowLength = 10,
-	fontSize = "13px",
+	fontSize = '13px',
+	hide = false,
 	renderTooltip,
 }: props) => {
 	const [show, setShow] = useState(false);
-	const [title, setTitle] = useState("");
-	const [showTimeoutId, setShowTimeoutId] = useState("");
-	const [closeTimeoutId, setCloseTimeoutId] = useState("");
+	const [title, setTitle] = useState('');
+	const [showTimeoutId, setShowTimeoutId] = useState('');
+	const [closeTimeoutId, setCloseTimeoutId] = useState('');
 	const titleNodeRef = useRef<any>();
 	const tooltipRef = useRef<any>();
 	const arrowRef = useRef<any>();
@@ -74,14 +76,14 @@ const Tooltip = ({
 	const showTooltip = (node: any) => {
 		if (closeTimeoutId) {
 			window.clearTimeout(closeTimeoutId);
-			setCloseTimeoutId("");
+			setCloseTimeoutId('');
 		}
 		const showTimeoutId = window.setTimeout(() => {
 			const title = node.getAttribute(titleAttribute);
 			titleNodeRef.current = node;
 			setTitle(title);
 			setShow(true);
-			setShowTimeoutId("");
+			setShowTimeoutId('');
 		}, delayShow);
 		setShowTimeoutId(String(showTimeoutId));
 	};
@@ -90,24 +92,24 @@ const Tooltip = ({
 		const closeTimeoutId = window.setTimeout(() => {
 			titleNodeRef.current = null;
 			setShow(false);
-			setCloseTimeoutId("");
+			setCloseTimeoutId('');
 		}, delayHide);
 		setCloseTimeoutId(String(closeTimeoutId));
 
 		if (showTimeoutId) {
 			window.clearTimeout(showTimeoutId);
-			setShowTimeoutId("");
+			setShowTimeoutId('');
 		}
 	}, [titleNodeRef, delayHide, showTimeoutId]);
 
 	useEffect(() => {
 		if (!show || !closeOnEsc) return;
 		const escHandler = (e: any) => {
-			if (e.key !== "Escape") return;
+			if (e.key !== 'Escape') return;
 			closeTooltip();
 		};
-		document.addEventListener("keydown", escHandler);
-		return () => document.removeEventListener("keydown", escHandler);
+		document.addEventListener('keydown', escHandler);
+		return () => document.removeEventListener('keydown', escHandler);
 	}, [show, closeOnEsc, closeTooltip]);
 
 	useEffect(() => {
@@ -115,8 +117,8 @@ const Tooltip = ({
 		const wheelHandler = () => {
 			closeTooltip();
 		};
-		document.addEventListener("wheel", wheelHandler);
-		return () => document.removeEventListener("wheel", wheelHandler);
+		document.addEventListener('wheel', wheelHandler);
+		return () => document.removeEventListener('wheel', wheelHandler);
 	}, [show, closeTooltip]);
 
 	useEffect(() => {
@@ -137,8 +139,10 @@ const Tooltip = ({
 			noArrow ? 0 : arrowLength
 		);
 
-		tooltipRef.current.style.left = `${x}px`;
-		tooltipRef.current.style.top = `${y}px`;
+		if (!hide) {
+			tooltipRef.current.style.left = `${x}px`;
+			tooltipRef.current.style.top = `${y}px`;
+		}
 
 		if (arrowRef.current) {
 			arrowRef.current.style.left = `${ax}px`;
@@ -164,39 +168,39 @@ const Tooltip = ({
 
 	const getArrowClasses = (position: string) => {
 		switch (position) {
-			case "top":
-				return "translate-x-[-50%] border-t-black";
-			case "bottom":
-				return "translate-x-[-50%] border-b-black";
-			case "left":
-				return "translate-y-[-50%] border-l-black";
-			case "right":
-				return "translate-y-[-50%] border-r-black";
+			case 'top':
+				return 'translate-x-[-50%] border-t-black';
+			case 'bottom':
+				return 'translate-x-[-50%] border-b-black';
+			case 'left':
+				return 'translate-y-[-50%] border-l-black';
+			case 'right':
+				return 'translate-y-[-50%] border-r-black';
 			default:
-				return "";
+				return '';
 		}
 	};
 
 	const getTranslateClasses = (position: string) => {
 		switch (position) {
-			case "top":
+			case 'top':
 				return show
-					? "translate-x-0 translate-y-0"
-					: "translate-x-0 -translate-y-3";
-			case "bottom":
+					? 'translate-x-0 translate-y-0'
+					: 'translate-x-0 -translate-y-3';
+			case 'bottom':
 				return show
-					? "translate-x-0 translate-y-0"
-					: "translate-x-0 translate-y-3";
-			case "left":
+					? 'translate-x-0 translate-y-0'
+					: 'translate-x-0 translate-y-3';
+			case 'left':
 				return show
-					? "translate-x-0 translate-y-0"
-					: "translate-y-0 -translate-x-3";
-			case "right":
+					? 'translate-x-0 translate-y-0'
+					: 'translate-y-0 -translate-x-3';
+			case 'right':
 				return show
-					? "translate-x-0 translate-y-0"
-					: "translate-y-0 translate-x-3";
+					? 'translate-x-0 translate-y-0'
+					: 'translate-y-0 translate-x-3';
 			default:
-				return "";
+				return '';
 		}
 	};
 
@@ -209,64 +213,70 @@ const Tooltip = ({
 			})}
 
 			<Portal>
-				<div>
-					{!noArrow && (
-						<div
-							ref={arrowRef}
-							className={`fixed z-[200] border-transparent
-                ${show ? "opacity-100" : "opacity-0"}
+				<>
+					{hide == false ? (
+						<div>
+							{!noArrow && (
+								<div
+									ref={arrowRef}
+									className={`fixed z-[200] border-transparent
+                ${show ? 'opacity-100' : 'opacity-0'}
                 ${getArrowClasses(position)}
                 ${!noTranslateAnimation && getTranslateClasses(position)}
               `}
-							style={{
-								borderWidth: ["top", "bottom"].includes(position)
-									? `${arrowLength}px ${arrowLength / 2}px`
-									: `${arrowLength / 2}px ${arrowLength}px`,
-								transition: show
-									? `transform 200ms ${
-											noTranslateAnimation ? "step-start" : "linear"
-									  }, opacity 200ms ${
-											noOpacityAnimation ? "step-start" : "linear"
-									  }`
-									: `transform 200ms ${
-											noTranslateAnimation ? "step-end" : "linear"
-									  }, opacity 200ms ${
-											noOpacityAnimation ? "step-end" : "linear"
-									  }`,
-							}}
-						/>
-					)}
+									style={{
+										borderWidth: ['top', 'bottom'].includes(position)
+											? `${arrowLength}px ${arrowLength / 2}px`
+											: `${arrowLength / 2}px ${arrowLength}px`,
+										transition: show
+											? `transform 200ms ${
+													noTranslateAnimation ? 'step-start' : 'linear'
+											  }, opacity 200ms ${
+													noOpacityAnimation ? 'step-start' : 'linear'
+											  }`
+											: `transform 200ms ${
+													noTranslateAnimation ? 'step-end' : 'linear'
+											  }, opacity 200ms ${
+													noOpacityAnimation ? 'step-end' : 'linear'
+											  }`,
+									}}
+								/>
+							)}
 
-					<div
-						ref={tooltipRef}
-						className={`pointer-events-none fixed z-[200] min-w-min max-w-[100vw] overflow-hidden
-              ${show ? "opacity-100" : "opacity-0"}
+							<div
+								ref={tooltipRef}
+								className={`pointer-events-none fixed z-[200] min-w-min max-w-[100vw] overflow-hidden
+              ${show ? 'opacity-100' : 'opacity-0'}
               ${!noTranslateAnimation && getTranslateClasses(position)}
             `}
-						style={{
-							transition: show
-								? `transform 200ms ${
-										noTranslateAnimation ? "step-start" : "linear"
-								  }, opacity 200ms ${
-										noOpacityAnimation ? "step-start" : "linear"
-								  }`
-								: `transform 200ms ${
-										noTranslateAnimation ? "step-end" : "linear"
-								  }, opacity 200ms ${
-										noOpacityAnimation ? "step-end" : "linear"
-								  }`,
-						}}
-					>
-						{renderTooltip?.({ element: titleNodeRef, title }) || (
-							<div
-								style={{ fontSize }}
-								className={`rounded-md bg-gray-900 px-3 py-1 text-center text-gray-300`}
+								style={{
+									transition: show
+										? `transform 200ms ${
+												noTranslateAnimation ? 'step-start' : 'linear'
+										  }, opacity 200ms ${
+												noOpacityAnimation ? 'step-start' : 'linear'
+										  }`
+										: `transform 200ms ${
+												noTranslateAnimation ? 'step-end' : 'linear'
+										  }, opacity 200ms ${
+												noOpacityAnimation ? 'step-end' : 'linear'
+										  }`,
+								}}
 							>
-								{title}
+								{renderTooltip?.({ element: titleNodeRef, title }) || (
+									<div
+										style={{ fontSize }}
+										className={`rounded-md bg-gray-900 px-3 py-1 text-center text-gray-300`}
+									>
+										{title}
+									</div>
+								)}
 							</div>
-						)}
-					</div>
-				</div>
+						</div>
+					) : (
+							<div></div>
+					)}
+				</>
 			</Portal>
 		</>
 	);

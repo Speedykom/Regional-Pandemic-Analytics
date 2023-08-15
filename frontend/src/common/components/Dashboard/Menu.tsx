@@ -7,78 +7,84 @@ import {
 	BiLock,
 	BiTable,
 	BiUser,
-} from "react-icons/bi";
-import { NavLink } from "../link";
-import { motion, AnimationControls } from "framer-motion";
-import { usePermission } from "@/common/hooks/use-permission";
+} from 'react-icons/bi';
+import { NavLink } from '../link';
+import { motion, AnimationControls } from 'framer-motion';
+import { usePermission } from '@/common/hooks/use-permission';
+import Tooltip from '../common/Tooltip';
 
 interface MenuProps {
 	controlstextopacity?: AnimationControls;
 	controlstext?: AnimationControls;
-	isOpen: boolean
+	isOpen: boolean;
 }
 
 export const MenuData = [
 	{
-		name: "Dashboard",
+		name: 'Dashboard',
 		items: [
 			{
-				title: "Home",
-				href: "/home",
+				title: 'Home',
+				href: '/home',
 				icon: BiHome,
-				scope: "",
+				scope: '',
 			},
 			{
-				title: "Dashboards",
-				href: "/dashboards",
+				title: 'Dashboards',
+				href: '/dashboards',
 				icon: BiTable,
-				scope: "dashboard:read",
+				scope: 'dashboard:read',
 			},
 			{
-				title: "Charts",
-				href: "/charts",
+				title: 'Charts',
+				href: '/charts',
 				icon: BiChart,
-				scope: "chart:read",
+				scope: 'chart:read',
 			},
 		],
 	},
 	{
-		name: "Manage",
+		name: 'Manage',
 		items: [
 			{
-				title: "Process Chains",
-				href: "/process-chains",
+				title: 'Process Chains',
+				href: '/process-chains',
 				icon: BiGitPullRequest,
-				scope: "process:read",
+				scope: 'process:read',
 			},
 			{
-				title: "Data",
-				href: "/data",
+				title: 'Data',
+				href: '/data',
 				icon: BiData,
-				scope: "data:read",
+				scope: 'data:read',
 			},
 			{
+<<<<<<< HEAD
 				title: "My Pipelines",
 				href: "/pipelines",
+=======
+				title: 'My Pipelines',
+				href: '/my-pipeline',
+>>>>>>> 6d43613 (tooltip component refactor, show tooltip only when sidebar is minimised)
 				icon: BiGitMerge,
-				scope: "pipeline:read",
+				scope: 'pipeline:read',
 			},
 		],
 	},
 	{
-		name: "Settings",
+		name: 'Settings',
 		items: [
 			{
-				title: "Roles",
-				href: "/roles",
+				title: 'Roles',
+				href: '/roles',
 				icon: BiLock,
-				scope: "user:read",
+				scope: 'user:read',
 			},
 			{
-				title: "Accounts",
-				href: "/users",
+				title: 'Accounts',
+				href: '/users',
 				icon: BiUser,
-				scope: "user:read",
+				scope: 'user:read',
 			},
 		],
 	},
@@ -92,9 +98,9 @@ export const SideNavLinks = (prop: MenuProps) => {
 				<div key={group.name} className="my-4 flex flex-col">
 					<motion.p
 						animate={prop.controlstextopacity}
-						className="text-gray-500 ml-4 text-sm font-bold mb-2"
+						className='text-gray-500 ml-4 text-sm font-bold mb-2'
 					>
-						{prop?.isOpen ? group?.name : ""}
+						{prop?.isOpen ? group?.name : ''}
 					</motion.p>
 
 					{group.items.filter(({ title, scope }) => title == "Home" || hasPermission(scope)).map((item) => (
@@ -119,4 +125,3 @@ export const SideNavLinks = (prop: MenuProps) => {
 		</>
 	);
 };
-
