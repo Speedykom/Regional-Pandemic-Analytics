@@ -7,78 +7,79 @@ import {
 	BiLock,
 	BiTable,
 	BiUser,
-} from "react-icons/bi";
-import { NavLink } from "../link";
-import { motion, AnimationControls } from "framer-motion";
-import { usePermission } from "@/common/hooks/use-permission";
+} from 'react-icons/bi';
+import { NavLink } from '../link';
+import { motion, AnimationControls } from 'framer-motion';
+import { usePermission } from '@/common/hooks/use-permission';
+import Tooltip from '../common/Tooltip';
 
 interface MenuProps {
 	controlstextopacity?: AnimationControls;
 	controlstext?: AnimationControls;
-	isOpen: boolean
+	isOpen: boolean;
 }
 
 export const MenuData = [
 	{
-		name: "Dashboard",
+		name: 'Dashboard',
 		items: [
 			{
-				title: "Home",
-				href: "/home",
+				title: 'Home',
+				href: '/home',
 				icon: BiHome,
-				scope: "",
+				scope: '',
 			},
 			{
-				title: "Dashboards",
-				href: "/dashboards",
+				title: 'Dashboards',
+				href: '/dashboards',
 				icon: BiTable,
-				scope: "dashboard:read",
+				scope: 'dashboard:read',
 			},
 			{
-				title: "Charts",
-				href: "/charts",
+				title: 'Charts',
+				href: '/charts',
 				icon: BiChart,
-				scope: "chart:read",
+				scope: 'chart:read',
 			},
 		],
 	},
 	{
-		name: "Manage",
+		name: 'Manage',
 		items: [
 			{
-				title: "Process Chains",
-				href: "/process-chains",
+				title: 'Process Chains',
+				href: '/process-chains',
 				icon: BiGitPullRequest,
-				scope: "process:read",
+				scope: 'process:read',
 			},
 			{
-				title: "Data",
-				href: "/data",
+				title: 'Data',
+				href: '/data',
 				icon: BiData,
-				scope: "data:read",
+				scope: 'data:read',
 			},
 			{
-				title: "My Pipelines",
-				href: "/my-pipeline",
+				title: 'My Pipelines',
+				href: '/my-pipeline',
 				icon: BiGitMerge,
-				scope: "pipeline:read",
+				scope: 'pipeline:read',
 			},
 		],
 	},
 	{
-		name: "Settings",
+		name: 'Settings',
 		items: [
 			{
-				title: "Roles",
-				href: "/roles",
+				title: 'Roles',
+				href: '/roles',
 				icon: BiLock,
-				scope: "user:read",
+				scope: 'user:read',
 			},
 			{
-				title: "Accounts",
-				href: "/users",
+				title: 'Accounts',
+				href: '/users',
 				icon: BiUser,
-				scope: "user:read",
+				scope: 'user:read',
 			},
 		],
 	},
@@ -89,47 +90,54 @@ export const SideNavLinks = (prop: MenuProps) => {
 	return (
 		<>
 			{MenuData.map((group, index) => (
-				<div key={index} className="my-4 flex flex-col">
+				<div key={index} className='my-4 flex flex-col'>
 					<motion.p
 						animate={prop.controlstextopacity}
-						className="text-gray-500 ml-4 text-sm font-bold mb-2"
+						className='text-gray-500 ml-4 text-sm font-bold mb-2'
 					>
-						{prop?.isOpen ? group?.name : ""}
+						{prop?.isOpen ? group?.name : ''}
 					</motion.p>
 
 					{group.items.map((item, index2) => (
 						<>
-							{item.title == "Home" ? (
-								<NavLink
-									href={item.href}
-									activeClassName="bg-prim text-white hover:bg-prim-hover"
-									className="hover:bg-gray-400/40 px-4 py-3 flex w-full cursor-pointer"
-								>
-									<item.icon className="text-lg" />
+							{item.title == 'Home' ? (
+								<Tooltip position='right' fontSize='12px' hide={prop.isOpen}>
+									<span title={item?.title}>
+										<NavLink
+											href={item.href}
+											activeClassName='bg-prim text-white hover:bg-prim-hover'
+											className='hover:bg-gray-400/40 px-4 py-3 flex w-full cursor-pointer'
+										>
+											<item.icon className='text-lg' />
 
-									<motion.p
-										animate={prop.controlstext}
-										className="ml-4 text-sm"
-									>
-										{prop?.isOpen ? item?.title : ""}
-									</motion.p>
-								</NavLink>
+											<motion.p
+												animate={prop.controlstext}
+												className='ml-4 text-sm'
+											>
+												{prop?.isOpen ? item?.title : ''}
+											</motion.p>
+										</NavLink>
+									</span>
+								</Tooltip>
 							) : (
 								hasPermission(item.scope) && (
-									<NavLink
-										href={item.href}
-										activeClassName="bg-prim text-white hover:bg-prim-hover"
-										className="hover:bg-gray-400/40 px-4 py-3 flex w-full cursor-pointer"
-									>
-										<item.icon className="text-lg" />
-
-										<motion.p
-											animate={prop?.controlstext}
-											className="ml-4 text-sm"
-										>
-											{prop?.isOpen ? item?.title : ""}
-										</motion.p>
-									</NavLink>
+									<Tooltip position='right' fontSize='12px' hide={prop.isOpen}>
+										<span title={item?.title}>
+											<NavLink
+												href={item.href}
+												activeClassName='bg-prim text-white hover:bg-prim-hover'
+												className='hover:bg-gray-400/40 px-4 py-3 flex w-full cursor-pointer'
+											>
+												<item.icon className='text-lg' />
+												<motion.p
+													animate={prop?.controlstext}
+													className='ml-4 text-sm'
+												>
+													{prop?.isOpen ? item?.title : ''}
+												</motion.p>
+											</NavLink>
+										</span>
+									</Tooltip>
 								)
 							)}
 						</>
@@ -139,4 +147,3 @@ export const SideNavLinks = (prop: MenuProps) => {
 		</>
 	);
 };
-
