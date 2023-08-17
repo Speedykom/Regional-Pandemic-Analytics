@@ -1,7 +1,13 @@
 {
-  "realm": "regional-pandemic-analytics",
-  "auth-server-url": "${HOP_KEYCLOAK_URL}",
-  "resource": "hop-client",
-  "public-client": true,
-  "use-resource-role-mappings": true
+  "realm": "${HOP_KEYCLOAK_REALM}",
+  "auth-server-url": "${HOP_KEYCLOAK_SERVER_URL}",
+  "resource": "${HOP_KEYCLOAK_CLIENT_ID}",
+  "public-client": false,
+  "use-resource-role-mappings": true,
+  "redirect-rewrite-rules" : {
+    "^/(.*)$" : "/hop"
+  },
+  "credentials": {
+    "secret": "${HOP_KEYCLOAK_CLIENT_SECRET}"
+  }
 }
