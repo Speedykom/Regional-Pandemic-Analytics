@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { DashboardApi, ChartApi } from "@/modules/superset/superset";
 import { ProcessApi } from "@/modules/process/process";
-import authReducer, { AuthApi } from "@/modules/auth/auth";
+import authReducer, { AuthApi, HopAuthApi } from "@/modules/auth/auth";
 import { PipelineApi } from "@/modules/pipeline/pipeline";
 import { UserApi } from "@/modules/user/user";
 import { RoleApi } from "@/modules/roles/role";
@@ -16,6 +16,7 @@ export const store = configureStore({
     [DataApi.reducerPath]: DataApi.reducer,
     [PipelineApi.reducerPath]: PipelineApi.reducer,
     [AuthApi.reducerPath]: AuthApi.reducer,
+    [HopAuthApi.reducerPath]: HopAuthApi.reducer,
     [UserApi.reducerPath]: UserApi.reducer,
     [RoleApi.reducerPath]: RoleApi.reducer,
     auth: authReducer,
@@ -28,6 +29,7 @@ export const store = configureStore({
       .concat(ProcessApi.middleware)
       .concat(DataApi.middleware)
       .concat(AuthApi.middleware)
+      .concat(HopAuthApi.middleware)
       .concat(PipelineApi.middleware)
       .concat(UserApi.middleware)
       .concat(RoleApi.middleware),

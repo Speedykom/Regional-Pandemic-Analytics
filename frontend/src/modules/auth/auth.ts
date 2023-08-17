@@ -1,7 +1,7 @@
 // Need to use the React-specific entry point to import createApi
 import { baseQuery } from '@/common/redux/api';
 import { createSlice } from '@reduxjs/toolkit';
-import { createApi } from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import secureLocalStorage from 'react-secure-storage';
 import { Credentials, UserProfile, Permissions, Jwt, OAuthParams } from './interface';
 import jwt_decode from 'jwt-decode';
@@ -18,7 +18,7 @@ export const AuthApi = createApi({
         body: body,
       }),
     }),
-    logout: builder.mutation({
+    logout: builder.mutation<void, void>({
       query: () => ({
         url: '/auth/logout',
         method: 'POST',
@@ -27,9 +27,23 @@ export const AuthApi = createApi({
   }),
 });
 
+export const HopAuthApi = createApi({
+  reducerPath: 'HopAuthApi',
+  baseQuery: fetchBaseQuery({ baseUrl: `/hop/` }),
+  endpoints: (builder) => ({
+    logoutFromHop: builder.mutation<void, void>({
+      query: () => ({
+        url: '/?logout=true',
+        method: 'GET',
+      }),
+    }),
+  }),
+});
+
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const { useLoginMutation, useLogoutMutation } = AuthApi;
+export const { useLogoutFromHopMutation } = HopAuthApi;
 
 type UserAuth = {
   user: null | UserProfile; // for user object

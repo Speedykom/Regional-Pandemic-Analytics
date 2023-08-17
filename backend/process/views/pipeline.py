@@ -10,6 +10,7 @@ from utils.minio import client
 from minio.commonconfig import COPY, CopySource, REPLACE
 from datetime import datetime
 
+
 class PipelineListView(APIView):
     keycloak_scopes = {
         'POST': 'pipeline:add',
@@ -69,6 +70,7 @@ class PipelineListView(APIView):
 
             return Response({"status": "success"}, status=status.HTTP_200_OK)
 
+
 class PipelineDetailView(APIView):
     keycloak_scopes = {
         'GET': 'pipeline:read',
@@ -78,14 +80,17 @@ class PipelineDetailView(APIView):
     file = "../hop/data-orch.list"
 
     def get(self, request, id=None):
-        pipeline = Pipeline.objects.filter(id=id)
+        pipeline = Pipeline.objects.get(id=id)
 
-        if (len(pipeline) <= 0): return Response({'status': 'success', "message": "No pipeline found for this id {}".format(id)}, status=404)
+        if not pipeline:
+            return Response({'status': "error", "message": "No pipeline found for this id {}".format(id)}, status=status.HTTP_404_NOT_FOUND)
 
-        file_path = 'file:///files/{}'.format(pipeline[0].path)
+        file_path = 'file:///files/{}'.format(pipeline.path)
         payload = {"names": [file_path]}
 
         edit_hop = EditAccessProcess(file=self.file)
         edit_hop.request_edit(json.dumps(payload))
 
-        return Response({"status": "success", "data": "Edit access granted!"}, status=status.HTTP_200_OK)
+        pipeline = PipelineSerializer(pipeline, many=False)
+
+        return Response(pipeline.data, status=status.HTTP_200_OK)
