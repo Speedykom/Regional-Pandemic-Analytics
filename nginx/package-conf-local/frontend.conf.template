@@ -28,12 +28,10 @@ server {
 	}
 
 	location /hop/ {
-		#rewrite ^/hop/?(.*)$ /$1 break;
 		proxy_set_header Host                    $host;
     	proxy_set_header X-Real-IP               $remote_addr;
     	proxy_set_header X-Scheme                $scheme;
 		proxy_pass http://$NGINX_UPSTREAM_HOP:8080/;
-		#proxy_redirect /ui /hop/ui;
 		error_log /var/log/hop_errors.log;
 	}
 }
