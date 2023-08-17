@@ -16,12 +16,14 @@ default_args = {
     "retry_delay": timedelta(minutes=5)
 }
 
+minio_url = Variable.get("minio_url")
+minio_access_key = Variable.get("minio_access_key")
+minio_secret_key = Variable.get("minio_secret_key")
+minio_ftp_server = Variable.get("minio_ftp_server")
+minio_ftp = f"{minio_access_key}:{minio_secret_key}@{minio_ftp_server}"
+
 # Download pipeline from minio bucket
 def download_pipeline_minio():
-    minio_url = Variable.get("minio_url")
-    minio_access_key = Variable.get("minio_access_key")
-    minio_secret_key = Variable.get("minio_secret_key")
-
     client = Minio(minio_url, access_key=minio_access_key , secret_key=minio_secret_key, secure=False)
     client.fget_object("pipelines","pipelines-created/{{user_id}}/{{pipeline_name}}","/hop/config/projects/default/{{user_id}}/{{pipeline_name}}")
 
@@ -41,7 +43,8 @@ with DAG("{{dag_id}}", default_args=default_args, schedule_interval="{{schedule_
       pipeline="{{user_id}}/{{pipeline_name}}",
       pipe_config='remote hop server',
       project_name='default',
-      log_level='Basic'
+      log_level='Basic',
+      params={'user_id':'{{user_id}}','minio_ftp':f'{minio_ftp}','dag_id':'{{dag_id}}'}
     )
     # Run Druid ingection
 
