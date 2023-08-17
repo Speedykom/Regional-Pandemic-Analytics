@@ -1,7 +1,7 @@
 import { AppDrawer } from "@/common/components/AppDrawer";
 import { ShowMessage } from "@/common/components/ShowMessage";
 import { schedule_intervals } from "@/common/utils/processs";
-import { useFindAllQuery as usePipelinesQuery } from "@/modules/pipeline/pipeline";
+import { useGetAllPipelinesQuery } from "@/modules/pipeline/pipeline";
 import { useCreateProcessChainMutation } from "@/modules/process/process";
 import { Button, Form, Input, Select } from "antd";
 import { useState } from "react";
@@ -16,7 +16,7 @@ export const AddProcess = ({ state, onClose }: Props) => {
   const [loading, setLoading] = useState(false);
   const [addProcess] = useCreateProcessChainMutation();
 
-  const { data: res } = usePipelinesQuery();
+  const { data: res } = useGetAllPipelinesQuery();
 
   const pipelines = res?.data || [];
 

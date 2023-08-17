@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
 	clearCredentials,
 	selectCurrentUser,
+	useLogoutFromHopMutation,
 	useLogoutMutation,
 } from "@/modules/auth/auth";
 import { toast } from "react-toastify";
@@ -31,16 +32,21 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
 	const router = useRouter();
 	const dispatch = useDispatch();
 	const [logout] = useLogoutMutation();
+	const [logoutFromHop] =  useLogoutFromHopMutation();
 	const currentUser = useSelector(selectCurrentUser);
 	const username = currentUser?.given_name;
 
 	const handleLogout = async () => {
-		logout({})
+		logout()
+			.then(() => {
+				return logoutFromHop();
+			})
 			.then(() => {
 				dispatch(clearCredentials());
 				router.push("/");
 			})
-			.catch(() => {
+			.catch((err) => {
+				console.log(err)
 				toast.error("Something went wrong!", { position: "top-right" });
 			});
 	};

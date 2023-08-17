@@ -38,7 +38,6 @@ To run the cluster, on local environment:
 - [frontend.igad.local](https://frontend.igad.local "front.igad.local") for frontend
 - [superset.igad.local](https://superset.igad.local "keyclaok.igad.local") for superset web console
 - [airflow.igad.local](https://airflow.igad.local "airflow.igad.local") for airflow web console
-- [hop.igad.local](https://hop.igad.local "hop.igad.local") for hop web console
 - [druid.igad.local](https://druid.igad.local "druid.igad.local") for keycloak web console
 - [coordinator.igad.local](https://coordinator.igad.local "coordinator.igad.local") for druid coordinator
 - [console.minio.igad.local](https://minio.igad.local "minio.igad.local") for minio web console
@@ -51,7 +50,6 @@ To run the cluster, on local environment:
 - [analytics2.igad-health.eu](https://analytics2.igad-health.eu) for Superset
 - [coordinator2.igad-health.eu](https://coordinator2.igad-health.eu) for Druid API
 - [db2.igad-health.eu](https://db2.igad-health.eu) for Druid
-- [integration2.igad-health.eu](https://integration2.igad-health.eu) for Hop
 - [auth2.igad-health.eu](https://auth2.igad-health.eu) for Keycloak
 - [orchestration2.igad-health.eu](https://orchestration2.igad-health.eu) for Airflow
 - [cache2.igad-health.eu](https://cache2.igad-health.eu) for Minio
