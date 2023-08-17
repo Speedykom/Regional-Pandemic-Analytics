@@ -198,7 +198,7 @@ export const ProcessCard = ({ process, onLoad }: ProcessCardProps) => {
             </div>
             <div className="text-sm flex flex-col items-center">
               <p className="mb-2 text-xs font-bold">State</p>
-              {process.state === "active" ? (
+              {process.active === true ? (
                 <p className="bg-gray-100 text-prim rounded-full p-1 px-3">
                   Active
                 </p>
@@ -209,14 +209,14 @@ export const ProcessCard = ({ process, onLoad }: ProcessCardProps) => {
               )}
             </div>
           </div>
-          {process.state === "active" && <div className="flex space-x-2 justify-end">
+          { process.active === true && <div className="flex space-x-2 justify-end">
             {hasPermission('process:update') && (
               <LoadButton onClick={() => onLoad(process)} />
             )}
-            {hasPermission('process:run') && process.airflow && (
+            {hasPermission('process:run') && process.dag_id && (
               <RunButton id={process.dag_id} />
             )}
-            {hasPermission('process:read') && process.airflow && (
+            {hasPermission('process:read') && process.dag_id && (
               <ViewButton id={process.dag_id} />
             )}
             {hasPermission('process:delete') &&  (

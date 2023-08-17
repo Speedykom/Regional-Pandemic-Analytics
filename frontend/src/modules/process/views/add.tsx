@@ -86,10 +86,9 @@ export const AddProcess = ({ state, onClose }: Props) => {
           <Select
             showSearch
             placeholder="Select Pipeline"
-            options={pipelines.map((pipeline: any, i: number) => ({
-              key: i + 353,
+            options={pipelines.map((pipeline: any) => ({
+              value: pipeline.name,
               label: pipeline.name,
-              value: pipeline.id,
             }))}
           />
         </Form.Item>
