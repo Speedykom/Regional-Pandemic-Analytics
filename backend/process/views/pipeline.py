@@ -6,6 +6,9 @@ from rest_framework import status
 from ..models import Pipeline
 from ..serializers import PipelineSerializer
 from ..gdags.hop import EditAccessProcess
+from utils.minio import client
+from minio.commonconfig import COPY, CopySource, REPLACE
+from datetime import datetime
 
 
 class PipelineListView(APIView):
@@ -15,53 +18,57 @@ class PipelineListView(APIView):
     }
 
     def get(self, request):
+        """ Return a user created pipelines """
+        
         cur_user = request.userinfo
         user_id = cur_user['sub']
 
-        snippets = Pipeline.objects.filter(user_id=user_id)
-        pipelines = PipelineSerializer(snippets, many=True)
-
-        return Response({"status": "success", "data": pipelines.data}, status=status.HTTP_200_OK)
+        pipelines:list[str]=[]
+    
+        objects=client.list_objects("pipelines",prefix=f"pipelines-created/{user_id}/",include_user_meta=True)
+        for object in objects:
+            pipelines.append(
+                {
+                    "name": object.object_name.removeprefix(f"pipelines-created/{user_id}/"),
+                    "description": object.metadata["X-Amz-Meta-Description"]
+                    }
+                )  
+        
+        return Response({"status": "success", "data": pipelines}, status=status.HTTP_200_OK)
 
     def post(self, request):
+        """ Create a pipeline from a chosen template for a specific user  """
+        
         cur_user = request.userinfo
         user_id = cur_user['sub']
+        
+        name = request.data['name']
+        template = request.data['template']
+        description = request.data['description']
+        
+        try:
+            # Checks if an object with the same name exits 
+            client_response = client.get_object("pipelines", f"pipelines-created/{user_id}/{name}")
+            client_response.close()
+            client_response.release_conn()
+            return Response({"status": "Fail", "message": f"file already exists with the name {name}"}, status=409)
+        except:            
+            # Create new pipeline by: 
+            #   1. copying the template,
+            #   2. renaming it to another index in the same bukcket
+            #   3. adding metadata: description + date of creation
+            client_result = client.copy_object(
+                "pipelines",
+                f"pipelines-created/{user_id}/{name}.hpl",
+                CopySource("pipelines", f"templates/{template}"),
+                metadata={
+                "description": f"{description}",
+                "created": f"{datetime.utcnow()}",
+                },
+                metadata_directive=REPLACE,
+            )
 
-        path = request.data['path']
-        name = request.data['name'].replace(
-            " ", "-").replace(".hpl", "").lower()
-
-        process = Pipeline.objects.filter(name=name, user_id=user_id)
-
-        if (len(process) > 0):
-            return Response({"status": "Fail", "message": "pipeline already exist with this name {}".format(name)}, status=409)
-
-        file = open(path, "r")
-
-        AIRFLOW_HOP_PIPELINES = os.getenv("AIRFLOW_HOP_PIPELINES")
-        pipeline_name = f"..{AIRFLOW_HOP_PIPELINES}/{name}.hpl"
-        pipeline_path = "{}.hpl".format(name)
-        parquet_path = "/opt/shared/{}.parquet".format(name)
-
-        pipeline = open(pipeline_name, "w")
-        pipeline.write(file.read())
-        pipeline.close()
-        file.close()
-
-        request.data['path'] = pipeline_path
-        request.data['parquet_path'] = parquet_path
-        request.data['name'] = name
-        request.data['user_id'] = user_id
-
-        serializer = PipelineSerializer(data=request.data)
-
-        if serializer.is_valid():
-
-            serializer.save()
-
-            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
-        else:
-            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
 
 
 class PipelineDetailView(APIView):
