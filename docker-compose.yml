@@ -55,6 +55,7 @@ x-airflow-common: &airflow
     - AIRFLOW_VAR_MINIO_URL=${BACKEND_MINIO_URL}
     - AIRFLOW_VAR_MINIO_ACCESS_KEY=${BACKEND_MINIO_ACCESS_KEY}
     - AIRFLOW_VAR_MINIO_SECRET_KEY=${BACKEND_MINIO_SECRET_KEY}
+    - AIRFLOW_VAR_MINIO_FTP_SERVER=${MINIO_FTP_SERVER}
   volumes:
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/include:/opt/airflow/include
@@ -85,9 +86,9 @@ services:
   # Minio
   # ========
   storage:
-    image: quay.io/minio/minio:RELEASE.2023-03-24T21-41-23Z
+    image: quay.io/minio/minio:RELEASE.2023-04-20T17-56-55Z
     container_name: storage
-    command: minio server /data --console-address ":9090"
+    command: minio server --console-address ":9090" --ftp "address=:8080" data
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
