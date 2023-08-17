@@ -26,4 +26,12 @@ server {
 		proxy_pass http://$NGINX_UPSTREAM_FRONTEND:3000/;
 		error_log /var/log/front_end_errors.log;
 	}
+
+	location /hop/ {
+		proxy_set_header Host                    $host;
+    	proxy_set_header X-Real-IP               $remote_addr;
+    	proxy_set_header X-Scheme                $scheme;
+		proxy_pass http://$NGINX_UPSTREAM_HOP:8080/;
+		error_log /var/log/hop_errors.log;
+	}
 }
