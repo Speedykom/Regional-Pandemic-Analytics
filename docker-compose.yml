@@ -142,7 +142,6 @@ services:
         - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
         - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
         - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
-        - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
         - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
         - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
         - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
@@ -153,7 +152,6 @@ services:
       - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
       - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
       - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
-      - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
       - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
       - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
       - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
@@ -416,9 +414,14 @@ services:
       - ./hop/pipelines:/files
       - ./storage:/home
       - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
+      - ./hop/keycloak/index.jsp:/usr/local/tomcat/webapps/ROOT/index.jsp
       - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
     environment:
-      - HOP_KEYCLOAK_URL=${HOP_KEYCLOAK_URL}
+      - HOP_KEYCLOAK_SELF_SIGNED_SSL=${HOP_KEYCLOAK_SELF_SIGNED_SSL}
+      - HOP_KEYCLOAK_CLIENT_ID=${HOP_KEYCLOAK_CLIENT_ID}
+      - HOP_KEYCLOAK_CLIENT_SECRET=${HOP_KEYCLOAK_CLIENT_SECRET}
+      - HOP_KEYCLOAK_REALM=${HOP_KEYCLOAK_REALM}
+      - HOP_KEYCLOAK_SERVER_URL=${HOP_KEYCLOAK_SERVER_URL}
 
   hop-server:
     image: apache/hop:2.4.0
@@ -582,6 +585,7 @@ services:
       - ./certbot/www:/var/www/certbot
     depends_on:
       - airflow-webserver
+      - backend
 
   # =====
   #  OpenHIM
