@@ -194,16 +194,15 @@ https://play.dhis2.org/40.0.0/api/dataSets</note>
         <target_field>DisplayName</target_field>
       </field>
     </fields>
-    <filename_base>DHIS2</filename_base>
+    <filename_base>ftp://${minio_ftp}/parquets/${user_id}/${dag_id}</filename_base>
     <filename_create_parent_folders>N</filename_create_parent_folders>
     <filename_datetime_format>yyyyMMdd-HHmmss</filename_datetime_format>
     <filename_ext>parquet</filename_ext>
     <filename_include_copy>N</filename_include_copy>
     <filename_include_date>N</filename_include_date>
     <filename_include_datetime>Y</filename_include_datetime>
-    <filename_include_split>Y</filename_include_split>
+    <filename_include_split>N</filename_include_split>
     <filename_include_time>N</filename_include_time>
-    <filename_split_size>1000000</filename_split_size>
     <row_group_size>20000</row_group_size>
     <version>1.0</version>
     <attributes/>
