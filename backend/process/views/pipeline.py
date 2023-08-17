@@ -66,7 +66,6 @@ class PipelineListView(APIView):
 
 class PipelineDetailView(APIView):
     keycloak_scopes = {
-        'POST': 'pipeline:update',
         'GET': 'pipeline:read',
     }
 
