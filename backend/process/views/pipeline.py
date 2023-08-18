@@ -3,11 +3,9 @@ import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from ..models import Pipeline
-from ..serializers import PipelineSerializer
 from ..gdags.hop import EditAccessProcess
 from utils.minio import client
-from minio.commonconfig import COPY, CopySource, REPLACE
+from minio.commonconfig import CopySource, REPLACE
 from datetime import datetime
 
 
@@ -19,41 +17,43 @@ class PipelineListView(APIView):
 
     def get(self, request):
         """ Return a user created pipelines """
-        
+
         cur_user = request.userinfo
         user_id = cur_user['sub']
 
-        pipelines:list[str]=[]
-    
-        objects=client.list_objects("pipelines",prefix=f"pipelines-created/{user_id}/",include_user_meta=True)
+        pipelines: list[str] = []
+
+        objects = client.list_objects(
+            "pipelines", prefix=f"pipelines-created/{user_id}/", include_user_meta=True)
         for object in objects:
             pipelines.append(
                 {
-                    "name": object.object_name.removeprefix(f"pipelines-created/{user_id}/"),
+                    "name": object.object_name.removeprefix(f"pipelines-created/{user_id}/").removesuffix(".hpl"),
                     "description": object.metadata["X-Amz-Meta-Description"]
-                    }
-                )  
-        
+                }
+            )
+
         return Response({"status": "success", "data": pipelines}, status=status.HTTP_200_OK)
 
     def post(self, request):
         """ Create a pipeline from a chosen template for a specific user  """
-        
+
         cur_user = request.userinfo
         user_id = cur_user['sub']
-        
+
         name = request.data['name']
         template = request.data['template']
         description = request.data['description']
-        
+
         try:
-            # Checks if an object with the same name exits 
-            client_response = client.get_object("pipelines", f"pipelines-created/{user_id}/{name}")
+            # Checks if an object with the same name exits
+            client_response = client.get_object(
+                "pipelines", f"pipelines-created/{user_id}/{name}")
             client_response.close()
             client_response.release_conn()
             return Response({"status": "Fail", "message": f"file already exists with the name {name}"}, status=409)
-        except:            
-            # Create new pipeline by: 
+        except:
+            # Create new pipeline by:
             #   1. copying the template,
             #   2. renaming it to another index in the same bukcket
             #   3. adding metadata: description + date of creation
@@ -62,8 +62,8 @@ class PipelineListView(APIView):
                 f"pipelines-created/{user_id}/{name}.hpl",
                 CopySource("pipelines", f"templates/{template}"),
                 metadata={
-                "description": f"{description}",
-                "created": f"{datetime.utcnow()}",
+                    "description": f"{description}",
+                    "created": f"{datetime.utcnow()}",
                 },
                 metadata_directive=REPLACE,
             )
@@ -73,24 +73,58 @@ class PipelineListView(APIView):
 
 class PipelineDetailView(APIView):
     keycloak_scopes = {
+        'PUT': 'pipeline:update',
         'GET': 'pipeline:read',
     }
 
     # dynamic dag output
     file = "../hop/data-orch.list"
 
-    def get(self, request, id=None):
-        pipeline = Pipeline.objects.get(id=id)
+    def get(self, request, name=None):
+        cur_user = request.userinfo
+        user_id = cur_user['sub']
+        try:
+            object = client.stat_object(
+                "pipelines", f"pipelines-created/{user_id}/{name}.hpl")
 
-        if not pipeline:
-            return Response({'status': "error", "message": "No pipeline found for this id {}".format(id)}, status=status.HTTP_404_NOT_FOUND)
+            # Download file from Minio to be available for HopUI
+            client.fget_object(
+                "pipelines", f"pipelines-created/{user_id}/{name}.hpl", f"/hop/pipelines/{name}.hpl")
 
-        file_path = 'file:///files/{}'.format(pipeline.path)
-        payload = {"names": [file_path]}
+            # Automatically open file in visual editor when HopUI opens
+            payload = {"names": ['file:///files/{}.hpl'.format(name)]}
+            edit_hop = EditAccessProcess(file=self.file)
+            edit_hop.request_edit(json.dumps(payload))
 
-        edit_hop = EditAccessProcess(file=self.file)
-        edit_hop.request_edit(json.dumps(payload))
+            return Response({
+                "name": name,
+                "description": object.metadata["X-Amz-Meta-Description"]
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({'status': "error", "message": "No pipeline found with this name {}".format(name)}, status=status.HTTP_404_NOT_FOUND)
 
-        pipeline = PipelineSerializer(pipeline, many=False)
+    def put(self, request, name=None):
+        cur_user = request.userinfo
+        user_id = cur_user['sub']
+        try:
+            object = client.stat_object(
+                "pipelines", f"pipelines-created/{user_id}/{name}.hpl")
+            # Update pipeline file in Minio
+            client.fput_object(
+                "pipelines", f"pipelines-created/{user_id}/{name}.hpl", f"/hop/pipelines/{name}.hpl",
+                metadata={
+                    "description": object.metadata["X-Amz-Meta-Description"],
+                    "updated": f"{datetime.utcnow()}",
+                    "created": object.metadata["X-Amz-Meta-Created"],
+                })
 
-        return Response(pipeline.data, status=status.HTTP_200_OK)
+            # Remove pipeline file from Minio volume
+            os.remove(f"/hop/pipelines/{name}.hpl")
+
+            return Response({
+                "status": "success"
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({'status': "error", "message": "Unable to update the pipeline {}".format(name)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
