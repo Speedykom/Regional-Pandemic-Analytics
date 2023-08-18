@@ -1,7 +1,7 @@
 import { countries } from "@/common/utils/countries";
 import { TextInput, SearchSelect, SearchSelectItem, Button, NumberInput } from "@tremor/react";
 import { useState } from "react";
-import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
+import Layout from "@/common/components/Dashboard/Layout";
 import { Unauthorized } from "@/common/components/common/unauth";
 import { EnvelopeIcon, ExclamationCircleIcon, PhoneIcon, UserIcon } from "@heroicons/react/24/outline";
 import { Switch } from "@headlessui/react";
@@ -368,8 +368,8 @@ export const AddUser = () => {
 export default function UserAdd() {
 	const { hasPermission } = usePermission();
 	return (
-		<DashboardFrame>
+		<Layout>
 			{hasPermission("user:add") ? <AddUser /> : <Unauthorized />}
-		</DashboardFrame>
+		</Layout>
 	);
 }
