@@ -97,7 +97,7 @@ export const MyPipelines = () => {
 									<TableCell>
 										<div className="flex space-x-2 justify-end">
 											<Button
-												onClick={() => router.push(`/pipelines/${item?.id}`)}
+												onClick={() => router.push(`/pipelines/${encodeURIComponent(item?.name)}`)}
 												className="hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white"
 											>
 												View
