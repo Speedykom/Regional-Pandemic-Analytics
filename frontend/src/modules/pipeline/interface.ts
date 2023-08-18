@@ -1,5 +1,4 @@
 export interface PipelineData {
-    id: string;
     name: string;
     description: string;
     parquet_path: string;
