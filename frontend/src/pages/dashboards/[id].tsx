@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { embedDashboard } from '@superset-ui/embedded-sdk';
-import DashboardFrame from '@/common/components/Dashboard/DashboardFrame';
+import Layout from '@/common/components/Dashboard/Layout';
 import getConfig from 'next/config';
 import { usePermission } from '@/common/hooks/use-permission';
 import { Unauthorized } from '@/common/components/common/unauth';
@@ -53,8 +53,8 @@ export default function SupersetDashboard() {
   }
 
   return (
-    <DashboardFrame title={'Dashboard'}>
+    <Layout>
       <div ref={ref} className="h-screen embed-iframe-container" />
-    </DashboardFrame>
+    </Layout>
   );
 }

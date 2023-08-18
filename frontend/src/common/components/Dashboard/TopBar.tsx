@@ -39,7 +39,9 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
 	const handleLogout = async () => {
 		logout()
 			.then(() => {
-				return logoutFromHop();
+				return logoutFromHop().catch((err) => {
+					console.warn(err)
+				});
 			})
 			.then(() => {
 				dispatch(clearCredentials());
@@ -149,7 +151,7 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
 								</Menu.Item>
 								<Menu.Item>
 									<Link
-										href="#"
+										href="javascript:void(0)"
 										className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
 									>
 										<Cog8ToothIcon className="h-4 w-4 mr-2" />
@@ -158,7 +160,7 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
 								</Menu.Item>
 								<Menu.Item>
 									<Link
-										href="#"
+										href="javascript:void(0)"
 										className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
 										onClick={handleLogout}
 									>
