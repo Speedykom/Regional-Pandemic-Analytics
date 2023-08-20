@@ -16,18 +16,38 @@ from django.conf import settings
 from utils.env_configs import (
     BASE_URL, APP_SECRET_KEY, APP_REALM, REST_REDIRECT_URI)
 
+import logging
+
 class LoginAPI(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(data=request.data,
+        logger = logging.getLogger(__name__)
+        
+        try:
+            serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({
-            'token': token.key,
-            'user_id': user.pk,
-            'email': user.email
-        })
+            serializer.is_valid(raise_exception=True)
+            user = serializer.validated_data['user']
+            token, created = Token.objects.get_or_create(user=user)
+
+            message = {
+                "message": "user login successfully {}".format("832728")
+            }
+
+            logger.info(message)
+            
+            return Response({
+                'token': token.key,
+                'user_id': user.pk,
+                'email': user.email
+            })
+        except Exception as e:
+            message = {
+                "message": "Authorization token is invalid or expired"
+            }
+
+            logger.error(message)
+            return Response({'status': response.json()['active'], 'error': 'Authorization token is invalid or expired'}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 class Authorization (APIView):
