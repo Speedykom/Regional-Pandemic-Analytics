@@ -1,0 +1,11 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /usr/share/filebeat/logs/*.log
+    
+  multiline.pattern: '^\['
+  multiline.negate: true
+  multiline.match: after
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]

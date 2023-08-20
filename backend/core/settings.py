@@ -23,6 +23,33 @@ CORS_ALLOW_CREDENTIALS=True
 CORS_ORIGIN_WHITELIST=os.getenv("CORS_ORIGIN_WHITELIST", 'http://localhost:3000,http://localhost:8000').split(',')
 # Application definition
 
+logs_folder = "{}/logs/app.log".format(BASE_DIR)
+
+LOGGING = {
+ 'version': 1,
+ 'disable_existing_loggers': False,
+ 'formatters': {
+  'simple': {
+   'format': '[%(asctime)s] %(levelname)s | %(funcName)s | %(name)s | %(message)s',
+   'datefmt': '%Y-%m-%d %H:%M:%S',
+  },
+ },
+ 'handlers': {
+  'logger': {
+   'level': 'DEBUG',
+   'class': 'logging.handlers.RotatingFileHandler',
+   'filename': logs_folder,
+   'formatter': 'simple',
+  }
+ },
+ 'loggers': {
+  'signal': {
+   'handlers': ['logger'],
+   'level': 'DEBUG',
+  }
+ }
+}
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

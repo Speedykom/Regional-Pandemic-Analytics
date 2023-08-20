@@ -74,90 +74,181 @@ volumes:
   broker_var: {}
   coordinator_var: {}
   router_var: {}
+  prometheus_data: {}
   mongo-data:
 
 services:
   # ========
   # Minio
   # ========
-  storage:
-    image: quay.io/minio/minio:RELEASE.2023-03-24T21-41-23Z
-    container_name: storage
-    command: minio server /data --console-address ":9090"
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-      - MINIO_SERVER_URL=${MINIO_SERVER_URL}
-      - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL}
-      - MINIO_IDENTITY_OPENID_CONFIG_URL=${MINIO_IDENTITY_OPENID_CONFIG_URL}
-      - MINIO_IDENTITY_OPENID_CLIENT_ID=${MINIO_IDENTITY_OPENID_CLIENT_ID}
-      - MINIO_IDENTITY_OPENID_CLIENT_SECRET=${MINIO_IDENTITY_OPENID_CLIENT_SECRET}
-      - MINIO_IDENTITY_OPENID_CLAIM_NAME=${MINIO_IDENTITY_OPENID_CLAIM_NAME}
-      - MINIO_IDENTITY_OPENID_DISPLAY_NAME=${MINIO_IDENTITY_OPENID_DISPLAY_NAME}
-      - MINIO_IDENTITY_OPENID_SCOPES=${MINIO_IDENTITY_OPENID_SCOPES}
-      - MINIO_IDENTITY_OPENID_REDIRECT_URI=${MINIO_IDENTITY_OPENID_REDIRECT_URI}
-    ports:
-      - "9001:9000"
-      - "8887:9090"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 30s
-      timeout: 20s
-      retries: 3
-    volumes:
-      - minio_data:/data
-    depends_on:
-      keycloak:
-        condition: service_healthy
-        restart: true
-  minio-mc:
-    image: minio/mc
-    container_name: minio-mc
-    entrypoint: ["/bin/sh", "-c"]
-    command:
-      - |
-        chmod +x /tmp/setup.sh
-        ./tmp/setup.sh
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-      - MINIO_MC_REMOTE_SERVER_URL=${MINIO_MC_REMOTE_SERVER_URL}
-    volumes:
-      - ./minio/setup.sh:/tmp/setup.sh
-    depends_on:
-      storage:
-        condition: service_healthy
-        restart: true
+  # storage:
+  #   image: quay.io/minio/minio:RELEASE.2023-03-24T21-41-23Z
+  #   container_name: storage
+  #   command: minio server /data --console-address ":9090"
+  #   environment:
+  #     - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+  #     - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+  #     - MINIO_SERVER_URL=${MINIO_SERVER_URL}
+  #     - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL}
+  #     - MINIO_IDENTITY_OPENID_CONFIG_URL=${MINIO_IDENTITY_OPENID_CONFIG_URL}
+  #     - MINIO_IDENTITY_OPENID_CLIENT_ID=${MINIO_IDENTITY_OPENID_CLIENT_ID}
+  #     - MINIO_IDENTITY_OPENID_CLIENT_SECRET=${MINIO_IDENTITY_OPENID_CLIENT_SECRET}
+  #     - MINIO_IDENTITY_OPENID_CLAIM_NAME=${MINIO_IDENTITY_OPENID_CLAIM_NAME}
+  #     - MINIO_IDENTITY_OPENID_DISPLAY_NAME=${MINIO_IDENTITY_OPENID_DISPLAY_NAME}
+  #     - MINIO_IDENTITY_OPENID_SCOPES=${MINIO_IDENTITY_OPENID_SCOPES}
+  #     - MINIO_IDENTITY_OPENID_REDIRECT_URI=${MINIO_IDENTITY_OPENID_REDIRECT_URI}
+  #   ports:
+  #     - "9001:9000"
+  #     - "8887:9090"
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+  #     interval: 30s
+  #     timeout: 20s
+  #     retries: 3
+  #   volumes:
+  #     - minio_data:/data
+  #   depends_on:
+  #     keycloak:
+  #       condition: service_healthy
+  #       restart: true
+  # minio-mc:
+  #   image: minio/mc
+  #   container_name: minio-mc
+  #   entrypoint: ["/bin/sh", "-c"]
+  #   command:
+  #     - |
+  #       chmod +x /tmp/setup.sh
+  #       ./tmp/setup.sh
+  #   environment:
+  #     - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+  #     - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+  #     - MINIO_MC_REMOTE_SERVER_URL=${MINIO_MC_REMOTE_SERVER_URL}
+  #   volumes:
+  #     - ./minio/setup.sh:/tmp/setup.sh
+  #   depends_on:
+  #     storage:
+  #       condition: service_healthy
+  #       restart: true
 
-  # ========
-  # Frontend
-  # ========
-  frontend:
-    container_name: frontend
-    build:
-      context: ./frontend
-      target: runner
-      args:
-        - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
-        - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
-        - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
-        - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
-        - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
-        - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
-        - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
-        - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
-    ports:
-      - "3000:3000"
-    environment:
-      - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
-      - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
-      - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
-      - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
-      - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
-      - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
-      - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
-      - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
-    restart: always
+  # # ========
+  # # kafka
+  # # ========
+  # kafka_zookeeper:
+  #   image: wurstmeister/zookeeper
+  #   container_name: kafka_zookeeper
+  #   ports:
+  #     - "2182:2181"
+  
+  # kafka:
+  #   image: wurstmeister/kafka
+  #   container_name: kafka
+  #   ports:
+  #     - "9092:9092"
+  #   environment:
+  #     KAFKA_ADVERTISED_HOST_NAME: localhost
+  #     KAFKA_ZOOKEEPER_CONNECT: kafka_zookeeper:2182
+
+  # # ========
+  # # elasticsearch
+  # # ========
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
+  #   container_name: elasticsearch
+  #   ports:
+  #     - 9200:9200
+  #     - 9300:9300
+  #   environment:
+  #     discovery.type: single-node
+
+  # # ========
+  # # kibana
+  # # ========
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:7.8.0
+  #   ports:
+  #     - 5601:5601
+  #   links:
+  #     - elasticsearch
+  #   depends_on:
+  #     - elasticsearch
+
+  # # ========
+  # # filebeat
+  # # ========
+  # filebeat:
+  #   image: docker.elastic.co/beats/filebeat:7.8.0
+  #   container_name: filebeat
+  #   volumes:
+  #     - ./backend/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+  #     - ./backend/logs:/usr/share/filebeat/logs
+  #   environment:
+  #     ELASTICSEARCH_URL: http://elasticsearch:9200
+  #   links:
+  #     - elasticsearch
+  #   depends_on:
+  #     - elasticsearch
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    expose:
+      - 9100
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    expose:
+      - 9090
+
+  # # ========
+  # # Frontend
+  # # ========
+  # frontend:
+  #   container_name: frontend
+  #   build:
+  #     context: ./frontend
+  #     target: runner
+  #     args:
+  #       - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
+  #       - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
+  #       - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
+  #       - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
+  #       - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
+  #       - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
+  #       - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
+  #       - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
+  #     - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
+  #     - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
+  #     - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
+  #     - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
+  #     - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
+  #     - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
+  #     - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
+  #   restart: always
 
   # ========
   # Backend
@@ -431,10 +522,9 @@ services:
     volumes:
       - ./hop/plugins/transforms/:/opt/hop/plugins/transforms/
       - ./hop/pipelines:/files
-      
-  # =======
-  # Airflow
-  # =======
+    # =======
+    # Airflow
+    # =======
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg
@@ -587,61 +677,60 @@ services:
   # =====
   #  OpenHIM
   # =====
+  # mongo-db:
+  #   container_name: mongo-db
+  #   image: mongo:4.0
+  #   volumes:
+  #     - "mongo-data:/data/db"
+  #   restart: unless-stopped
 
-  mongo-db:
-    container_name: mongo-db
-    image: mongo:4.0
-    volumes:
-      - "mongo-data:/data/db"
-    restart: unless-stopped
+  # openhim-core:
+  #   container_name: openhim-core
+  #   image: jembi/openhim-core:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     - mongo_url=mongodb://mongo-db/openhim-development
+  #     - mongo_atnaUrl=mongodb://mongo-db/openhim-development
+  #     - api_authenticationTypes=["token", "basic", "openid", "local"]
+  #     - authentication_enableCustomTokenAuthentication=true
+  #     - api_openid_url=${OPENHIM_KEYCLOAK_FRONTEND_URL}/realms/${OPENHIM_KEYCLOAK_REALM_NAME}
+  #     - api_openid_callbackUrl=${OPENHIM_KEYCLOAK_ROOT_URL}
+  #     - api_openid_clientId=${OPENHIM_KEYCLOAK_CLIENT_ID}
+  #     - api_openid_clientSecret=${OPENHIM_KEYCLOAK_SECRET}
+  #     - NODE_TLS_REJECT_UNAUTHORIZED=0
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  #     - "keycloak.igad.local:host-gateway"
 
-  openhim-core:
-    container_name: openhim-core
-    image: jembi/openhim-core:latest
-    restart: unless-stopped
-    environment:
-      - mongo_url=mongodb://mongo-db/openhim-development
-      - mongo_atnaUrl=mongodb://mongo-db/openhim-development
-      - api_authenticationTypes=["token", "basic", "openid", "local"]
-      - authentication_enableCustomTokenAuthentication=true
-      - api_openid_url=${OPENHIM_KEYCLOAK_FRONTEND_URL}/realms/${OPENHIM_KEYCLOAK_REALM_NAME}
-      - api_openid_callbackUrl=${OPENHIM_KEYCLOAK_ROOT_URL}
-      - api_openid_clientId=${OPENHIM_KEYCLOAK_CLIENT_ID}
-      - api_openid_clientSecret=${OPENHIM_KEYCLOAK_SECRET}
-      - NODE_TLS_REJECT_UNAUTHORIZED=0
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-      - "keycloak.igad.local:host-gateway"
+  #   ports:
+  #     - "8080:8080"
+  #     - "5000:5000"
+  #     - "5001:5001"
+  #   depends_on:
+  #     - mongo-db
+  #   healthcheck:
+  #     test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
+  #     interval: 30s
+  #     timeout: 30s
+  #     retries: 3
 
-    ports:
-      - "8080:8080"
-      - "5000:5000"
-      - "5001:5001"
-    depends_on:
-      - mongo-db
-    healthcheck:
-      test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
-      interval: 30s
-      timeout: 30s
-      retries: 3
-
-  openhim-console:
-    container_name: openhim-console
-    image: jembi/openhim-console:latest
-    ports:
-      - "9000:80"
-    environment:
-      - KC_OPENHIM_SSO_ENABLED=true
-      - KC_OPENHIM_CLIENT_ID=${OPENHIM_KEYCLOAK_CLIENT_ID}
-      - KC_REALM_NAME=${OPENHIM_KEYCLOAK_REALM_NAME}
-      - KC_FRONTEND_URL=${OPENHIM_KEYCLOAK_FRONTEND_URL}
-      - OPENHIM_CORE_MEDIATOR_HOSTNAME=${OPENHIM_CORE_MEDIATOR_HOSTNAME}
-      - OPENHIM_MEDIATOR_API_PORT=${OPENHIM_MEDIATOR_API_PORT}
-    depends_on:
-      - openhim-core
-    restart: unless-stopped
-    healthcheck:
-      test: "curl -sS http://openhim-console || exit 1"
-      interval: 30s
-      timeout: 30s
-      retries: 3
+  # openhim-console:
+  #   container_name: openhim-console
+  #   image: jembi/openhim-console:latest
+  #   ports:
+  #     - "9000:80"
+  #   environment:
+  #     - KC_OPENHIM_SSO_ENABLED=true
+  #     - KC_OPENHIM_CLIENT_ID=${OPENHIM_KEYCLOAK_CLIENT_ID}
+  #     - KC_REALM_NAME=${OPENHIM_KEYCLOAK_REALM_NAME}
+  #     - KC_FRONTEND_URL=${OPENHIM_KEYCLOAK_FRONTEND_URL}
+  #     - OPENHIM_CORE_MEDIATOR_HOSTNAME=${OPENHIM_CORE_MEDIATOR_HOSTNAME}
+  #     - OPENHIM_MEDIATOR_API_PORT=${OPENHIM_MEDIATOR_API_PORT}
+  #   depends_on:
+  #     - openhim-core
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: "curl -sS http://openhim-console || exit 1"
+  #     interval: 30s
+  #     timeout: 30s
+  #     retries: 3
