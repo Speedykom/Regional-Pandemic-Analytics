@@ -22,7 +22,7 @@ class ListDashboardsAPI(APIView):
             'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', '')
         }
         response = requests.get(url=url, headers=headers)
-        if response.status_code != 200:
+        if not response.ok:
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
         return Response(response.json(), status=status.HTTP_200_OK)
@@ -43,7 +43,7 @@ class ListChartsAPI(APIView):
         }
         
         response = requests.get(url=url, headers=headers)
-        if response.status_code != 200:
+        if not response.ok :
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
         return Response(response.json(), status=status.HTTP_200_OK)
@@ -67,7 +67,7 @@ class EnableEmbed(APIView):
         
         response = requests.post(url, json={"allowed_domains": [os.getenv("SUPERSET_ALLOWED_DOMAINS")]}, headers=headers)
         
-        if response.status_code != 200:
+        if not response.ok :
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
         return Response(response.json(), status=status.HTTP_200_OK)    #result.uuid
@@ -121,7 +121,7 @@ class GuestTokenApi(APIView):
         
         response = requests.post(url, json=payload, headers=headers)
         
-        if response.status_code != 200:
+        if not response.ok :
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
         return Response(response.json(), status=status.HTTP_200_OK)
@@ -147,7 +147,7 @@ class CsrfTokenApi(APIView):
         
         response = requests.get(url=url, headers=headers)
         
-        if response.status_code != 200:
+        if not response.ok :
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
         return Response({'data': response.json()}, status=status.HTTP_200_OK)    
@@ -161,16 +161,16 @@ class GetThumbnail(APIView):
     }
     
     def get(self, request, *args, **kwargs):
-        digest = '{0:032x}'.format(random.randrange(16**32))
-        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['id']}/thumbnail/{digest}"
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/2/"
         
         headers = {
             'Content-Type': "application/json",
             'X-KeycloakToken': request.META['HTTP_AUTHORIZATION'].replace('Bearer ', '')
         }
+        print(headers)
         
         response = requests.get(url, headers=headers)
         
         if not response.ok :
-            return Response({'errorMessage': response.reason}, status=response.status_code)
+            return Response({'errorMessage': response.json()}, status=response.status_code)
         return Response({ 'thumbnail': response.json()}, status=response.status_code)

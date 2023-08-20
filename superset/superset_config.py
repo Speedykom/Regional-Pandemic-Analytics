@@ -253,3 +253,8 @@ CUSTOM_SECURITY_MANAGER = CustomSupersetSecurityManager
 ENABLE_PROXY_FIX = True
 WTF_CSRF_ENABLED = False
 SQLALCHEMY_DATABASE_URI = SUPERSET_DATABASE_URI
+FEATURE_FLAGS = { 
+                 "THUMBNAILS" : True,
+                 "THUMBNAILS_SQLA_LISTENERS": True, 
+                #  "LISTVIEWS_DEFAULT_CARD_VIEW" : True 
+                 }
