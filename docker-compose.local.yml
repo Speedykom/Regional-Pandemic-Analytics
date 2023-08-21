@@ -3,9 +3,9 @@ version: "3.4"
 ## This overrides frontend on the docker-compose.yml file when running run.local.sh, this is done so the frontend local container
 ## can be updated in real time while editing frontend code, it only needs to be restarted when changing the env variables
 services:
-  # ========
-  # Frontend
-  # ========
+  # # ========
+  # # Frontend
+  # # ========
   # frontend:
   #   container_name: frontend
   #   build:
@@ -45,20 +45,19 @@ services:
     ports:
       - "9999:8080"
 
-  # # =====
-  # #  Minio
-  # # =====
-  # storage:
-  #   container_name: storage
-  #   extra_hosts:
-  #     - "host.docker.internal:host-gateway"
-  #     - "minio.igad.local:host-gateway"
-  #     - "keycloak.igad.local:host-gateway"
-  # minio-mc:
-  #   extra_hosts:
-  #     - "host.docker.internal:host-gateway"
-  #     - "minio.igad.local:host-gateway"
-  
+  # =====
+  #  Minio
+  # =====
+  storage:
+    container_name: storage
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "minio.igad.local:host-gateway"
+      - "keycloak.igad.local:host-gateway"
+  minio-mc:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "minio.igad.local:host-gateway"
   # ========
   # Backend
   # ========
