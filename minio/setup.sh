@@ -18,7 +18,6 @@ create_bucket(){
 # configure minio access key, secret key, region and s3 signature
 aws configure set profile.default.aws_access_key_id $MINIO_ACCESS_KEY
 aws configure set profile.default.aws_secret_access_key $MINIO_SECRET_KEY
-# aws configure set profile.default.region $MINIO_REGION
 aws configure set profile.default.s3.signature_version s3v4
 
 # create minio buckets 
