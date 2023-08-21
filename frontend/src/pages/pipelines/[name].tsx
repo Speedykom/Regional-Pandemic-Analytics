@@ -7,10 +7,10 @@ import { useRouter } from "next/router";
 export default function Pipeline() {
 	const router = useRouter();
 	const { hasPermission } = usePermission();
-	const { id } = router.query as { id: string };
+	const { name } = router.query as { name: string };
 	return (
 		<Layout>
-			{hasPermission("pipeline:read") && id ? <HopUI id={id} /> : <Unauthorized />}
+			{hasPermission("pipeline:read") && name ? <HopUI name={name} /> : <Unauthorized />}
 		</Layout>
 	);
 }
