@@ -18,39 +18,32 @@ from utils.env_configs import (
 
 import logging
 
+logger = logging.getLogger(__name__)
+
 class LoginAPI(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
-        logger = logging.getLogger(__name__)
         
-        try:
-            serializer = self.serializer_class(data=request.data,
-                                           context={'request': request})
-            serializer.is_valid(raise_exception=True)
-            user = serializer.validated_data['user']
-            token, created = Token.objects.get_or_create(user=user)
+        serializer = self.serializer_class(data=request.data,
+                                        context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
 
-            message = {
-                "message": "user login successfully {}".format("832728")
-            }
+        message = {
+            "message": "user login successfully {}".format(user)
+        }
 
-            logger.info(message)
-            
-            return Response({
-                'token': token.key,
-                'user_id': user.pk,
-                'email': user.email
-            })
-        except Exception as e:
-            message = {
-                "message": "Authorization token is invalid or expired"
-            }
+        logger.info(message)
 
-            logger.error(message)
-            return Response({'status': response.json()['active'], 'error': 'Authorization token is invalid or expired'}, status=status.HTTP_401_UNAUTHORIZED)
-
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email
+        })
 
 
 class Authorization (APIView):
+    
     permission_classes = [AllowAny]
      
     """
@@ -59,6 +52,9 @@ class Authorization (APIView):
     def get(self, request, *args, **kwargs):
         reqToken: str = request.META.get('HTTP_AUTHORIZATION')
         if reqToken is None:
+
+            logger.error("Authorization header was not provider or invalid")
+
             return Response({'error': 'Authorization header was not provider or invalid'})
         
         serialToken = reqToken.replace("Bearer ", "")
@@ -71,8 +67,10 @@ class Authorization (APIView):
                             data=form_data)
         
         if response.status_code != 200:
+            logger.error("Authorization token is invalid or expired")
             return Response({'status': response.json()['active'], 'error': 'Authorization token is invalid or expired'}, status=status.HTTP_401_UNAUTHORIZED)
         
+        logger.info("Authorization token is invalid or expired")
         return Response(response.json(), status=status.HTTP_200_OK)
     
 class Logout (APIView):
@@ -85,6 +83,7 @@ class Logout (APIView):
         reqToken: str = request.META.get('HTTP_AUTHORIZATION')
 
         if reqToken is None:
+            logger.info('Refresh token was not set in authorization header')
             return Response({'error': 'Refresh token was not set in authorization header'}, status=status.HTTP_401_UNAUTHORIZED)
         
         serialToken = reqToken.replace("Bearer ", "")
@@ -99,8 +98,10 @@ class Logout (APIView):
                             data=form_data)
 
         if not response.ok:
+            logger.error(response.json())
             return Response(response.json(), status=response.status_code)
         
+        logger.info("Logout was successful")
         return Response({'message': 'Logout was successful', 'success': True}, status=status.HTTP_200_OK)    
 
 class KeyCloakLoginAPI(APIView):
@@ -135,8 +136,10 @@ class KeyCloakLoginAPI(APIView):
                 credentials["permissions"] = map(lambda p: {'name': p.name, 'scopes': p.scopes}, user_permissions)
                 return Response(credentials, status=status.HTTP_200_OK)
 
+            logger.error("Login Failed")
             return Response({"result": "Login Failed"}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
+            logger.error("Login Failed")
             return Response({"result": "Login Failed"}, status=status.HTTP_401_UNAUTHORIZED)
 
     """API to refresh and update keycloak access token
@@ -149,6 +152,7 @@ class KeyCloakLoginAPI(APIView):
     ))
     def put(self, request, *args, **kwargs):
         refresh_token = request.data.get("refresh_token", None)
+
         form_data = {
             "client_id": os.getenv("CLIENT_ID"),
             "client_secret": os.getenv("CLIENT_SECRET"),
@@ -160,9 +164,10 @@ class KeyCloakLoginAPI(APIView):
                             data=form_data)
 
         if res.status_code == 200:
-
             data = res.json()
             return Response(data, status=status.HTTP_200_OK)
+
+        logger.error("Failed to get access token.")
 
         return Response({"result": "Failed to get access token."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -193,15 +198,19 @@ class PasswordAPI(APIView):
         user_id = cur_user['sub']
 
         if not newPassword or newPassword != confirmPassword:
+            logger.error('Invalid password')
             return Response({'errorMessage': 'Invalid password'}, status=status.HTTP_400_BAD_REQUEST)
         elif decode['id'] != user_id:
+            logger.error('Invalid reset password token')
             return Response({'errorMessage': 'Invalid reset password token'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             keycloak_admin = get_keycloak_admin()
             keycloak_admin.set_user_password(user_id=user_id, password=newPassword, temporary=False)
+            logger.info('Password created successfully')
             return Response({'message': 'Password created successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error('Unable to create user password')
             return Response({'errorMessage': 'Unable to create user password'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         
@@ -221,14 +230,17 @@ class PasswordAPI(APIView):
         confirmPassword = request.data.get("confirmPassword", None)
 
         if not newPassword or newPassword != confirmPassword:
+            logger.error('Invalid password')
             return Response({'errorMessage': 'Invalid password'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             user_id = request.data.get("id", None)
             keycloak_admin = get_keycloak_admin()
             keycloak_admin.set_user_password(user_id=user_id, password=newPassword, temporary=False)
+            logger.info('Password updated successfully')
             return Response({'message': 'Password updated successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error('Unable to update user password')
             return Response({'errorMessage': 'Unable to update user password'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -263,9 +275,11 @@ class ResetPasswordAPI(APIView):
             redirectUri = f"{REST_REDIRECT_URI}?tok={token}"
 
             SendMail("IGAD Reset Password", payload, redirectUri)
-
+            
+            logger.info('Reset password link has been sent to your email')
             return Response({'message': 'Reset password link has been sent to your email'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error('Unable to reset the user password')
             return Response({'errorMessage': 'Unable to reset the user password'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     """
@@ -281,6 +295,8 @@ class ResetPasswordAPI(APIView):
                 form_data["token"], APP_SECRET_KEY, algorithms=['HS256'])
             return Response(decode, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError:
+            logger.error('Reset password token expired')
             return Response({'errorMessage': 'Reset password token expired'}, status=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:
+            logger.error('Token provided is invalid')
             return Response({'errorMessage': 'Token provided is invalid'}, status=status.HTTP_401_UNAUTHORIZED)
