@@ -131,33 +131,33 @@ services:
         condition: service_healthy
         restart: true
 
-  # ========
-  # Frontend
-  # ========
-  # frontend:
-  #   container_name: frontend
-  #   build:
-  #     context: ./frontend
-  #     target: runner
-  #     args:
-  #       - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
-  #       - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
-  #       - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
-  #       - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
-  #       - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
-  #       - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
-  #       - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
-  #   ports:
-  #     - "3000:3000"
-  #   environment:
-  #     - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
-  #     - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
-  #     - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
-  #     - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
-  #     - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
-  #     - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
-  #     - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
-  #   restart: always
+  ========
+  Frontend
+  ========
+  frontend:
+    container_name: frontend
+    build:
+      context: ./frontend
+      target: runner
+      args:
+        - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
+        - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
+        - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
+        - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
+        - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
+        - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
+        - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
+      - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
+      - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
+      - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
+      - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
+      - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
+      - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
+    restart: always
 
   # ========
   # Logging Service
@@ -647,64 +647,64 @@ services:
       - airflow-webserver
       - backend
 
-  # # =====
-  # #  OpenHIM
-  # # =====
+  # =====
+  #  OpenHIM
+  # =====
 
-  # mongo-db:
-  #   container_name: mongo-db
-  #   image: mongo:4.0
-  #   volumes:
-  #     - "mongo-data:/data/db"
-  #   restart: unless-stopped
+  mongo-db:
+    container_name: mongo-db
+    image: mongo:4.0
+    volumes:
+      - "mongo-data:/data/db"
+    restart: unless-stopped
 
-  # openhim-core:
-  #   container_name: openhim-core
-  #   image: jembi/openhim-core:latest
-  #   restart: unless-stopped
-  #   environment:
-  #     - mongo_url=mongodb://mongo-db/openhim-development
-  #     - mongo_atnaUrl=mongodb://mongo-db/openhim-development
-  #     - api_authenticationTypes=["token", "basic", "openid", "local"]
-  #     - authentication_enableCustomTokenAuthentication=true
-  #     - api_openid_url=${OPENHIM_KEYCLOAK_FRONTEND_URL}/realms/${OPENHIM_KEYCLOAK_REALM_NAME}
-  #     - api_openid_callbackUrl=${OPENHIM_KEYCLOAK_ROOT_URL}
-  #     - api_openid_clientId=${OPENHIM_KEYCLOAK_CLIENT_ID}
-  #     - api_openid_clientSecret=${OPENHIM_KEYCLOAK_SECRET}
-  #     - NODE_TLS_REJECT_UNAUTHORIZED=0
-  #   extra_hosts:
-  #     - "host.docker.internal:host-gateway"
-  #     - "keycloak.igad.local:host-gateway"
+  openhim-core:
+    container_name: openhim-core
+    image: jembi/openhim-core:latest
+    restart: unless-stopped
+    environment:
+      - mongo_url=mongodb://mongo-db/openhim-development
+      - mongo_atnaUrl=mongodb://mongo-db/openhim-development
+      - api_authenticationTypes=["token", "basic", "openid", "local"]
+      - authentication_enableCustomTokenAuthentication=true
+      - api_openid_url=${OPENHIM_KEYCLOAK_FRONTEND_URL}/realms/${OPENHIM_KEYCLOAK_REALM_NAME}
+      - api_openid_callbackUrl=${OPENHIM_KEYCLOAK_ROOT_URL}
+      - api_openid_clientId=${OPENHIM_KEYCLOAK_CLIENT_ID}
+      - api_openid_clientSecret=${OPENHIM_KEYCLOAK_SECRET}
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "keycloak.igad.local:host-gateway"
 
-  #   ports:
-  #     - "8080:8080"
-  #     - "5000:5000"
-  #     - "5001:5001"
-  #   depends_on:
-  #     - mongo-db
-  #   healthcheck:
-  #     test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
-  #     interval: 30s
-  #     timeout: 30s
-  #     retries: 3
+    ports:
+      - "8080:8080"
+      - "5000:5000"
+      - "5001:5001"
+    depends_on:
+      - mongo-db
+    healthcheck:
+      test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
+      interval: 30s
+      timeout: 30s
+      retries: 3
 
-  # openhim-console:
-  #   container_name: openhim-console
-  #   image: jembi/openhim-console:latest
-  #   ports:
-  #     - "9000:80"
-  #   environment:
-  #     - KC_OPENHIM_SSO_ENABLED=true
-  #     - KC_OPENHIM_CLIENT_ID=${OPENHIM_KEYCLOAK_CLIENT_ID}
-  #     - KC_REALM_NAME=${OPENHIM_KEYCLOAK_REALM_NAME}
-  #     - KC_FRONTEND_URL=${OPENHIM_KEYCLOAK_FRONTEND_URL}
-  #     - OPENHIM_CORE_MEDIATOR_HOSTNAME=${OPENHIM_CORE_MEDIATOR_HOSTNAME}
-  #     - OPENHIM_MEDIATOR_API_PORT=${OPENHIM_MEDIATOR_API_PORT}
-  #   depends_on:
-  #     - openhim-core
-  #   restart: unless-stopped
-  #   healthcheck:
-  #     test: "curl -sS http://openhim-console || exit 1"
-  #     interval: 30s
-  #     timeout: 30s
-  #     retries: 3
+  openhim-console:
+    container_name: openhim-console
+    image: jembi/openhim-console:latest
+    ports:
+      - "9000:80"
+    environment:
+      - KC_OPENHIM_SSO_ENABLED=true
+      - KC_OPENHIM_CLIENT_ID=${OPENHIM_KEYCLOAK_CLIENT_ID}
+      - KC_REALM_NAME=${OPENHIM_KEYCLOAK_REALM_NAME}
+      - KC_FRONTEND_URL=${OPENHIM_KEYCLOAK_FRONTEND_URL}
+      - OPENHIM_CORE_MEDIATOR_HOSTNAME=${OPENHIM_CORE_MEDIATOR_HOSTNAME}
+      - OPENHIM_MEDIATOR_API_PORT=${OPENHIM_MEDIATOR_API_PORT}
+    depends_on:
+      - openhim-core
+    restart: unless-stopped
+    healthcheck:
+      test: "curl -sS http://openhim-console || exit 1"
+      interval: 30s
+      timeout: 30s
+      retries: 3
