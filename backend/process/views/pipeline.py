@@ -7,6 +7,8 @@ from ..models import Pipeline
 from ..serializers import PipelineSerializer
 from ..gdags.hop import EditAccessProcess
 
+logger = logging.getLogger(__name__)
+
 class PipelineListView(APIView):
     keycloak_scopes = {
         'POST': 'pipeline:add',
@@ -33,6 +35,7 @@ class PipelineListView(APIView):
         process = Pipeline.objects.filter(name=name, user_id=user_id)
 
         if (len(process) > 0):
+            logger.error("pipeline already exist with this name {}".format(name))
             return Response({"status": "Fail", "message": "pipeline already exist with this name {}".format(name)}, status=409)
 
         file = open(path, "r")
@@ -60,6 +63,7 @@ class PipelineListView(APIView):
 
             return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)
         else:
+            logger.error(serializer.errors)
             return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class PipelineDetailView(APIView):
@@ -73,7 +77,9 @@ class PipelineDetailView(APIView):
     def get(self, request, id=None):
         pipeline = Pipeline.objects.filter(id=id)
 
-        if (len(pipeline) <= 0): return Response({'status': 'success', "message": "No pipeline found for this id {}".format(id)}, status=404)
+        if (len(pipeline) <= 0):
+            logger.error("No pipeline found for this id {}".format(id))
+            return Response({'status': 'success', "message": "No pipeline found for this id {}".format(id)}, status=404)
 
         file_path = 'file:///files/{}'.format(pipeline[0].path)
         payload = {"names": [file_path]}
