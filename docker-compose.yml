@@ -131,9 +131,9 @@ services:
         condition: service_healthy
         restart: true
 
-  ========
-  Frontend
-  ========
+  # ========
+  # Frontend
+  # ========
   frontend:
     container_name: frontend
     build:
