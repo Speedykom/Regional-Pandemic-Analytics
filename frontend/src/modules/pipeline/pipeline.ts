@@ -26,7 +26,7 @@ export const PipelineApi = createApi({
       }),
       invalidatesTags: ['pipelines'],
     }),
-    updatePipeline: builder.mutation<any, string>({
+    updatePipeline: builder.mutation<{ status: string, message?: string}, string>({
       query: (name) => ({
         url: `/pipeline/${name}`,
         method: "PUT",

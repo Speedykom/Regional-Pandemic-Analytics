@@ -100,9 +100,8 @@ class PipelineDetailView(APIView):
                 "name": name,
                 "description": object.metadata["X-Amz-Meta-Description"]
             }, status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
-            return Response({'status': "error", "message": "No pipeline found with this name {}".format(name)}, status=status.HTTP_404_NOT_FOUND)
+        except:
+            return Response({'status': "error", "message": "Something went wrong while attempting to fetch pipeline {}".format(name)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def put(self, request, name=None):
         cur_user = request.userinfo
@@ -125,6 +124,5 @@ class PipelineDetailView(APIView):
             return Response({
                 "status": "success"
             }, status=status.HTTP_200_OK)
-        except Exception as e:
-            print(e)
+        except:
             return Response({'status': "error", "message": "Unable to update the pipeline {}".format(name)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
