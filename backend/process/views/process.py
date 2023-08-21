@@ -12,7 +12,9 @@ api = os.getenv("AIRFLOW_API")
 username = os.getenv("AIRFLOW_USER")
 password = os.getenv("AIRFLOW_PASSWORD")
 
-logger = logging.getLogger(__name__)
+import logging
+
+logger = logging.getLogger("PROCESS CHAIN")
 
 class ProcessListView(APIView):
 

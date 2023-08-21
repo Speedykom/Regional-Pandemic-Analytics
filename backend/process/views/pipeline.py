@@ -7,7 +7,9 @@ from ..models import Pipeline
 from ..serializers import PipelineSerializer
 from ..gdags.hop import EditAccessProcess
 
-logger = logging.getLogger(__name__)
+import logging
+
+logger = logging.getLogger("PIPELINE")
 
 class PipelineListView(APIView):
     keycloak_scopes = {
