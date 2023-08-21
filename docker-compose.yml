@@ -75,154 +75,65 @@ volumes:
   coordinator_var: {}
   router_var: {}
   prometheus_data: {}
+  grafana_data: {}
   mongo-data:
 
 services:
   # ========
   # Minio
   # ========
-  # storage:
-  #   image: quay.io/minio/minio:RELEASE.2023-03-24T21-41-23Z
-  #   container_name: storage
-  #   command: minio server /data --console-address ":9090"
-  #   environment:
-  #     - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-  #     - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-  #     - MINIO_SERVER_URL=${MINIO_SERVER_URL}
-  #     - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL}
-  #     - MINIO_IDENTITY_OPENID_CONFIG_URL=${MINIO_IDENTITY_OPENID_CONFIG_URL}
-  #     - MINIO_IDENTITY_OPENID_CLIENT_ID=${MINIO_IDENTITY_OPENID_CLIENT_ID}
-  #     - MINIO_IDENTITY_OPENID_CLIENT_SECRET=${MINIO_IDENTITY_OPENID_CLIENT_SECRET}
-  #     - MINIO_IDENTITY_OPENID_CLAIM_NAME=${MINIO_IDENTITY_OPENID_CLAIM_NAME}
-  #     - MINIO_IDENTITY_OPENID_DISPLAY_NAME=${MINIO_IDENTITY_OPENID_DISPLAY_NAME}
-  #     - MINIO_IDENTITY_OPENID_SCOPES=${MINIO_IDENTITY_OPENID_SCOPES}
-  #     - MINIO_IDENTITY_OPENID_REDIRECT_URI=${MINIO_IDENTITY_OPENID_REDIRECT_URI}
-  #   ports:
-  #     - "9001:9000"
-  #     - "8887:9090"
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-  #     interval: 30s
-  #     timeout: 20s
-  #     retries: 3
-  #   volumes:
-  #     - minio_data:/data
-  #   depends_on:
-  #     keycloak:
-  #       condition: service_healthy
-  #       restart: true
-  # minio-mc:
-  #   image: minio/mc
-  #   container_name: minio-mc
-  #   entrypoint: ["/bin/sh", "-c"]
-  #   command:
-  #     - |
-  #       chmod +x /tmp/setup.sh
-  #       ./tmp/setup.sh
-  #   environment:
-  #     - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-  #     - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-  #     - MINIO_MC_REMOTE_SERVER_URL=${MINIO_MC_REMOTE_SERVER_URL}
-  #   volumes:
-  #     - ./minio/setup.sh:/tmp/setup.sh
-  #   depends_on:
-  #     storage:
-  #       condition: service_healthy
-  #       restart: true
-
-  # # ========
-  # # kafka
-  # # ========
-  # kafka_zookeeper:
-  #   image: wurstmeister/zookeeper
-  #   container_name: kafka_zookeeper
-  #   ports:
-  #     - "2182:2181"
-  
-  # kafka:
-  #   image: wurstmeister/kafka
-  #   container_name: kafka
-  #   ports:
-  #     - "9092:9092"
-  #   environment:
-  #     KAFKA_ADVERTISED_HOST_NAME: localhost
-  #     KAFKA_ZOOKEEPER_CONNECT: kafka_zookeeper:2182
-
-  # # ========
-  # # elasticsearch
-  # # ========
-  # elasticsearch:
-  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
-  #   container_name: elasticsearch
-  #   ports:
-  #     - 9200:9200
-  #     - 9300:9300
-  #   environment:
-  #     discovery.type: single-node
-
-  # # ========
-  # # kibana
-  # # ========
-  # kibana:
-  #   image: docker.elastic.co/kibana/kibana:7.8.0
-  #   ports:
-  #     - 5601:5601
-  #   links:
-  #     - elasticsearch
-  #   depends_on:
-  #     - elasticsearch
-
-  # # ========
-  # # filebeat
-  # # ========
-  # filebeat:
-  #   image: docker.elastic.co/beats/filebeat:7.8.0
-  #   container_name: filebeat
-  #   volumes:
-  #     - ./backend/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
-  #     - ./backend/logs:/usr/share/filebeat/logs
-  #   environment:
-  #     ELASTICSEARCH_URL: http://elasticsearch:9200
-  #   links:
-  #     - elasticsearch
-  #   depends_on:
-  #     - elasticsearch
-
-  node-exporter:
-    image: prom/node-exporter:latest
-    container_name: node-exporter
-    restart: unless-stopped
+  storage:
+    image: quay.io/minio/minio:RELEASE.2023-04-20T17-56-55Z
+    container_name: storage
+    command: minio server --console-address ":9090" --ftp "address=:8080" data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_SERVER_URL=${MINIO_SERVER_URL}
+      - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL}
+      - MINIO_IDENTITY_OPENID_CONFIG_URL=${MINIO_IDENTITY_OPENID_CONFIG_URL}
+      - MINIO_IDENTITY_OPENID_CLIENT_ID=${MINIO_IDENTITY_OPENID_CLIENT_ID}
+      - MINIO_IDENTITY_OPENID_CLIENT_SECRET=${MINIO_IDENTITY_OPENID_CLIENT_SECRET}
+      - MINIO_IDENTITY_OPENID_CLAIM_NAME=${MINIO_IDENTITY_OPENID_CLAIM_NAME}
+      - MINIO_IDENTITY_OPENID_DISPLAY_NAME=${MINIO_IDENTITY_OPENID_DISPLAY_NAME}
+      - MINIO_IDENTITY_OPENID_SCOPES=${MINIO_IDENTITY_OPENID_SCOPES}
+      - MINIO_IDENTITY_OPENID_REDIRECT_URI=${MINIO_IDENTITY_OPENID_REDIRECT_URI}
+    ports:
+      - "9001:9000"
+      - "8887:9090"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
     volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
+      - minio_data:/data
+    depends_on:
+      keycloak:
+        condition: service_healthy
+        restart: true
+  minio-mc:
+    image: minio/mc
+    container_name: minio-mc
+    entrypoint: ["/bin/sh", "-c"]
     command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
-    expose:
-      - 9100
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    restart: unless-stopped
+      - |
+        chmod +x /tmp/setup.sh
+        ./tmp/setup.sh
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_MC_REMOTE_SERVER_URL=${MINIO_MC_REMOTE_SERVER_URL}
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--web.enable-lifecycle'
-    expose:
-      - 9090
+      - ./minio/setup.sh:/tmp/setup.sh
+    depends_on:
+      storage:
+        condition: service_healthy
+        restart: true
 
-  # # ========
-  # # Frontend
-  # # ========
+  # ========
+  # Frontend
+  # ========
   # frontend:
   #   container_name: frontend
   #   build:
@@ -233,7 +144,6 @@ services:
   #       - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
   #       - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
   #       - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
-  #       - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
   #       - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
   #       - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
   #       - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
@@ -244,11 +154,68 @@ services:
   #     - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
   #     - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
   #     - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
-  #     - NEXT_PUBLIC_HOP_UI=${FRONTEND_NEXT_PUBLIC_HOP_UI}
   #     - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
   #     - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
   #     - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
   #   restart: always
+
+  # ========
+  # Logging Service
+  # ========
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+    command:
+      - '--path.rootfs=/host'
+    ports:
+      - 9100:9100
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    container_name: cadvisor
+    pid: host
+    ports:
+      - 8080:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+      - /etc/machine-id:/etc/machine-id:ro
+    expose:
+      - 8080
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/kmsg
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    
+    ports:
+      - 9090:9090
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+
+
 
   # ========
   # Backend
@@ -281,8 +248,8 @@ services:
     depends_on:
       backend_db:
         condition: service_healthy
-      keycloak:
-        condition: service_healthy
+      # keycloak:
+      #   condition: service_healthy
     ports:
       - "8000:8000"
     volumes:
@@ -507,9 +474,14 @@ services:
       - ./hop/pipelines:/files
       - ./storage:/home
       - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
+      - ./hop/keycloak/index.jsp:/usr/local/tomcat/webapps/ROOT/index.jsp
       - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
     environment:
-      - HOP_KEYCLOAK_URL=${HOP_KEYCLOAK_URL}
+      - HOP_KEYCLOAK_SELF_SIGNED_SSL=${HOP_KEYCLOAK_SELF_SIGNED_SSL}
+      - HOP_KEYCLOAK_CLIENT_ID=${HOP_KEYCLOAK_CLIENT_ID}
+      - HOP_KEYCLOAK_CLIENT_SECRET=${HOP_KEYCLOAK_CLIENT_SECRET}
+      - HOP_KEYCLOAK_REALM=${HOP_KEYCLOAK_REALM}
+      - HOP_KEYCLOAK_SERVER_URL=${HOP_KEYCLOAK_SERVER_URL}
 
   hop-server:
     image: apache/hop:2.4.0
@@ -673,10 +645,12 @@ services:
       - ./certbot/www:/var/www/certbot
     depends_on:
       - airflow-webserver
+      - backend
 
-  # =====
-  #  OpenHIM
-  # =====
+  # # =====
+  # #  OpenHIM
+  # # =====
+
   # mongo-db:
   #   container_name: mongo-db
   #   image: mongo:4.0
