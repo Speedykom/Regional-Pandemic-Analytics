@@ -87,7 +87,7 @@ export const AddProcess = ({ state, onClose }: Props) => {
             showSearch
             placeholder="Select Pipeline"
             options={pipelines.map((pipeline: any) => ({
-              value: pipeline.name,
+              value: pipeline.name  + ".hpl",
               label: pipeline.name,
             }))}
           />
