@@ -12,21 +12,22 @@ export const HopUI = ({ name }: HopUIProps) => {
 	const { data } = useGetPipelineQuery(name);
 	const [updatePipeline] = useUpdatePipelineMutation();
 
-	const savePipeline = () => {
-		updatePipeline(name)
-			.then((data: any) => {
-				if (data.status === "success") {
-					navigateToPipelines().then(() => {
-						toast.success("Pipeline updated successfully", { position: "top-right" });
-					})
-				} else {
-					return Promise.reject(data)
-				}
-			}).catch(() => {
-				navigateToPipelines().then(() => {
-					toast.error("Unable to update pipeline", { position: "top-right" });
-				})
-			})
+	const savePipeline = async () => {
+		try {
+			const response = await updatePipeline(name)
+			if ('data' in response && response.data.status === "success") {
+				await navigateToPipelines()
+				toast.success("Pipeline updated successfully", { position: "top-right" });
+				return
+			}
+			console.error('API failed to update pipeline', response);
+			throw new Error('API failed to update pipeline')
+		} catch(e) {
+			console.error('Failed to update pipeline', e);
+			await navigateToPipelines()
+			toast.error("Unable to update pipeline", { position: "top-right" });
+
+		}
 	}
 
 	const navigateToPipelines = () => {
