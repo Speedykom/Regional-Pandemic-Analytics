@@ -13,7 +13,7 @@ export const PipelineApi = createApi({
       providesTags: ['pipelines'],
     }),
     getPipeline: builder.query<PipelineData, string>({
-      query: (id) => `/pipeline/${id}`,
+      query: (name) => `/pipeline/${name}`,
     }),
     templates: builder.query<TemplateList, void>({
       query: () => '/hop'
@@ -26,6 +26,12 @@ export const PipelineApi = createApi({
       }),
       invalidatesTags: ['pipelines'],
     }),
+    updatePipeline: builder.mutation<{ status: string, message?: string}, string>({
+      query: (name) => ({
+        url: `/pipeline/${name}`,
+        method: "PUT",
+      }),
+    }),
   }),
 });
 
@@ -34,4 +40,5 @@ export const {
   useGetPipelineQuery,
   useTemplatesQuery,
   useCreatePipelineMutation,
+  useUpdatePipelineMutation,
 } = PipelineApi;
