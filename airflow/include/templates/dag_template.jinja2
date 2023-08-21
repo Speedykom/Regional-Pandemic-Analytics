@@ -1,9 +1,14 @@
 from datetime import datetime, timedelta
 from airflow import DAG
+from airflow.baseoperator import BaseOperator
+from airflow.exceptions import AirflowException
 from airflow.models import Variable
 from airflow.operators.python_operator import PythonOperator
 from airflow_hop.operators import HopPipelineOperator
+from airflow.triggers.temporal import TimeDeltaTrigger
 from minio import Minio
+import os
+import requests
 
 default_args = {
     "owner": "{{owner}}",
@@ -28,16 +33,98 @@ def download_pipeline_minio():
     client.fget_object("pipelines","pipelines-created/{{user_id}}/{{pipeline_name}}","/hop/config/projects/default/{{user_id}}/{{pipeline_name}}")
 
 # Ingest to druid
+class DruidOperator(BaseOperator):
+  def __init__(self, **kwargs):
+    super().__init__(**kwargs)
+    self.base_url = "{}/druid/indexer/v1/task".format(os.environ['DRUID_COORDINATOR_URL'])
+
+  def execute(self):
+    payload = {
+      "type": "index_parallel",
+      "spec": {
+        "ioConfig": {
+          "type": "index_parallel",
+          "inputSource": {
+            "type": "s3",
+            "endpointConfig": {
+              "url": minio_url,
+              # Even if MinIO does not have regions, this is required because the Se extensions use
+              # AWS libraries under the hood which insist on getting a region
+              "region": "us-east-1"
+            },
+            "clientConfig": {
+              # Our internal communication is not encrypted, so use plain HTTP
+              "protocol": "http",
+              # Since we do not have the necessary DNS set up to use the sub-domain per bucket
+              # scheme, ensure that path style access is used instead
+              "enablePathStyleAccess": True
+            },
+            "objects": [
+              {
+                "bucket": "parquets",
+                "path": "{{user_id}}/{{dag_id}}"
+              }
+            ],
+            "properties": {
+               "accessKeyId": minio_access_key,
+               "secretAccessKey": minio_secret_key
+            }
+          },
+          "inputFormat": {
+            "type": "parquet"
+          }
+        },
+        "tuningConfig": {
+          "type": "index_parallel",
+          "partitionsSpec": {
+            "type": "dynamic"
+          }
+        },
+        "dataSchema": {
+          "dataSource": "{{dag_id}}",
+          "timestampSpec": {
+            "column": "Date",
+            "format": "millis"
+          },
+          "dimensionsSpec": {
+            "dimensions": []
+          },
+          "granularitySpec": {
+            "queryGranularity": "none",
+            "rollup": False,
+            "segmentGranularity": "day"
+          }
+        }
+      }
+    }
+    client = requests.post(self.base_url, json = payload)
+    if not client.ok:
+       raise AirflowException('Failed to start Druid ingestion')
+    self.wait_for_completion(client.json()['task'])
+
+  def wait_for_completion(self, process_id: str):
+    self.defer(trigger=TimeDeltaTrigger(timedelta(seconds=5)), method_name="check_status", kwargs={ "process_id": process_id })
+
+  def check_status(self, process_id: str):
+    url = "{}/{}/status".format(self.base_url, process_id)
+    response = requests.get(url)
+    if response.ok:
+      match response.json()['status']['statusCode']:
+        case 'FAILED':
+          raise AirflowException('Druid ingestion failed')
+        case 'SUCCESS':
+          return
+    self.wait_for_completion(process_id)
 
 with DAG("{{dag_id}}", default_args=default_args, schedule_interval="{{schedule_interval}}", catchup=False, is_paused_upon_creation=False) as dag:
-    
+
     # Download pipeline from minio bucket
     pipeline_minio = PythonOperator(
         task_id="pipeline_minio",
         python_callable=download_pipeline_minio
         )
 
-    # Run Hop pipeline by sending it over HTTP to Hop server    
+    # Run Hop pipeline by sending it over HTTP to Hop server
     hop = HopPipelineOperator(
       task_id="{{pipeline_name}}",
       pipeline="{{user_id}}/{{pipeline_name}}",
@@ -46,7 +133,8 @@ with DAG("{{dag_id}}", default_args=default_args, schedule_interval="{{schedule_
       log_level='Basic',
       params={'user_id':'{{user_id}}','minio_ftp':f'{minio_ftp}','dag_id':'{{dag_id}}'}
     )
-    # Run Druid ingection
 
-    
-    pipeline_minio >> hop 
+    # Run Druid ingestion
+    druid = DruidOperator()
+
+    pipeline_minio >> hop >> druid
