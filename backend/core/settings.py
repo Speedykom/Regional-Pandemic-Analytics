@@ -34,14 +34,6 @@ LOGGING = {
    'datefmt': '%Y-%m-%d %H:%M:%S',
   },
  },
- 'handlers': {
-  'logger': {
-   'level': 'DEBUG',
-   'class': 'logging.handlers.RotatingFileHandler',
-   'filename': logs_folder,
-   'formatter': 'simple',
-  }
- },
  'loggers': {
   'signal': {
    'handlers': ['logger'],
