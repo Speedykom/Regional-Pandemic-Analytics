@@ -12,8 +12,10 @@ api = os.getenv("AIRFLOW_API")
 username = os.getenv("AIRFLOW_USER")
 password = os.getenv("AIRFLOW_PASSWORD")
 
+logger = logging.getLogger(__name__)
 
 class ProcessListView(APIView):
+
     keycloak_scopes = {
         'GET': 'process:read',
         'POST': 'process:add'
@@ -34,6 +36,7 @@ class ProcessListView(APIView):
                 dag_id=dag_id, user_id=user_id)
 
             if (len(process) <= 0):
+                logger.error("No process found for this dag_id {}".format(dag_id))
                 return Response({'status': 'success', "message": "No process found for this dag_id {}".format(dag_id)}, status=404)
 
             route = "{}/dags/{}".format(api, dag_id)
@@ -42,6 +45,7 @@ class ProcessListView(APIView):
             res_status = client.status_code
 
             if (res_status == 404):
+                logger.error(client.json()['detail'])
                 return Response({'status': 'success', "message": client.json()['detail']}, status=res_status)
 
             route = "{}/dags/{}/dagRuns".format(api, dag_id)
@@ -92,6 +96,7 @@ class ProcessListView(APIView):
         process = ProcessChain.objects.filter(dag_id=dag_id, user_id=user_id)
 
         if (len(process) > 0):
+            logger.error("process already exist with this dag_id {}".format(dag_id))
             return Response({"status": "Fail", "message": "process already exist with this dag_id {}".format(dag_id)}, status=409)
 
         request.data['path'] = pipeline['path']
@@ -135,7 +140,8 @@ class ProcessDetailView(APIView):
         res_status = client.status_code
 
         if (res_status == 404):
-            return Response({'status': 'success', "message": client.json()['detail']}, status=res_status)
+            logger.error(client.json()['detail'])
+            return Response({'status': 'fail', "message": client.json()['detail']}, status=res_status)
         else:
             return Response({'status': 'success', "message": client.json()['dag_runs'].format(id)}, status=200)
 
@@ -146,7 +152,8 @@ class ProcessDetailView(APIView):
         res_status = client.status_code
 
         if (res_status == 404):
-            return Response({'status': 'success', "message": "No process found for this dag_id {}".format(id)}, status=res_status)
+            logger.error("No process found for this dag_id {}".format(id))
+            return Response({'status': 'fail', "message": "No process found for this dag_id {}".format(id)}, status=res_status)
         else:
             return Response({'status': 'success', "message": "{} process start running!".format(id)}, status=res_status)
 
@@ -154,4 +161,5 @@ class ProcessDetailView(APIView):
         process = ProcessChain.objects.get(dag_id=dag_id)
         process.state = 'inactive'
         process.save()
+        logger.info("Process chain with dag_id: ".format(dag_id))
         return Response({"status": "success", "data": "Record Deleted"})
