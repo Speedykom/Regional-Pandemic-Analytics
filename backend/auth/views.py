@@ -11,7 +11,7 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import AllowAny
 from mailer.sender import SendMail
-from utils.keycloak_auth import get_keycloak_admin, get_keycloak_openid
+from utils.keycloak_auth import get_keycloak_admin, get_keycloak_openid, get_current_user_id
 from django.conf import settings
 from utils.env_configs import (
     BASE_URL, APP_SECRET_KEY, APP_REALM, REST_REDIRECT_URI)
@@ -169,8 +169,7 @@ class PasswordAPI(APIView):
         token = request.data.get("token", None)
 
         decode = jwt.decode(token, APP_SECRET_KEY, algorithms=['HS256'])
-        cur_user = request.userinfo
-        user_id = cur_user['sub']
+        user_id = get_current_user_id(request)
 
         if not newPassword or newPassword != confirmPassword:
             return Response({'errorMessage': 'Invalid password'}, status=status.HTTP_400_BAD_REQUEST)
