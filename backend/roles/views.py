@@ -7,6 +7,10 @@ from rest_framework.permissions import AllowAny
 from utils.keycloak_auth import get_keycloak_admin
 from django.conf import settings
 
+import logging
+
+logger = logging.getLogger("ROLE")
+
 #Api to create and list all roles
 class RoleApiView(APIView):
     permission_classes = [AllowAny, ]
@@ -20,6 +24,7 @@ class RoleApiView(APIView):
             client_roles = keycloak_admin.get_client_roles(client_id=client_id)
             return Response(client_roles, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error( 'Unable to retrieve the roles')
             return Response({'errorMessage': 'Unable to retrieve the roles'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     """
@@ -37,6 +42,6 @@ class RoleApiView(APIView):
             keycloak_admin.update_client_role(client_role_id=client_id, role_name=kwargs['name'], payload=form_data)
             return Response({'message': 'Role update was successful'}, status=status.HTTP_200_OK)
         except Exception as err:
-            print(err)
+            logger.error('Unable to update the role')
             return Response({'errorMessage': 'Unable to update the role'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
