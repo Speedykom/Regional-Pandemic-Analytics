@@ -7,6 +7,7 @@ from ..gdags.hop import EditAccessProcess
 from utils.minio import client
 from minio.commonconfig import CopySource, REPLACE
 from datetime import datetime
+from utils.keycloak_auth import get_current_user_id
 
 
 class PipelineListView(APIView):
@@ -17,9 +18,7 @@ class PipelineListView(APIView):
 
     def get(self, request):
         """ Return a user created pipelines """
-
-        cur_user = request.userinfo
-        user_id = cur_user['sub']
+        user_id = get_current_user_id(request)
 
         pipelines: list[str] = []
 
@@ -37,9 +36,7 @@ class PipelineListView(APIView):
 
     def post(self, request):
         """ Create a pipeline from a chosen template for a specific user  """
-
-        cur_user = request.userinfo
-        user_id = cur_user['sub']
+        user_id = get_current_user_id(request)
 
         name = request.data['name']
         template = request.data['template']
@@ -81,8 +78,7 @@ class PipelineDetailView(APIView):
     file = "../hop/data-orch.list"
 
     def get(self, request, name=None):
-        cur_user = request.userinfo
-        user_id = cur_user['sub']
+        user_id = get_current_user_id(request)
         try:
             object = client.stat_object(
                 "pipelines", f"pipelines-created/{user_id}/{name}.hpl")
@@ -105,8 +101,7 @@ class PipelineDetailView(APIView):
             return Response({'status': "error", "message": "No pipeline found with this name {}".format(name)}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, name=None):
-        cur_user = request.userinfo
-        user_id = cur_user['sub']
+        user_id = get_current_user_id(request)
         try:
             object = client.stat_object(
                 "pipelines", f"pipelines-created/{user_id}/{name}.hpl")
