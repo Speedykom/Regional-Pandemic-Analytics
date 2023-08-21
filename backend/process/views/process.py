@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from ..models import ProcessChain
+from utils.keycloak_auth import get_current_user_id, get_current_user_name
 
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")
@@ -50,9 +51,8 @@ class ProcessListView(APIView):
         return Response({'status': 'success', "dags": processes}, status=200)
 
     def post(self, request):
-        cur_user = request.userinfo
-        user_id = cur_user['sub']
-        user_name = cur_user["preferred_username"]
+        user_id = get_current_user_id(request)
+        user_name = get_current_user_name(request)
 
         # Collect Form data
         dag_id = request.data['name'].replace(" ", "-").lower()
