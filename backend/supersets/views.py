@@ -6,6 +6,10 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from . import auths
 
+import logging
+
+logger = logging.getLogger("SUPERSET")
+
 class ListDashboardsAPI(APIView):
     """
     API view to superset dashboards
@@ -22,6 +26,7 @@ class ListDashboardsAPI(APIView):
         }
         response = requests.get(url=url, headers=headers)
         if response.status_code != 200:
+            logger.error(response.json())
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
         return Response(response.json(), status=status.HTTP_200_OK)
@@ -43,6 +48,7 @@ class ListChartsAPI(APIView):
         
         response = requests.get(url=url, headers=headers)
         if response.status_code != 200:
+            logger.error(response.json())
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
         return Response(response.json(), status=status.HTTP_200_OK)
@@ -67,6 +73,7 @@ class EnableEmbed(APIView):
         response = requests.post(url, json={"allowed_domains": [os.getenv("SUPERSET_ALLOWED_DOMAINS")]}, headers=headers)
         
         if response.status_code != 200:
+            logger.error(response.json())
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
         return Response(response.json(), status=status.HTTP_200_OK)    #result.uuid
@@ -147,6 +154,7 @@ class CsrfTokenApi(APIView):
         response = requests.get(url=url, headers=headers)
         
         if response.status_code != 200:
+            logger.error(response.json())
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
         return Response({'data': response.json()}, status=status.HTTP_200_OK)    
