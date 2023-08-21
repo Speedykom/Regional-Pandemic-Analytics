@@ -461,10 +461,21 @@ services:
       interval: 5s
       retries: 5
 
+  airflow-triggerer:
+    <<: *airflow
+    depends_on:
+      - airflow-pg
+    container_name: airflow-triggerer
+    command: triggerer
+    restart: on-failure
+    ports:
+      - 8794:8794
+
   airflow-scheduler:
     <<: *airflow
     depends_on:
       - airflow-pg
+      - airflow-triggerer
     container_name: airflow-scheduler
     command: scheduler
     restart: on-failure
