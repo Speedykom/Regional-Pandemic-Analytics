@@ -7,8 +7,10 @@ env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-HOP_FILES_DIR = os.path.abspath(os.path.join(BASE_DIR, os.getenv("HOPE_TEMPLATE_PATH", "")))
-COPY_HOP_FILES_DIR = os.path.abspath(os.path.join(BASE_DIR, os.getenv("HOPE_PIPELINE_PATH", "")))
+HOP_FILES_DIR = os.path.abspath(os.path.join(
+    BASE_DIR, os.getenv("HOPE_TEMPLATE_PATH", "")))
+COPY_HOP_FILES_DIR = os.path.abspath(os.path.join(
+    BASE_DIR, os.getenv("HOPE_PIPELINE_PATH", "")))
 
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
@@ -18,28 +20,34 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CORS_ORIGIN_ALLOW_ALL=os.getenv("CORS_ORIGIN_ALLOW_ALL","False")
-CORS_ALLOW_CREDENTIALS=True
-CORS_ORIGIN_WHITELIST=os.getenv("CORS_ORIGIN_WHITELIST", 'http://localhost:3000,http://localhost:8000').split(',')
+CORS_ORIGIN_ALLOW_ALL = os.getenv("CORS_ORIGIN_ALLOW_ALL", "False")
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = os.getenv(
+    "CORS_ORIGIN_WHITELIST", 'http://localhost:3000,http://localhost:8000').split(',')
 # Application definition
 
 logs_folder = "{}/logs/app.log".format(BASE_DIR)
 
 LOGGING = {
- 'version': 1,
- 'disable_existing_loggers': False,
- 'formatters': {
-  'simple': {
-   'format': '[%(asctime)s] %(levelname)s | %(funcName)s | %(name)s | %(message)s',
-   'datefmt': '%Y-%m-%d %H:%M:%S',
-  },
- },
- 'loggers': {
-  'signal': {
-   'handlers': ['logger'],
-   'level': 'DEBUG',
-  }
- }
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '[%(asctime)s] %(levelname)s | %(funcName)s | %(name)s | %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    'loggers': {
+        'signal': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        }
+    }
 }
 
 INSTALLED_APPS = [
@@ -93,7 +101,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", 'True').lower() in ('true', '1', 't')
+DEVELOPMENT_MODE = os.getenv(
+    "DEVELOPMENT_MODE", 'True').lower() in ('true', '1', 't')
 
 if DEVELOPMENT_MODE is True:
     DATABASES = {
@@ -105,9 +114,9 @@ if DEVELOPMENT_MODE is True:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': os.getenv('DB_ENGINE','django.db.backends.postgresql'),
+            'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.postgresql'),
             'USER': os.environ.get('DB_USER'),
-            'PASSWORD':os.environ.get('DB_PASSWORD'),
+            'PASSWORD': os.environ.get('DB_PASSWORD'),
             'NAME': os.environ.get('DB_NAME'),
             'PORT': os.environ.get('DB_PORT'),
             'HOST': os.environ.get('DB_HOST')
@@ -158,7 +167,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication'
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        #'rest_framework.permissions.IsAuthenticated'
+        # 'rest_framework.permissions.IsAuthenticated'
     ),
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
@@ -183,7 +192,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://data2.igad-health.eu',
 ]
 
-# Excempt list - URL paths that doesn't need Keycloak Authorization 
+# Excempt list - URL paths that doesn't need Keycloak Authorization
 KEYCLOAK_BEARER_AUTHENTICATION_EXEMPT_PATHS = [
     'admin', 'accounts',
 ]
@@ -191,10 +200,11 @@ CONFIG_DIR = os.path.join(os.path.dirname(__file__), os.pardir)
 KEYCLOAK_CONFIG = {
     'KEYCLOAK_REALM': os.getenv("KEYCLOAK_REALM"),
     'KEYCLOAK_CLIENT_ID': os.getenv("CLIENT_ID"),
-    'KEYCLOAK_DEFAULT_ACCESS': 'ALLOW', # DENY or ALLOW
+    'KEYCLOAK_DEFAULT_ACCESS': 'ALLOW',  # DENY or ALLOW
     'KEYCLOAK_METHOD_VALIDATE_TOKEN': 'DECODE',
     'KEYCLOAK_SERVER_URL': os.getenv("KEYCLOAK_SERVER_URL"),
-    'KEYCLOAK_INTERNAL_SERVER_URL': os.getenv("BASE_URL"), # @todo : rename env var BASE_URL
+    # @todo : rename env var BASE_URL
+    'KEYCLOAK_INTERNAL_SERVER_URL': os.getenv("BASE_URL"),
     'KEYCLOAK_CLIENT_SECRET_KEY': os.getenv("CLIENT_SECRET"),
     'KEYCLOAK_ADMIN_USERNAME': os.getenv("KEYCLOAK_ADMIN_USERNAME"),
     'KEYCLOAK_ADMIN_PASSWORD': os.getenv("KEYCLOAK_ADMIN_PASSWORD"),
@@ -212,7 +222,7 @@ MINIO_ENDPOINT = os.getenv("MINIO_URL")
 
 # EMAIL TRASMISSION SETTINGS
 
-EMAIL_BACKEND ='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = os.getenv("MAIL_HOST")
 EMAIL_PORT = 587
 EMAIL_HOST_USER = os.getenv("MAIL_USER")
@@ -230,4 +240,3 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_REGION = "us-east-1"
 AWS_S3_SECURE_URLS = False
 AWS_S3_VERIFY = False
-
