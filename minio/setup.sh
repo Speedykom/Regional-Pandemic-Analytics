@@ -25,4 +25,4 @@ create_bucket "minio-remote" "parquets"
 create_bucket "minio-remote" "repan-bucket"
 create_bucket "minio-remote" "avatars"
 
-mc mirror  /tmp/templates/ minio-remote/pipelines/
+mc mirror  /tmp/templates/ minio-remote/pipelines/templates
