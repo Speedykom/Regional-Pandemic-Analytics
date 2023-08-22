@@ -40,7 +40,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
-  
+
   hop-server:
     ports:
       - "9999:8080"
@@ -55,10 +55,6 @@ services:
       - "host.docker.internal:host-gateway"
       - "minio.igad.local:host-gateway"
       - "keycloak.igad.local:host-gateway"
-  minio-mc:
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-      - "minio.igad.local:host-gateway"
   # ========
   # Backend
   # ========

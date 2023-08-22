@@ -129,6 +129,7 @@ services:
       - MINIO_MC_REMOTE_SERVER_URL=${MINIO_MC_REMOTE_SERVER_URL}
     volumes:
       - ./minio/setup.sh:/tmp/setup.sh
+      - ./hop/pipelines/templates:/tmp/templates
     depends_on:
       storage:
         condition: service_healthy
