@@ -1,22 +1,22 @@
 // Need to use the React-specific entry point to import createApi
 import { baseQuery } from "@/common/redux/api";
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { PipelineList, TemplateList } from "./interface";
+import { PipelineData, PipelineList, TemplateList } from "./interface";
 
 export const PipelineApi = createApi({
   reducerPath: 'PipelineApi',
   baseQuery,
   tagTypes: ['pipelines'],
   endpoints: (builder) => ({
-    findAll: builder.query<PipelineList, void>({
+    getAllPipelines: builder.query<PipelineList, void>({
       query: () => '/pipeline/list',
       providesTags: ['pipelines'],
     }),
+    getPipeline: builder.query<PipelineData, string>({
+      query: (name) => `/pipeline/${name}`,
+    }),
     templates: builder.query<TemplateList, void>({
       query: () => '/hop'
-    }),
-    editAccess: builder.mutation<any, string>({
-      query: (id) => `/pipeline/access/${id}`,
     }),
     createPipeline: builder.mutation<any, string>({
       query: (body) => ({
@@ -26,7 +26,19 @@ export const PipelineApi = createApi({
       }),
       invalidatesTags: ['pipelines'],
     }),
+    updatePipeline: builder.mutation<{ status: string, message?: string}, string>({
+      query: (name) => ({
+        url: `/pipeline/${name}`,
+        method: "PUT",
+      }),
+    }),
   }),
 });
 
-export const { useFindAllQuery, useTemplatesQuery, useCreatePipelineMutation, useEditAccessMutation } = PipelineApi;
+export const {
+  useGetAllPipelinesQuery,
+  useGetPipelineQuery,
+  useTemplatesQuery,
+  useCreatePipelineMutation,
+  useUpdatePipelineMutation,
+} = PipelineApi;
