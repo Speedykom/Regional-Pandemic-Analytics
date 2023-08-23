@@ -71,7 +71,7 @@ urlpatterns = [
     # ---------------------- Piepline  Endpoints ------------------------------------------
     path('pipeline', pipeline_views.PipelineListView.as_view()),
     path('pipeline/list', pipeline_views.PipelineListView.as_view()),
-    path('pipeline/access/<str:id>', pipeline_views.PipelineDetailView.as_view()),
+    path('pipeline/<str:name>', pipeline_views.PipelineDetailView.as_view()),
 
     # ---------------------- Process Chain  Endpoints ------------------------------------------
     path('process', process_views.ProcessListView.as_view()),

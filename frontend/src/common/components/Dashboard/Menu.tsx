@@ -59,7 +59,7 @@ export const MenuData = [
 			},
 			{
 				title: "My Pipelines",
-				href: "/my-pipeline",
+				href: "/pipelines",
 				icon: BiGitMerge,
 				scope: "pipeline:read",
 			},
@@ -88,8 +88,8 @@ export const SideNavLinks = (prop: MenuProps) => {
 	const { hasPermission } = usePermission();
 	return (
 		<>
-			{MenuData.map((group, index) => (
-				<div key={index} className="my-4 flex flex-col">
+			{MenuData.map((group) => (
+				<div key={group.name} className="my-4 flex flex-col">
 					<motion.p
 						animate={prop.controlstextopacity}
 						className="text-gray-500 ml-4 text-sm font-bold mb-2"
@@ -97,42 +97,22 @@ export const SideNavLinks = (prop: MenuProps) => {
 						{prop?.isOpen ? group?.name : ""}
 					</motion.p>
 
-					{group.items.map((item, index2) => (
-						<>
-							{item.title == "Home" ? (
-								<NavLink
-									href={item.href}
-									activeClassName="bg-prim text-white hover:bg-prim-hover"
-									className="hover:bg-gray-400/40 px-4 py-3 flex w-full cursor-pointer"
-								>
-									<item.icon className="text-lg" />
+					{group.items.filter(({ title, scope }) => title == "Home" || hasPermission(scope)).map((item) => (
+						<NavLink
+							key={item.title}
+							href={item.href}
+							activeClassName="bg-prim text-white hover:bg-prim-hover"
+							className="hover:bg-gray-400/40 px-4 py-3 flex w-full cursor-pointer"
+						>
+							<item.icon className="text-lg" />
 
-									<motion.p
-										animate={prop.controlstext}
-										className="ml-4 text-sm"
-									>
-										{prop?.isOpen ? item?.title : ""}
-									</motion.p>
-								</NavLink>
-							) : (
-								hasPermission(item.scope) && (
-									<NavLink
-										href={item.href}
-										activeClassName="bg-prim text-white hover:bg-prim-hover"
-										className="hover:bg-gray-400/40 px-4 py-3 flex w-full cursor-pointer"
-									>
-										<item.icon className="text-lg" />
-
-										<motion.p
-											animate={prop?.controlstext}
-											className="ml-4 text-sm"
-										>
-											{prop?.isOpen ? item?.title : ""}
-										</motion.p>
-									</NavLink>
-								)
-							)}
-						</>
+							<motion.p
+								animate={prop?.controlstext}
+								className="ml-4 text-sm"
+							>
+								{prop?.isOpen ? item?.title : ""}
+							</motion.p>
+						</NavLink>
 					))}
 				</div>
 			))}

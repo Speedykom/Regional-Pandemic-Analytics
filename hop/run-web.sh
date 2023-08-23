@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-envsubst < /usr/local/tomcat/webapps/ROOT/WEB-INF/keycloak.template.json > /usr/local/tomcat/webapps/ROOT/WEB-INF/keycloak.json 
+envsubst </usr/local/tomcat/webapps/ROOT/WEB-INF/keycloak.template.json >/usr/local/tomcat/webapps/ROOT/WEB-INF/keycloak.json
 
 set -Euo pipefail
 
@@ -104,17 +104,16 @@ else
   log "Not creating a project or environment in the container"
 fi
 
-
 # if we have a /config/tomcat-users.xml file, copy it to the conf folder.
 if [ -f "/config/tomcat-users.xml" ]; then
-    log "copying users file to /usr/local/tomcat/conf/"
-    cp /config/tomcat-users.xml /usr/local/tomcat/conf/
+  log "copying users file to /usr/local/tomcat/conf/"
+  cp /config/tomcat-users.xml /usr/local/tomcat/conf/
 fi
 
 # if we have a /config/web.xml file, copy it to the WEB-INF folder.
 if [ -f "/config/web.xml" ]; then
-    log "copying web.xml file to /usr/local/tomcat/conf/"
-    cp /config/web.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/
+  log "copying web.xml file to /usr/local/tomcat/conf/"
+  cp /config/web.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/
 fi
 
 #
@@ -129,6 +128,6 @@ pid="$!"
 log "Running Apache Tomcat / Hop Web with PID ${pid}"
 trap "log 'Stopping Tomcat'; catalina.sh stop" SIGINT SIGTERM
 
-while kill -0 $pid > /dev/null 2>&1; do
-    wait
+while kill -0 $pid >/dev/null 2>&1; do
+  wait
 done

@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser
 from core import settings
-from utils.minio import upload_file_to_minio
+from utils.minio import client
 from bs4 import BeautifulSoup
 from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
@@ -32,25 +32,20 @@ class ListHopAPIView(APIView):
     """
     permission_classes = [AllowAny]
 
-    def get_all_directory_files(self)-> List[str]:
-      """Looks into the hops template, iterate over the files, append and return"""
-      files: List[str] = []
-    
-      for filename in os.listdir(settings.HOP_FILES_DIR):
-        if filename.endswith(".hpl"):
-          responseFormat = {
-            "name": filename,
-            "path": '{}/{}'.format(settings.HOP_FILES_DIR, filename)
-          }
-          files.append(responseFormat)
-        else:
-          continue
-      
-      return files
-
     def get(self, request):
-      """Returns all the files from the hop directory"""
-      return Response({'status': 'success', "data": self.get_all_directory_files()}, status=200)
+      """ Return hop templates from minio bucket """
+      
+      pipelines_templates:list[str]=[]
+    
+      objects=client.list_objects("pipelines",prefix="templates/")
+      for object in objects:
+        pipelines_templates.append(
+          {
+            "name": object.object_name.removeprefix("templates/")
+            }
+          )  
+    
+      return Response({'status': 'success', "data": pipelines_templates}, status=200)
      
 class GetSingleHopAPIView(APIView):
     """
@@ -156,7 +151,7 @@ class NewHopAPIView(APIView):
           return Response({'status': 'error', "message": '{} already exists'.format(filename)}, status=409)
         else:
           # replace the file storage from filestorage to minio
-          upload_file_to_minio("hop-bucket", file_obj)
+          # upload_file_to_minio("hop-bucket", file_obj)
           return Response({'status': 'success', "message": "template file uploaded successfully"}, status=200)
       else:
         # check if the filename does exist and throw error otherwise; save the file as it is
@@ -164,7 +159,7 @@ class NewHopAPIView(APIView):
           return Response({'status': 'error', "message": '{} already exists'.format(file_obj.name)}, status=409)
         else:
           # replace the file storage from filestorage to minio
-          upload_file_to_minio("hop-bucket", file_obj)
+          # upload_file_to_minio("hop-bucket", file_obj)
           return Response({'status': 'success', "message": "template file uploaded successfully"}, status=200)
     except MultiValueDictKeyError:
       return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)

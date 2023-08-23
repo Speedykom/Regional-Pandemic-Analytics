@@ -47,7 +47,11 @@ export default function Layout({ children }: LayoutProps) {
 					</Drawer>
 				</div>
 				<div className={`w-full pt-16 transition-all duration-[400ms]`}>
-					<div className="bg-gray-100 h-screen">{children}</div>
+					<div className="bg-gray-100 h-screen">
+						<div className="mx-3 md:mx-16 py-10">
+							{children}
+						</div>
+					</div>
 				</div>
 			</main>
 		</>

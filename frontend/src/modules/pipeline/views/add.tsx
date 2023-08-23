@@ -26,7 +26,7 @@ export const AddPipeline = ({
 	const [addPipeline, { isLoading }] = useCreatePipelineMutation();
 
 	const onFinish = (value: any) => {
-		addPipeline({ ...value, path: template?.path }).then((res: any) => {
+		addPipeline({ ...value, template:template.name }).then((res: any) => {
 			if (res.error) {
 				const { data } = res.error;
 				const { message } = data;

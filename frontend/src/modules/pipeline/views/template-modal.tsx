@@ -65,14 +65,14 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
 	};
 
 	return (
-		<div className="border-t">
-			<p className="bg-yellow-200 px-3 py-2 rounded-md mt-3 text-gray-500 w-full">
+		<div className='border-t'>
+			<p className='bg-yellow-200 px-3 py-2 rounded-md mt-3 text-gray-500 w-full'>
 				Note: select your template you want to create from and press continue
 			</p>
-			<div className="grid grid-cols-3 gap-4 my-3">
+			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-3'>
 				{(templates?.data || []).map((template, index) => (
-					<div key={index} className="">
-						<Tooltip position="top" fontSize="16px">
+					<div key={index} className=''>
+						<Tooltip position='top' fontSize='16px'>
 							<Card
 								key={index}
 								title={template?.name}
@@ -83,16 +83,16 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
 										: `border-gray-300 hover:border-green-800`
 								} cursor-pointer`}
 							>
-								<div className="">
-									<Title className="w-full border-b text-sm font-normal text-prim whitespace-nowrap overflow-hidden text-ellipsis">
+								<div className=''>
+									<Title className='w-full border-b text-sm font-normal text-prim whitespace-nowrap overflow-hidden text-ellipsis'>
 										{template?.name}
 									</Title>
 								</div>
-								<div className="flex justify-center p-3">
+								<div className='flex justify-center p-3'>
 									<img
-										className="h-16"
+										className='h-16'
 										src={getIcon(template?.name)}
-										alt="icon"
+										alt='icon'
 									/>
 								</div>
 							</Card>
@@ -100,10 +100,10 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
 					</div>
 				))}
 			</div>
-			<div className="mt-8 flex justify-end space-x-2">
+			<div className='mt-8 flex justify-end space-x-2'>
 				<Button
-					type="button"
-					className=" bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
+					type='button'
+					className=' bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0'
 					onClick={handleCancle}
 				>
 					Cancel
@@ -111,7 +111,7 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
 				<Button
 					disabled={selected == undefined}
 					onClick={handleOk}
-					className="bg-prim hover:bg-prim-hover text-white border-0 text-sm"
+					className='bg-prim hover:bg-prim-hover text-white border-0 text-sm'
 				>
 					Continue
 				</Button>

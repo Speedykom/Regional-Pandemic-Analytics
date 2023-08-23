@@ -1,9 +1,5 @@
 import { theme } from "antd";
 import { useState } from "react";
-import getConfig from 'next/config'
- 
-// Only holds serverRuntimeConfig and publicRuntimeConfig
-const { publicRuntimeConfig } = getConfig()
 
 export const EditHopProcess = () => {
   const { token } = theme.useToken();
@@ -40,7 +36,7 @@ export const EditHopProcess = () => {
 
   return (
     <div>
-      <iframe style={{height: "700px", width: "100%"}} src={publicRuntimeConfig.NEXT_PUBLIC_HOP_UI} />
+      <iframe style={{height: "700px", width: "100%"}} src={'/hop/ui'} />
     </div>
   );
 };

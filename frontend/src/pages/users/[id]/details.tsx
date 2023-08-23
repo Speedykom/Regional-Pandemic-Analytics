@@ -1,4 +1,4 @@
-import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
+import Layout from "@/common/components/Dashboard/Layout";
 import { Unauthorized } from "@/common/components/common/unauth";
 import { usePermission } from "@/common/hooks/use-permission";
 import { UserDetails } from "@/modules/user/views/UserDetails";
@@ -6,8 +6,8 @@ import { UserDetails } from "@/modules/user/views/UserDetails";
 export default function UserAdd() {
 	const { hasPermission } = usePermission();
 	return (
-		<DashboardFrame>
+		<Layout>
 			{hasPermission("user:read") ? <UserDetails /> : <Unauthorized />}
-		</DashboardFrame>
+		</Layout>
 	);
 }

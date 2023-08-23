@@ -35,15 +35,15 @@ services:
   # =====
   #  Hop
   # =====
-  # hop:
-  #   container_name: hop
-  #   extra_hosts:
-  #     - "host.docker.internal:host-gateway"
-  #     - "keycloak.igad.local:host-gateway"
-  
-  # hop-server:
-  #   ports:
-  #     - "9999:8080"
+  hop:
+    container_name: hop
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "keycloak.igad.local:host-gateway"
+
+  hop-server:
+    ports:
+      - "9999:8080"
 
   # =====
   #  Minio
@@ -54,11 +54,6 @@ services:
       - "host.docker.internal:host-gateway"
       - "minio.igad.local:host-gateway"
       - "keycloak.igad.local:host-gateway"
-  minio-mc:
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-      - "minio.igad.local:host-gateway"
-      
   # ========
   # Backend
   # ========

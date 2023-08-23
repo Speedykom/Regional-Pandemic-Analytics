@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
 	clearCredentials,
 	selectCurrentUser,
+	useLogoutFromHopMutation,
 	useLogoutMutation,
 } from "@/modules/auth/auth";
 import { toast } from "react-toastify";
@@ -31,16 +32,23 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
 	const router = useRouter();
 	const dispatch = useDispatch();
 	const [logout] = useLogoutMutation();
+	const [logoutFromHop] =  useLogoutFromHopMutation();
 	const currentUser = useSelector(selectCurrentUser);
 	const username = currentUser?.given_name;
 
 	const handleLogout = async () => {
-		logout({})
+		logout()
+			.then(() => {
+				return logoutFromHop().catch((err) => {
+					console.warn(err)
+				});
+			})
 			.then(() => {
 				dispatch(clearCredentials());
 				router.push("/");
 			})
-			.catch(() => {
+			.catch((err) => {
+				console.log(err)
 				toast.error("Something went wrong!", { position: "top-right" });
 			});
 	};
@@ -143,7 +151,7 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
 								</Menu.Item>
 								<Menu.Item>
 									<Link
-										href="#"
+										href="javascript:void(0)"
 										className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
 									>
 										<Cog8ToothIcon className="h-4 w-4 mr-2" />
@@ -152,7 +160,7 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
 								</Menu.Item>
 								<Menu.Item>
 									<Link
-										href="#"
+										href="javascript:void(0)"
 										className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
 										onClick={handleLogout}
 									>

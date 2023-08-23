@@ -8,7 +8,6 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from utils.filename import gen_filename
 
-from utils.minio import upload_file_to_minio, download_file
 from django.utils.datastructures import MultiValueDictKeyError
 
 from .serializers import *
@@ -230,7 +229,6 @@ class UserAvatarView(APIView):
 
     def get(self, request, **kwargs):
         filename = request.query_params['filename']
-        url = download_file('avatars', filename)
         return Response(url.read(), content_type='binary/octet-stream')
 
     def post(self, request, **kwargs):
@@ -240,9 +238,6 @@ class UserAvatarView(APIView):
 
             name_generator = gen_filename(file_obj.name)
             file_obj.name = name_generator['newName']
-
-            # check that a filename is passed
-            upload_file_to_minio("avatars", file_obj)
 
             try:
                 keycloak_admin = get_keycloak_admin()

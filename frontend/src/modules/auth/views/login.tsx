@@ -6,7 +6,6 @@ import { KeyIcon } from '@heroicons/react/24/solid';
 
 export default function LoginForm() {
   const { signInWithKeyCloak } = useAuth();
-
   return (
     <>
       <Head>
@@ -31,11 +30,11 @@ export default function LoginForm() {
                       </div>
                       <div className="mb-5">
                         <Button
-						  icon={KeyIcon}
+						              icon={KeyIcon}
                           type="button"
                           className="w-full bg-prim text-white rounded-md border-0 hover:bg-green-700"
                           size="lg"
-						  onClick={signInWithKeyCloak}
+						              onClick={signInWithKeyCloak}
                         >
                           Sign-In with KeyCloak
                         </Button>

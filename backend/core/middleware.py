@@ -101,7 +101,7 @@ class KeycloakMiddleware(MiddlewareMixin):
                                                              method_token_info=method_validate_token.lower(),
                                                              key=client_public_key,
                                                              options={"verify_aud": False})
-        except KeycloakInvalidTokenError as e:
+        except:
             return JsonResponse({"detail": AuthenticationFailed.default_detail},
                                 status=AuthenticationFailed.status_code)
 
@@ -112,8 +112,11 @@ class KeycloakMiddleware(MiddlewareMixin):
 
         if has_scope_permission:
             # Add to userinfo to the view
-            request.userinfo = keycloak.userinfo(token)
-            return None
+            try:
+                request.userinfo = keycloak.userinfo(token)
+            except Exception as e:
+                return JsonResponse({"detail": AuthenticationFailed.default_detail},
+                                    status=AuthenticationFailed.status_code)
         else:
             # User Permission Denied
             return JsonResponse({"detail": PermissionDenied.default_detail},

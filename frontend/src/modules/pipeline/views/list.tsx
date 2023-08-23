@@ -11,15 +11,16 @@ import {
 } from "@tremor/react";
 import MediaQuery from "react-responsive";
 import { useState } from "react";
-import { useFindAllQuery } from "../pipeline";
-import ViewButton from "./ViewButton";
+import { useGetAllPipelinesQuery } from "../pipeline";
 import { usePermission } from "@/common/hooks/use-permission";
 import { AddPipeline } from "./add";
 import { TemplateModal } from "./template-modal";
 import { useModal } from "@/common/hooks/use-modal";
+import { useRouter } from "next/router";
 
 export const MyPipelines = () => {
-	const { data, refetch } = useFindAllQuery();
+	const router = useRouter();
+	const { data, refetch } = useGetAllPipelinesQuery();
 	const { hasPermission } = usePermission();
 	const [template, setTemplate] = useState<any>();
 	const [drawer, setDrawer] = useState<boolean>(false);
@@ -95,7 +96,12 @@ export const MyPipelines = () => {
 									</MediaQuery>
 									<TableCell>
 										<div className="flex space-x-2 justify-end">
-											<ViewButton id={item?.id} />
+											<Button
+												onClick={() => router.push(`/pipelines/${encodeURIComponent(item?.name)}`)}
+												className="hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white"
+											>
+												View
+											</Button>
 										</div>
 									</TableCell>
 								</TableRow>

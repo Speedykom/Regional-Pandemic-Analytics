@@ -1,4 +1,4 @@
-import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
+import Layout from "@/common/components/Dashboard/Layout";
 import { countries } from "@/common/utils/countries";
 
 import { Fragment, useEffect, useState } from "react";
@@ -396,8 +396,8 @@ export const ProfileSettings = () => {
 
 export default function ProfileLayout() {
 	return (
-		<DashboardFrame title="Profile Settings">
+		<Layout>
 			<ProfileSettings />
-		</DashboardFrame>
+		</Layout>
 	);
 }

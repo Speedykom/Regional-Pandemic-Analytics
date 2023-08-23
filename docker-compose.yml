@@ -52,8 +52,13 @@ x-airflow-common: &airflow
     - ENVIRONMENT=${AIRFLOW_ENVIRONMENT}
     - DRUID_COORDINATOR_URL={DRUID_COORDINATOR_URL}
     - AIRFLOW_CONN_HOP_DEFAULT=${AIRFLOW_CONN_HOP_DEFAULT}
+    - AIRFLOW_VAR_MINIO_URL=${BACKEND_MINIO_URL}
+    - AIRFLOW_VAR_MINIO_ACCESS_KEY=${BACKEND_MINIO_ACCESS_KEY}
+    - AIRFLOW_VAR_MINIO_SECRET_KEY=${BACKEND_MINIO_SECRET_KEY}
+    - AIRFLOW_VAR_MINIO_FTP_SERVER=${MINIO_FTP_SERVER}
   volumes:
     - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/include:/opt/airflow/include
     - ./airflow/logs:/opt/airflow/logs
     - ./airflow/plugins:/opt/airflow/plugins
     - ./airflow/webserver_config.py:/opt/airflow/webserver_config.py
@@ -126,6 +131,7 @@ services:
       - MINIO_MC_REMOTE_SERVER_URL=${MINIO_MC_REMOTE_SERVER_URL}
     volumes:
       - ./minio/setup.sh:/tmp/setup.sh
+      - ./hop/pipelines/templates:/tmp/templates
     depends_on:
       storage:
         condition: service_healthy
@@ -480,6 +486,9 @@ services:
       - HOP_KEYCLOAK_CLIENT_SECRET=${HOP_KEYCLOAK_CLIENT_SECRET}
       - HOP_KEYCLOAK_REALM=${HOP_KEYCLOAK_REALM}
       - HOP_KEYCLOAK_SERVER_URL=${HOP_KEYCLOAK_SERVER_URL}
+      - HOP_KEYCLOAK_SSL_REQUIRED=${HOP_KEYCLOAK_SSL_REQUIRED}
+      - HOP_KEYCLOAK_CONFIDENTIAL_PORT=${HOP_KEYCLOAK_CONFIDENTIAL_PORT}
+      - HOP_KEYCLOAK_DISABLE_SSL_VERIFICATION=${HOP_KEYCLOAK_DISABLE_SSL_VERIFICATION}
 
   hop-server:
     image: apache/hop:2.4.0
@@ -512,10 +521,21 @@ services:
       interval: 5s
       retries: 5
 
+  airflow-triggerer:
+    <<: *airflow
+    depends_on:
+      - airflow-pg
+    container_name: airflow-triggerer
+    command: triggerer
+    restart: on-failure
+    ports:
+      - 8794:8794
+
   airflow-scheduler:
     <<: *airflow
     depends_on:
       - airflow-pg
+      - airflow-triggerer
     container_name: airflow-scheduler
     command: scheduler
     restart: on-failure
@@ -590,6 +610,9 @@ services:
       - MINIO_KEYCLOAK_CLIENT_ID=${MINIO_IDENTITY_OPENID_CLIENT_ID}
       - MINIO_KEYCLOAK_SECRET=${MINIO_IDENTITY_OPENID_CLIENT_SECRET}
       - MINIO_KEYCLOAK_CLAIM_NAME=${MINIO_IDENTITY_OPENID_CLAIM_NAME}
+      - AIRFLOW_KEYCLOAK_CLIENT_ID=${AIRFLOW_KEYCLOAK_CLIENT_ID}
+      - AIRFLOW_KEYCLOAK_CLIENT_SECRET=${AIRFLOW_KEYCLOAK_CLIENT_SECRET}
+      - NGINX_AIRFLOW_DOMAIN_NAME=${NGINX_AIRFLOW_DOMAIN_NAME}
     restart: unless-stopped
     volumes:
       - ./keycloak/realm/realm.json:/opt/keycloak/data/import/realm.json
@@ -645,15 +668,6 @@ services:
     depends_on:
       - airflow-webserver
       - backend
-      - storage
-      - openhim-console
-      - keycloak
-      - openhim-core
-      - hop
-      - router
-      - coordinator
-      - frontend
-      - superset
 
   # =====
   #  OpenHIM

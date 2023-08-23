@@ -1,4 +1,4 @@
-import DashboardFrame from "@/common/components/Dashboard/DashboardFrame";
+import Layout from "@/common/components/Dashboard/Layout";
 import React from "react";
 import Router from "next/router";
 import getConfig from 'next/config'
@@ -7,10 +7,8 @@ const { publicRuntimeConfig } = getConfig()
 
 export default function ProcessChains() {
   return (
-    <DashboardFrame title="Hop Process Chains" back onBackPress={() => {
-      Router.back()
-    }}>
+    <Layout>
       <iframe src={publicRuntimeConfig.NEXT_HOP_UI} />
-    </DashboardFrame>
+    </Layout>
   );
 }
