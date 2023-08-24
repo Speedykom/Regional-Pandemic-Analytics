@@ -39,7 +39,6 @@ urlpatterns = [
             cache_timeout=0), name='schema-redoc'),
 
     ## ---------------------- Auth Endpoints -----------------------------------
-    path('auth/login', auth_view.LoginAPI.as_view()),  # app login
     path('auth/key-auth', auth_view.KeyCloakLoginAPI.as_view()),  # Keycloak login and refresh token
     path('auth/password', auth_view.PasswordAPI.as_view()), # create and change password
     path('auth/request-verify', auth_view.ResetPasswordAPI.as_view()), # Reset password and verify reset password token
