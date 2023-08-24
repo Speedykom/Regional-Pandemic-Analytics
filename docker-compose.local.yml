@@ -48,6 +48,7 @@ services:
   # =====
   #  Minio
   # =====
+
   storage:
     container_name: storage
     extra_hosts:
@@ -57,6 +58,7 @@ services:
   # ========
   # Backend
   # ========
+
   backend:
     container_name: backend
     command: python manage.py runserver 0.0.0.0:8000
@@ -69,6 +71,7 @@ services:
   # ========
   # Airflow
   # ========
+
   airflow-webserver:
     container_name: airflow-webserver
     extra_hosts:
