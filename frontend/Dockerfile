@@ -7,8 +7,6 @@ WORKDIR /frontend
 
 COPY package.json package-lock.json ./
 
-RUN npm install -g npm@9.8.1
-
 RUN npm ci
 
 # Rebuild the source code only when needed
