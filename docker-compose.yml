@@ -79,8 +79,6 @@ volumes:
   broker_var: {}
   coordinator_var: {}
   router_var: {}
-  prometheus_data: {}
-  grafana_data: {}
   mongo-data:
 
 services:
@@ -159,62 +157,6 @@ services:
       - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
       - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
     restart: always
-
-  # ========
-  # Logging Service
-  # ========
-  node-exporter:
-    image: prom/node-exporter:latest
-    container_name: node-exporter
-    restart: unless-stopped
-    volumes:
-      - '/:/host:ro,rslave'
-    command:
-      - '--path.rootfs=/host'
-    ports:
-      - 9100:9100
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.47.2
-    container_name: cadvisor
-    pid: host
-    ports:
-      - 8080:8080
-    volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk:/dev/disk:ro
-      - /etc/machine-id:/etc/machine-id:ro
-    expose:
-      - 8080
-    restart: unless-stopped
-    privileged: true
-    devices:
-      - /dev/kmsg
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    restart: unless-stopped
-    volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-    
-    ports:
-      - 9090:9090
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: grafana
-    ports:
-      - 9091:3000
-    volumes:
-      - grafana_data:/var/lib/grafana
-    restart: unless-stopped
 
   # ========
   # Backend
@@ -474,10 +416,9 @@ services:
     volumes:
       - ./hop/plugins/transforms/:/opt/hop/plugins/transforms/
       - ./hop/pipelines:/files
-
-  # =======
-  # Airflow
-  # =======
+    # =======
+    # Airflow
+    # =======
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg
@@ -633,6 +574,7 @@ services:
   # =====
   #  OpenHIM
   # =====
+
   mongo-db:
     container_name: mongo-db
     image: mongo:4.0
