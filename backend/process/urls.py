@@ -1,10 +1,14 @@
 from django.urls import path
-from .views import ProcessListView, ProcessDetailView
+from .views import ProcessView, ProcessRunView
 
 urlpatterns = [
-    path("", ProcessListView.as_view()),
-    path("list", ProcessListView.as_view()),
-    path("run/<str:id>", ProcessDetailView.as_view()),
-    path("delete/<str:dag_id>", ProcessDetailView.as_view()),
-    path("one/<str:dag_id>", ProcessDetailView.as_view()),
+    path("", ProcessView.as_view({"get": "list", "post": "create"})),
+    path(
+        "<str:dag_id>",
+        ProcessView.as_view({"get": "retrieve", "put": "update", "delete": "destroy"}),
+    ),
+    path(
+        "<str:dag_id>/dagRuns",
+        ProcessRunView.as_view({"get": "list", "post": "create"}),
+    ),
 ]
