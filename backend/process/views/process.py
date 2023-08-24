@@ -108,12 +108,13 @@ class ProcessDetailView(APIView):
         client = requests.get(route, json={}, auth=(AirflowInstance.username, AirflowInstance.password))
 
         res_status = client.status_code
+        data = client.json()
 
         if (res_status == 404):
-            logger.error(client.json()['detail'])
-            return Response({'status': 'fail', "message": client.json()['detail']}, status=res_status)
+            logger.error(data['detail'])
+            return Response({'status': 'fail', "message": data['detail']}, status=res_status)
         else:
-            return Response({'status': 'success', "message": client.json()['dag_runs'].format(id)}, status=200)
+            return Response({'status': 'success', "message": data['dag_runs'].format(id)}, status=200)
 
     def post(self, request, id=None):
         route = "{}/dags/{}/dagRuns".format(AirflowInstance.url, id)
