@@ -7,7 +7,7 @@ from ..models import ProcessChain
 from utils.keycloak_auth import get_current_user_id, get_current_user_name
 import logging
 
-logger = logging.getLogger("PROCESS CHAIN")
+logger = logging.getLogger("django")
 
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")

@@ -12,7 +12,7 @@ from utils.keycloak_auth import get_current_user_id
 
 import logging
 
-logger = logging.getLogger("PIPELINE")
+logger = logging.getLogger("django")
 
 class PipelineListView(APIView):
     keycloak_scopes = {
