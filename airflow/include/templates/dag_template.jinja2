@@ -1,8 +1,7 @@
 from datetime import datetime, timedelta
 from airflow import DAG
-from airflow.baseoperator import BaseOperator
 from airflow.exceptions import AirflowException
-from airflow.models import Variable
+from airflow.models import BaseOperator, Variable
 from airflow.operators.python_operator import PythonOperator
 from airflow_hop.operators import HopPipelineOperator
 from airflow.triggers.temporal import TimeDeltaTrigger
@@ -35,7 +34,7 @@ def download_pipeline_minio():
 # Ingest to druid
 class DruidOperator(BaseOperator):
   def __init__(self, **kwargs):
-    super().__init__(**kwargs)
+    super().__init__(task_id = 'repan_druid_ingestion', **kwargs)
     self.base_url = "{}/druid/indexer/v1/task".format(os.environ['DRUID_COORDINATOR_URL'])
 
   def execute(self):
@@ -109,10 +108,10 @@ class DruidOperator(BaseOperator):
     url = "{}/{}/status".format(self.base_url, process_id)
     response = requests.get(url)
     if response.ok:
-      match response.json()['status']['statusCode']:
-        case 'FAILED':
+      status = response.json()['status']['statusCode']
+      if status == 'FAILED':
           raise AirflowException('Druid ingestion failed')
-        case 'SUCCESS':
+      elif status == 'SUCCESS':
           return
     self.wait_for_completion(process_id)
 
