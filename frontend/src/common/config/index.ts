@@ -1,13 +1,13 @@
-import secureLocalStorage from "react-secure-storage";
+import secureLocalStorage from 'react-secure-storage';
 
-export const prepareHeaders = (headers: any, { getState, endpoint }: any) => {
-    const tokens = secureLocalStorage.getItem("tokens");
+export const prepareHeaders = (headers: any, {}: any) => {
+  const tokens = secureLocalStorage.getItem('tokens');
 
-    if (!tokens) headers;
+  if (!tokens) headers;
 
-    const { accessToken } = (tokens as any);
+  const { accessToken } = tokens as any;
 
-    headers.set("AUTHORIZATION", `Bearer ${accessToken}`);
+  headers.set('AUTHORIZATION', `Bearer ${accessToken}`);
 
-    return headers;
-}
+  return headers;
+};

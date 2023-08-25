@@ -1,12 +1,15 @@
-import { TextInput } from "@tremor/react";
-import { useState, Fragment } from "react";
-import { useDropzone } from "react-dropzone";
-import { toast } from "react-toastify";
-import axios from "axios";
-import { Dialog, Transition } from "@headlessui/react";
-import { ArrowUpOnSquareIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "@/modules/auth/auth";
+import { TextInput } from '@tremor/react';
+import { useState, Fragment } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { Dialog, Transition } from '@headlessui/react';
+import {
+  ArrowUpOnSquareIcon,
+  DocumentTextIcon,
+} from '@heroicons/react/24/outline';
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '@/modules/auth/auth';
 
 interface prop {
   dag: any;
@@ -14,8 +17,8 @@ interface prop {
   state: boolean;
 }
 
-export default function LoadData({ dag, state, onClose }: prop) {
-  const [fileName, setFileName] = useState<string>("");
+export default function LoadData({ state, onClose }: prop) {
+  const [fileName, setFileName] = useState<string>('');
   const user = useSelector(selectCurrentUser);
   const email = user?.email || '';
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
@@ -23,49 +26,49 @@ export default function LoadData({ dag, state, onClose }: prop) {
   const handleDataUpload = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!fileName) {
-      toast.error("Please enter the file name!", {
-        position: "top-right",
+      toast.error('Please enter the file name!', {
+        position: 'top-right',
         autoClose: 5000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        theme: "light",
+        theme: 'light',
       });
       return;
     }
 
     const formData = new FormData();
 
-    formData.append("username", email);
-    formData.append("file_name", fileName);
+    formData.append('username', email);
+    formData.append('file_name', fileName);
 
     acceptedFiles.forEach((file, index) => {
       formData.append(`uploadedFiles_${index}`, file, file.name);
     });
 
     axios
-      .post("/api/data/upload/", formData, {
+      .post('/api/data/upload/', formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       })
       .then((response) => {
         if (response.status == 201) {
-          toast.success("File uploaded successfully!", {
-            position: "top-right",
+          toast.success('File uploaded successfully!', {
+            position: 'top-right',
             autoClose: 5000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            theme: "light",
+            theme: 'light',
           });
         }
       })
-      .catch((error) => {});
+      .catch();
   };
 
   return (
@@ -123,14 +126,14 @@ export default function LoadData({ dag, state, onClose }: prop) {
                               setFileName(e.target.value);
                             }}
                           />
-                          <span className="text-xs tracking-wide text-red-600"></span>
+                          <span className="text-xs tracking-wide text-red-600" />
                         </div>
                         <div className="mt-3">
                           <section className="container">
                             <div
                               {...getRootProps({
                                 className:
-                                  "dropzone border-dashed border-2 border-gray-300 p-4 rounded-md",
+                                  'dropzone border-dashed border-2 border-gray-300 p-4 rounded-md',
                               })}
                             >
                               <input {...getInputProps()} />
