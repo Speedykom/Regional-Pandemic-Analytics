@@ -18,7 +18,7 @@ from utils.env_configs import (
 
 import logging
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("django")
 
 class Authorization (APIView):
     

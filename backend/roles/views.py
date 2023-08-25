@@ -9,7 +9,7 @@ from django.conf import settings
 
 import logging
 
-logger = logging.getLogger("ROLE")
+logger = logging.getLogger("django")
 
 #Api to create and list all roles
 class RoleApiView(APIView):
