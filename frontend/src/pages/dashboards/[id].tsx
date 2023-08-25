@@ -5,7 +5,10 @@ import getConfig from 'next/config';
 import { usePermission } from '@/common/hooks/use-permission';
 import { Unauthorized } from '@/common/components/common/unauth';
 import { useRouter } from 'next/router';
-import { useEnableDashboardMutation, useGenerateGuestTokenMutation } from '@/modules/superset/superset';
+import {
+  useEnableDashboardMutation,
+  useGenerateGuestTokenMutation,
+} from '@/modules/superset/superset';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -15,12 +18,12 @@ export default function SupersetDashboard() {
   const [enableDashboard] = useEnableDashboardMutation();
   const [generateGuestToken] = useGenerateGuestTokenMutation();
   const { hasPermission } = usePermission();
-  let ref = useRef(null);
+  const ref = useRef(null);
 
   const embedDash = async () => {
     const response = await enableDashboard(id);
     if (ref.current && response && 'data' in response) {
-      const uuid = response.data.result.uuid;
+      const { uuid } = response.data.result;
       await embedDashboard({
         id: uuid, // given by the Superset embedding UI
         supersetDomain: `${publicRuntimeConfig.NEXT_PUBLIC_SUPERSET_URL}`,

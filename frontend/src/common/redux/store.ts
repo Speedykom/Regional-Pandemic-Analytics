@@ -1,12 +1,12 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { DashboardApi, ChartApi } from "@/modules/superset/superset";
-import { ProcessApi } from "@/modules/process/process";
-import authReducer, { AuthApi, HopAuthApi } from "@/modules/auth/auth";
-import { PipelineApi } from "@/modules/pipeline/pipeline";
-import { UserApi } from "@/modules/user/user";
-import { RoleApi } from "@/modules/roles/role";
-import { DataApi } from "@/modules/data/data";
-import sidebarSlice from "../components/Dashboard/SidebarSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import { DashboardApi, ChartApi } from '@/modules/superset/superset';
+import { ProcessApi } from '@/modules/process/process';
+import authReducer, { AuthApi, HopAuthApi } from '@/modules/auth/auth';
+import { PipelineApi } from '@/modules/pipeline/pipeline';
+import { UserApi } from '@/modules/user/user';
+import { RoleApi } from '@/modules/roles/role';
+import { DataApi } from '@/modules/data/data';
+import sidebarSlice from '../components/Dashboard/SidebarSlice';
 
 export const store = configureStore({
   reducer: {
