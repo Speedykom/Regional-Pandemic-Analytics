@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+cd frontend/ . && npm run prettier .
+npm run lint:fix 
+npm run lint ||
+(
+    echo 'ESLint Check Failed. Make the required changes listed above, add changes and try to commit again';
+    false;
+)
