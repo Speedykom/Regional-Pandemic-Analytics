@@ -8,7 +8,7 @@ from . import auths
 
 import logging
 
-logger = logging.getLogger("SUPERSET")
+logger = logging.getLogger("django")
 
 class ListDashboardsAPI(APIView):
     """
