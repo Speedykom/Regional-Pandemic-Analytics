@@ -4,9 +4,5 @@ import DataList from '@/modules/data/views/List';
 
 export default function DataPage() {
   const { hasPermission } = usePermission();
-  return (
-    <Layout>
-      {hasPermission('data:read') && <DataList />}
-    </Layout>
-  );
+  return <Layout>{hasPermission('data:read') && <DataList />}</Layout>;
 }

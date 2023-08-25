@@ -23,7 +23,7 @@ interface ModalContext {
 }
 
 const ModalContext = createContext<ModalContext>({
-  showModal: (_modal: ModalState) => undefined,
+  showModal: () => undefined,
   hideModal: () => undefined,
   isVisible: false,
 });
@@ -92,11 +92,7 @@ const ModalProvider: FC<{ children: ReactNode }> = ({ children }) => {
                   />
                 </div>
                 {title && (
-                  <Dialog.Title
-                    className={
-                      'text-xl font-semibold text-gray-900 title-font mb-3'
-                    }
-                  >
+                  <Dialog.Title className="text-xl font-semibold text-gray-900 title-font mb-3">
                     {title}
                   </Dialog.Title>
                 )}
