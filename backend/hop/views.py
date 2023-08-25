@@ -11,6 +11,10 @@ from django.core.files.storage import FileSystemStorage
 from rest_framework.permissions import AllowAny
 from django.utils.datastructures import MultiValueDictKeyError
 
+import logging
+
+logger = logging.getLogger("django")
+
 def get_file_by_name(filename: str)-> any:
   """Looks for a file by it name and return the found item"""
   if os.path.isfile(os.path.join(settings.HOP_FILES_DIR, filename)):
@@ -61,6 +65,7 @@ class GetSingleHopAPIView(APIView):
         bs_data = bs_content.find("info")
         return HttpResponse(bs_data.prettify(), content_type="text/xml")
       else:
+        logger.error("No match found! No filename match: {}".format(filename))
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
 
     def post(self, request, filename):
@@ -81,6 +86,7 @@ class GetSingleHopAPIView(APIView):
         bsc_data = bs_content.find('info')
         return HttpResponse(bsc_data.prettify(), content_type="text/xml")
       else:
+        logger.error("No match found! No filename match: {}".format(filename))
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
     
     def patch(self, request, filename):
@@ -103,6 +109,7 @@ class GetSingleHopAPIView(APIView):
         bsc_data = bs_content.find('info')
         return HttpResponse(bsc_data.prettify(), content_type="text/xml")
       else:
+        logger.error("No match found! No filename match: {}".format(filename))
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
       
     def delete(self, request, filename):
@@ -120,6 +127,7 @@ class GetSingleHopAPIView(APIView):
         bsc_data = bs_content.find('info')
         return HttpResponse(bsc_data.prettify(), content_type="text/xml")
       else:
+        logger.error("No match found! No filename match: {}".format(filename))
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
       
 class NewHopAPIView(APIView):
@@ -142,12 +150,14 @@ class NewHopAPIView(APIView):
 
       # validate the file extension
       if extensionError:
+        logger.error(extensionError)
         return Response({'status': 'error', "message": extensionError}, status=500)
       
       # check that a filename is passed
       if(len(filename) != 0):
         # check if the filename does exist and throw error otherwise; save the file as the name passed
         if get_file_by_name(filename):
+          logger.error('{} already exists'.format(filename))
           return Response({'status': 'error', "message": '{} already exists'.format(filename)}, status=409)
         else:
           # replace the file storage from filestorage to minio
@@ -156,12 +166,14 @@ class NewHopAPIView(APIView):
       else:
         # check if the filename does exist and throw error otherwise; save the file as it is
         if get_file_by_name(file_obj.name):
+          logger.error('{} already exists'.format(filename))
           return Response({'status': 'error', "message": '{} already exists'.format(file_obj.name)}, status=409)
         else:
           # replace the file storage from filestorage to minio
           # upload_file_to_minio("hop-bucket", file_obj)
           return Response({'status': 'success', "message": "template file uploaded successfully"}, status=200)
     except MultiValueDictKeyError:
+      logger.error("Please provide a file to upload")
       return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
          
     
