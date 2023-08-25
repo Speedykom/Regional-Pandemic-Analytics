@@ -6,7 +6,7 @@ import {
   BadgeDelta,
   Flex,
   Grid,
-} from "@tremor/react";
+} from '@tremor/react';
 
 interface AnalyticsType {
   title: string;
@@ -14,57 +14,57 @@ interface AnalyticsType {
   metricPrev: string;
   delta: string;
   deltaType:
-    | "moderateIncrease"
-    | "moderateDecrease"
-    | "increase"
-    | "decrease"
-    | "unchanged"
+    | 'moderateIncrease'
+    | 'moderateDecrease'
+    | 'increase'
+    | 'decrease'
+    | 'unchanged'
     | undefined;
 }
 
 const data = [
   {
-    Month: "Jan 2023",
-    "Covid19 - New Confirmed Cases": 2890,
-    "Covid19 - New Deaths": 2400,
-    "Covid19 - New Recovered": 4938,
+    Month: 'Jan 2023',
+    'Covid19 - New Confirmed Cases': 2890,
+    'Covid19 - New Deaths': 2400,
+    'Covid19 - New Recovered': 4938,
   },
   {
-    Month: "Feb 2023",
-    "Covid19 - New Confirmed Cases": 1890,
-    "Covid19 - New Deaths": 1400,
-    "Covid19 - New Recovered": 3938,
+    Month: 'Feb 2023',
+    'Covid19 - New Confirmed Cases': 1890,
+    'Covid19 - New Deaths': 1400,
+    'Covid19 - New Recovered': 3938,
   },
   // ...
   {
-    Month: "Jul 2023",
-    "Covid19 - New Confirmed Cases": 4890,
-    "Covid19 - New Deaths": 3400,
-    "Covid19 - New Recovered": 2938,
+    Month: 'Jul 2023',
+    'Covid19 - New Confirmed Cases': 4890,
+    'Covid19 - New Deaths': 3400,
+    'Covid19 - New Recovered': 2938,
   },
 ];
 
 const categories: Array<AnalyticsType> = [
   {
-    title: "Covid19 - New Confirmed Cases",
-    metric: "12,699",
-    metricPrev: "9,456",
-    delta: "34.3%",
-    deltaType: "moderateIncrease",
+    title: 'Covid19 - New Confirmed Cases',
+    metric: '12,699',
+    metricPrev: '9,456',
+    delta: '34.3%',
+    deltaType: 'moderateIncrease',
   },
   {
-    title: "Covid19 - New Deaths",
-    metric: "10,348",
-    metricPrev: "8,456",
-    delta: "18.1%",
-    deltaType: "moderateIncrease",
+    title: 'Covid19 - New Deaths',
+    metric: '10,348',
+    metricPrev: '8,456',
+    delta: '18.1%',
+    deltaType: 'moderateIncrease',
   },
   {
-    title: "Covid19 - New Recovered",
-    metric: "7000",
-    metricPrev: "8,082",
-    delta: "12.3%",
-    deltaType: "moderateDecrease",
+    title: 'Covid19 - New Recovered',
+    metric: '7000',
+    metricPrev: '8,082',
+    delta: '12.3%',
+    deltaType: 'moderateDecrease',
   },
 ];
 
@@ -90,10 +90,10 @@ export default function AnalyticsCard() {
             data={data}
             index="Month"
             categories={[item.title]}
-            colors={["blue"]}
-            showXAxis={true}
+            colors={['blue']}
+            showXAxis
             showGridLines={false}
-            startEndOnly={true}
+            startEndOnly
             showYAxis={false}
             showLegend={false}
           />

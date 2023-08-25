@@ -1,21 +1,21 @@
-import { ShowMessage } from "@/common/components/ShowMessage";
-import { Button, Popover, Steps } from "antd";
+import { ShowMessage } from '@/common/components/ShowMessage';
+import { Button, Popover, Steps } from 'antd';
 import {
   BiChart,
   BiChevronDown,
   BiChevronUp,
   BiGitMerge,
   BiTable,
-} from "react-icons/bi";
+} from 'react-icons/bi';
+import { useState } from 'react';
+import Router from 'next/router';
+import { AiOutlineSchedule } from 'react-icons/ai';
+import { usePermission } from '@/common/hooks/use-permission';
 import {
   useDeleteProcessChainMutation,
   useUpdateProcessChainActionMutation,
   useRunProcessChainMutation,
-} from "../process";
-import { useState } from "react";
-import Router from "next/router";
-import { AiOutlineSchedule } from "react-icons/ai";
-import { usePermission } from "@/common/hooks/use-permission";
+} from '../process';
 
 interface ProcessCardProps {
   process: any;
@@ -42,7 +42,7 @@ const ViewButton = ({ id }: { id: string }) => {
     setLoading(true);
     editAccess(id).then((res: any) => {
       if (res.error) {
-        ShowMessage("error", res.error.message);
+        ShowMessage('error', res.error.message);
         setLoading(false);
         return;
       }
@@ -72,7 +72,7 @@ const DeleteButton = ({ id }: { id: string }) => {
     setLoading(true);
     deleteProcessChain(id).then((res: any) => {
       if (res.error) {
-        ShowMessage("error", res.error.message);
+        ShowMessage('error', res.error.message);
         return;
       }
 
@@ -110,7 +110,10 @@ const DeleteButton = ({ id }: { id: string }) => {
       open={state}
       onOpenChange={open}
     >
-      <Button loading={loading} className="dag-btn border-red-500 text-red-500 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:bg-red-500 focus:text-white">
+      <Button
+        loading={loading}
+        className="dag-btn border-red-500 text-red-500 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:bg-red-500 focus:text-white"
+      >
         Disable
       </Button>
     </Popover>
@@ -130,11 +133,11 @@ const RunButton = ({ id }: { id: string }) => {
           const { message } = data;
 
           setLoading(false);
-          ShowMessage("success", message);
+          ShowMessage('success', message);
           return;
         }
 
-        ShowMessage("success", res.data.message);
+        ShowMessage('success', res.data.message);
       })
       .finally(() => {
         setLoading(false);
@@ -156,19 +159,19 @@ export const ProcessCard = ({ process, onLoad }: ProcessCardProps) => {
   const { hasPermission } = usePermission();
   const steps = [
     {
-      title: "Data Source Selection",
+      title: 'Data Source Selection',
       icon: <BiGitMerge />,
     },
     {
-      title: "Orchestration",
+      title: 'Orchestration',
       icon: <AiOutlineSchedule />,
     },
     {
-      title: "Analytics Data Model",
+      title: 'Analytics Data Model',
       icon: <BiTable />,
     },
     {
-      title: "Charts",
+      title: 'Charts',
       icon: <BiChart />,
     },
   ];
@@ -177,7 +180,7 @@ export const ProcessCard = ({ process, onLoad }: ProcessCardProps) => {
 
   const [state, setState] = useState(false);
 
-  const [current, setCurrent] = useState(0);
+  const [current] = useState(0);
 
   return (
     <div className="bg-white mb-5 shadow border rounded-3xl p-5 px-8">
@@ -209,20 +212,22 @@ export const ProcessCard = ({ process, onLoad }: ProcessCardProps) => {
               )}
             </div>
           </div>
-          { process.active === true && <div className="flex space-x-2 justify-end">
-            {hasPermission('process:update') && (
-              <LoadButton onClick={() => onLoad(process)} />
-            )}
-            {hasPermission('process:run') && process.dag_id && (
-              <RunButton id={process.dag_id} />
-            )}
-            {hasPermission('process:read') && process.dag_id && (
-              <ViewButton id={process.dag_id} />
-            )}
-            {hasPermission('process:delete') &&  (
-              <DeleteButton id={process.dag_id} />
-            )}
-          </div>}
+          {process.active === true && (
+            <div className="flex space-x-2 justify-end">
+              {hasPermission('process:update') && (
+                <LoadButton onClick={() => onLoad(process)} />
+              )}
+              {hasPermission('process:run') && process.dag_id && (
+                <RunButton id={process.dag_id} />
+              )}
+              {hasPermission('process:read') && process.dag_id && (
+                <ViewButton id={process.dag_id} />
+              )}
+              {hasPermission('process:delete') && (
+                <DeleteButton id={process.dag_id} />
+              )}
+            </div>
+          )}
         </div>
         <div className="w-1/3 flex justify-end">
           {state ? (

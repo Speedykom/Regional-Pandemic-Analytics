@@ -39,9 +39,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 
 ## Scope-Based Permissions using keycloak
 
-Once authenticated, the API will return the access and refresh tokens as well as the permissions. These credentials are stored in the state using Redux Toolkit as well as the secure local storage. The hook `usePermission()`, which is located in `common/hooks` folder, allows the developer to display component depending on the available authorization scopes. 
+Once authenticated, the API will return the access and refresh tokens as well as the permissions. These credentials are stored in the state using Redux Toolkit as well as the secure local storage. The hook `usePermission()`, which is located in `common/hooks` folder, allows the developer to display component depending on the available authorization scopes.
 
 Example :
+
 ```react
 export const Users = () => {
   const { hasPermission } = usePermission();
