@@ -2,7 +2,6 @@ import { AppDrawer } from '@/common/components/AppDrawer';
 import { ShowMessage } from '@/common/components/ShowMessage';
 import { schedule_intervals } from '@/common/utils/processs';
 import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
-import { useCreateProcessChainMutation } from '@/modules/process/process';
 import { Button, Form, Input, Select } from 'antd';
 import { useState } from 'react';
 
@@ -14,7 +13,7 @@ interface Props {
 export const AddProcess = ({ state, onClose }: Props) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [addProcess] = useCreateProcessChainMutation();
+  // const [addProcess] = useCreateProcessChainMutation();
 
   const { data: res } = useGetAllPipelinesQuery();
 
@@ -22,21 +21,6 @@ export const AddProcess = ({ state, onClose }: Props) => {
 
   const onFinish = (value: any) => {
     setLoading(true);
-
-    addProcess({ ...value })
-      .then((res: any) => {
-        if (res.error) {
-          const { data } = res.error;
-          const { message } = data;
-
-          ShowMessage('error', message);
-          return;
-        }
-
-        ShowMessage('success', 'Process created successfully');
-        cancel();
-      })
-      .finally(() => setLoading(false));
   };
 
   const cancel = () => {
