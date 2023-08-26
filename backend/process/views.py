@@ -14,7 +14,7 @@ class AirflowInstance:
     password = os.getenv("AIRFLOW_PASSWORD")
 
 
-class DagConfig:
+class DagDTO:
     factory_id = "FACTORY"
 
     def __init__(self, owner, user_id, dag_id, schedule_interval, pipeline_name):
@@ -25,8 +25,17 @@ class DagConfig:
         self.pipeline_name = pipeline_name
 
 
+class Dag:
+    def __init__(self, name, dag_id, data_source_name, schedule_interval, status):
+        self.name = (name,)
+        self.dag_id = dag_id
+        self.data_source_name = (data_source_name,)
+        self.schedule_interval = schedule_interval
+        self.status = status
+
+
 class DagRun:
-    def __init(self, dag_id, dag_run_id, state):
+    def __init__(self, dag_id, dag_run_id, state):
         self.dag_id = (dag_id,)
         self.dag_run_id = (dag_run_id,)
         self.state = state
@@ -71,30 +80,27 @@ class ProcessView(ViewSet):
             for dag in airflow_response.json()["dags"]:
                 if user_name in dag["owners"]:
                     processes.append(
-                        {
-                            "name": dag["dag_id"],
-                            "dag_id": dag["dag_id"],
-                            "data_source_name": dag["dag_id"],
-                            "schedule_interval": dag["schedule_interval"]["value"],
-                            "active": dag["is_active"],
-                        }
+                        Dag(
+                            dag["dag_id"],
+                            dag["dag_id"],
+                            dag["dag_id"],
+                            dag["schedule_interval"]["value"],
+                            dag["is_active"],
+                        ).__dict__
                     )
-
-            return Response(
-                {"status": "success", "dags": processes}, status=status.HTTP_200_OK
-            )
+            return Response({"dags": processes}, status=status.HTTP_200_OK)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
     def create(self, request):
-        # Create DagConfig object
+        # Create DagDTO object
         # Object contains config that will be passed to the dag factory to create new dag from templates
-        new_dag_config = DagConfig(
+        new_dag_config = DagDTO(
             owner=get_current_user_name(request),
             user_id=get_current_user_id(request),
             dag_id=request.data["name"].replace(" ", "-").lower(),
-            schedule_interval=request.data["schedule_interval"],
             pipeline_name=request.data["pipeline"],
+            schedule_interval=request.data["schedule_interval"],
         )
 
         # Run factory by passing config to create a process chain
@@ -166,11 +172,13 @@ class ProcessRunView(ViewSet):
         if airflow_response.status_code == 200:
             for dag_run in airflow_response.json()["dag_runs"]:
                 dag_runs.append(
-                    DagRun(dag_run["dag_id"], dag_run["dag_run_id"], dag_run["state"])
+                    DagRun(
+                        dag_id=dag_run["dag_id"],
+                        dag_run_id=dag_run["dag_run_id"],
+                        state=dag_run["state"],
+                    ).__dict__
                 )
-            return Response(
-                {"status": "success", "dag_runs": dag_runs}, status=status.HTTP_200_OK
-            )
+            return Response({"dag_runs": dag_runs}, status=status.HTTP_200_OK)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
