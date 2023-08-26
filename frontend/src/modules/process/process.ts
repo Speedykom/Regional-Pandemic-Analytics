@@ -2,38 +2,33 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from '@/common/redux/api';
 import { Process } from '../../common/redux/interface/process';
+import { DagDetailsResponse, DagForm, DagRunsResponse } from './interface';
 
-// Define a service using a base URL and expected endpoints
-export const ProcessApi = createApi({
-  reducerPath: 'ProcessApi',
+export const processApi = createApi({
+  reducerPath: 'processApi',
   baseQuery,
-  tagTypes: ['processes'],
+  tagTypes: ['process'],
   endpoints: (builder) => ({
-    getProcessChains: builder.query<Process, void>({
-      query: () => '/process/list',
-      providesTags: ['processes'],
+    // GET POST dags
+    getProcess: builder.query<DagDetailsResponse, void>({
+      query: () => '/process',
+      providesTags: ['process'],
     }),
-    getProcessChainById: builder.query<Process, string>({
-      query: (id) => `/process/one/${id}`,
-    }),
-    updateProcessChainAction: builder.mutation<Process, string>({
-      query: (id) => `/process/access/${id}`,
-    }),
-    runProcessChain: builder.mutation<Process, string>({
-      query: (id) => ({
-        url: `/process/run/${id}`,
+    createProcess: builder.mutation<void, DagForm>({
+      query: (dagForm) => ({
+        url: '/process',
         method: 'POST',
-        body: {},
+        body: { ...dagForm },
       }),
-      invalidatesTags: ['processes'],
+      invalidatesTags: ['process'],
     }),
-    deleteProcessChain: builder.mutation<Process, string>({
-      query: (id) => ({
-        url: `/process/delete/${id}`,
-        method: 'DELETE',
-        body: {},
-      }),
-      invalidatesTags: ['processes'],
+    // GET PUT DELETE dag by dag_id
+    // getProcessById: builder.query<DagDetails, string>({
+    //   query: (dag_id) => `/process/${dag_id}`,
+    // }),
+    // GET POST dag_run
+    getProcessHistoryById: builder.query<DagRunsResponse, string>({
+      query: (dag_id) => `/process/${dag_id}/dagRuns`,
     }),
     createProcessChain: builder.mutation<Process, string>({
       query: (body) => ({
@@ -41,18 +36,12 @@ export const ProcessApi = createApi({
         method: 'POST',
         body,
       }),
-      invalidatesTags: ['processes'],
     }),
   }),
 });
 
-// Export hooks for usage in functional components, which are
-// auto-generated based on the defined endpoints
 export const {
-  useGetProcessChainsQuery,
-  useGetProcessChainByIdQuery,
-  useRunProcessChainMutation,
-  useCreateProcessChainMutation,
-  useUpdateProcessChainActionMutation,
-  useDeleteProcessChainMutation,
-} = ProcessApi;
+  useGetProcessQuery,
+  useCreateProcessMutation,
+  useGetProcessHistoryByIdQuery,
+} = processApi;

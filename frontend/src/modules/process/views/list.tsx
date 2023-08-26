@@ -4,8 +4,10 @@ import { Button } from 'antd';
 import { Loader } from '@/common/components/Loader';
 import LoadData from '@/common/components/TABS/upload';
 import { usePermission } from '@/common/hooks/use-permission';
-import { ProcessCard } from '../components/process-card';
-import { useProcessChainList } from '../hooks';
+import ProcessCard from '../components/ProcessCard';
+import { useGetProcessQuery } from '../process';
+import { AccordionList } from '@tremor/react';
+import { DagDetails } from '../interface';
 
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();
@@ -31,7 +33,8 @@ export default function ProcessChainList() {
     setProcess(null);
   };
 
-  const { rows, loading } = useProcessChainList();
+  const { data, error, isLoading, isFetching, isSuccess } =
+    useGetProcessQuery();
 
   return (
     <>
@@ -44,14 +47,32 @@ export default function ProcessChainList() {
         </div>
         <div>
           {hasPermission('process:add') && (
-            <Button onClick={() => openAdd()} type="primary" size="large">
+            <Button
+              className="bg-prim hover:bg-prim-hover border-0"
+              onClick={() => openAdd()}
+            >
               Add Process Chain
             </Button>
           )}
         </div>
       </div>
       <div className="mt-5">
-        {loading ? (
+        {isLoading && (
+          <div className="flex h-96 bg-white shadow-md border rounded-md items-center justify-center">
+            <div className="w-16 h-16">
+              <Loader />
+            </div>
+          </div>
+        )}
+        {isSuccess && (
+          <AccordionList>
+            {data.dags.map((process: DagDetails) => {
+              return <ProcessCard key={process.dag_id} process={process} />;
+            })}
+          </AccordionList>
+        )}
+
+        {/* {loading ? (
           <div className="flex h-96 bg-white shadow-md border rounded-md items-center justify-center">
             <div className="w-16 h-16">
               <Loader />
@@ -67,10 +88,10 @@ export default function ProcessChainList() {
               />
             ))}
           </>
-        )}
+        )} */}
       </div>
       <AddProcess onClose={closeAdd} state={addProcess} />
-      <LoadData onClose={closeLoad} state={load} dag={process} />
+      {/* <LoadData onClose={closeLoad} state={load} dag={process} /> */}
     </>
   );
 }
