@@ -44,3 +44,25 @@ body {
 .ant-btn-primary, .bg-prim {
   background-color: #31713b;
 }
+
+.footerSection {
+  margin: 20px;
+  padding: 20px;
+  background-color: #f3f4f6;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: bold;
+  color: #007b38;
+}
+
+.sectionText {
+  font-size: 14px;
+  color: #333;
+}
+
+
+
