@@ -11,7 +11,7 @@
     "type-check": "tsc",
     "lint:fix": "next lint --fix",
     "prepare:husky": "cd .. && husky install frontend/.husky",
-    "pre-commit": "npm run prettier . && npm run lint:fix && npm run lint"
+    "pre-commit": "npm run lint"
   },
   "dependencies": {
     "@ant-design/icons": "^5.1.0",
