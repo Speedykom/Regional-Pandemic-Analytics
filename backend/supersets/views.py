@@ -128,6 +128,7 @@ class GuestTokenApi(APIView):
         response = requests.post(url, json=payload, headers=headers)
         
         if response.status_code != 200:
+            logger.error(response.json())
             return Response({'errorMessage': response.json()}, status=response.status_code)
         
         return Response(response.json(), status=status.HTTP_200_OK)

@@ -6,6 +6,9 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import MultiPartParser
 from data.serializers import FileUploadSerializer, FileListSerializer
 from data.models import FileUpload
+import logging
+
+logger = logging.getLogger("django")
 
 class DataUploadAPIView(APIView):
     keycloak_scopes = {
@@ -34,10 +37,12 @@ class DataUploadAPIView(APIView):
         username = request.data.get('username', None)
 
         if username is None:
+            logger.info("Username not found")
             return Response({"message": "Username not found"}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = FileListSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
 
+        logger.info('File uploaded successfully')
         return Response({'message': 'File uploaded successfully'}, status=status.HTTP_201_CREATED)

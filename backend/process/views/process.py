@@ -88,9 +88,10 @@ class ProcessListView(APIView):
                 }
             })
 
-        logger.info(res.text)
+        
         
         if res.status_code == 200:
+            logger.info(res.text)
             return Response({"status": "success"}, status=status.HTTP_200_OK)
         else:
             logger.error("failed to fetch process chin")
@@ -126,6 +127,7 @@ class ProcessDetailView(APIView):
             logger.error("No process found for this dag_id {}".format(id))
             return Response({'status': 'fail', "message": "No process found for this dag_id {}".format(id)}, status=res_status)
         else:
+            logger.info("{} process start running!".format(id))
             return Response({'status': 'success', "message": "{} process start running!".format(id)}, status=res_status)
 
     def delete(self, request, dag_id=None):
