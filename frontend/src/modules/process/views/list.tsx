@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { AddProcess } from '@/modules/process/views/add';
 import { Button } from 'antd';
-import { useProcessChainList } from '../hooks';
-import { ProcessCard } from '../components/process-card';
 import { Loader } from '@/common/components/Loader';
 import LoadData from '@/common/components/TABS/upload';
 import { usePermission } from '@/common/hooks/use-permission';
+import { ProcessCard } from '../components/process-card';
+import { useProcessChainList } from '../hooks';
 
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();

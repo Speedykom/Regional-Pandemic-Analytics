@@ -1,9 +1,9 @@
-import { Popover } from "antd";
-import { ReactNode } from "react";
-import { FiMoreVertical } from "react-icons/fi";
+import { Popover } from 'antd';
+import { ReactNode } from 'react';
+import { FiMoreVertical } from 'react-icons/fi';
 
 interface prop {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 export const Action = ({ children }: prop) => {
