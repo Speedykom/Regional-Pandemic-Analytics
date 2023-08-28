@@ -8,8 +8,10 @@
     "start": "next start",
     "prettier": "prettier 'src/**/*.{js,jsx,ts,tsx,json,css}' --write .",
     "lint": "next lint",
+    "type-check": "tsc",
     "lint:fix": "next lint --fix",
-    "prepare:husky": "cd .. && husky install frontend/.husky"
+    "prepare:husky": "cd .. && husky install frontend/.husky",
+    "pre-commit": "npm run prettier . && npm run lint:fix && npm run lint"
   },
   "dependencies": {
     "@ant-design/icons": "^5.1.0",
