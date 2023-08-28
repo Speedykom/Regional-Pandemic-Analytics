@@ -1,11 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  isOpen: true
-}
+  isOpen: true,
+};
 
 const sidebarSlice = createSlice({
-  name: "sidebar",
+  name: 'sidebar',
   initialState,
   reducers: {
     openSidebar: (state) => {

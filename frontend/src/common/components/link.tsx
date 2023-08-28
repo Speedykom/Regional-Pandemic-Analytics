@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { ReactNode } from "react";
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { ReactNode } from 'react';
 
 interface props {
   href: string;
@@ -19,13 +19,13 @@ export const NavLink = ({
 
   let active = false;
 
-  if (asPath.startsWith(href) && href !== "/") active = true;
-  else if (href === "/" && asPath === href) active = true;
+  if (asPath.startsWith(href) && href !== '/') active = true;
+  else if (href === '/' && asPath === href) active = true;
 
   return (
     <Link
       href={href}
-      className={`${className} ${active ? activeClassName : ""}`}
+      className={`${className} ${active ? activeClassName : ''}`}
     >
       {children}
     </Link>
