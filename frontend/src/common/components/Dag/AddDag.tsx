@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent } from "react";
+import { useState, ChangeEvent, FormEvent } from 'react';
 
 interface FormData {
   hopFilePath: string;
@@ -13,14 +13,14 @@ interface FormData {
 
 const AddDag: React.FC = () => {
   const [formData, setFormData] = useState<FormData>({
-    hopFilePath: "",
-    hopProjectFolder: "",
-    hopProjectName: "",
-    hopEnvName: "",
-    hopEnvConfigFileNamePaths: "",
-    hopRunConfig: "",
+    hopFilePath: '',
+    hopProjectFolder: '',
+    hopProjectName: '',
+    hopEnvName: '',
+    hopEnvConfigFileNamePaths: '',
+    hopRunConfig: '',
     scheduleInterval: 1,
-    scheduleIntervalBy: "",
+    scheduleIntervalBy: '',
   });
 
   const handleChange = (e: ChangeEvent<HTMLInputElement> | any | null) => {
@@ -33,7 +33,6 @@ const AddDag: React.FC = () => {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
     // TODO: Submit form data to server or do something else with it
   };
   return (
@@ -149,7 +148,7 @@ const AddDag: React.FC = () => {
       <button
         type="submit"
         className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 mt-7 rounded-md"
-        style={{ background: "#3c81f6" }}
+        style={{ background: '#3c81f6' }}
       >
         Save
       </button>
