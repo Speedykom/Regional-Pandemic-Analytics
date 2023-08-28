@@ -5,7 +5,7 @@ import { ChartList, DashboardList, DashboardStatus } from './interface';
 
 export const DashboardApi = createApi({
   reducerPath: 'DashboardApi',
-  baseQuery: baseQuery,
+  baseQuery,
   endpoints: (builder) => ({
     getDashboards: builder.query<DashboardList, void>({
       query: () => 'superset/list',
@@ -29,7 +29,7 @@ export const DashboardApi = createApi({
 
 export const ChartApi = createApi({
   reducerPath: 'ChartApi',
-  baseQuery: baseQuery,
+  baseQuery,
   endpoints: (builder) => ({
     getCharts: builder.query<ChartList, void>({
       query: () => 'superset/list/charts',

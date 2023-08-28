@@ -1,5 +1,9 @@
-import { clearCredentials } from '@/modules/auth/auth';
-import { BaseQueryFn, FetchArgs, fetchBaseQuery, FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
+import {
+  BaseQueryFn,
+  FetchArgs,
+  fetchBaseQuery,
+  FetchBaseQueryError,
+} from '@reduxjs/toolkit/query/react';
 import getConfig from 'next/config';
 import router from 'next/router';
 import secureLocalStorage from 'react-secure-storage';
@@ -33,13 +37,13 @@ export const baseQuery: BaseQueryFn<
   unknown,
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  let result = await baseQueryWithAuthHeader(args, api, extraOptions)
+  const result = await baseQueryWithAuthHeader(args, api, extraOptions);
   if (result.error && result.error.status === 401) {
     api.dispatch({
       payload: undefined,
-      type: "auth/clearCredentials"
+      type: 'auth/clearCredentials',
     });
-    router.push("/");
+    router.push('/');
   }
-  return result
-}
+  return result;
+};

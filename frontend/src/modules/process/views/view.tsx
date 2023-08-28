@@ -1,8 +1,8 @@
-import { Collapse } from "antd";
-import { AppDrawer } from "../../../common/components/AppDrawer";
-import { Loader } from "../../../common/components/Loader";
-import axios from "axios";
-import { useEffect, useState } from "react";
+import { Collapse } from 'antd';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { AppDrawer } from '../../../common/components/AppDrawer';
+import { Loader } from '../../../common/components/Loader';
 
 interface prop {
   onClose: () => void;
@@ -23,7 +23,7 @@ export const ViewDag = ({ onClose, state, id }: prop) => {
         const row = res.data.dag;
         setRow(row);
       })
-      .catch((res: any) => {
+      .catch(() => {
         onClose();
       })
       .finally(() => setLoading(false));
@@ -68,7 +68,7 @@ export const ViewDag = ({ onClose, state, id }: prop) => {
           <div className="flex justify-between items-center mb-5">
             <p className="w-1/3">Description:</p>
             <p className="font-semibold w-2/3 flex justify-end">
-              {dag?.dag?.description || "None"}
+              {dag?.dag?.description || 'None'}
             </p>
           </div>
           <div className="flex justify-between items-center mb-5">
@@ -92,13 +92,13 @@ export const ViewDag = ({ onClose, state, id }: prop) => {
           <div className="flex justify-between items-center mb-5">
             <p className="w-1/3">Active:</p>
             <p className="font-semibold w-2/3 flex justify-end">
-              {dag?.dag?.is_active ? "Yes" : "No"}
+              {dag?.dag?.is_active ? 'Yes' : 'No'}
             </p>
           </div>
           <div className="flex justify-between items-center mb-5">
             <p className="w-1/3">Paused:</p>
             <p className="font-semibold w-2/3 flex justify-end">
-              {dag?.dag?.is_paused ? "Yes" : "No"}
+              {dag?.dag?.is_paused ? 'Yes' : 'No'}
             </p>
           </div>
           <div className="flex justify-between items-center mb-5">
@@ -114,7 +114,7 @@ export const ViewDag = ({ onClose, state, id }: prop) => {
             </p>
           </div>
           <div className="mt-5">
-            <Collapse defaultActiveKey={["1"]}>
+            <Collapse defaultActiveKey={['1']}>
               {dag?.dag?.runs.map((run: any) => (
                 <Panel
                   header={`${new Date(run.execution_date).toLocaleString()} - ${
@@ -133,7 +133,7 @@ export const ViewDag = ({ onClose, state, id }: prop) => {
                   <div className="flex justify-between items-center mb-5">
                     <p>External trigger:</p>
                     <p className="font-semibold">
-                      {run.external_trigger ? "Yes" : "No"}
+                      {run.external_trigger ? 'Yes' : 'No'}
                     </p>
                   </div>
                 </Panel>
