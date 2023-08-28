@@ -1,10 +1,10 @@
-import { AppDrawer } from "@/common/components/AppDrawer";
-import { ShowMessage } from "@/common/components/ShowMessage";
-import { schedule_intervals } from "@/common/utils/processs";
-import { useGetAllPipelinesQuery } from "@/modules/pipeline/pipeline";
-import { useCreateProcessChainMutation } from "@/modules/process/process";
-import { Button, Form, Input, Select } from "antd";
-import { useState } from "react";
+import { AppDrawer } from '@/common/components/AppDrawer';
+import { ShowMessage } from '@/common/components/ShowMessage';
+import { schedule_intervals } from '@/common/utils/processs';
+import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
+import { useCreateProcessChainMutation } from '@/modules/process/process';
+import { Button, Form, Input, Select } from 'antd';
+import { useState } from 'react';
 
 interface Props {
   state: boolean;
@@ -29,11 +29,11 @@ export const AddProcess = ({ state, onClose }: Props) => {
           const { data } = res.error;
           const { message } = data;
 
-          ShowMessage("error", message);
+          ShowMessage('error', message);
           return;
         }
 
-        ShowMessage("success", "Process created successfully");
+        ShowMessage('success', 'Process created successfully');
         cancel();
       })
       .finally(() => setLoading(false));
@@ -57,7 +57,7 @@ export const AddProcess = ({ state, onClose }: Props) => {
 
   return (
     <AppDrawer
-      title={"Add Process Chain"}
+      title="Add Process Chain"
       state={state}
       onClose={cancel}
       footer={footer}
@@ -76,7 +76,7 @@ export const AddProcess = ({ state, onClose }: Props) => {
           rules={[
             {
               required: true,
-              message: "Please enter process name",
+              message: 'Please enter process name',
             },
           ]}
         >
@@ -87,7 +87,7 @@ export const AddProcess = ({ state, onClose }: Props) => {
             showSearch
             placeholder="Select Pipeline"
             options={pipelines.map((pipeline: any) => ({
-              value: pipeline.name  + ".hpl",
+              value: `${pipeline.name}.hpl`,
               label: pipeline.name,
             }))}
           />
@@ -98,7 +98,7 @@ export const AddProcess = ({ state, onClose }: Props) => {
           rules={[
             {
               required: true,
-              message: "Please select schedule interval",
+              message: 'Please select schedule interval',
             },
           ]}
         >

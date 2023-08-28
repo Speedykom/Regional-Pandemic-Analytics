@@ -1,19 +1,14 @@
-import { Button, Popover } from "antd";
-import { ColumnsType } from "antd/es/table";
+import { Button, Popover } from 'antd';
+import { ColumnsType } from 'antd/es/table';
+import { ShowMessage } from '@/common/components/ShowMessage';
+import { useState } from 'react';
+import Router from 'next/router';
 import {
   useDeleteProcessChainMutation,
   useUpdateProcessChainActionMutation,
   useGetProcessChainsQuery,
   useRunProcessChainMutation,
-} from "./process";
-import { ShowMessage } from "@/common/components/ShowMessage";
-import { useState } from "react";
-import Router from "next/router";
-
-interface Props {
-  loadData: (id: string) => void;
-  viewProcess: (id: string) => void;
-}
+} from './process';
 
 const ViewButton = ({ id }: { id: string }) => {
   const [editAccess] = useUpdateProcessChainActionMutation();
@@ -24,7 +19,7 @@ const ViewButton = ({ id }: { id: string }) => {
     setLoading(true);
     editAccess(id).then((res: any) => {
       if (res.error) {
-        ShowMessage("error", res.error.message);
+        ShowMessage('error', res.error.message);
         setLoading(false);
         return;
       }
@@ -55,7 +50,7 @@ const DelButton = ({ id }: { id: string }) => {
     delProcess(id)
       .then((res: any) => {
         if (res.error) {
-          ShowMessage("error", res.error.message);
+          ShowMessage('error', res.error.message);
           return;
         }
 
@@ -94,9 +89,7 @@ const DelButton = ({ id }: { id: string }) => {
       open={state}
       onOpenChange={open}
     >
-      <Button
-        className="dag-btn border-red-500 text-red-500 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:bg-red-500 focus:text-white"
-      >
+      <Button className="dag-btn border-red-500 text-red-500 rounded-md hover:bg-red-500 hover:text-white focus:outline-none focus:bg-red-500 focus:text-white">
         Disable
       </Button>
     </Popover>
@@ -116,11 +109,11 @@ const RunButton = ({ id }: { id: string }) => {
           const { message } = data;
 
           setLoading(false);
-          ShowMessage("success", message);
+          ShowMessage('success', message);
           return;
         }
 
-        ShowMessage("success", res.data.message);
+        ShowMessage('success', res.data.message);
       })
       .finally(() => {
         setLoading(false);
@@ -139,7 +132,7 @@ const RunButton = ({ id }: { id: string }) => {
 };
 
 export const useProcessChainList = () => {
-  const { data: data, isLoading: loading } = useGetProcessChainsQuery();
+  const { data, isLoading: loading } = useGetProcessChainsQuery();
 
   const columns: ColumnsType<any> = [
     // {
@@ -151,46 +144,46 @@ export const useProcessChainList = () => {
     //   width: 100,
     // },
     {
-      title: "Dag",
-      dataIndex: "dag_id",
-      key: "dag_id",
+      title: 'Dag',
+      dataIndex: 'dag_id',
+      key: 'dag_id',
     },
     {
-      title: "Schedule",
-      dataIndex: "schedule_interval",
-      key: "schedule_interval",
+      title: 'Schedule',
+      dataIndex: 'schedule_interval',
+      key: 'schedule_interval',
       render: (schedule_interval) => {
         return <p>{schedule_interval}</p>;
       },
     },
     {
-      title: "Next Run",
-      dataIndex: "airflow",
-      key: "next_run",
+      title: 'Next Run',
+      dataIndex: 'airflow',
+      key: 'next_run',
       render: (data) => {
         return (
           <p>
             {data
               ? new Date(data?.next_dagrun).toUTCString()
-              : "Dag creation inprogress"}
+              : 'Dag creation inprogress'}
           </p>
         );
       },
     },
     {
-      title: "Active",
-      dataIndex: "airflow",
-      key: "is_active",
+      title: 'Active',
+      dataIndex: 'airflow',
+      key: 'is_active',
       render: (data) => {
         return (
           <p>
-            {data ? (data.is_active ? "Yes" : "No") : "Dag creation inprogress"}
+            {data ? (data.is_active ? 'Yes' : 'No') : 'Dag creation inprogress'}
           </p>
         );
       },
     },
     {
-      key: "action",
+      key: 'action',
       render: (dag) => (
         <div className="flex space-x-2 justify-end">
           {dag.airflow ? <RunButton id={dag.dag_id} /> : null}
@@ -205,42 +198,42 @@ export const useProcessChainList = () => {
 };
 
 export const useProcessDagRuns = () => {
-  const { data: data, isLoading: loading } = useGetProcessChainsQuery();
+  const {} = useGetProcessChainsQuery();
 
   const columns: ColumnsType<any> = [
     {
-      title: "Execution Date",
-      dataIndex: "execution_date",
-      key: "execution_date",
+      title: 'Execution Date',
+      dataIndex: 'execution_date',
+      key: 'execution_date',
       render: (date) => new Date(date).toLocaleString(),
     },
     {
-      title: "Start Date",
-      dataIndex: "start_date",
-      key: "start_date",
+      title: 'Start Date',
+      dataIndex: 'start_date',
+      key: 'start_date',
       render: (date) => new Date(date).toLocaleString(),
     },
     {
-      title: "end_date",
-      dataIndex: "end_date",
-      key: "end_date",
+      title: 'end_date',
+      dataIndex: 'end_date',
+      key: 'end_date',
       render: (date) => new Date(date).toLocaleString(),
     },
     {
-      title: "Run Type",
-      dataIndex: "run_type",
-      key: "run_type",
+      title: 'Run Type',
+      dataIndex: 'run_type',
+      key: 'run_type',
     },
     {
-      title: "Last Scheduling Decision",
-      dataIndex: "last_scheduling_decision",
-      key: "last_scheduling_decision",
+      title: 'Last Scheduling Decision',
+      dataIndex: 'last_scheduling_decision',
+      key: 'last_scheduling_decision',
       render: (date) => new Date(date).toLocaleString(),
     },
     {
-      title: "State",
-      dataIndex: "state",
-      key: "state",
+      title: 'State',
+      dataIndex: 'state',
+      key: 'state',
     },
   ];
 

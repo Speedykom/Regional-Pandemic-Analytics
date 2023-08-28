@@ -1,7 +1,7 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { Process } from '../../common/redux/interface/process';
 import { baseQuery } from '@/common/redux/api';
+import { Process } from '../../common/redux/interface/process';
 
 // Define a service using a base URL and expected endpoints
 export const ProcessApi = createApi({
@@ -39,7 +39,7 @@ export const ProcessApi = createApi({
       query: (body) => ({
         url: '/process',
         method: 'POST',
-        body: body,
+        body,
       }),
       invalidatesTags: ['processes'],
     }),
