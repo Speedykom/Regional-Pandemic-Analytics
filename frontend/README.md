@@ -53,3 +53,31 @@ export const Users = () => {
   );
 };
 ```
+
+### Formatting rules
+
+- Adding a semicolon at the end of every statement.
+- Trailing commas where valid in ES5 (objects, arrays, etc.). No trailing commas in type parameters in TypeScript.
+- Using single quotes instead of double quotes.
+- Using 2 spaces per indentation-level.
+- No indent lines with tabs instead of spaces.
+- 80 as a line length where Prettier will try wrap.
+- Printing spaces between brackets in object literals.
+
+  for more details please visit "https://prettier.io/docs/en/options.html".
+
+### Eslint rules
+
+- No unused variables, functions, and function parameters are allowed.
+- No calls or assignments to methods of the console object are allowed.
+- No require statements except in import statements are allowed.
+
+  for more details please visit:
+  "https://nextjs.org/docs/pages/building-your-application/configuring/eslint#eslint-plugin",
+  "https://typescript-eslint.io/rules/".
+
+please run "npm run pre-commit" under the frontend directory to check your code.
+
+### Husky Setup
+
+For setting up Husky please run "prepare:husky" under Regional-Pandemic-Analytics directory
