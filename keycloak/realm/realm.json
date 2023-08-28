@@ -915,7 +915,7 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "${AIRFLOW_KEYCLOAK_CLIENT_SECRET}",
-      "redirectUris": ["${NGINX_AIRFLOW_DOMAIN_NAME}/*"],
+      "redirectUris": ["http://${NGINX_AIRFLOW_DOMAIN_NAME}/*", "https://${NGINX_AIRFLOW_DOMAIN_NAME}/*"],
       "webOrigins": [],
       "notBefore": 0,
       "bearerOnly": false,
