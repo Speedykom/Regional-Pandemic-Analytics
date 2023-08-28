@@ -1,4 +1,4 @@
-import { Role } from "../roles/interface";
+import { Role } from '../roles/interface';
 
 export interface User {
   id: string;
@@ -27,7 +27,7 @@ export interface User {
     impersonate: boolean;
     manage: boolean;
   };
-  roles: Array<Role>
+  roles: Array<Role>;
 }
 
 export type Users = User[];
@@ -46,13 +46,13 @@ export interface SerialUser {
   role: {
     id: string;
     name: string;
-  }
+  };
 }
 
 export interface UserResponse {
-  mesage: string,
-  user: SerialUser
+  mesage: string;
+  user: SerialUser;
 }
 export type ResetRequest = {
   email: string;
-}
+};

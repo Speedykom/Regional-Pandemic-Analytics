@@ -1,14 +1,14 @@
-import dayjs from "dayjs";
+import dayjs from 'dayjs';
 
 export const CovertFromTimestampToDate = (timestamp: number): string => {
-    let date = new Date(timestamp);
-    return date.toDateString();
-}
+  const date = new Date(timestamp);
+  return date.toDateString();
+};
 
 export const ToMonthDayYear = (date: string): string => {
-    return dayjs(date).format("MMMM DD, YYYY");
-}
+  return dayjs(date).format('MMMM DD, YYYY');
+};
 
 export const ToMonthDayYearTime = (date: string): string => {
-    return dayjs(date).format("MMMM DD, YYYY");
-}
+  return dayjs(date).format('MMMM DD, YYYY');
+};

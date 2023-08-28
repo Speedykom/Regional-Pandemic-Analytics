@@ -1,5 +1,5 @@
-import { Drawer } from "antd";
-import { ReactNode } from "react";
+import { Drawer } from 'antd';
+import { ReactNode } from 'react';
 
 interface prop {
   onClose: () => void;
@@ -9,9 +9,22 @@ interface prop {
   footer?: ReactNode;
 }
 
-export const AppDrawer = ({ state, onClose, title, children, footer }: prop) => {
+export const AppDrawer = ({
+  state,
+  onClose,
+  title,
+  children,
+  footer,
+}: prop) => {
   return (
-    <Drawer footer={footer} title={title} width={500} maskClosable={false} open={state} onClose={onClose}>
+    <Drawer
+      footer={footer}
+      title={title}
+      width={500}
+      maskClosable={false}
+      open={state}
+      onClose={onClose}
+    >
       {children}
     </Drawer>
   );
