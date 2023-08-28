@@ -40,6 +40,7 @@ class RoleApiView(APIView):
             keycloak_admin = get_keycloak_admin()
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
             keycloak_admin.update_client_role(client_role_id=client_id, role_name=kwargs['name'], payload=form_data)
+            logger.info('Role update was successful')
             return Response({'message': 'Role update was successful'}, status=status.HTTP_200_OK)
         except Exception as err:
             logger.error('Unable to update the role')

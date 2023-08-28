@@ -72,6 +72,7 @@ class PipelineListView(APIView):
                 metadata_directive=REPLACE,
             )
 
+            logger.info("New file created!")
             return Response({"status": "success"}, status=status.HTTP_200_OK)
 
 
@@ -128,4 +129,5 @@ class PipelineDetailView(APIView):
                 "status": "success"
             }, status=status.HTTP_200_OK)
         except:
+            logger.error("Unable to update the pipeline {}".format(name))
             return Response({'status': "error", "message": "Unable to update the pipeline {}".format(name)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

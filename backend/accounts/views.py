@@ -17,6 +17,9 @@ from utils.generators import get_random_secret
 from utils.keycloak_auth import get_keycloak_admin
 from django.conf import settings
 
+import logging
+
+logger = logging.getLogger("django")
 
 def homepage():
     return HttpResponse('<h2 style="text-align:center">Welcome to IGAD API Page</h2>')
@@ -37,6 +40,7 @@ class UserListView(APIView):
             users = keycloak_admin.get_users({})
             return Response(users, status=status.HTTP_200_OK)
         except:
+            logger.error('Unable to retrieve users.')
             return Response({'errorMessage': 'Unable to retrieve users.'}, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(request_body=openapi.Schema(
@@ -101,8 +105,10 @@ class UserListView(APIView):
                 "password": form_data['credentials'][0]['value']
             }
 
+            logger.info('User created successfully')
             return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_201_CREATED)
         except Exception as err:
+            logger.error('Unable to create a new user');
             return Response({'errorMessage': 'Unable to create a new user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserDetailView(APIView):
@@ -124,6 +130,7 @@ class UserDetailView(APIView):
             user["roles"] = roles
             return Response(user, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error('Unable to retrieve the user')
             return Response({'errorMessage': 'Unable to retrieve the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @swagger_auto_schema(request_body=openapi.Schema(
@@ -158,9 +165,11 @@ class UserDetailView(APIView):
             keycloak_admin.update_user(kwargs['id'], form_data)
             role = request.data.get("role", {})
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
-            keycloak_admin.assign_client_role(client_id=client_id, user_id=kwargs['id'], roles=[role])
+            keycloak_admin.assign_client_role(client_id=client_id, user_id=kwargs['id'], roles=[role]);
+            logger.info('Account details updated successfully')
             return Response({'message': 'Account details updated successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error('Unable to update the user')
             return Response({'errorMessage': 'Unable to update the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request, **kwargs):
@@ -173,8 +182,10 @@ class UserDetailView(APIView):
                 'enabled': False
             }
             keycloak_admin.update_user(kwargs['id'], user_data)
+            logger.info('User archived successfully')
             return Response({'message': 'User archived successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error('Unable to archive the user')
             return Response({'errorMessage': 'Unable to archive the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserRolesView(APIView):
@@ -203,8 +214,10 @@ class UserRolesView(APIView):
             roles = request.data.get("roles", [self.roleObject])
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
             keycloak_admin.assign_client_role(client_id=client_id, user_id=kwargs['id'], roles=roles)
+            logger.info('Roles has been assigned successfully')
             return Response({'message': 'Roles has been assigned successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error('Unable to assign roles to the user')
             return Response({'errorMessage': 'Unable to assign roles to the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request, **kwargs):
@@ -214,6 +227,7 @@ class UserRolesView(APIView):
             roles = keycloak_admin.get_client_roles_of_user(user_id=kwargs['id'], client_id=client_id)
             return Response(roles, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error('Unable to retrieve the user roles')
             return Response({'errorMessage': 'Unable to retrieve the user roles'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -247,8 +261,11 @@ class UserAvatarView(APIView):
                     }
                 }
                 keycloak_admin.update_user(kwargs['id'], user_data)
+                logger.info('Avatar uploaded successfully')
                 return Response({'message': 'Avatar uploaded successfully'}, status=status.HTTP_200_OK)
             except Exception as err:
+                logger.error('Unable to update the user avatar')
                 return Response({'errorMessage': 'Unable to update the user avatar'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         except MultiValueDictKeyError:
+            logger.error("Please provide a file to upload")
             return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
