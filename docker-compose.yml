@@ -34,6 +34,7 @@ x-druid-common: &druid
     - druid_escalator_authorizerName=${DRUID_druid_escalator_authorizerName}
     - druid_auth_authorizers=${DRUID_druid_auth_authorizers}
     - druid_auth_authorizer_MyBasicMetadataAuthorizer_type=${DRUID_druid_auth_authorizer_MyBasicMetadataAuthorizer_type}
+    - AWS_REGION=us-east-1
 
 x-airflow-common: &airflow
   build:
