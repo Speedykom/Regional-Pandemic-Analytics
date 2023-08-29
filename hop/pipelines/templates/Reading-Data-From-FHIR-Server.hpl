@@ -3,9 +3,9 @@
   <info>
     <name>Reading-Data-From-FHIR-Server</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
-    <description/>
-    <extended_description/>
-    <pipeline_version/>
+    <description />
+    <extended_description />
+    <pipeline_version />
     <pipeline_type>Normal</pipeline_type>
     <parameters>
     </parameters>
@@ -21,11 +21,11 @@
   </info>
   <notepads>
     <notepad>
-      <note>Please ensure that the URL, Login Username and 
-password are entered correctly
+      <note>Please ensure that the URL, Login Username and
+        password are entered correctly
 
-Please fill up in addition the Field tab with the 
-fields you want to return from the api</note>
+        Please fill up in addition the Field tab with the
+        fields you want to return from the api</note>
       <xloc>48</xloc>
       <yloc>320</yloc>
       <width>310</width>
@@ -45,8 +45,8 @@ fields you want to return from the api</note>
       <bordercolorblue>250</bordercolorblue>
     </notepad>
     <notepad>
-      <note>Use this transform to read the json data 
-returned from the FHIR API</note>
+      <note>Use this transform to read the json data
+        returned from the FHIR API</note>
       <xloc>368</xloc>
       <yloc>336</yloc>
       <width>254</width>
@@ -67,13 +67,13 @@ returned from the FHIR API</note>
     </notepad>
     <notepad>
       <note>This is a mandatory transform! Please do not remove.
-Only add the fields you want to process.
+        Only add the fields you want to process.
 
-See the example fields provided for you when 
-click on edit transform
+        See the example fields provided for you when
+        click on edit transform
 
-Target fields don't accept white spaces or 
-specefic characters</note>
+        Target fields don't accept white spaces or
+        specefic characters</note>
       <xloc>1120</xloc>
       <yloc>304</yloc>
       <width>333</width>
@@ -118,13 +118,13 @@ specefic characters</note>
   <transform>
     <name>Generate rows</name>
     <type>RowGenerator</type>
-    <description/>
+    <description />
     <distribute>Y</distribute>
-    <custom_distribution/>
+    <custom_distribution />
     <copies>1</copies>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
     <fields>
 </fields>
@@ -133,7 +133,7 @@ specefic characters</note>
     <never_ending>N</never_ending>
     <limit>1</limit>
     <row_time_field>now</row_time_field>
-    <attributes/>
+    <attributes />
     <GUI>
       <xloc>96</xloc>
       <yloc>80</yloc>
@@ -142,16 +142,16 @@ specefic characters</note>
   <transform>
     <name>JSON input</name>
     <type>JsonInput</type>
-    <description/>
+    <description />
     <distribute>N</distribute>
-    <custom_distribution/>
+    <custom_distribution />
     <copies>1</copies>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
     <include>N</include>
-    <include_field/>
+    <include_field />
     <rownum>N</rownum>
     <addresultfile>N</addresultfile>
     <readurl>N</readurl>
@@ -160,11 +160,11 @@ specefic characters</note>
     <doNotFailIfNoFile>Y</doNotFailIfNoFile>
     <ignoreMissingPath>Y</ignoreMissingPath>
     <defaultPathLeafToNull>Y</defaultPathLeafToNull>
-    <rownum_field/>
+    <rownum_field />
     <file>
-      <name/>
-      <filemask/>
-      <exclude_filemask/>
+      <name />
+      <filemask />
+      <exclude_filemask />
       <file_required>N</file_required>
       <include_subfolders>N</include_subfolders>
     </file>
@@ -173,10 +173,10 @@ specefic characters</note>
         <name>birthDate</name>
         <path>$.entry.*.resource.birthDate</path>
         <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
+        <format />
+        <currency />
+        <decimal />
+        <group />
         <length>-1</length>
         <precision>-1</precision>
         <trim_type>none</trim_type>
@@ -186,10 +186,10 @@ specefic characters</note>
         <name>gender</name>
         <path>$.entry.*.resource.gender</path>
         <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
+        <format />
+        <currency />
+        <decimal />
+        <group />
         <length>-1</length>
         <precision>-1</precision>
         <trim_type>none</trim_type>
@@ -199,10 +199,10 @@ specefic characters</note>
         <name>id</name>
         <path>$.entry.*.resource.id</path>
         <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
+        <format />
+        <currency />
+        <decimal />
+        <group />
         <length>-1</length>
         <precision>-1</precision>
         <trim_type>none</trim_type>
@@ -212,10 +212,10 @@ specefic characters</note>
         <name>address</name>
         <path>$.entry.*.resource.address</path>
         <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
+        <format />
+        <currency />
+        <decimal />
+        <group />
         <length>-1</length>
         <precision>-1</precision>
         <trim_type>none</trim_type>
@@ -226,15 +226,15 @@ specefic characters</note>
     <IsInFields>Y</IsInFields>
     <IsAFile>N</IsAFile>
     <valueField>patient</valueField>
-    <shortFileFieldName/>
-    <pathFieldName/>
-    <hiddenFieldName/>
-    <lastModificationTimeFieldName/>
-    <uriNameFieldName/>
-    <rootUriNameFieldName/>
-    <extensionFieldName/>
-    <sizeFieldName/>
-    <attributes/>
+    <shortFileFieldName />
+    <pathFieldName />
+    <hiddenFieldName />
+    <lastModificationTimeFieldName />
+    <uriNameFieldName />
+    <rootUriNameFieldName />
+    <extensionFieldName />
+    <sizeFieldName />
+    <attributes />
     <GUI>
       <xloc>432</xloc>
       <yloc>240</yloc>
@@ -243,13 +243,13 @@ specefic characters</note>
   <transform>
     <name>Parquet File Output </name>
     <type>ParquetFileOutput</type>
-    <description/>
+    <description />
     <distribute>Y</distribute>
-    <custom_distribution/>
+    <custom_distribution />
     <copies>1</copies>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
     <compression_codec>UNCOMPRESSED</compression_codec>
     <data_page_size>1048576</data_page_size>
@@ -273,17 +273,17 @@ specefic characters</note>
       </field>
     </fields>
     <filename_base>ftp://${minio_ftp}/parquets/${user_id}/${dag_id}</filename_base>
-    <filename_create_parent_folders>N</filename_create_parent_folders>
+    <filename_create_parent_folders>Y</filename_create_parent_folders>
     <filename_datetime_format>yyyyMMdd-HHmmss</filename_datetime_format>
     <filename_ext>parquet</filename_ext>
     <filename_include_copy>N</filename_include_copy>
     <filename_include_date>N</filename_include_date>
-    <filename_include_datetime>Y</filename_include_datetime>
+    <filename_include_datetime>N</filename_include_datetime>
     <filename_include_split>N</filename_include_split>
     <filename_include_time>N</filename_include_time>
     <row_group_size>20000</row_group_size>
     <version>1.0</version>
-    <attributes/>
+    <attributes />
     <GUI>
       <xloc>1216</xloc>
       <yloc>240</yloc>
@@ -292,23 +292,23 @@ specefic characters</note>
   <transform>
     <name>Read-Data-From-API</name>
     <type>Http</type>
-    <description/>
+    <description />
     <distribute>Y</distribute>
-    <custom_distribution/>
+    <custom_distribution />
     <copies>1</copies>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
     <url>https://hapi.fhir.org/baseR4/Patient/</url>
     <urlInField>N</urlInField>
     <ignoreSsl>N</ignoreSsl>
-    <urlField/>
+    <urlField />
     <encoding>UTF-8</encoding>
-    <httpLogin/>
+    <httpLogin />
     <httpPassword>Encrypted </httpPassword>
-    <proxyHost/>
-    <proxyPort/>
+    <proxyHost />
+    <proxyPort />
     <socketTimeout>10000</socketTimeout>
     <connectionTimeout>10000</connectionTimeout>
     <closeIdleConnectionsTime>-1</closeIdleConnectionsTime>
@@ -316,11 +316,11 @@ specefic characters</note>
     </lookup>
     <result>
       <name>patient</name>
-      <code/>
-      <response_time/>
-      <response_header/>
+      <code />
+      <response_time />
+      <response_header />
     </result>
-    <attributes/>
+    <attributes />
     <GUI>
       <xloc>208</xloc>
       <yloc>240</yloc>
@@ -329,13 +329,13 @@ specefic characters</note>
   <transform>
     <name>Select values</name>
     <type>SelectValues</type>
-    <description/>
+    <description />
     <distribute>Y</distribute>
-    <custom_distribution/>
+    <custom_distribution />
     <copies>1</copies>
     <partitioning>
       <method>none</method>
-      <schema_name/>
+      <schema_name />
     </partitioning>
     <fields>
       <field>
@@ -356,7 +356,7 @@ specefic characters</note>
       </field>
       <select_unspecified>N</select_unspecified>
     </fields>
-    <attributes/>
+    <attributes />
     <GUI>
       <xloc>784</xloc>
       <yloc>240</yloc>
@@ -364,5 +364,5 @@ specefic characters</note>
   </transform>
   <transform_error_handling>
   </transform_error_handling>
-  <attributes/>
+  <attributes />
 </pipeline>
