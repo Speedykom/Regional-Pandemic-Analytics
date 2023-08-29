@@ -11,33 +11,16 @@ import { DagDetails } from '../interface';
 
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();
-  const [addProcess, setProcessAdd] = useState(false);
-  const [process, setProcess] = useState<any>(null);
-  const [load, setLoad] = useState(false);
+  const [addComponent, setAddComponent] = useState(false);
 
-  const closeAdd = () => {
-    setProcessAdd(false);
+  const closePanel = () => {
+    setAddComponent(false);
   };
 
-  const openAdd = () => {
-    setProcessAdd(true);
-  };
-
-  const openLoad = (process: any) => {
-    setLoad(true);
-    setProcess(process);
-  };
-
-  const closeLoad = () => {
-    setLoad(false);
-    setProcess(null);
-  };
-
-  const { data, error, isLoading, isFetching, isSuccess } =
-    useGetProcessQuery();
+  const { data, isLoading, isSuccess } = useGetProcessQuery();
 
   return (
-    <>
+    <div>
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl">Process Chain</h2>
@@ -49,7 +32,9 @@ export default function ProcessChainList() {
           {hasPermission('process:add') && (
             <Button
               className="bg-prim hover:bg-prim-hover border-0"
-              onClick={() => openAdd()}
+              onClick={() => {
+                setAddComponent(true);
+              }}
             >
               Add Process Chain
             </Button>
@@ -71,27 +56,10 @@ export default function ProcessChainList() {
             })}
           </AccordionList>
         )}
-
-        {/* {loading ? (
-          <div className="flex h-96 bg-white shadow-md border rounded-md items-center justify-center">
-            <div className="w-16 h-16">
-              <Loader />
-            </div>
-          </div>
-        ) : (
-          <>
-            {rows.map((process) => (
-              <ProcessCard
-                onLoad={(process) => openLoad(process)}
-                process={process}
-                key={process.id}
-              />
-            ))}
-          </>
-        )} */}
       </div>
-      <AddProcess onClose={closeAdd} state={addProcess} />
-      {/* <LoadData onClose={closeLoad} state={load} dag={process} /> */}
-    </>
+      {addComponent && (
+        <AddProcess panelState={addComponent} closePanel={closePanel} />
+      )}
+    </div>
   );
 }
