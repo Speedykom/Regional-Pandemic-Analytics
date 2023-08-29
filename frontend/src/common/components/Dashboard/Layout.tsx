@@ -5,6 +5,7 @@ import Drawer from "../common/Drawer";
 import { SideNavLinks } from "./Menu";
 import { useMediaQuery } from "react-responsive";
 import { useSelector } from "react-redux";
+import Footer from "../Footer";
 
 interface LayoutProps {
 	children: ReactNode;
@@ -54,6 +55,8 @@ export default function Layout({ children }: LayoutProps) {
 					</div>
 				</div>
 			</main>
+<Footer />			
 		</>
+		
 	);
 }
