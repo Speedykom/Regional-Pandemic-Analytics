@@ -6,6 +6,7 @@ from airflow_hop.operators import HopPipelineOperator
 from airflow.triggers.temporal import TimeDeltaTrigger
 import logging
 from datetime import datetime, timedelta
+from airflow.utils.context import Context
 from minio import Minio
 import os
 import requests
@@ -46,7 +47,7 @@ class DruidOperator(BaseOperator):
     super().__init__(task_id = 'repan_druid_ingestion', **kwargs)
     self.base_url = "{}/druid/indexer/v1/task".format(os.environ['DRUID_COORDINATOR_URL'])
 
-  def execute(self):
+  def execute(self, context: Context):
     payload = {
       "type": "index_parallel",
       "spec": {
@@ -55,10 +56,10 @@ class DruidOperator(BaseOperator):
           "inputSource": {
             "type": "s3",
             "endpointConfig": {
-              "url": minio_url,
+              "url": minio_url if minio_url.startswith("http://") else "http://{}".format(minio_url),
               # Even if MinIO does not have regions, this is required because the Se extensions use
               # AWS libraries under the hood which insist on getting a region
-              "region": "us-east-1"
+              "signingRegion": "us-east-1"
             },
             "clientConfig": {
               # Our internal communication is not encrypted, so use plain HTTP
@@ -70,7 +71,7 @@ class DruidOperator(BaseOperator):
             "objects": [
               {
                 "bucket": "parquets",
-                "path": "{{user_id}}/{{dag_id}}"
+                "path": "{{user_id}}/{{dag_id}}.parquet"
               }
             ],
             "properties": {
@@ -92,7 +93,8 @@ class DruidOperator(BaseOperator):
           "dataSource": "{{dag_id}}",
           "timestampSpec": {
             "column": "Date",
-            "format": "millis"
+            "format": "millis",
+            "missingValue": 0
           },
           "dimensionsSpec": {
             "dimensions": []
