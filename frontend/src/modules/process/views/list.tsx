@@ -50,11 +50,11 @@ export default function ProcessChainList() {
           </div>
         )}
         {isSuccess && (
-          <AccordionList>
+          <div>
             {data.dags.map((process: DagDetails) => {
               return <ProcessCard key={process.dag_id} process={process} />;
             })}
-          </AccordionList>
+          </div>
         )}
       </div>
       {addComponent && (
