@@ -1,0 +1,6 @@
+#!/usr/bin/env sh
+cd frontend/ . && npm run pre-commit ||
+(
+    echo 'ESLint Check Failed. Make the required changes listed above, add changes and try to commit again';
+    false;
+)
