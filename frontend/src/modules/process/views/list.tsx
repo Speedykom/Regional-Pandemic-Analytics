@@ -18,7 +18,8 @@ export default function ProcessChainList() {
     setAddComponent(false);
   };
 
-  const { data, isLoading, isSuccess } = useGetProcessQuery();
+  const { data, isLoading, isSuccess, refetch } = useGetProcessQuery();
+
   const { data: pipelineList, isSuccess: isSuccessPipeline } =
     useGetAllPipelinesQuery();
 
@@ -35,7 +36,8 @@ export default function ProcessChainList() {
           {hasPermission('process:add') && (
             <Button
               className="bg-prim hover:bg-prim-hover border-0"
-              onClick={() => {
+              onClick={(event) => {
+                event.preventDefault();
                 setAddComponent(true);
               }}
             >
@@ -63,6 +65,7 @@ export default function ProcessChainList() {
       {addComponent && isSuccessPipeline && (
         <AddProcess
           pipelineList={pipelineList}
+          refetch={refetch}
           panelState={addComponent}
           closePanel={closePanel}
         />

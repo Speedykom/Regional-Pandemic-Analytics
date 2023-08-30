@@ -17,6 +17,7 @@ import { AiOutlineSchedule } from "react-icons/ai";
 import { useGetProcessHistoryByIdQuery } from "../process";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
+import { History } from "./History";
 interface IProcessCard {
   process: DagDetails;
 }
@@ -41,6 +42,7 @@ const steps = [
 ];
 
 export default function ProcessCard({ process }: IProcessCard) {
+  console.log("AA", process);
   const { data, isSuccess } = useGetProcessHistoryByIdQuery(process.dag_id);
   const [open, setOpen] = useState(false);
   return (
@@ -67,9 +69,15 @@ export default function ProcessCard({ process }: IProcessCard) {
               </span>
               <span>
                 <div className="mb-2 text-xs font-bold">Status</div>
-                <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                  {process.status && <span> active </span>}
-                </Badge>
+                {process.status ? (
+                  <Badge className="bg-red-100 text-red-500 rounded-full p-1 px-3">
+                    <span>inactive</span>
+                  </Badge>
+                ) : (
+                  <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
+                    <span>active</span>
+                  </Badge>
+                )}
               </span>
             </span>
             <span className="flex space-x-3 p-3 mr-7">
@@ -115,21 +123,7 @@ export default function ProcessCard({ process }: IProcessCard) {
                   );
                 })}
               </div>
-              {isSuccess && (
-                <div>
-                  <Title>Last Execution</Title>
-                  <List>
-                    {data.dag_runs.map((dagRun) => {
-                      return (
-                        <ListItem key={dagRun.dag_run_id}>
-                          <span>{dagRun.dag_run_id}</span>
-                          <span>{dagRun.status}</span>
-                        </ListItem>
-                      );
-                    })}
-                  </List>
-                </div>
-              )}
+              {isSuccess && <History dagRuns={data.dag_runs} />}
             </div>
           </AccordionBody>
         )}
