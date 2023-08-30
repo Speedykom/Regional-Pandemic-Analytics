@@ -1,14 +1,30 @@
 import { AppDrawer } from '@/common/components/AppDrawer';
 import { ShowMessage } from '@/common/components/ShowMessage';
 import { schedule_intervals } from '@/common/utils/processs';
-import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
 import { Button, Form, Input, Select } from 'antd';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { DagForm } from '../interface';
+import { PipelineList } from '@/modules/pipeline/interface';
+import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
+import { useCreateProcessMutation } from '../process';
 
-export const AddProcess = ({ pipelineList, panelState, closePanel }: any) => {
+interface IAddProcessProps {
+  pipelineList: PipelineList;
+  refetch: () => QueryActionCreatorResult<any>;
+  panelState: boolean;
+  closePanel: () => void;
+}
+
+export const AddProcess = ({
+  pipelineList,
+  refetch,
+  panelState,
+  closePanel,
+}: IAddProcessProps) => {
   const { register, handleSubmit, control } = useForm();
+
+  const [createProcess] = useCreateProcessMutation();
 
   const footer = (
     <div className="space-x-2 p-2">
@@ -20,6 +36,7 @@ export const AddProcess = ({ pipelineList, panelState, closePanel }: any) => {
             pipeline: values.pipelineTemplate,
             schedule_interval: values.scheduleInterval,
           } as DagForm);
+          setTimeout(refetch, 1000);
           closePanel();
         })}
       >
