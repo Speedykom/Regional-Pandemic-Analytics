@@ -14,7 +14,7 @@ export const History = ({ dagRuns }: IHistroyProps) => {
           return (
             <ListItem key={dagRun.dag_run_id}>
               <span>{dagRun.dag_run_id}</span>
-              <span>{dagRun.status}</span>
+              <span>{dagRun.state}</span>
             </ListItem>
           );
         })}
