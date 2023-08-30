@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from utils.keycloak_auth import get_keycloak_admin
 from django.conf import settings
+from logs.user_log import Logger
 
 #Api to create and list all roles
 class RoleApiView(APIView):
@@ -14,18 +15,23 @@ class RoleApiView(APIView):
     """_api view to get client roles_
     """
     def get(self, request, *args, **kwargs):
+        logger = Logger(request)
+
         try:
             keycloak_admin = get_keycloak_admin()
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
             client_roles = keycloak_admin.get_client_roles(client_id=client_id)
             return Response(client_roles, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error(err)
             return Response({'errorMessage': 'Unable to retrieve the roles'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     """
     API view to update Keycloak client role
     """
     def put(self, request, *args, **kwargs):
+        logger = Logger(request)
+
         form_data = {
             "name": request.data.get("name", None),
             "description": request.data.get("description", None),
@@ -35,8 +41,9 @@ class RoleApiView(APIView):
             keycloak_admin = get_keycloak_admin()
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
             keycloak_admin.update_client_role(client_role_id=client_id, role_name=kwargs['name'], payload=form_data)
+            logger.user_info("Role update was successful", form_data)
             return Response({'message': 'Role update was successful'}, status=status.HTTP_200_OK)
         except Exception as err:
-            print(err)
+            logger.error(err)
             return Response({'errorMessage': 'Unable to update the role'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

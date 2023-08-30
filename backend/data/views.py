@@ -6,6 +6,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.parsers import MultiPartParser
 from data.serializers import FileUploadSerializer, FileListSerializer
 from data.models import FileUpload
+from logs.user_log import Logger
 
 class DataUploadAPIView(APIView):
     keycloak_scopes = {
@@ -23,21 +24,34 @@ class DataUploadAPIView(APIView):
         }
     ))
     def get(self, request, *args, **kwargs):
-        username = request.query_params.get("username")
+        logger = Logger(request)
 
-        data = FileUpload.objects.filter(username=username).order_by("-date_added")
-        serializer = FileUploadSerializer(data, many=True)
+        try:
+            username = request.query_params.get("username")
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            data = FileUpload.objects.filter(username=username).order_by("-date_added")
+            serializer = FileUploadSerializer(data, many=True)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Exception as err:
+            logger.error(err)
+            return Response({'status': 'fail', "message": "fail to request upload files"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     
     def post(self, request, *args, **kwargs):
-        username = request.data.get('username', None)
+        logger = Logger(request)
 
-        if username is None:
-            return Response({"message": "Username not found"}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            username = request.data.get('username', None)
 
-        serializer = FileListSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            if username is None:
+                return Response({"message": "Username not found"}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response({'message': 'File uploaded successfully'}, status=status.HTTP_201_CREATED)
+            serializer = FileListSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+
+            return Response({'message': 'File uploaded successfully'}, status=status.HTTP_201_CREATED)
+        except Exception as err:
+            logger.error(err)
+            return Response({'status': 'fail', "message": "fail to uploaded file"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
