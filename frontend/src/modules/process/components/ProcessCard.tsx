@@ -1,18 +1,22 @@
 import { ShowMessage } from "@/common/components/ShowMessage";
-import { Button, List, ListItem, Title } from "@tremor/react";
-import { DagDetails } from "../interface";
+import { Disclosure } from "@headlessui/react";
 import {
-  BiChart,
-  BiGitMerge,
-  BiTable,
-  BiChevronDown,
-  BiChevronUp,
-} from "react-icons/bi";
+  Badge,
+  Button,
+  Accordion,
+  AccordionHeader,
+  AccordionBody,
+  Card,
+  List,
+  ListItem,
+  Title,
+} from "@tremor/react";
+import { DagDetails } from "../interface";
+import { BiChart, BiGitMerge, BiTable } from "react-icons/bi";
 import { AiOutlineSchedule } from "react-icons/ai";
-import { usePermission } from "@/common/hooks/use-permission";
 import { useGetProcessHistoryByIdQuery } from "../process";
+import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
-
 interface IProcessCard {
   process: DagDetails;
 }
@@ -37,78 +41,71 @@ const steps = [
 ];
 
 export default function ProcessCard({ process }: IProcessCard) {
-  const { data, error, isLoading, isFetching, isSuccess } =
-    useGetProcessHistoryByIdQuery(process.dag_id);
-  const { hasPermission } = usePermission();
-  const [state, setState] = useState(false);
+  const { data, isSuccess } = useGetProcessHistoryByIdQuery(process.dag_id);
+  const [open, setOpen] = useState(false);
   return (
-    <div className="bg-white mb-3 shadow border rounded-3xl p-5">
-      <div className="flex flex-col ">
-        <div className="flex justify-between flex-1 items-center">
-          <div className="flex justify-between space-x-10">
-            <div className="text-sm flex flex-col items-center">
-              <p className="mb-2 text-xs font-bold">Process Name</p>
-              <p className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                {process.name}
-              </p>
-            </div>
-            <div className="text-sm flex flex-col items-center">
-              <p className="mb-2 text-xs font-bold">Schedule</p>
-              <p className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                {process.schedule_interval}
-              </p>
-            </div>
-            <div className="text-sm flex flex-col items-center">
-              <p className="mb-2 text-xs font-bold">State</p>
-              {process.status ? (
-                <span className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                  {" "}
-                  Active{" "}
-                </span>
-              ) : (
-                <span className="bg-red-100 text-red-500 rounded-full p-1 px-3">
-                  {" "}
-                  Inactive{" "}
-                </span>
-              )}
-            </div>
-            <div className="flex space-x-2 justify-end">
-              {hasPermission("process:update") && (
-                <Button variant="secondary" color="gray">
-                  Load Data
-                </Button>
-              )}
-              {hasPermission("process:run") && process.dag_id && (
-                <Button variant="secondary" color="green">
-                  Run
-                </Button>
-              )}
-              {hasPermission("process:read") && process.dag_id && (
-                <Button variant="secondary">View</Button>
-              )}
-              {hasPermission("process:delete") && (
-                <Button variant="secondary" color="red">
-                  Disable
-                </Button>
-              )}
-            </div>
+    <div>
+      <Accordion defaultOpen={true}>
+        <Disclosure.Button
+          disabled={true}
+          as="div"
+          className="w-full flex items-center justify-between text-tremor-content-emphasis pr-9 m-3"
+        >
+          <div className="w-fulL flex justify-between">
+            <span className="flex space-x-10 ml-3">
+              <span>
+                <div className="mb-2 text-xs font-bold">Name</div>
+                <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
+                  {process.name}
+                </Badge>
+              </span>
+              <span>
+                <div className="mb-2 text-xs font-bold">Schedule Interval</div>
+                <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
+                  {process.schedule_interval}
+                </Badge>
+              </span>
+              <span>
+                <div className="mb-2 text-xs font-bold">Status</div>
+                <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
+                  {process.status && <span> active </span>}
+                </Badge>
+              </span>
+            </span>
+            <span className="flex space-x-3 p-3 mr-7">
+              <Button variant="secondary" color="gray">
+                Load Data
+              </Button>
+              <Button
+                variant="secondary"
+                color="green"
+                onClick={() => {
+                  console.log("EEE");
+                }}
+              >
+                Run
+              </Button>
+              <Button variant="secondary">View</Button>
+              <Button variant="secondary" color="red">
+                Disable
+              </Button>
+            </span>
+
+            <ChevronRightIcon
+              className={
+                open ? "ui-open:rotate-90 transform w-4" : "transform w-4"
+              }
+              onClick={() => {
+                console.log(open);
+                setOpen(!open);
+              }}
+            />
           </div>
-          <div className="w-1/3 flex justify-end">
-            {state ? (
-              <button onClick={() => setState(false)}>
-                <BiChevronUp className="text-4xl text-prim" />
-              </button>
-            ) : (
-              <button onClick={() => setState(true)}>
-                <BiChevronDown className="text-4xl text-prim" />
-              </button>
-            )}
-          </div>
-        </div>
-        {state ? (
-          <div className="pt-14 pb-5 flex flex-col justify-center">
-            <div className="flex justify-center space-x-10">
-              <div className="flex">
+        </Disclosure.Button>
+        {open && (
+          <AccordionBody>
+            <div className="flex flex-col">
+              <div className="flex justify-center space-x-10">
                 {steps.map((step) => {
                   return (
                     <div key={step.title} className="p-2 flex space-x-2">
@@ -118,25 +115,25 @@ export default function ProcessCard({ process }: IProcessCard) {
                   );
                 })}
               </div>
+              {isSuccess && (
+                <div>
+                  <Title>Last Execution</Title>
+                  <List>
+                    {data.dag_runs.map((dagRun) => {
+                      return (
+                        <ListItem key={dagRun.dag_run_id}>
+                          <span>{dagRun.dag_run_id}</span>
+                          <span>{dagRun.status}</span>
+                        </ListItem>
+                      );
+                    })}
+                  </List>
+                </div>
+              )}
             </div>
-            {isSuccess && (
-              <div>
-                <Title>Last Execution</Title>
-                <List>
-                  {data.dag_runs.map((dagRun) => {
-                    return (
-                      <ListItem key={dagRun.dag_run_id}>
-                        <span>{dagRun.dag_run_id}</span>
-                        <span>{dagRun.status}</span>
-                      </ListItem>
-                    );
-                  })}
-                </List>
-              </div>
-            )}
-          </div>
-        ) : null}
-      </div>
+          </AccordionBody>
+        )}
+      </Accordion>
     </div>
   );
 }
