@@ -88,7 +88,6 @@ class ProcessView(ViewSet):
                             dag["is_paused"],
                         ).__dict__
                     )
-            print(airflow_response.json()["dags"])
             return Response({"dags": processes}, status=status.HTTP_200_OK)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
@@ -125,7 +124,7 @@ class ProcessView(ViewSet):
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
-    # Dag Details INCLUDING dag runs ???
+    # Dag Details
     def retrieve(self, request, dag_id=None):
         dag_runs = []
 
@@ -142,6 +141,24 @@ class ProcessView(ViewSet):
             return Response(
                 {"status": "success", "dag_runs": dag_runs}, status=status.HTTP_200_OK
             )
+        else:
+            return Response({"status": "failed"}, status=airflow_response.status_code)
+    def update(self, request, dag_id=None):
+        route = f"{AirflowInstance.url}/dags/{dag_id}"
+        
+        airflow_response = requests.get(
+            route, auth=(AirflowInstance.username, AirflowInstance.password)
+        )
+        is_paused = airflow_response.json()["is_paused"]
+        
+        airflow_response = requests.patch(
+            route, auth=(AirflowInstance.username, AirflowInstance.password),json={
+                "is_paused": not is_paused
+            }
+        )
+        
+        if airflow_response.status_code == 200:
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
@@ -188,10 +205,9 @@ class ProcessRunView(ViewSet):
         airflow_response = requests.post(
             route,
             auth=(AirflowInstance.username, AirflowInstance.password),
-            json={
-                "dag_run_id": f"{get_current_user_name(request)}-{datetime.utcnow()}"
-            },
+            json={},
         )
+        print(airflow_response)
 
         if airflow_response.status_code == 200:
             return Response({"status": "success"}, status=status.HTTP_201_CREATED)
