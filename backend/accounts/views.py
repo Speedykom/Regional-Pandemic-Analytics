@@ -16,6 +16,7 @@ from .models import *
 from utils.generators import get_random_secret
 from utils.keycloak_auth import get_keycloak_admin
 from django.conf import settings
+from logs.user_log import Logger
 
 
 def homepage():
@@ -32,8 +33,6 @@ class UserListView(APIView):
     }
 
     def get(self, request, *args, **kwargs):
-        logger = Logger(request)
-        
         try:
             keycloak_admin = get_keycloak_admin()
             users = keycloak_admin.get_users({})
@@ -56,6 +55,8 @@ class UserListView(APIView):
         }
     ))
     def post(self, request, *args, **kwargs):
+        logger = Logger(request)
+
         generate_password = get_random_secret(10)
         form_data = {
             "firstName": request.data.get("firstName", None),
@@ -103,8 +104,11 @@ class UserListView(APIView):
                 "password": form_data['credentials'][0]['value']
             }
 
+            logger.user_info('User created successfully', user)
+            
             return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_201_CREATED)
         except Exception as err:
+            logger.error(err)
             return Response({'errorMessage': 'Unable to create a new user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserDetailView(APIView):
@@ -118,6 +122,7 @@ class UserDetailView(APIView):
     }
 
     def get(self, request, **kwargs):
+        logger = Logger(request)
         try:
             keycloak_admin = get_keycloak_admin()
             user = keycloak_admin.get_user(kwargs['id'])
@@ -126,6 +131,7 @@ class UserDetailView(APIView):
             user["roles"] = roles
             return Response(user, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error(err)
             return Response({'errorMessage': 'Unable to retrieve the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @swagger_auto_schema(request_body=openapi.Schema(
@@ -142,6 +148,8 @@ class UserDetailView(APIView):
         }
     ))
     def put(self, request, *args, **kwargs):
+        logger = Logger(request)
+
         form_data = {
             "firstName": request.data.get("firstName", None),
             "lastName": request.data.get("lastName", None),
@@ -161,11 +169,15 @@ class UserDetailView(APIView):
             role = request.data.get("role", {})
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
             keycloak_admin.assign_client_role(client_id=client_id, user_id=kwargs['id'], roles=[role])
+            logger.user_info('Account details updated successfully', role)
             return Response({'message': 'Account details updated successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error(err)
             return Response({'errorMessage': 'Unable to update the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def delete(self, request, **kwargs):
+        logger = Logger(request)
+
         try:
             keycloak_admin = get_keycloak_admin()
             user_data = {
@@ -175,8 +187,10 @@ class UserDetailView(APIView):
                 'enabled': False
             }
             keycloak_admin.update_user(kwargs['id'], user_data)
+            logger.user_info('User archived successfully', user_data)
             return Response({'message': 'User archived successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error(err)
             return Response({'errorMessage': 'Unable to archive the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserRolesView(APIView):
@@ -200,22 +214,29 @@ class UserRolesView(APIView):
         }
     ))
     def put(self, request, **kwargs):
+        logger = Logger(request)
+
         try:
             keycloak_admin = get_keycloak_admin()
             roles = request.data.get("roles", [self.roleObject])
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
             keycloak_admin.assign_client_role(client_id=client_id, user_id=kwargs['id'], roles=roles)
+            logger.user_info('Roles has been assigned successfully', roles)
             return Response({'message': 'Roles has been assigned successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error(err)
             return Response({'errorMessage': 'Unable to assign roles to the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request, **kwargs):
+        logger = Logger(request)
+
         try:
             keycloak_admin = get_keycloak_admin()
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
             roles = keycloak_admin.get_client_roles_of_user(user_id=kwargs['id'], client_id=client_id)
             return Response(roles, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error(err)
             return Response({'errorMessage': 'Unable to retrieve the user roles'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -235,6 +256,9 @@ class UserAvatarView(APIView):
 
     def post(self, request, **kwargs):
         """Receives a request to upload a file and sends it to filesystem for now. Later the file will be uploaded to minio server."""
+        
+        logger = Logger(request)
+
         try:
             file_obj = request.data['file']
 
@@ -249,8 +273,11 @@ class UserAvatarView(APIView):
                     }
                 }
                 keycloak_admin.update_user(kwargs['id'], user_data)
+                logger.user_info('Avatar uploaded successfully', user_data)
                 return Response({'message': 'Avatar uploaded successfully'}, status=status.HTTP_200_OK)
             except Exception as err:
+                logger.error(err)
                 return Response({'errorMessage': 'Unable to update the user avatar'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        except MultiValueDictKeyError:
+        except MultiValueDictKeyError as err:
+            logger.error(err)
             return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
