@@ -1,7 +1,6 @@
 from keycloak import KeycloakAdmin, KeycloakOpenID
 from django.conf import settings
 
-
 def get_current_user_id(request):
     cur_user = request.userinfo
     return cur_user['sub']
