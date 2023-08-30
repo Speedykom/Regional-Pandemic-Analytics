@@ -23,6 +23,46 @@ CORS_ALLOW_CREDENTIALS=True
 CORS_ORIGIN_WHITELIST=os.getenv("CORS_ORIGIN_WHITELIST", 'http://localhost:3000,http://localhost:8000').split(',')
 # Application definition
 
+FORMATTERS = (
+    {
+        "verbose": {
+            "format": "{levelname} {asctime:s} {name} {threadName} {thread:d} {module} {filename} {lineno:d} {name} {funcName} {process:d} {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname} {asctime:s} {name} {module} {filename} {lineno:d} {funcName} {message}",
+            "style": "{",
+        },
+    },
+)
+
+HANDLERS = {
+    "console_handler": {
+        "class": "logging.StreamHandler",
+        "formatter": "simple",
+        "level": "DEBUG"
+    },
+    "info_handler": {
+        "class": "logging.handlers.RotatingFileHandler",
+        "filename": f"{BASE_DIR}/logs/repan_info.log",
+        "mode": "a",
+        "encoding": "utf-8",
+        "formatter": "verbose",
+        "level": "INFO",
+        "backupCount": 5,
+        "maxBytes": 1024 * 1024 * 5,  # 5 MB
+    },
+    "error_handler": {
+        "class": "logging.handlers.RotatingFileHandler",
+        "filename": f"{BASE_DIR}/logs/repan_error.log",
+        "mode": "a",
+        "formatter": "verbose",
+        "level": "WARNING",
+        "backupCount": 5,
+        "maxBytes": 1024 * 1024 * 5,  # 5 MB
+    },
+}
+
 LOGGERS = (
     {
         "django": {
