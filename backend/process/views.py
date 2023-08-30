@@ -85,9 +85,10 @@ class ProcessView(ViewSet):
                             dag["dag_id"],
                             dag["dag_id"],
                             dag["schedule_interval"]["value"],
-                            dag["is_active"],
+                            dag["is_paused"],
                         ).__dict__
                     )
+            print(airflow_response.json()["dags"])
             return Response({"dags": processes}, status=status.HTTP_200_OK)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
