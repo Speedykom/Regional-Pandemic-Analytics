@@ -4,6 +4,7 @@ from django.conf import settings
 
 def get_current_user_id(request):
     cur_user = request.userinfo
+    print(cur_user)
     return cur_user['sub']
 
 
