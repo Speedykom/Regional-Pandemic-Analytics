@@ -23,6 +23,38 @@ CORS_ALLOW_CREDENTIALS=True
 CORS_ORIGIN_WHITELIST=os.getenv("CORS_ORIGIN_WHITELIST", 'http://localhost:3000,http://localhost:8000').split(',')
 # Application definition
 
+LOGGERS = (
+    {
+        "django": {
+            "handlers": ["console_handler", "info_handler"],
+            "level": "INFO",
+        },
+        "django.request": {
+            "handlers": ["error_handler"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "django.template": {
+            "handlers": ["error_handler"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+        "django.server": {
+            "handlers": ["error_handler"],
+            "level": "INFO",
+            "propagate": True,
+        },
+    },
+)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": FORMATTERS[0],
+    "handlers": HANDLERS,
+    "loggers": LOGGERS[0],
+}
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
