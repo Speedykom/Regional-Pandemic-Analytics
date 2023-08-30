@@ -32,6 +32,8 @@ class UserListView(APIView):
     }
 
     def get(self, request, *args, **kwargs):
+        logger = Logger(request)
+        
         try:
             keycloak_admin = get_keycloak_admin()
             users = keycloak_admin.get_users({})
