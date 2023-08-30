@@ -8,6 +8,7 @@ import ProcessCard from '../components/ProcessCard';
 import { useGetProcessQuery } from '../process';
 import { AccordionList } from '@tremor/react';
 import { DagDetails } from '../interface';
+import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
 
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();
@@ -18,6 +19,8 @@ export default function ProcessChainList() {
   };
 
   const { data, isLoading, isSuccess } = useGetProcessQuery();
+  const { data: pipelineList, isSuccess: isSuccessPipeline } =
+    useGetAllPipelinesQuery();
 
   return (
     <div>
@@ -57,8 +60,12 @@ export default function ProcessChainList() {
           </div>
         )}
       </div>
-      {addComponent && (
-        <AddProcess panelState={addComponent} closePanel={closePanel} />
+      {addComponent && isSuccessPipeline && (
+        <AddProcess
+          pipelineList={pipelineList}
+          panelState={addComponent}
+          closePanel={closePanel}
+        />
       )}
     </div>
   );
