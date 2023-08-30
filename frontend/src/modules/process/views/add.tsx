@@ -35,9 +35,10 @@ export const AddProcess = ({
             name: values.processName,
             pipeline: values.pipelineTemplate,
             schedule_interval: values.scheduleInterval,
-          } as DagForm);
-          setTimeout(refetch, 1000);
-          closePanel();
+          } as DagForm).then(() => {
+            setTimeout(refetch, 1000);
+            closePanel();
+          });
         })}
       >
         Submit
