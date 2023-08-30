@@ -15,6 +15,7 @@ from utils.keycloak_auth import get_keycloak_admin, get_keycloak_openid, get_cur
 from django.conf import settings
 from utils.env_configs import (
     BASE_URL, APP_SECRET_KEY, APP_REALM, REST_REDIRECT_URI)
+from logs.user_log import Logger
 
 class LoginAPI(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
@@ -164,6 +165,8 @@ class PasswordAPI(APIView):
         }
     ))
     def post(self, request, *args, **kwargs):
+        logger = Logger(request)
+
         newPassword = request.data.get("newPassword", None)
         confirmPassword = request.data.get("confirmPassword", None)
         token = request.data.get("token", None)
@@ -179,8 +182,10 @@ class PasswordAPI(APIView):
         try:
             keycloak_admin = get_keycloak_admin()
             keycloak_admin.set_user_password(user_id=user_id, password=newPassword, temporary=False)
+            logger.user_info('Password created successfully', {"password": newPassword})
             return Response({'message': 'Password created successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error(err)
             return Response({'errorMessage': 'Unable to create user password'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         
