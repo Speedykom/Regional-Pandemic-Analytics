@@ -15,7 +15,7 @@ export interface DagDetails {
 export interface DagRun {
   dag_id: string;
   dag_run_id: string;
-  status: string;
+  state: string;
 }
 
 export interface DagDetailsResponse {

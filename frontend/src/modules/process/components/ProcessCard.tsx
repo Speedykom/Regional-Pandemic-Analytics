@@ -14,7 +14,11 @@ import {
 import { DagDetails } from "../interface";
 import { BiChart, BiGitMerge, BiTable } from "react-icons/bi";
 import { AiOutlineSchedule } from "react-icons/ai";
-import { useGetProcessHistoryByIdQuery } from "../process";
+import {
+  useEnableProcessMutation,
+  useGetProcessHistoryByIdQuery,
+  useRunProcessByIdMutation,
+} from "../process";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { useState } from "react";
 import { History } from "./History";
@@ -42,8 +46,10 @@ const steps = [
 ];
 
 export default function ProcessCard({ process }: IProcessCard) {
-  console.log("AA", process);
   const { data, isSuccess } = useGetProcessHistoryByIdQuery(process.dag_id);
+  const [runProcessById] = useRunProcessByIdMutation();
+  const [enableProcess] = useEnableProcessMutation();
+
   const [open, setOpen] = useState(false);
   return (
     <div>
@@ -84,19 +90,40 @@ export default function ProcessCard({ process }: IProcessCard) {
               <Button variant="secondary" color="gray">
                 Load Data
               </Button>
-              <Button
-                variant="secondary"
-                color="green"
-                onClick={() => {
-                  console.log("EEE");
-                }}
-              >
-                Run
-              </Button>
+              {!process.status && (
+                <Button
+                  variant="secondary"
+                  color="green"
+                  onClick={() => {
+                    console.log("YES");
+                    runProcessById(process.dag_id);
+                  }}
+                >
+                  Run
+                </Button>
+              )}
               <Button variant="secondary">View</Button>
-              <Button variant="secondary" color="red">
-                Disable
-              </Button>
+              {process.status ? (
+                <Button
+                  variant="secondary"
+                  color="red"
+                  onClick={() => {
+                    enableProcess(process.dag_id);
+                  }}
+                >
+                  Enable
+                </Button>
+              ) : (
+                <Button
+                  variant="secondary"
+                  color="red"
+                  onClick={() => {
+                    enableProcess(process.dag_id);
+                  }}
+                >
+                  Disable
+                </Button>
+              )}
             </span>
 
             <ChevronRightIcon
