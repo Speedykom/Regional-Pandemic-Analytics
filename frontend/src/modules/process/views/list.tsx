@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
-import { AddProcess } from '@/modules/process/views/add';
-import { Button } from 'antd';
+import { Button, AccordionList } from '@tremor/react';
 import { Loader } from '@/common/components/Loader';
-import LoadData from '@/common/components/TABS/upload';
 import { usePermission } from '@/common/hooks/use-permission';
+import { useCreateProcessMutation, useGetProcessQuery } from '../process';
+import { DagDetails, DagForm } from '../interface';
 import ProcessCard from '../components/ProcessCard';
-import { useGetProcessQuery } from '../process';
-import { AccordionList } from '@tremor/react';
-import { DagDetails } from '../interface';
+import { AddProcess } from './add';
 import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
 
 export default function ProcessChainList() {
