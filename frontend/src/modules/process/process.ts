@@ -11,7 +11,6 @@ export const processApi = createApi({
   baseQuery,
   tagTypes: ['process'],
   endpoints: (builder) => ({
-    // GET POST dags
     getProcess: builder.query<DagDetailsResponse, void>({
       query: () => '/process',
       providesTags: ['process'],
