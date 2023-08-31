@@ -4,8 +4,8 @@ import { DagDetails } from '../interface';
 import { BiChart, BiGitMerge, BiTable } from 'react-icons/bi';
 import { AiOutlineSchedule } from 'react-icons/ai';
 import {
-  useEnableProcessMutation,
   useRunProcessByIdMutation,
+  useToggleProcessStatusMutation,
 } from '../process';
 import { ChevronRightIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
@@ -35,7 +35,7 @@ const steps = [
 
 export default function ProcessCard({ process }: IProcessCard) {
   const [runProcessById] = useRunProcessByIdMutation();
-  const [enableProcess] = useEnableProcessMutation();
+  const [toggleProcessStatus] = useToggleProcessStatusMutation();
 
   const [open, setOpen] = useState(false);
   return (
@@ -94,7 +94,7 @@ export default function ProcessCard({ process }: IProcessCard) {
                   variant="secondary"
                   color="red"
                   onClick={() => {
-                    enableProcess(process.dag_id);
+                    toggleProcessStatus(process.dag_id);
                   }}
                 >
                   Enable
@@ -104,7 +104,7 @@ export default function ProcessCard({ process }: IProcessCard) {
                   variant="secondary"
                   color="red"
                   onClick={() => {
-                    enableProcess(process.dag_id);
+                    toggleProcessStatus(process.dag_id);
                   }}
                 >
                   Disable
