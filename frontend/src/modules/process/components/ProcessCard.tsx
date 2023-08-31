@@ -4,9 +4,8 @@ import { DagDetails } from '../interface';
 import { BiChart, BiGitMerge, BiTable } from 'react-icons/bi';
 import { AiOutlineSchedule } from 'react-icons/ai';
 import {
-  useEnableProcessMutation,
-  useGetProcessHistoryByIdQuery,
   useRunProcessByIdMutation,
+  useToggleProcessStatusMutation,
 } from '../process';
 import { ChevronRightIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
@@ -35,9 +34,8 @@ const steps = [
 ];
 
 export default function ProcessCard({ process }: IProcessCard) {
-  const { data, isSuccess } = useGetProcessHistoryByIdQuery(process.dag_id);
   const [runProcessById] = useRunProcessByIdMutation();
-  const [enableProcess] = useEnableProcessMutation();
+  const [toggleProcessStatus] = useToggleProcessStatusMutation();
 
   const [open, setOpen] = useState(false);
   return (
@@ -76,9 +74,6 @@ export default function ProcessCard({ process }: IProcessCard) {
               </span>
             </span>
             <span className="flex space-x-3 p-3 mr-7">
-              <Button variant="secondary" color="gray">
-                Load Data
-              </Button>
               {!process.status && (
                 <Button
                   variant="secondary"
@@ -90,13 +85,13 @@ export default function ProcessCard({ process }: IProcessCard) {
                   Run
                 </Button>
               )}
-              <Button variant="secondary">View</Button>
+
               {process.status ? (
                 <Button
                   variant="secondary"
                   color="red"
                   onClick={() => {
-                    enableProcess(process.dag_id);
+                    toggleProcessStatus(process.dag_id);
                   }}
                 >
                   Enable
@@ -106,7 +101,7 @@ export default function ProcessCard({ process }: IProcessCard) {
                   variant="secondary"
                   color="red"
                   onClick={() => {
-                    enableProcess(process.dag_id);
+                    toggleProcessStatus(process.dag_id);
                   }}
                 >
                   Disable
@@ -137,7 +132,7 @@ export default function ProcessCard({ process }: IProcessCard) {
                   );
                 })}
               </div>
-              {isSuccess && <History dagRuns={data.dag_runs} />}
+              <History dagId={process.dag_id} />
             </div>
           </AccordionBody>
         )}
