@@ -6,7 +6,7 @@ interface IHistroyProps {
   dagId: string;
 }
 
-export const History = ({ dagId }: IHistroyProps) => {
+export default function History({ dagId }: IHistroyProps) {
   const { data, isSuccess } = useGetProcessHistoryByIdQuery(dagId);
   return (
     <div>
@@ -24,4 +24,4 @@ export const History = ({ dagId }: IHistroyProps) => {
       </List>
     </div>
   );
-};
+}
