@@ -28,13 +28,9 @@ export const processApi = createApi({
       }),
       invalidatesTags: ['process'],
     }),
-    // GET PUT DELETE dag by dag_id
-    // getProcessById: builder.query<DagDetails, string>({
-    //   query: (dag_id) => `/process/${dag_id}`,
-    // }),
-    // GET POST dag_run
     getProcessHistoryById: builder.query<DagRunsResponse, string>({
       query: (dag_id) => `/process/${dag_id}/dagRuns`,
+      providesTags: ['process'],
     }),
   }),
 });
