@@ -1,5 +1,5 @@
-import { ShowMessage } from "@/common/components/ShowMessage";
-import { Disclosure } from "@headlessui/react";
+import { ShowMessage } from '@/common/components/ShowMessage';
+import { Disclosure } from '@headlessui/react';
 import {
   Badge,
   Button,
@@ -10,37 +10,37 @@ import {
   List,
   ListItem,
   Title,
-} from "@tremor/react";
-import { DagDetails } from "../interface";
-import { BiChart, BiGitMerge, BiTable } from "react-icons/bi";
-import { AiOutlineSchedule } from "react-icons/ai";
+} from '@tremor/react';
+import { DagDetails } from '../interface';
+import { BiChart, BiGitMerge, BiTable } from 'react-icons/bi';
+import { AiOutlineSchedule } from 'react-icons/ai';
 import {
   useEnableProcessMutation,
   useGetProcessHistoryByIdQuery,
   useRunProcessByIdMutation,
-} from "../process";
-import { ChevronRightIcon } from "@heroicons/react/24/solid";
-import { useState } from "react";
-import { History } from "./History";
+} from '../process';
+import { ChevronRightIcon } from '@heroicons/react/24/solid';
+import { useState } from 'react';
+import { History } from './History';
 interface IProcessCard {
   process: DagDetails;
 }
 
 const steps = [
   {
-    title: "Data Source Selection",
+    title: 'Data Source Selection',
     icon: <BiGitMerge />,
   },
   {
-    title: "Orchestration",
+    title: 'Orchestration',
     icon: <AiOutlineSchedule />,
   },
   {
-    title: "Analytics Data Model",
+    title: 'Analytics Data Model',
     icon: <BiTable />,
   },
   {
-    title: "Charts",
+    title: 'Charts',
     icon: <BiChart />,
   },
 ];
@@ -95,7 +95,7 @@ export default function ProcessCard({ process }: IProcessCard) {
                   variant="secondary"
                   color="green"
                   onClick={() => {
-                    console.log("YES");
+                    console.log('YES');
                     runProcessById(process.dag_id);
                   }}
                 >
@@ -128,7 +128,7 @@ export default function ProcessCard({ process }: IProcessCard) {
 
             <ChevronRightIcon
               className={
-                open ? "ui-open:rotate-90 transform w-4" : "transform w-4"
+                open ? 'ui-open:rotate-90 transform w-4' : 'transform w-4'
               }
               onClick={() => {
                 console.log(open);

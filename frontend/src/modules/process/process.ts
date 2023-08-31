@@ -1,7 +1,10 @@
-// Need to use the React-specific entry point to import createApi
 import { createApi } from '@reduxjs/toolkit/query/react';
+import {
+  DagForm,
+  DagDetailsResponse,
+  DagRunsResponse,
+} from '../../modules/process/interface';
 import { baseQuery } from '@/common/redux/api';
-import { DagDetailsResponse, DagForm, DagRunsResponse } from './interface';
 
 export const processApi = createApi({
   reducerPath: 'processApi',
@@ -32,6 +35,13 @@ export const processApi = createApi({
       query: (dag_id) => `/process/${dag_id}/dagRuns`,
       providesTags: ['process'],
     }),
+    runProcessById: builder.mutation<void, string>({
+      query: (dag_id) => ({
+        url: `/process/${dag_id}/dagRuns`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['process'],
+    }),
   }),
 });
 
@@ -40,4 +50,5 @@ export const {
   useCreateProcessMutation,
   useEnableProcessMutation,
   useGetProcessHistoryByIdQuery,
+  useRunProcessByIdMutation,
 } = processApi;
