@@ -114,7 +114,7 @@ class ProcessView(ViewSet):
                     "user_id": f"{new_dag_config.user_id}",
                     "dag_id": f"{new_dag_config.dag_id}",
                     "schedule_interval": f"{new_dag_config.schedule_interval}",
-                    "pipeline_name": f"{new_dag_config.pipeline_name}",
+                    "pipeline_name": f"{new_dag_config.pipeline_name}.hpl",
                 }
             },
         )
