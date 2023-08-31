@@ -13,8 +13,8 @@ interface DisableResponse {
   message: string;
 }
 
-export const UserApi = createApi({
-  reducerPath: 'UserApi',
+export const userApi = createApi({
+  reducerPath: 'userApi',
   baseQuery,
   endpoints: (builder) => ({
     getUsers: builder.query<Users, void>({
@@ -54,4 +54,4 @@ export const {
   useDisableUserMutation,
   useAddUserMutation,
   useResetPasswordMutation,
-} = UserApi;
+} = userApi;
