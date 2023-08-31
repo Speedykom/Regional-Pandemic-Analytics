@@ -108,7 +108,7 @@ class DruidOperator(BaseOperator):
       }
     }
     task_logger.debug('Sending ingestion spec to Druid')
-    client = requests.post(self.base_url, json = payload)
+    client = requests.post(self.base_url, json = payload , auth=druid_auth)
     if not client.ok:
        task_logger.error('Sending of ingestion spec failed with code %d and message: “%s”', client.status_code, client.text)
        raise AirflowException('Failed to start Druid ingestion')
@@ -118,7 +118,7 @@ class DruidOperator(BaseOperator):
   def wait_for_completion(self, process_id: str):
     self.defer(trigger=TimeDeltaTrigger(timedelta(seconds=5)), method_name="check_status", kwargs={ "process_id": process_id })
 
-  def check_status(self, process_id: str):
+  def check_status(self, process_id: str , **kwargs):
     task_logger.debug('Checking status of Druid ingestion…')
     url = "{}/{}/status".format(self.base_url, process_id)
     response = requests.get(url, auth=druid_auth)
