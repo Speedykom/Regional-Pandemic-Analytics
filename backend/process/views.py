@@ -128,9 +128,10 @@ class ProcessView(ViewSet):
     def retrieve(self, request, dag_id=None):
         dag_runs = []
 
-        route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns"
+        route = f"{AirflowInstance.url}/dags/{dag_id}"
         airflow_response = requests.get(
-            route, auth=(AirflowInstance.username, AirflowInstance.password)
+            route,
+            auth=(AirflowInstance.username, AirflowInstance.password),
         )
 
         if airflow_response.status_code == 200:
@@ -143,20 +144,21 @@ class ProcessView(ViewSet):
             )
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
+
     def update(self, request, dag_id=None):
         route = f"{AirflowInstance.url}/dags/{dag_id}"
-        
+
         airflow_response = requests.get(
             route, auth=(AirflowInstance.username, AirflowInstance.password)
         )
         is_paused = airflow_response.json()["is_paused"]
-        
+
         airflow_response = requests.patch(
-            route, auth=(AirflowInstance.username, AirflowInstance.password),json={
-                "is_paused": not is_paused
-            }
+            route,
+            auth=(AirflowInstance.username, AirflowInstance.password),
+            json={"is_paused": not is_paused},
         )
-        
+
         if airflow_response.status_code == 200:
             return Response({"status": "success"}, status=status.HTTP_200_OK)
         else:
@@ -184,7 +186,9 @@ class ProcessRunView(ViewSet):
 
         route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns"
         airflow_response = requests.get(
-            route, auth=(AirflowInstance.username, AirflowInstance.password)
+            route,
+            auth=(AirflowInstance.username, AirflowInstance.password),
+            params={"limit": 5, "order_by": "-execution_date"},
         )
 
         if airflow_response.status_code == 200:
