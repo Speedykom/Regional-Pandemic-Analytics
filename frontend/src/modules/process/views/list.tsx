@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, AccordionList } from '@tremor/react';
 import { Loader } from '@/common/components/Loader';
 import { usePermission } from '@/common/hooks/use-permission';
-import { useCreateProcessMutation, useGetProcessQuery } from '../process';
+import { useGetProcessQuery } from '../process';
 import { DagDetails, DagForm } from '../interface';
 import ProcessCard from '../components/ProcessCard';
 import { AddProcess } from './add';
