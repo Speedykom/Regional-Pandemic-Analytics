@@ -75,9 +75,10 @@ class ProcessView(ViewSet):
             auth=(AirflowInstance.username, AirflowInstance.password),
         )
 
-        if airflow_response.status_code == 200:
+        airflow_json = airflow_response.json()["dags"]
+        if airflow_response.ok:
             # Only returns the dags which owners flag is the same as the username
-            for dag in airflow_response.json()["dags"]:
+            for dag in airflow_json:
                 if user_name in dag["owners"]:
                     processes.append(
                         Dag(
@@ -119,7 +120,7 @@ class ProcessView(ViewSet):
             },
         )
 
-        if airflow_response.status_code == 200:
+        if airflow_response.ok:
             return Response({"status": "success"}, status=status.HTTP_201_CREATED)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
@@ -134,8 +135,9 @@ class ProcessView(ViewSet):
             auth=(AirflowInstance.username, AirflowInstance.password),
         )
 
-        if airflow_response.status_code == 200:
-            for dag_run in airflow_response.json()["dag_runs"]:
+        airflow_json = airflow_response.json()["dag_runs"]
+        if airflow_response.ok:
+            for dag_run in airflow_json:
                 dag_runs.append(
                     DagRun(dag_run["dag_id"], dag_run["dag_run_id"], dag_run["state"])
                 )
@@ -159,7 +161,7 @@ class ProcessView(ViewSet):
             json={"is_paused": not is_paused},
         )
 
-        if airflow_response.status_code == 200:
+        if airflow_response.ok:
             return Response({"status": "success"}, status=status.HTTP_200_OK)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
@@ -191,8 +193,9 @@ class ProcessRunView(ViewSet):
             params={"limit": 5, "order_by": "-execution_date"},
         )
 
-        if airflow_response.status_code == 200:
-            for dag_run in airflow_response.json()["dag_runs"]:
+        airflow_json = airflow_response.json()["dag_runs"]
+        if airflow_response.ok:
+            for dag_run in airflow_json:
                 dag_runs.append(
                     DagRun(
                         dag_id=dag_run["dag_id"],
@@ -213,7 +216,7 @@ class ProcessRunView(ViewSet):
         )
         print(airflow_response)
 
-        if airflow_response.status_code == 200:
+        if airflow_response.ok:
             return Response({"status": "success"}, status=status.HTTP_201_CREATED)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
