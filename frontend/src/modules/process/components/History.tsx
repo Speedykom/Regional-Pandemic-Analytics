@@ -1,5 +1,5 @@
-import { List, ListItem, Title } from "@tremor/react";
-import { DagRun } from "../interface";
+import { List, ListItem, Title } from '@tremor/react';
+import { DagRun } from '../interface';
 
 interface IHistroyProps {
   dagRuns: DagRun[];
