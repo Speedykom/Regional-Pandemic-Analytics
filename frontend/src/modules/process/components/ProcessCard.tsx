@@ -5,7 +5,6 @@ import { BiChart, BiGitMerge, BiTable } from 'react-icons/bi';
 import { AiOutlineSchedule } from 'react-icons/ai';
 import {
   useEnableProcessMutation,
-  useGetProcessHistoryByIdQuery,
   useRunProcessByIdMutation,
 } from '../process';
 import { ChevronRightIcon } from '@heroicons/react/24/solid';
@@ -35,7 +34,6 @@ const steps = [
 ];
 
 export default function ProcessCard({ process }: IProcessCard) {
-  const { data, isSuccess } = useGetProcessHistoryByIdQuery(process.dag_id);
   const [runProcessById] = useRunProcessByIdMutation();
   const [enableProcess] = useEnableProcessMutation();
 
@@ -137,7 +135,7 @@ export default function ProcessCard({ process }: IProcessCard) {
                   );
                 })}
               </div>
-              {isSuccess && <History dagRuns={data.dag_runs} />}
+              <History dagId={process.dag_id} />
             </div>
           </AccordionBody>
         )}

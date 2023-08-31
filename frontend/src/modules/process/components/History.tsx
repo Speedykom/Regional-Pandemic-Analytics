@@ -1,23 +1,26 @@
 import { List, ListItem, Title } from '@tremor/react';
 import { DagRun } from '../interface';
+import { useGetProcessHistoryByIdQuery } from '../process';
 
 interface IHistroyProps {
-  dagRuns: DagRun[];
+  dagId: string;
 }
 
-export const History = ({ dagRuns }: IHistroyProps) => {
+export const History = ({ dagId }: IHistroyProps) => {
+  const { data, isSuccess } = useGetProcessHistoryByIdQuery(dagId);
   return (
     <div>
       <Title>Last Execution</Title>
       <List>
-        {dagRuns.map((dagRun: DagRun) => {
-          return (
-            <ListItem key={dagRun.dag_run_id}>
-              <span>{dagRun.dag_run_id}</span>
-              <span>{dagRun.state}</span>
-            </ListItem>
-          );
-        })}
+        {isSuccess &&
+          data.dag_runs.map((dagRun: DagRun) => {
+            return (
+              <ListItem key={dagRun.dag_run_id}>
+                <span>{dagRun.dag_run_id}</span>
+                <span>{dagRun.state}</span>
+              </ListItem>
+            );
+          })}
       </List>
     </div>
   );
