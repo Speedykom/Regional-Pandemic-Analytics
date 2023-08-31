@@ -74,9 +74,6 @@ export default function ProcessCard({ process }: IProcessCard) {
               </span>
             </span>
             <span className="flex space-x-3 p-3 mr-7">
-              <Button variant="secondary" color="gray">
-                Load Data
-              </Button>
               {!process.status && (
                 <Button
                   variant="secondary"
@@ -88,7 +85,7 @@ export default function ProcessCard({ process }: IProcessCard) {
                   Run
                 </Button>
               )}
-              <Button variant="secondary">View</Button>
+
               {process.status ? (
                 <Button
                   variant="secondary"
