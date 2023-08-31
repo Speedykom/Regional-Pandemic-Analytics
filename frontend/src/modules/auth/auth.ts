@@ -13,8 +13,8 @@ import {
 } from './interface';
 
 // Define a service using a base URL and expected endpoints
-export const AuthApi = createApi({
-  reducerPath: 'AuthApi',
+export const authApi = createApi({
+  reducerPath: 'authApi',
   baseQuery,
   endpoints: (builder) => ({
     login: builder.mutation<Credentials, OAuthParams>({
@@ -33,8 +33,8 @@ export const AuthApi = createApi({
   }),
 });
 
-export const HopAuthApi = createApi({
-  reducerPath: 'HopAuthApi',
+export const hopAuthApi = createApi({
+  reducerPath: 'hopAuthApi',
   baseQuery: fetchBaseQuery({ baseUrl: `/hop/` }),
   endpoints: (builder) => ({
     logoutFromHop: builder.mutation<void, void>({
@@ -48,8 +48,8 @@ export const HopAuthApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useLoginMutation, useLogoutMutation } = AuthApi;
-export const { useLogoutFromHopMutation } = HopAuthApi;
+export const { useLoginMutation, useLogoutMutation } = authApi;
+export const { useLogoutFromHopMutation } = hopAuthApi;
 
 type UserAuth = {
   user: null | UserProfile; // for user object
