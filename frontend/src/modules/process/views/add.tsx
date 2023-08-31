@@ -1,118 +1,127 @@
-import { AppDrawer } from '@/common/components/AppDrawer';
-import { ShowMessage } from '@/common/components/ShowMessage';
+import Drawer from '@/common/components/common/Drawer';
 import { schedule_intervals } from '@/common/utils/processs';
-import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
-import { useCreateProcessChainMutation } from '@/modules/process/process';
-import { Button, Form, Input, Select } from 'antd';
-import { useState } from 'react';
+import {
+  Button,
+  SearchSelect,
+  SearchSelectItem,
+  TextInput,
+} from '@tremor/react';
+import { useForm, Controller } from 'react-hook-form';
+import { useCreateProcessMutation } from '../process';
+import { DagForm } from '../interface';
+import { PipelineList } from '@/modules/pipeline/interface';
+import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
 
-interface Props {
-  state: boolean;
-  onClose: () => void;
+interface IAddProcessProps {
+  pipelineList: PipelineList;
+  refetch: () => QueryActionCreatorResult<any>;
+  panelState: boolean;
+  closePanel: () => void;
 }
 
-export const AddProcess = ({ state, onClose }: Props) => {
-  const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
-  const [addProcess] = useCreateProcessChainMutation();
+export const AddProcess = ({
+  pipelineList,
+  refetch,
+  panelState,
+  closePanel,
+}: IAddProcessProps) => {
+  const { register, handleSubmit, control } = useForm();
 
-  const { data: res } = useGetAllPipelinesQuery();
-
-  const pipelines = res?.data || [];
-
-  const onFinish = (value: any) => {
-    setLoading(true);
-
-    addProcess({ ...value })
-      .then((res: any) => {
-        if (res.error) {
-          const { data } = res.error;
-          const { message } = data;
-
-          ShowMessage('error', message);
-          return;
-        }
-
-        ShowMessage('success', 'Process created successfully');
-        cancel();
-      })
-      .finally(() => setLoading(false));
-  };
-
-  const cancel = () => {
-    form.resetFields();
-    onClose();
-  };
+  const [createProcess] = useCreateProcessMutation();
 
   const footer = (
     <div className="space-x-2 p-2">
-      <Button loading={loading} type="primary" onClick={() => form.submit()}>
+      <Button
+        className="bg-prim text-white border-0 hover:bg-prim-hover"
+        onClick={handleSubmit((values) => {
+          createProcess({
+            name: values.processName,
+            pipeline: values.pipelineTemplate,
+            schedule_interval: values.scheduleInterval,
+          } as DagForm).then(() => {
+            setTimeout(refetch, 1000);
+            closePanel();
+          });
+        })}
+      >
         Submit
       </Button>
-      <Button onClick={cancel} type="default">
+      <Button
+        className="bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
+        onClick={closePanel}
+      >
         Cancel
       </Button>
     </div>
   );
 
   return (
-    <AppDrawer
-      title="Add Process Chain"
-      state={state}
-      onClose={cancel}
+    <Drawer
+      title={'Add Process Chain'}
+      isOpen={panelState}
+      onClose={closePanel}
+      placement="right"
+      width={350}
       footer={footer}
     >
-      <Form
-        form={form}
-        name="add-process"
-        onFinish={onFinish}
-        layout="vertical"
-        scrollToFirstError
-      >
-        <Form.Item
-          name="name"
-          label="Name"
-          tooltip="Process Name"
-          rules={[
-            {
-              required: true,
-              message: 'Please enter process name',
-            },
-          ]}
-        >
-          <Input placeholder="Enter Dag Name" className="w-full" />
-        </Form.Item>
-        <Form.Item name="pipeline" label="Pipeline" className="w-full">
-          <Select
-            showSearch
-            placeholder="Select Pipeline"
-            options={pipelines.map((pipeline: any) => ({
-              value: `${pipeline.name}.hpl`,
-              label: pipeline.name,
-            }))}
-          />
-        </Form.Item>
-        <Form.Item
-          name="schedule_interval"
-          label="Schedule Interval"
-          rules={[
-            {
-              required: true,
-              message: 'Please select schedule interval',
-            },
-          ]}
-        >
-          <Select
-            showSearch
-            placeholder="Select Schedule Interval"
-            options={schedule_intervals.map((time: string, i: number) => ({
-              key: i,
-              label: time,
-              value: time,
-            }))}
-          />
-        </Form.Item>
-      </Form>
-    </AppDrawer>
+      <div className="w-96 px-3">
+        <form className="flex flex-col space-y-3">
+          <div>
+            <label>Process Chain</label>
+            <TextInput
+              {...register('processName', { required: true })}
+              placeholder="Process Chain"
+            />
+          </div>
+
+          <div>
+            <label>Pipeline Template</label>
+            <Controller
+              name="pipelineTemplate"
+              control={control}
+              defaultValue={''}
+              render={({ field }) => {
+                return (
+                  <SearchSelect {...field} placeholder="Pipeline Template">
+                    {pipelineList.data.map((pipeline: any) => {
+                      return (
+                        <SearchSelectItem
+                          key={pipeline.name}
+                          value={pipeline.name}
+                        >
+                          {pipeline.name}
+                        </SearchSelectItem>
+                      );
+                    })}
+                  </SearchSelect>
+                );
+              }}
+            />
+          </div>
+
+          <div>
+            <label>Schedule Interval</label>
+            <Controller
+              name="scheduleInterval"
+              control={control}
+              defaultValue={''}
+              render={({ field }) => {
+                return (
+                  <SearchSelect {...field} placeholder="Schedule Interval">
+                    {schedule_intervals.map((interval: any) => {
+                      return (
+                        <SearchSelectItem key={interval} value={interval}>
+                          {interval}
+                        </SearchSelectItem>
+                      );
+                    })}
+                  </SearchSelect>
+                );
+              }}
+            />
+          </div>
+        </form>
+      </div>
+    </Drawer>
   );
 };
