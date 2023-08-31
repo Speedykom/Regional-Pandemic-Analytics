@@ -3,8 +3,8 @@ import { baseQuery } from '@/common/redux/api';
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { PipelineData, PipelineList, TemplateList } from './interface';
 
-export const PipelineApi = createApi({
-  reducerPath: 'PipelineApi',
+export const pipelineApi = createApi({
+  reducerPath: 'pipelineApi',
   baseQuery,
   tagTypes: ['pipelines'],
   endpoints: (builder) => ({
@@ -44,4 +44,4 @@ export const {
   useTemplatesQuery,
   useCreatePipelineMutation,
   useUpdatePipelineMutation,
-} = PipelineApi;
+} = pipelineApi;
