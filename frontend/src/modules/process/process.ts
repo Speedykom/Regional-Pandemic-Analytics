@@ -23,7 +23,7 @@ export const processApi = createApi({
       }),
       invalidatesTags: ['process'],
     }),
-    enableProcess: builder.mutation<void, string>({
+    toggleProcessStatus: builder.mutation<void, string>({
       query: (dag_id) => ({
         url: `/process/${dag_id}`,
         method: 'PUT',
@@ -47,7 +47,7 @@ export const processApi = createApi({
 export const {
   useGetProcessQuery,
   useCreateProcessMutation,
-  useEnableProcessMutation,
+  useToggleProcessStatusMutation,
   useGetProcessHistoryByIdQuery,
   useRunProcessByIdMutation,
 } = processApi;
