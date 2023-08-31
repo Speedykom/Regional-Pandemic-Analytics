@@ -84,7 +84,6 @@ export default function ProcessCard({ process }: IProcessCard) {
                   variant="secondary"
                   color="green"
                   onClick={() => {
-                    console.log('YES');
                     runProcessById(process.dag_id);
                   }}
                 >
@@ -120,7 +119,6 @@ export default function ProcessCard({ process }: IProcessCard) {
                 open ? 'ui-open:rotate-90 transform w-4' : 'transform w-4'
               }
               onClick={() => {
-                console.log(open);
                 setOpen(!open);
               }}
             />
