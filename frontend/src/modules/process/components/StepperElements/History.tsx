@@ -1,6 +1,6 @@
 import { List, ListItem, Title } from '@tremor/react';
-import { DagRun } from '../interface';
-import { useGetProcessHistoryByIdQuery } from '../process';
+import { DagRun } from '../../interface';
+import { useGetProcessHistoryByIdQuery } from '../../process';
 
 interface IHistroyProps {
   dagId: string;

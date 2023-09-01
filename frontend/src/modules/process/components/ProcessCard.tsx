@@ -9,7 +9,6 @@ import {
 import { ChevronRightIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 import Stepper from './Stepper';
-import History from './History';
 interface IProcessCard {
   process: DagDetails;
   pipelineList: any;
@@ -108,12 +107,12 @@ export default function ProcessCard({ process, pipelineList }: IProcessCard) {
               <Stepper
                 pipeline={data.pipeline}
                 pipelineList={pipelineList}
+                dagId={process.dag_id}
                 description={process.description}
                 nextDagRun={process.next_dagrun}
                 nextDagRunCreateAfter={process.next_dagrun_create_after}
                 lastParsedTime={process.last_parsed_time}
               />
-              <History dagId={process.dag_id} />
             </div>
           </AccordionBody>
         )}
