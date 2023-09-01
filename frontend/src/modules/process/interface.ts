@@ -10,6 +10,10 @@ export interface DagDetails {
   data_source_name: string;
   schedule_interval: string;
   status: string;
+  description: string;
+  last_parsed_time: string;
+  next_dagrun: string;
+  next_dagrun_create_after: string;
 }
 
 export interface DagRun {

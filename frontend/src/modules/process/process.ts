@@ -23,6 +23,11 @@ export const processApi = createApi({
       }),
       invalidatesTags: ['process'],
     }),
+    getProcessPipelineById: builder.query<any, string>({
+      query: (dag_id) => ({
+        url: `/process/${dag_id}`,
+      }),
+    }),
     toggleProcessStatus: builder.mutation<void, string>({
       query: (dag_id) => ({
         url: `/process/${dag_id}`,
@@ -47,6 +52,7 @@ export const processApi = createApi({
 export const {
   useGetProcessQuery,
   useCreateProcessMutation,
+  useGetProcessPipelineByIdQuery,
   useToggleProcessStatusMutation,
   useGetProcessHistoryByIdQuery,
   useRunProcessByIdMutation,
