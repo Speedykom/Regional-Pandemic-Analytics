@@ -8,9 +8,16 @@ import {
   TableRow,
 } from '@tremor/react';
 import { useState } from 'react';
+import { useUpdateProcessPipelineByIdMutation } from '../../process';
 
-export default function DataSourceSelection({ pipeline, pipelineList }: any) {
+export default function DataSourceSelection({
+  dagId,
+  pipeline,
+  pipelineList,
+}: any) {
   const [newPipeline, setNewPipeline] = useState('');
+
+  const [updateProcessPipelineById] = useUpdateProcessPipelineByIdMutation();
 
   return (
     <div className="flex flex-col space-y-3">
@@ -47,7 +54,18 @@ export default function DataSourceSelection({ pipeline, pipelineList }: any) {
         </Table>
       </div>
       <div className="flex justify-center">
-        <Button disabled={newPipeline === ''}>Save</Button>
+        <Button
+          disabled={newPipeline === ''}
+          onClick={() => {
+            updateProcessPipelineById({
+              old_pipeline: pipeline,
+              new_pipeline: newPipeline + '.hpl',
+              dag_id: dagId,
+            });
+          }}
+        >
+          Save
+        </Button>
       </div>
     </div>
   );
