@@ -161,6 +161,26 @@ class ProcessView(ViewSet):
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
     def update(self, request, dag_id=None):
+        old_pipeline = request.data["old_pipeline"]
+        new_pipeline = request.data["new_pipeline"]
+
+        airflow_internal_url = AirflowInstance.url.removesuffix("/api/v1")
+        airflow_response = requests.put(
+            f"{airflow_internal_url}/factory",
+            auth=(AirflowInstance.username, AirflowInstance.password),
+            json={
+                "old_pipeline": f"{old_pipeline}",
+                "new_pipeline": f"{new_pipeline}",
+                "dag": f"{dag_id}",
+            },
+        )
+
+        if airflow_response.ok:
+            return Response({"status": "success"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"status": "failed"}, status=airflow_response.status_code)
+
+    def partial_update(self, request, dag_id=None):
         route = f"{AirflowInstance.url}/dags/{dag_id}"
 
         airflow_response = requests.get(
