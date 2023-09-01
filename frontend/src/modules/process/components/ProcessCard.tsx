@@ -2,6 +2,7 @@ import { Disclosure } from '@headlessui/react';
 import { Badge, Button, Accordion, AccordionBody } from '@tremor/react';
 import { DagDetails } from '../interface';
 import {
+  useGetProcessPipelineByIdQuery,
   useRunProcessByIdMutation,
   useToggleProcessStatusMutation,
 } from '../process';
@@ -11,9 +12,11 @@ import Stepper from './Stepper';
 import History from './History';
 interface IProcessCard {
   process: DagDetails;
+  pipelineList: any;
 }
 
-export default function ProcessCard({ process }: IProcessCard) {
+export default function ProcessCard({ process, pipelineList }: IProcessCard) {
+  const { data, isSuccess } = useGetProcessPipelineByIdQuery(process.dag_id);
   const [runProcessById] = useRunProcessByIdMutation();
   const [toggleProcessStatus] = useToggleProcessStatusMutation();
 
@@ -99,10 +102,17 @@ export default function ProcessCard({ process }: IProcessCard) {
             />
           </div>
         </Disclosure.Button>
-        {open && (
+        {open && isSuccess && (
           <AccordionBody>
             <div className="flex flex-col space-y-2 pt-2 px-10 pb-1">
-              <Stepper />
+              <Stepper
+                pipeline={data.pipeline}
+                pipelineList={pipelineList}
+                description={process.description}
+                nextDagRun={process.next_dagrun}
+                nextDagRunCreateAfter={process.next_dagrun_create_after}
+                lastParsedTime={process.last_parsed_time}
+              />
               <History dagId={process.dag_id} />
             </div>
           </AccordionBody>
