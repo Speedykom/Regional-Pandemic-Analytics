@@ -1,9 +1,27 @@
 import { BiChart, BiGitMerge, BiTable } from 'react-icons/bi';
 import { AiOutlineSchedule } from 'react-icons/ai';
 import React from 'react';
-import { TabList, Tab, TabGroup, TabPanels, TabPanel } from '@tremor/react';
+import {
+  TabList,
+  Tab,
+  TabGroup,
+  TabPanels,
+  TabPanel,
+  Table,
+  TableCell,
+  TableHeaderCell,
+  TableRow,
+  SearchSelect,
+  SearchSelectItem,
+} from '@tremor/react';
 
-export default function Stepper() {
+export default function Stepper({
+  pipeline,
+  pipelineList,
+  description,
+  nextDagRun,
+  lastParsedTime,
+}: any) {
   const steps = [
     {
       title: 'Data Source Selection',
@@ -22,6 +40,7 @@ export default function Stepper() {
       icon: <BiChart />,
     },
   ];
+
   return (
     <div>
       <TabGroup>
@@ -42,8 +61,56 @@ export default function Stepper() {
           })}
         </TabList>
         <TabPanels>
-          <TabPanel className="px-20 pt-2">A</TabPanel>
-          <TabPanel className="px-20 pt-2">B</TabPanel>
+          <TabPanel className="px-20 pt-2">
+            <Table>
+              <TableRow>
+                <TableHeaderCell>Pipeline used</TableHeaderCell>
+                <TableCell>{pipeline}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableHeaderCell>Pipelines</TableHeaderCell>
+                <TableCell>
+                  <SearchSelect placeholder="Pipeline Template">
+                    {pipelineList.data.map((pipeline: any) => {
+                      return (
+                        <SearchSelectItem
+                          key={pipeline.name}
+                          value={pipeline.name}
+                        >
+                          {pipeline.name}
+                        </SearchSelectItem>
+                      );
+                    })}
+                  </SearchSelect>
+                </TableCell>
+              </TableRow>
+            </Table>
+          </TabPanel>
+          <TabPanel className="px-20 pt-2">
+            <Table>
+              <TableRow>
+                <TableHeaderCell>description</TableHeaderCell>
+                <TableCell className="whitespace-normal">
+                  {description} hello there this is a basic description element
+                  that should be working. By the way, have fun in the demo.
+                  There is no description field in the Add component so please
+                  remember to add it
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableHeaderCell>Last update</TableHeaderCell>
+                <TableCell className="whitespace-normal">
+                  {lastParsedTime}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableHeaderCell>Next scheduled execution</TableHeaderCell>
+                <TableCell className="whitespace-normal">
+                  {nextDagRun}
+                </TableCell>
+              </TableRow>
+            </Table>
+          </TabPanel>
           <TabPanel className="px-20 pt-2">C</TabPanel>
           <TabPanel className="px-20 pt-2">D</TabPanel>
         </TabPanels>
