@@ -35,11 +35,7 @@ export default function Stepper({
   return (
     <div>
       <TabGroup>
-        <TabList
-          className="pl-40 pr-40 flex justify-around"
-          color="green"
-          // variant="solid"
-        >
+        <TabList className="pl-40 pr-40 flex justify-around" color="green">
           {steps.map((step) => {
             return (
               <Tab key={step.title} className="px-5">
@@ -54,6 +50,7 @@ export default function Stepper({
         <TabPanels>
           <TabPanel className="px-20 pt-2">
             <DataSourceSelection
+              dagId={dagId}
               pipeline={pipeline}
               pipelineList={pipelineList}
             />
