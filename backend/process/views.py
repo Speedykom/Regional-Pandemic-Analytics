@@ -26,12 +26,25 @@ class DagDTO:
 
 
 class Dag:
-    def __init__(self, name, dag_id, data_source_name, schedule_interval, status):
-        self.name = (name,)
+    def __init__(
+        self,
+        name,
+        dag_id,
+        data_source_name,
+        schedule_interval,
+        status,
+        description,
+        last_parsed_time,
+        next_dagrun,
+    ):
+        self.name = name
         self.dag_id = dag_id
-        self.data_source_name = (data_source_name,)
+        self.data_source_name = data_source_name
         self.schedule_interval = schedule_interval
         self.status = status
+        self.description = description
+        self.last_parsed_time = last_parsed_time
+        self.next_dagrun = next_dagrun
 
 
 class DagRun:
@@ -87,6 +100,9 @@ class ProcessView(ViewSet):
                             dag["dag_id"],
                             dag["schedule_interval"]["value"],
                             dag["is_paused"],
+                            dag["description"],
+                            dag["last_parsed_time"],
+                            dag["next_dagrun"],
                         ).__dict__
                     )
             return Response({"dags": processes}, status=status.HTTP_200_OK)
@@ -125,25 +141,22 @@ class ProcessView(ViewSet):
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
-    # Dag Details
+    # Dag Pipeline
     def retrieve(self, request, dag_id=None):
-        dag_runs = []
-
-        route = f"{AirflowInstance.url}/dags/{dag_id}"
+        route = f"{AirflowInstance.url}/dags/{dag_id}/tasks"
         airflow_response = requests.get(
             route,
             auth=(AirflowInstance.username, AirflowInstance.password),
         )
 
-        airflow_json = airflow_response.json()["dag_runs"]
         if airflow_response.ok:
-            for dag_run in airflow_json:
-                dag_runs.append(
-                    DagRun(dag_run["dag_id"], dag_run["dag_run_id"], dag_run["state"])
-                )
-            return Response(
-                {"status": "success", "dag_runs": dag_runs}, status=status.HTTP_200_OK
-            )
+            airflow_json = airflow_response.json()["tasks"]
+            for task in airflow_json:
+                if task["operator_name"] == "HopPipelineOperator":
+                    return Response(
+                        {"pipeline": task["task_id"]},
+                        status=status.HTTP_200_OK,
+                    )
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
