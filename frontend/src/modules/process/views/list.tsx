@@ -1,40 +1,28 @@
 import React, { useState } from 'react';
-import { AddProcess } from '@/modules/process/views/add';
-import { Button } from 'antd';
-import { useProcessChainList } from '../hooks';
-import { ProcessCard } from '../components/process-card';
+import { Button } from '@tremor/react';
 import { Loader } from '@/common/components/Loader';
-import LoadData from '@/common/components/TABS/upload';
 import { usePermission } from '@/common/hooks/use-permission';
+import { useGetProcessQuery } from '../process';
+import { DagDetails } from '../interface';
+import ProcessCard from '../components/ProcessCard';
+import { AddProcess } from './add';
+import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
 
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();
-  const [addProcess, setProcessAdd] = useState(false);
-  const [process, setProcess] = useState<any>(null);
-  const [load, setLoad] = useState(false);
+  const [addComponent, setAddComponent] = useState(false);
 
-  const closeAdd = () => {
-    setProcessAdd(false);
+  const closePanel = () => {
+    setAddComponent(false);
   };
 
-  const openAdd = () => {
-    setProcessAdd(true);
-  };
+  const { data, isLoading, isSuccess, refetch } = useGetProcessQuery();
 
-  const openLoad = (process: any) => {
-    setLoad(true);
-    setProcess(process);
-  };
-
-  const closeLoad = () => {
-    setLoad(false);
-    setProcess(null);
-  };
-
-  const { rows, loading } = useProcessChainList();
+  const { data: pipelineList, isSuccess: isSuccessPipeline } =
+    useGetAllPipelinesQuery();
 
   return (
-    <>
+    <div>
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl">Process Chain</h2>
@@ -44,33 +32,42 @@ export default function ProcessChainList() {
         </div>
         <div>
           {hasPermission('process:add') && (
-            <Button onClick={() => openAdd()} type="primary" size="large">
+            <Button
+              className="bg-prim hover:bg-prim-hover border-0"
+              onClick={(event) => {
+                event.preventDefault();
+                setAddComponent(true);
+              }}
+            >
               Add Process Chain
             </Button>
           )}
         </div>
       </div>
       <div className="mt-5">
-        {loading ? (
+        {isLoading && (
           <div className="flex h-96 bg-white shadow-md border rounded-md items-center justify-center">
             <div className="w-16 h-16">
               <Loader />
             </div>
           </div>
-        ) : (
-          <>
-            {rows.map((process) => (
-              <ProcessCard
-                onLoad={(process) => openLoad(process)}
-                process={process}
-                key={process.id}
-              />
-            ))}
-          </>
+        )}
+        {isSuccess && (
+          <div>
+            {data.dags.map((process: DagDetails) => {
+              return <ProcessCard key={process.dag_id} process={process} />;
+            })}
+          </div>
         )}
       </div>
-      <AddProcess onClose={closeAdd} state={addProcess} />
-      <LoadData onClose={closeLoad} state={load} dag={process} />
-    </>
+      {addComponent && isSuccessPipeline && (
+        <AddProcess
+          pipelineList={pipelineList}
+          refetch={refetch}
+          panelState={addComponent}
+          closePanel={closePanel}
+        />
+      )}
+    </div>
   );
 }

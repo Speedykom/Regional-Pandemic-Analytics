@@ -12,8 +12,6 @@
 frontend/.env
 # backend/.env
 
-.vscode/
-
 venv/
 /venv/
 

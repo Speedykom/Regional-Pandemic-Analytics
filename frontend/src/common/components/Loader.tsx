@@ -3,10 +3,10 @@ export const Loader = () => {
     <svg
       xmlns="http://www.w3.org/2000/svg"
       style={{
-        margin: "auto",
-        background: "transparent",
-        display: "block",
-        shapeRendering: "auto",
+        margin: 'auto',
+        background: 'transparent',
+        display: 'block',
+        shapeRendering: 'auto',
       }}
       width="100%"
       height="100%"

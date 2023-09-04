@@ -1,12 +1,16 @@
 import { useRouter } from 'next/router';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import keycloak from '@/common/config/keycloak';
-import { selectIsAuthenticated, setCredentials, useLoginMutation } from '@/modules/auth/auth';
+import {
+  selectIsAuthenticated,
+  setCredentials,
+  useLoginMutation,
+} from '@/modules/auth/auth';
 import { OAuthParams } from '@/modules/auth/interface';
+import { useDispatch, useSelector } from 'react-redux';
 import { Loading } from '../components/Loading';
 import { parseQuery } from '../utils/misc';
-import { useDispatch, useSelector } from 'react-redux';
 
 export interface AuthContextValue {
   signInWithKeyCloak: () => void;
@@ -30,9 +34,9 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
 
   useEffect(() => {
     if (!isAuthenticated && router.asPath !== '/') {
-      router.push("/");
+      router.push('/');
     } else if (isAuthenticated && router.asPath === '/') {
-      router.push("/home");
+      router.push('/home');
     }
   }, [isAuthenticated, router]);
 
@@ -45,8 +49,8 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   };
 
   useEffect(() => {
-    const asPath = router.asPath;
-    const [_, hash] = asPath.split('#');
+    const { asPath } = router;
+    const hash = asPath.split('#')[1];
     if (!oauthRef.current && isLoginPage && hash) {
       const params = parseQuery(hash) as OAuthParams;
       oauthRef.current = params;
@@ -74,7 +78,7 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
   return (
     <AuthContext.Provider
       value={{
-        signInWithKeyCloak
+        signInWithKeyCloak,
       }}
     >
       {children}

@@ -3,9 +3,9 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from '@/common/redux/api';
 import { ChartList, DashboardList, DashboardStatus } from './interface';
 
-export const DashboardApi = createApi({
-  reducerPath: 'DashboardApi',
-  baseQuery: baseQuery,
+export const dashboardApi = createApi({
+  reducerPath: 'dashboardApi',
+  baseQuery,
   endpoints: (builder) => ({
     getDashboards: builder.query<DashboardList, void>({
       query: () => 'superset/list',
@@ -27,9 +27,9 @@ export const DashboardApi = createApi({
   }),
 });
 
-export const ChartApi = createApi({
-  reducerPath: 'ChartApi',
-  baseQuery: baseQuery,
+export const chartApi = createApi({
+  reducerPath: 'chartApi',
+  baseQuery,
   endpoints: (builder) => ({
     getCharts: builder.query<ChartList, void>({
       query: () => 'superset/list/charts',
@@ -41,6 +41,6 @@ export const {
   useGetDashboardsQuery,
   useEnableDashboardMutation,
   useGenerateGuestTokenMutation,
-} = DashboardApi;
+} = dashboardApi;
 
-export const { useGetChartsQuery } = ChartApi;
+export const { useGetChartsQuery } = chartApi;
