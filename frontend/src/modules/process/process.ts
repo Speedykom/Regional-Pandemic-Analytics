@@ -49,6 +49,10 @@ export const processApi = createApi({
       query: (dag_id) => `/process/${dag_id}/dagRuns`,
       providesTags: ['process'],
     }),
+    getProcessHistoryTasksbyId: builder.query<any, any>({
+      query: ({ dag_id, dag_run_id }) =>
+        `/process/${dag_id}/dagRuns/${dag_run_id}/taskInstances`,
+    }),
     runProcessById: builder.mutation<void, string>({
       query: (dag_id) => ({
         url: `/process/${dag_id}/dagRuns`,
@@ -66,5 +70,6 @@ export const {
   useUpdateProcessPipelineByIdMutation,
   useToggleProcessStatusMutation,
   useGetProcessHistoryByIdQuery,
+  useGetProcessHistoryTasksbyIdQuery,
   useRunProcessByIdMutation,
 } = processApi;

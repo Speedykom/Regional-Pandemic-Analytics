@@ -39,6 +39,10 @@ export const AddProcess = ({
             pipeline: values.pipelineTemplate,
             schedule_interval: values.scheduleInterval,
           } as DagForm).then(() => {
+            // WARNING !!!
+            // The only reason why we're using setTimeout
+            // is because Airflow takes time to rescan the dags directory
+            // NEED TO BE CHANGED !!!
             setTimeout(refetch, 1000);
             closePanel();
           });

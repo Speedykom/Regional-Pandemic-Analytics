@@ -253,3 +253,22 @@ class ProcessRunView(ViewSet):
             return Response({"status": "success"}, status=status.HTTP_201_CREATED)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
+
+    def retrieve(self, request, dag_id=None, dag_run_id=None):
+        route = (
+            f"{AirflowInstance.url}/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances"
+        )
+        airflow_response = requests.get(
+            route,
+            auth=(AirflowInstance.username, AirflowInstance.password),
+        )
+
+        if airflow_response.ok:
+            airflow_json = airflow_response.json()["task_instances"]
+            tasks = []
+            for task in airflow_json:
+                tasks.append({"task_id": task["task_id"], "state": task["state"]})
+
+            return Response({"tasks": tasks}, status=status.HTTP_200_OK)
+        else:
+            return Response({"status": "failed"}, status=airflow_response.status_code)
