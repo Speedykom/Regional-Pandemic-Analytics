@@ -1,6 +1,4 @@
-
 import React from 'react';
-
 const BusinessAgreement: React.FC = () => {
   return (
     <div className="footerSection">
@@ -11,5 +9,4 @@ const BusinessAgreement: React.FC = () => {
     </div>
   );
 };
-
 export default BusinessAgreement;

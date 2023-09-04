@@ -1,5 +1,5 @@
 export interface SupersetListResponse<
-  T = DashboardListResult | ChartListResult,
+  T = DashboardListResult | ChartListResult
 > {
   count: number;
   description_columns: DescriptionColumns;
