@@ -29,3 +29,13 @@ export interface DagDetailsResponse {
 export interface DagRunsResponse {
   dag_runs: DagRun[];
 }
+
+export interface DagPipelineResponse {
+  pipeline: string;
+}
+
+export interface DagPipelineRequest {
+  old_pipeline: string;
+  new_pipeline: string;
+  dag_id: string;
+}
