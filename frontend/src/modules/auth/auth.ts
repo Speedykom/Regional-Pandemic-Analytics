@@ -3,19 +3,25 @@ import { baseQuery } from '@/common/redux/api';
 import { createSlice } from '@reduxjs/toolkit';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import secureLocalStorage from 'react-secure-storage';
-import { Credentials, UserProfile, Permissions, Jwt, OAuthParams } from './interface';
 import jwt_decode from 'jwt-decode';
+import {
+  Credentials,
+  UserProfile,
+  Permissions,
+  Jwt,
+  OAuthParams,
+} from './interface';
 
 // Define a service using a base URL and expected endpoints
-export const AuthApi = createApi({
-  reducerPath: 'AuthApi',
+export const authApi = createApi({
+  reducerPath: 'authApi',
   baseQuery,
   endpoints: (builder) => ({
     login: builder.mutation<Credentials, OAuthParams>({
       query: (body) => ({
         url: '/auth/key-auth',
         method: 'POST',
-        body: body,
+        body,
       }),
     }),
     logout: builder.mutation<void, void>({
@@ -27,8 +33,8 @@ export const AuthApi = createApi({
   }),
 });
 
-export const HopAuthApi = createApi({
-  reducerPath: 'HopAuthApi',
+export const hopAuthApi = createApi({
+  reducerPath: 'hopAuthApi',
   baseQuery: fetchBaseQuery({ baseUrl: `/hop/` }),
   endpoints: (builder) => ({
     logoutFromHop: builder.mutation<void, void>({
@@ -42,8 +48,8 @@ export const HopAuthApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useLoginMutation, useLogoutMutation } = AuthApi;
-export const { useLogoutFromHopMutation } = HopAuthApi;
+export const { useLoginMutation, useLogoutMutation } = authApi;
+export const { useLogoutFromHopMutation } = hopAuthApi;
 
 type UserAuth = {
   user: null | UserProfile; // for user object
@@ -91,19 +97,20 @@ const loadAccessToken = () => {
     const tokens = secureLocalStorage.getItem('tokens') as {
       accessToken: string;
     };
-    return tokens?.accessToken
+    return tokens?.accessToken;
   }
-  return null
-}
-
+  return null;
+};
 
 const loadPermissions = () => {
   if (typeof window !== undefined) {
-    const permissions = secureLocalStorage.getItem('permissions') as Permissions;
-    return permissions || []
+    const permissions = secureLocalStorage.getItem(
+      'permissions'
+    ) as Permissions;
+    return permissions || [];
   }
-  return []
-}
+  return [];
+};
 
 const initialState: UserAuth = {
   user: parseAccessToken(loadAccessToken()), // for user object
@@ -112,7 +119,7 @@ const initialState: UserAuth = {
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState: initialState,
+  initialState,
   reducers: {
     clearCredentials: (state: UserAuth) => {
       secureLocalStorage.clear();

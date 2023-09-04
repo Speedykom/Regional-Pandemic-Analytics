@@ -21,6 +21,20 @@ x-druid-common: &druid
     - druid_processing_numThreads=${DRUID_druid_processing_numThreads}
     - druid_processing_numMergeBuffers=${DRUID_druid_processing_numMergeBuffers}
     - DRUID_LOG4J=${DRUID_DRUID_LOG4J}
+    - druid_auth_authenticatorChain=${DRUID_druid_auth_authenticatorChain}
+    - druid_auth_authenticator_MyBasicMetadataAuthenticator_type=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_type}
+    - druid_auth_authenticator_MyBasicMetadataAuthenticator_initialAdminPassword=${DRUID_ADMIN_PASSWORD}
+    - druid_auth_authenticator_MyBasicMetadataAuthenticator_initialInternalClientPassword=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_initialInternalClientPassword}
+    - druid_auth_authenticator_MyBasicMetadataAuthenticator_credentialsValidator_type=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_credentialsValidator_type}
+    - druid_auth_authenticator_MyBasicMetadataAuthenticator_skipOnFailure=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_skipOnFailure}
+    - druid_auth_authenticator_MyBasicMetadataAuthenticator_authorizerName=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_authorizerName}
+    - druid_escalator_type=${DRUID_druid_escalator_type}
+    - druid_escalator_internalClientUsername=${DRUID_druid_escalator_internalClientUsername}
+    - druid_escalator_internalClientPassword=${DRUID_druid_escalator_internalClientPassword}
+    - druid_escalator_authorizerName=${DRUID_druid_escalator_authorizerName}
+    - druid_auth_authorizers=${DRUID_druid_auth_authorizers}
+    - druid_auth_authorizer_MyBasicMetadataAuthorizer_type=${DRUID_druid_auth_authorizer_MyBasicMetadataAuthorizer_type}
+    - AWS_REGION=us-east-1
 
 x-airflow-common: &airflow
   build:
@@ -50,7 +64,8 @@ x-airflow-common: &airflow
     - AUTH_USER_REGISTRATION_ROLE=${AIRFLOW_AUTH_USER_REGISTRATION_ROLE}
     - AUTH_ROLES_SYNC_AT_LOGIN=${AIRFLOW_AUTH_ROLES_SYNC_AT_LOGIN}
     - ENVIRONMENT=${AIRFLOW_ENVIRONMENT}
-    - DRUID_COORDINATOR_URL={DRUID_COORDINATOR_URL}
+    - DRUID_COORDINATOR_URL=${DRUID_COORDINATOR_URL}
+    - DRUID_ADMIN_PASSWORD=${DRUID_ADMIN_PASSWORD}
     - AIRFLOW_CONN_HOP_DEFAULT=${AIRFLOW_CONN_HOP_DEFAULT}
     - AIRFLOW_VAR_MINIO_URL=${BACKEND_MINIO_URL}
     - AIRFLOW_VAR_MINIO_ACCESS_KEY=${BACKEND_MINIO_ACCESS_KEY}
@@ -101,9 +116,6 @@ services:
       - MINIO_IDENTITY_OPENID_DISPLAY_NAME=${MINIO_IDENTITY_OPENID_DISPLAY_NAME}
       - MINIO_IDENTITY_OPENID_SCOPES=${MINIO_IDENTITY_OPENID_SCOPES}
       - MINIO_IDENTITY_OPENID_REDIRECT_URI=${MINIO_IDENTITY_OPENID_REDIRECT_URI}
-    ports:
-      - "9001:9000"
-      - "8887:9090"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
@@ -151,8 +163,6 @@ services:
         - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
         - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
         - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
-    ports:
-      - "3000:3000"
     environment:
       - NEXT_PUBLIC_MINIO_URL=${FRONTEND_NEXT_PUBLIC_MINIO_URL}
       - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
@@ -196,16 +206,11 @@ services:
         condition: service_healthy
       keycloak:
         condition: service_healthy
-    ports:
-      - "8000:8000"
     volumes:
       - ./airflow/dags:/airflow/dags
       - ./hop:/hop
     environment:
       - DEVELOPMENT_MODE=${BACKEND_DEVELOPMENT_MODE}
-      - KEYCLOAK_ADMIN_CLIENT_ID=${BACKEND_KEYCLOAK_ADMIN_CLIENT_ID}
-      - KEYCLOAK_ADMIN_CLIENT_SECRET=${BACKEND_KEYCLOAK_ADMIN_CLIENT_SECRET}
-      - KEYCLOAK_ADMIN_AUTH_URL=${BACKEND_KEYCLOAK_ADMIN_AUTH_URL}
       - KEYCLOAK_ADMIN_USERNAME=${BACKEND_KEYCLOAK_ADMIN_USERNAME}
       - KEYCLOAK_ADMIN_PASSWORD=${BACKEND_KEYCLOAK_ADMIN_PASSWORD}
       - KEYCLOAK_REDIRECT_URI=${BACKEND_PUBLIC_URL}
@@ -274,8 +279,6 @@ services:
   zookeeper:
     container_name: zookeeper
     image: zookeeper:3.5
-    ports:
-      - "2181:2181"
     environment:
       - ZOO_MY_ID=${ZOOKEEPER_ZOO_MY_ID}
 
@@ -289,8 +292,6 @@ services:
     depends_on:
       - zookeeper
       - db
-    ports:
-      - "8081:8081"
     command:
       - coordinator
 
@@ -304,8 +305,6 @@ services:
       - zookeeper
       - db
       - coordinator
-    ports:
-      - "8082:8082"
     command:
       - broker
 
@@ -320,8 +319,6 @@ services:
       - zookeeper
       - db
       - coordinator
-    ports:
-      - "8083:8083"
     command:
       - historical
 
@@ -336,9 +333,6 @@ services:
       - zookeeper
       - db
       - coordinator
-    ports:
-      - "8091:8091"
-      - "8100-8105:8100-8105"
     command:
       - middleManager
 
@@ -353,8 +347,6 @@ services:
       - zookeeper
       - db
       - coordinator
-    ports:
-      - "8884:8888"
     command:
       - router
 
@@ -392,8 +384,6 @@ services:
       - SUPERSET_FEATURE_EMBEDDED_SUPERSET=True
     volumes:
       - ./superset/superset_config.py:/app/pythonpath/superset_config.py
-    ports:
-      - 8883:8088
     depends_on:
       - superset_db
       - superset_cache
@@ -414,8 +404,6 @@ services:
     build: ./hop
     container_name: hop
     user: "0:1000"
-    ports:
-      - "8882:8080"
     volumes:
       - ./hop/pipelines:/files
       - ./storage:/home
@@ -453,8 +441,6 @@ services:
       - POSTGRES_USER=${AIRFLOW_POSTGRES_USER}
       - POSTGRES_PASSWORD=${AIRFLOW_POSTGRES_PASSWORD}
       - POSTGRES_DB=${AIRFLOW_POSTGRES_DB}
-    ports:
-      - "6434:6432"
     volumes:
       - airflow_data:/var/lib/postgresql/data
     healthcheck:
@@ -469,8 +455,6 @@ services:
     container_name: airflow-triggerer
     command: triggerer
     restart: on-failure
-    ports:
-      - 8794:8794
 
   airflow-scheduler:
     <<: *airflow
@@ -480,8 +464,6 @@ services:
     container_name: airflow-scheduler
     command: scheduler
     restart: on-failure
-    ports:
-      - "8793:8793"
 
   airflow-webserver:
     <<: *airflow
@@ -491,8 +473,6 @@ services:
     container_name: airflow-webserver
     restart: always
     command: webserver
-    ports:
-      - "8881:8080"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 30s
@@ -514,8 +494,6 @@ services:
       - POSTGRES_DB=${KEYCLOAK_POSTGRES_DB}
     healthcheck:
       test: "exit 0"
-    ports:
-      - "5434:5432"
 
   keycloak:
     image: quay.io/keycloak/keycloak:20.0.0
@@ -524,8 +502,6 @@ services:
       - start-dev
       - --import-realm
       - --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true
-    ports:
-      - "8885:8080"
     environment:
       - KC_DB=${KEYCLOAK_DB}
       - KC_DB_URL_DATABASE=${KEYCLOAK_DB_URL_DATABASE}
@@ -638,11 +614,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
-
-    ports:
-      - "8080:8080"
-      - "5000:5000"
-      - "5001:5001"
     depends_on:
       - mongo-db
     healthcheck:
@@ -654,8 +625,6 @@ services:
   openhim-console:
     container_name: openhim-console
     image: jembi/openhim-console:latest
-    ports:
-      - "9000:80"
     environment:
       - KC_OPENHIM_SSO_ENABLED=true
       - KC_OPENHIM_CLIENT_ID=${OPENHIM_KEYCLOAK_CLIENT_ID}
