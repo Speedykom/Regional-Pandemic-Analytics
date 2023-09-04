@@ -13,4 +13,8 @@ urlpatterns = [
         "/<str:dag_id>/dagRuns",
         ProcessRunView.as_view({"get": "list", "post": "create"}),
     ),
+    path(
+        "/<str:dag_id>/dagRuns/<str:dag_run_id>/taskInstances",
+        ProcessRunView.as_view({"get": "retrieve"}),
+    ),
 ]

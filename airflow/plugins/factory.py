@@ -18,7 +18,6 @@ def generate_dag(dag_conf):
 
 
 def update_dag(old_pipeline, new_pipeline, dag):
-    print("AAAAAAAAAAAAAAAAAAAAA", old_pipeline, new_pipeline, dag)
     with open(f"dags/{dag}.py", "r") as f:
         content = f.read()
     content = content.replace(old_pipeline, new_pipeline)
@@ -42,7 +41,6 @@ class Factory(AppBuilderBaseView):
                 request.json["dag"],
             )
             return {"Status": "Success"}
-        return "AA"
 
 
 v_appbuilder_view = Factory()
