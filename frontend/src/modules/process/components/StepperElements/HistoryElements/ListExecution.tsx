@@ -1,8 +1,19 @@
 import { DagRun } from '@/modules/process/interface';
 import { useGetProcessHistoryByIdQuery } from '@/modules/process/process';
 import { RadioGroup } from '@headlessui/react';
+import { Dispatch, SetStateAction } from 'react';
 
-export default function ListExecution({ dagId, selected, setSelected }: any) {
+interface ListExecutionProps {
+  dagId: string;
+  selected: string;
+  setSelected: Dispatch<SetStateAction<string>>;
+}
+
+export default function ListExecution({
+  dagId,
+  selected,
+  setSelected,
+}: ListExecutionProps) {
   const { data, isSuccess } = useGetProcessHistoryByIdQuery(dagId);
   return (
     <RadioGroup value={selected} onChange={setSelected}>
