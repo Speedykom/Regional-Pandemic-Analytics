@@ -32,7 +32,7 @@ for domains in "${domain_names[@]}"; do
   echo "### Creating dummy certificate for $domains ..."
   path="/etc/letsencrypt/live/$domains"
   mkdir -p "$data_path/conf/live/$domains"
-  docker compose --env-file ./.env -f docker-compose.yml -f docker-compose.dev.yml run --rm --entrypoint "\
+  docker compose --env-file ./.env.dev -f docker-compose.yml -f docker-compose.dev.yml run --rm --entrypoint "\
     openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
       -keyout '$path/privkey.pem' \
       -out '$path/fullchain.pem' \
@@ -40,11 +40,11 @@ for domains in "${domain_names[@]}"; do
   echo
 
   echo "### Starting nginx ..."
-  docker compose --env-file ./.env -f docker-compose.yml -f docker-compose.dev.yml up --force-recreate -d nginx
+  docker compose --env-file ./.env.dev -f docker-compose.yml -f docker-compose.dev.yml up --force-recreate -d nginx
   echo
 
   echo "### Deleting dummy certificate for $domains ..."
-  docker compose --env-file ./.env -f docker-compose.yml -f docker-compose.dev.yml run --rm --entrypoint "\
+  docker compose --env-file ./.env.dev -f docker-compose.yml -f docker-compose.dev.yml run --rm --entrypoint "\
     rm -Rf /etc/letsencrypt/live/$domains && \
     rm -Rf /etc/letsencrypt/archive/$domains && \
     rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
@@ -66,7 +66,7 @@ for domains in "${domain_names[@]}"; do
   # Enable staging mode if needed
   if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
-  docker compose --env-file ./.env -f docker-compose.yml -f docker-compose.dev.yml run --rm --entrypoint "\
+  docker compose --env-file ./.env.dev -f docker-compose.yml -f docker-compose.dev.yml run --rm --entrypoint "\
     certbot certonly --cert-name $domains --webroot -w /var/www/certbot \
       $staging_arg \
       $email_arg \
