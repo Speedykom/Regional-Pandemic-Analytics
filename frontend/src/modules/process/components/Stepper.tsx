@@ -77,8 +77,8 @@ export default function Stepper({
               nextDagRun={nextDagRun}
             />
           </TabPanel>
-          <TabPanel className="px-20 pt-2">C</TabPanel>
-          <TabPanel className="px-20 pt-2">D</TabPanel>
+          <TabPanel className="px-20 pt-2">Work in progress</TabPanel>
+          <TabPanel className="px-20 pt-2">Work in progress</TabPanel>
         </TabPanels>
       </TabGroup>
     </div>
