@@ -4,6 +4,16 @@ import React from 'react';
 import { TabList, Tab, TabGroup, TabPanels, TabPanel } from '@tremor/react';
 import DataSourceSelection from './StepperElements/DataSourceSelection';
 import Orchestration from './StepperElements/Orchestration';
+import { PipelineList } from '@/modules/pipeline/interface';
+
+interface StepperProps {
+  pipeline: string;
+  pipelineList: PipelineList;
+  dagId: string;
+  description: string;
+  nextDagRun: string;
+  lastParsedTime: string;
+}
 
 export default function Stepper({
   pipeline,
@@ -12,7 +22,7 @@ export default function Stepper({
   description,
   nextDagRun,
   lastParsedTime,
-}: any) {
+}: StepperProps) {
   const steps = [
     {
       title: 'Data Source Selection',
