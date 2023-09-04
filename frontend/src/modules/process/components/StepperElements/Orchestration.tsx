@@ -20,6 +20,9 @@ export default function Orchestration({
   lastParsedTime,
   nextDagRun,
 }: OrchestrationProps) {
+  const lastParsedTimeDate = new Date(lastParsedTime);
+  const nextDagRunDate = new Date(nextDagRun);
+
   return (
     <div className="flex flex-col space-y-3 ">
       <div className="flex justify-center">
@@ -36,12 +39,14 @@ export default function Orchestration({
           <TableRow>
             <TableHeaderCell>Last update</TableHeaderCell>
             <TableCell className="whitespace-normal">
-              {lastParsedTime}
+              {lastParsedTimeDate.toUTCString()}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableHeaderCell>Next scheduled execution</TableHeaderCell>
-            <TableCell className="whitespace-normal">{nextDagRun}</TableCell>
+            <TableCell className="whitespace-normal">
+              {nextDagRunDate.toUTCString()}
+            </TableCell>
           </TableRow>
         </Table>
       </div>

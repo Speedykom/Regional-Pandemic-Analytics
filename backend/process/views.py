@@ -49,8 +49,8 @@ class Dag:
 
 class DagRun:
     def __init__(self, dag_id, dag_run_id, state):
-        self.dag_id = (dag_id,)
-        self.dag_run_id = (dag_run_id,)
+        self.dag_id = dag_id
+        self.dag_run_id = dag_run_id
         self.state = state
 
 
@@ -236,6 +236,7 @@ class ProcessRunView(ViewSet):
                         state=dag_run["state"],
                     ).__dict__
                 )
+            print(dag_runs)
             return Response({"dag_runs": dag_runs}, status=status.HTTP_200_OK)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
