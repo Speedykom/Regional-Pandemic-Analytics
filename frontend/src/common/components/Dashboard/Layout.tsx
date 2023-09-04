@@ -1,11 +1,11 @@
-import { useState, ReactNode } from "react";
-import SideBar from "./SideBar";
-import TopBar from "./TopBar";
-import Drawer from "../common/Drawer";
-import { SideNavLinks } from "./Menu";
-import { useMediaQuery } from "react-responsive";
-import { useSelector } from "react-redux";
-import Footer from "../Footer";
+import { useState, ReactNode } from 'react';
+import SideBar from './SideBar';
+import TopBar from './TopBar';
+import Drawer from '../common/Drawer';
+import { SideNavLinks } from './Menu';
+import { useMediaQuery } from 'react-responsive';
+import { useSelector } from 'react-redux';
+import Footer from '../Footer';
 
 interface LayoutProps {
   children: ReactNode;
