@@ -9,12 +9,19 @@ import {
 } from '@tremor/react';
 import { useState } from 'react';
 import { useUpdateProcessPipelineByIdMutation } from '../../process';
+import { PipelineList } from '@/modules/pipeline/interface';
+
+interface DataSourceSelectionProps {
+  dagId: string;
+  pipeline: string;
+  pipelineList: PipelineList;
+}
 
 export default function DataSourceSelection({
   dagId,
   pipeline,
   pipelineList,
-}: any) {
+}: DataSourceSelectionProps) {
   const [newPipeline, setNewPipeline] = useState('');
 
   const [updateProcessPipelineById] = useUpdateProcessPipelineByIdMutation();
@@ -37,7 +44,7 @@ export default function DataSourceSelection({
                   onValueChange={setNewPipeline}
                   placeholder="Pipeline Template"
                 >
-                  {pipelineList.data.map((pipeline: any) => {
+                  {pipelineList.data.map((pipeline) => {
                     return (
                       <SearchSelectItem
                         key={pipeline.name}
