@@ -1,0 +1,12 @@
+version: "3.4"
+
+## This overrides frontend on the docker-compose.yml file when running run.local.sh, this is done so the frontend local container
+## can be updated in real time while editing frontend code, it only needs to be restarted when changing the env variables
+services:
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    #entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
