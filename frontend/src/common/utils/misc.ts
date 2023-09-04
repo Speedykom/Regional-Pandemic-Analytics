@@ -6,14 +6,11 @@ export function parseQuery(queryString: string) {
   const pairs = (
     queryString[0] === '?' ? queryString.substr(1) : queryString
   ).split('&');
-  return pairs.reduce(
-    (acc, curr) => {
-      const [key, value] = curr.split('=');
-      acc[decodeURIComponent(key)] = decodeURIComponent(value || '');
-      return acc;
-    },
-    {} as { [key: string]: string }
-  );
+  return pairs.reduce((acc, curr) => {
+    const [key, value] = curr.split('=');
+    acc[decodeURIComponent(key)] = decodeURIComponent(value || '');
+    return acc;
+  }, {} as { [key: string]: string });
 }
 
 export const getCookie = (name: string) => {
