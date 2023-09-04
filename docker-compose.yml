@@ -369,6 +369,7 @@ services:
       - SUPERSET_FEATURE_EMBEDDED_SUPERSET=True
     volumes:
       - ./superset/superset_config.py:/app/pythonpath/superset_config.py
+      - ./superset/import/dashboard_export.zip:/app/dashboard_export.zip
     depends_on:
       - superset_db
       - superset_cache
@@ -380,6 +381,7 @@ services:
         superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
         superset db upgrade
         superset superset init
+        superset import-dashboards -p /app/dashboard_export.zip
         cd /usr/bin && ./run-server.sh
 
   # =====
