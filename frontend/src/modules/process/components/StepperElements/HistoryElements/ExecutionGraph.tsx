@@ -7,8 +7,7 @@ interface ExecutionGraphProps {
   dagRunId: string;
 }
 
-function graph(dagId: string, dagRunId: string) {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
+function Graph({ dagId, dagRunId }: ExecutionGraphProps) {
   const { data, isSuccess } = useGetProcessHistoryTasksbyIdQuery({
     dag_id: dagId,
     dag_run_id: dagRunId,
@@ -45,9 +44,11 @@ export default function ExecutionGraph({
   return (
     <Card className="h-72">
       <div className="flex flex space-x-2">
-        {dagRunId === ''
-          ? 'please select an execution'
-          : graph(dagId, dagRunId)}
+        {dagRunId === '' ? (
+          'Please select an execution'
+        ) : (
+          <Graph dagId={dagId} dagRunId={dagRunId} />
+        )}
       </div>
     </Card>
   );
