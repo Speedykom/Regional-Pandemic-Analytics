@@ -10,17 +10,20 @@ import {
 import { useState } from 'react';
 import { useUpdateProcessPipelineByIdMutation } from '../../process';
 import { PipelineList } from '@/modules/pipeline/interface';
+import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
 
 interface DataSourceSelectionProps {
   dagId: string;
   pipeline: string;
   pipelineList: PipelineList;
+  refetch: () => QueryActionCreatorResult<any>;
 }
 
 export default function DataSourceSelection({
   dagId,
   pipeline,
   pipelineList,
+  refetch,
 }: DataSourceSelectionProps) {
   const [newPipeline, setNewPipeline] = useState('');
 
@@ -69,6 +72,10 @@ export default function DataSourceSelection({
               new_pipeline: newPipeline + '.hpl',
               dag_id: dagId,
             });
+            setTimeout(() => {
+              refetch();
+              setNewPipeline('');
+            }, 3000);
           }}
         >
           Save
