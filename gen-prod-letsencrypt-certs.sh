@@ -58,11 +58,7 @@ for domain in "${domain_names[@]}"; do
 done
 
 echo "### Requesting Let's Encrypt certificate for $domains ..."
-#Join $domains to -d args
-domain_args=""
-for domain in "${domain_names[@]}"; do
-domain_args="$domain_args -d $domain"
-done
+
 
 # Select appropriate email arg
 case "$email" in
@@ -78,7 +74,7 @@ for domain in "${domain_names[@]}"; do
   certbot certonly --cert-name $domain --webroot -w /var/www/certbot \
       $staging_arg \
       $email_arg \
-      $domain_args \
+      -d $domain \
       --rsa-key-size $rsa_key_size \
       --agree-tos \
       --force-renewal" certbot
