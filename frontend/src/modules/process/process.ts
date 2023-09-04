@@ -3,6 +3,8 @@ import {
   DagForm,
   DagDetailsResponse,
   DagRunsResponse,
+  DagPipelineResponse,
+  DagPipelineRequest,
 } from '../../modules/process/interface';
 import { baseQuery } from '@/common/redux/api';
 
@@ -23,12 +25,12 @@ export const processApi = createApi({
       }),
       invalidatesTags: ['process'],
     }),
-    getProcessPipelineById: builder.query<any, string>({
+    getProcessPipelineById: builder.query<DagPipelineResponse, string>({
       query: (dag_id) => ({
         url: `/process/${dag_id}`,
       }),
     }),
-    updateProcessPipelineById: builder.mutation<void, any>({
+    updateProcessPipelineById: builder.mutation<void, DagPipelineRequest>({
       query: ({ old_pipeline, new_pipeline, dag_id }) => ({
         url: `/process/${dag_id}`,
         body: { old_pipeline, new_pipeline },

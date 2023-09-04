@@ -9,12 +9,16 @@ import {
 import { ChevronRightIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 import Stepper from './Stepper';
-interface IProcessCard {
+import { PipelineList } from '@/modules/pipeline/interface';
+interface ProcessCardProps {
   process: DagDetails;
-  pipelineList: any;
+  pipelineList: PipelineList;
 }
 
-export default function ProcessCard({ process, pipelineList }: IProcessCard) {
+export default function ProcessCard({
+  process,
+  pipelineList,
+}: ProcessCardProps) {
   const { data, isSuccess } = useGetProcessPipelineByIdQuery(process.dag_id);
   const [runProcessById] = useRunProcessByIdMutation();
   const [toggleProcessStatus] = useToggleProcessStatusMutation();
@@ -110,7 +114,6 @@ export default function ProcessCard({ process, pipelineList }: IProcessCard) {
                 dagId={process.dag_id}
                 description={process.description}
                 nextDagRun={process.next_dagrun}
-                nextDagRunCreateAfter={process.next_dagrun_create_after}
                 lastParsedTime={process.last_parsed_time}
               />
             </div>
