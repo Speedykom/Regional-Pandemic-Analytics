@@ -2,6 +2,7 @@ import { DagRun } from '@/modules/process/interface';
 import { useGetProcessHistoryByIdQuery } from '@/modules/process/process';
 import { RadioGroup } from '@headlessui/react';
 import { Dispatch, SetStateAction } from 'react';
+import { BiCheckCircle } from 'react-icons/bi';
 
 interface ListExecutionProps {
   dagId: string;
@@ -54,7 +55,7 @@ export default function ListExecution({
                     </div>
                     {checked && (
                       <div className="shrink-0 text-white">
-                        <CheckIcon className="h-6 w-6" />
+                        <BiCheckCircle />
                       </div>
                     )}
                   </div>
@@ -64,20 +65,5 @@ export default function ListExecution({
           ))}
       </div>
     </RadioGroup>
-  );
-}
-
-function CheckIcon(props: any) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" {...props}>
-      <circle cx={12} cy={12} r={12} fill="#fff" opacity="0.2" />
-      <path
-        d="M7 13l3 3 7-7"
-        stroke="#fff"
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }
