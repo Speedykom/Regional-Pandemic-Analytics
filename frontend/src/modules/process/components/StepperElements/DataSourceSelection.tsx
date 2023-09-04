@@ -72,6 +72,10 @@ export default function DataSourceSelection({
               new_pipeline: newPipeline + '.hpl',
               dag_id: dagId,
             });
+            // WARNING !!!
+            // The only reason why we're using setTimeout
+            // is because Airflow takes time to rescan the dags directory
+            // NEED TO BE CHANGED !!!
             setTimeout(() => {
               refetch();
               setNewPipeline('');
