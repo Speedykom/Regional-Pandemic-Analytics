@@ -12,7 +12,7 @@ import { DagForm } from '../interface';
 import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
 
-interface IAddProcessProps {
+interface AddProcessProps {
   pipelineList: PipelineList;
   refetch: () => QueryActionCreatorResult<any>;
   panelState: boolean;
@@ -24,7 +24,7 @@ export const AddProcess = ({
   refetch,
   panelState,
   closePanel,
-}: IAddProcessProps) => {
+}: AddProcessProps) => {
   const { register, handleSubmit, control } = useForm();
 
   const [createProcess] = useCreateProcessMutation();
@@ -83,7 +83,7 @@ export const AddProcess = ({
               render={({ field }) => {
                 return (
                   <SearchSelect {...field} placeholder="Pipeline Template">
-                    {pipelineList.data.map((pipeline: any) => {
+                    {pipelineList.data.map((pipeline) => {
                       return (
                         <SearchSelectItem
                           key={pipeline.name}
@@ -108,7 +108,7 @@ export const AddProcess = ({
               render={({ field }) => {
                 return (
                   <SearchSelect {...field} placeholder="Schedule Interval">
-                    {schedule_intervals.map((interval: any) => {
+                    {schedule_intervals.map((interval) => {
                       return (
                         <SearchSelectItem key={interval} value={interval}>
                           {interval}
