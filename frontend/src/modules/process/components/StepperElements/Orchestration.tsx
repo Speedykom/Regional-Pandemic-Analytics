@@ -1,11 +1,19 @@
 import { Table, TableCell, TableHeaderCell, TableRow } from '@tremor/react';
 import History from './History';
+
+interface OrchestrationProps {
+  dagId: string;
+  description: string;
+  lastParsedTime: string;
+  nextDagRun: string;
+}
+
 export default function Orchestration({
   dagId,
   description,
   lastParsedTime,
   nextDagRun,
-}: any) {
+}: OrchestrationProps) {
   return (
     <div className="flex space-y-3">
       <Table className="flex justify-center overflow-visible w-1/2">
