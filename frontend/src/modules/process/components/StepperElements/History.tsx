@@ -1,6 +1,7 @@
-import { Title, Card } from '@tremor/react';
+import { Title } from '@tremor/react';
 import { useState } from 'react';
 import ListExecution from './HistoryElements/ListExecution';
+import ExecutionGraph from './HistoryElements/ExecutionGraph';
 
 interface IHistroyProps {
   dagId: string;
@@ -21,7 +22,7 @@ export default function History({ dagId }: IHistroyProps) {
           />
         </div>
         <div className="grow">
-          <Card className="h-72"></Card>
+          <ExecutionGraph dagId={dagId} dagRunId={selected} />
         </div>
       </div>
     </div>
