@@ -1,14 +1,18 @@
-from datetime import datetime, timedelta
 from airflow import DAG
-from airflow.baseoperator import BaseOperator
 from airflow.exceptions import AirflowException
-from airflow.models import Variable
+from airflow.models import BaseOperator, Variable
 from airflow.operators.python_operator import PythonOperator
 from airflow_hop.operators import HopPipelineOperator
 from airflow.triggers.temporal import TimeDeltaTrigger
+import logging
+from datetime import datetime, timedelta
+from airflow.utils.context import Context
 from minio import Minio
 import os
 import requests
+from requests.auth import HTTPBasicAuth
+
+task_logger = logging.getLogger('airflow.task')
 
 default_args = {
     "owner": "{{owner}}",
@@ -27,18 +31,23 @@ minio_secret_key = Variable.get("minio_secret_key")
 minio_ftp_server = Variable.get("minio_ftp_server")
 minio_ftp = f"{minio_access_key}:{minio_secret_key}@{minio_ftp_server}"
 
+druid_admin_password = os.environ['DRUID_ADMIN_PASSWORD']
+druid_auth = HTTPBasicAuth('admin', druid_admin_password)
+
 # Download pipeline from minio bucket
 def download_pipeline_minio():
+    task_logger.debug('Beginning download of pipeline from MinIO…')
     client = Minio(minio_url, access_key=minio_access_key , secret_key=minio_secret_key, secure=False)
     client.fget_object("pipelines","pipelines-created/{{user_id}}/{{pipeline_name}}","/hop/config/projects/default/{{user_id}}/{{pipeline_name}}")
+    task_logger.info('Download of pipeline from MinIO completed')
 
 # Ingest to druid
 class DruidOperator(BaseOperator):
   def __init__(self, **kwargs):
-    super().__init__(**kwargs)
+    super().__init__(task_id = 'repan_druid_ingestion', **kwargs)
     self.base_url = "{}/druid/indexer/v1/task".format(os.environ['DRUID_COORDINATOR_URL'])
 
-  def execute(self):
+  def execute(self, context: Context):
     payload = {
       "type": "index_parallel",
       "spec": {
@@ -47,10 +56,10 @@ class DruidOperator(BaseOperator):
           "inputSource": {
             "type": "s3",
             "endpointConfig": {
-              "url": minio_url,
+              "url": minio_url if minio_url.startswith("http://") else "http://{}".format(minio_url),
               # Even if MinIO does not have regions, this is required because the Se extensions use
               # AWS libraries under the hood which insist on getting a region
-              "region": "us-east-1"
+              "signingRegion": "us-east-1"
             },
             "clientConfig": {
               # Our internal communication is not encrypted, so use plain HTTP
@@ -62,7 +71,7 @@ class DruidOperator(BaseOperator):
             "objects": [
               {
                 "bucket": "parquets",
-                "path": "{{user_id}}/{{dag_id}}"
+                "path": "{{user_id}}/{{dag_id}}.parquet"
               }
             ],
             "properties": {
@@ -84,7 +93,8 @@ class DruidOperator(BaseOperator):
           "dataSource": "{{dag_id}}",
           "timestampSpec": {
             "column": "Date",
-            "format": "millis"
+            "format": "millis",
+            "missingValue": 0
           },
           "dimensionsSpec": {
             "dimensions": []
@@ -97,26 +107,35 @@ class DruidOperator(BaseOperator):
         }
       }
     }
-    client = requests.post(self.base_url, json = payload)
+    task_logger.debug('Sending ingestion spec to Druid')
+    client = requests.post(self.base_url, json = payload , auth=druid_auth)
     if not client.ok:
+       task_logger.error('Sending of ingestion spec failed with code %d and message: “%s”', client.status_code, client.text)
        raise AirflowException('Failed to start Druid ingestion')
+    task_logger.info('Ingestion spec sent to Druid. waiting for completion…')
     self.wait_for_completion(client.json()['task'])
 
   def wait_for_completion(self, process_id: str):
     self.defer(trigger=TimeDeltaTrigger(timedelta(seconds=5)), method_name="check_status", kwargs={ "process_id": process_id })
 
-  def check_status(self, process_id: str):
+  def check_status(self, process_id: str , **kwargs):
+    task_logger.debug('Checking status of Druid ingestion…')
     url = "{}/{}/status".format(self.base_url, process_id)
-    response = requests.get(url)
+    response = requests.get(url, auth=druid_auth)
     if response.ok:
-      match response.json()['status']['statusCode']:
-        case 'FAILED':
+      status = response.json()['status']['statusCode']
+      if status == 'FAILED':
+          task_logger.error('Druid ingestion has failed!')
           raise AirflowException('Druid ingestion failed')
-        case 'SUCCESS':
+      elif status == 'SUCCESS':
+          task_logger.info('Druid ingestion successfully completed')
           return
+    task_logger.debug('Druid ingestion still running')
     self.wait_for_completion(process_id)
 
 with DAG("{{dag_id}}", default_args=default_args, schedule_interval="{{schedule_interval}}", catchup=False, is_paused_upon_creation=False) as dag:
+
+    task_logger.debug('Setting up components of DAG')
 
     # Download pipeline from minio bucket
     pipeline_minio = PythonOperator(
@@ -136,5 +155,7 @@ with DAG("{{dag_id}}", default_args=default_args, schedule_interval="{{schedule_
 
     # Run Druid ingestion
     druid = DruidOperator()
+
+    task_logger.debug('Now starting DAG…')
 
     pipeline_minio >> hop >> druid
