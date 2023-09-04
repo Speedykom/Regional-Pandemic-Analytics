@@ -19,7 +19,9 @@ export default function ProcessCard({
   process,
   pipelineList,
 }: ProcessCardProps) {
-  const { data, isSuccess } = useGetProcessPipelineByIdQuery(process.dag_id);
+  const { data, isSuccess, refetch } = useGetProcessPipelineByIdQuery(
+    process.dag_id
+  );
   const [runProcessById] = useRunProcessByIdMutation();
   const [toggleProcessStatus] = useToggleProcessStatusMutation();
 
@@ -112,6 +114,7 @@ export default function ProcessCard({
                 pipeline={data.pipeline}
                 pipelineList={pipelineList}
                 dagId={process.dag_id}
+                refetch={refetch}
                 description={process.description}
                 nextDagRun={process.next_dagrun}
                 lastParsedTime={process.last_parsed_time}

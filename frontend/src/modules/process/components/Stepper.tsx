@@ -5,11 +5,13 @@ import { TabList, Tab, TabGroup, TabPanels, TabPanel } from '@tremor/react';
 import DataSourceSelection from './StepperElements/DataSourceSelection';
 import Orchestration from './StepperElements/Orchestration';
 import { PipelineList } from '@/modules/pipeline/interface';
+import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
 
 interface StepperProps {
   pipeline: string;
   pipelineList: PipelineList;
   dagId: string;
+  refetch: () => QueryActionCreatorResult<any>;
   description: string;
   nextDagRun: string;
   lastParsedTime: string;
@@ -19,6 +21,7 @@ export default function Stepper({
   pipeline,
   pipelineList,
   dagId,
+  refetch,
   description,
   nextDagRun,
   lastParsedTime,
@@ -63,6 +66,7 @@ export default function Stepper({
               dagId={dagId}
               pipeline={pipeline}
               pipelineList={pipelineList}
+              refetch={refetch}
             />
           </TabPanel>
           <TabPanel className="px-20 pt-2">
