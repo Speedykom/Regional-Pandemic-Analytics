@@ -13,15 +13,15 @@ export default function History({ dagId }: IHistroyProps) {
   return (
     <div>
       <Title>Last Execution</Title>
-      <div className="flex space-x-4">
-        <div>
+      <div className="flex space-x-4 flex-end ">
+        <div className="basis-1/4">
           <ListExecution
             dagId={dagId}
             selected={selected}
             setSelected={setSelected}
           />
         </div>
-        <div className="grow">
+        <div className="basis-3/4">
           <ExecutionGraph dagId={dagId} dagRunId={selected} />
         </div>
       </div>
