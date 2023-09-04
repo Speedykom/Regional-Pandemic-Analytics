@@ -35,7 +35,7 @@ export default function DataSourceSelection({
         <Table className="flex justify-center overflow-visible w-1/2">
           <TableRow className="">
             <TableHeaderCell>Pipeline used</TableHeaderCell>
-            <TableCell>{pipeline}</TableCell>
+            <TableCell>{pipeline.slice(0, -4)}</TableCell>
           </TableRow>
           <TableRow className=" overflow-auto">
             <TableHeaderCell>Pipelines</TableHeaderCell>
