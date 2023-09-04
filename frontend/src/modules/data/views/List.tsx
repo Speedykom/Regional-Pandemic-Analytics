@@ -15,16 +15,16 @@ import {
 import React from 'react';
 import { LinkIcon } from '@heroicons/react/20/solid';
 import getConfig from 'next/config';
-import { Data } from '../interface';
-import { useGetUploadedFilesQuery } from '../data';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '@/modules/auth/auth';
+import { Data } from '../interface';
+import { useGetUploadedFilesQuery } from '../data';
 
 const { publicRuntimeConfig } = getConfig();
 
 export default function DataList() {
   const user = useSelector(selectCurrentUser);
-  const { data } = useGetUploadedFilesQuery(user?.email || '')
+  const { data } = useGetUploadedFilesQuery(user?.email || '');
   const file_server = publicRuntimeConfig.NEXT_PUBLIC_MINIO_URL;
 
   return (

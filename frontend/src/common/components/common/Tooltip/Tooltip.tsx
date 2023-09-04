@@ -1,38 +1,38 @@
 import React, {
-	MutableRefObject,
-	ReactElement,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
-import ReactDOM from "react-dom";
-import { getTooltipPoint, getArrowBoxPoint, getClosestAncestor } from "./utils";
+  MutableRefObject,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import ReactDOM from 'react-dom';
+import { getTooltipPoint, getArrowBoxPoint, getClosestAncestor } from './utils';
 
 type renderTooltipParams = {
-	element: MutableRefObject<any>;
-	title: string;
+  element: MutableRefObject<any>;
+  title: string;
 };
 
 interface props {
-	children: ReactElement;
-	position?: string;
-	space?: number;
-	delayShow?: number;
-	delayHide?: number;
-	noArrow?: boolean;
-	noTranslateAnimation?: boolean;
-	noOpacityAnimation?: boolean;
-	closeOnEsc?: boolean;
-	scopeSelector?: string;
-	titleAttribute?: string;
-	arrowLength?: number;
-	fontSize?: string;
-	renderTooltip?: (params: renderTooltipParams) => void;
+  children: ReactElement;
+  position?: string;
+  space?: number;
+  delayShow?: number;
+  delayHide?: number;
+  noArrow?: boolean;
+  noTranslateAnimation?: boolean;
+  noOpacityAnimation?: boolean;
+  closeOnEsc?: boolean;
+  scopeSelector?: string;
+  titleAttribute?: string;
+  arrowLength?: number;
+  fontSize?: string;
+  renderTooltip?: (params: renderTooltipParams) => void;
 }
 
-const Portal = ({ children }: Pick<props, "children">) => {
-	return ReactDOM.createPortal(children, document.body);
+const Portal = ({ children }: Pick<props, 'children'>) => {
+  return ReactDOM.createPortal(children, document.body);
 };
 
 /**
@@ -48,228 +48,226 @@ const Portal = ({ children }: Pick<props, "children">) => {
  */
 
 const Tooltip = ({
-	children,
-	position = "bottom",
-	space = 5,
-	delayShow = 0,
-	delayHide = 0,
-	noArrow = false,
-	noTranslateAnimation = false,
-	noOpacityAnimation = false,
-	closeOnEsc = false,
-	scopeSelector = "",
-	titleAttribute = "title",
-	arrowLength = 10,
-	fontSize = "13px",
-	renderTooltip,
+  children,
+  position = 'bottom',
+  space = 5,
+  delayShow = 0,
+  delayHide = 0,
+  noArrow = false,
+  noTranslateAnimation = false,
+  noOpacityAnimation = false,
+  closeOnEsc = false,
+  scopeSelector = '',
+  titleAttribute = 'title',
+  arrowLength = 10,
+  fontSize = '13px',
+  renderTooltip,
 }: props) => {
-	const [show, setShow] = useState(false);
-	const [title, setTitle] = useState("");
-	const [showTimeoutId, setShowTimeoutId] = useState("");
-	const [closeTimeoutId, setCloseTimeoutId] = useState("");
-	const titleNodeRef = useRef<any>();
-	const tooltipRef = useRef<any>();
-	const arrowRef = useRef<any>();
+  const [show, setShow] = useState(false);
+  const [title, setTitle] = useState('');
+  const [showTimeoutId, setShowTimeoutId] = useState('');
+  const [closeTimeoutId, setCloseTimeoutId] = useState('');
+  const titleNodeRef = useRef<any>();
+  const tooltipRef = useRef<any>();
+  const arrowRef = useRef<any>();
 
-	const showTooltip = (node: any) => {
-		if (closeTimeoutId) {
-			window.clearTimeout(closeTimeoutId);
-			setCloseTimeoutId("");
-		}
-		const showTimeoutId = window.setTimeout(() => {
-			const title = node.getAttribute(titleAttribute);
-			titleNodeRef.current = node;
-			setTitle(title);
-			setShow(true);
-			setShowTimeoutId("");
-		}, delayShow);
-		setShowTimeoutId(String(showTimeoutId));
-	};
+  const showTooltip = (node: any) => {
+    if (closeTimeoutId) {
+      window.clearTimeout(closeTimeoutId);
+      setCloseTimeoutId('');
+    }
+    const showTimeoutId = window.setTimeout(() => {
+      const title = node.getAttribute(titleAttribute);
+      titleNodeRef.current = node;
+      setTitle(title);
+      setShow(true);
+      setShowTimeoutId('');
+    }, delayShow);
+    setShowTimeoutId(String(showTimeoutId));
+  };
 
-	const closeTooltip = useCallback(() => {
-		const closeTimeoutId = window.setTimeout(() => {
-			titleNodeRef.current = null;
-			setShow(false);
-			setCloseTimeoutId("");
-		}, delayHide);
-		setCloseTimeoutId(String(closeTimeoutId));
+  const closeTooltip = useCallback(() => {
+    const closeTimeoutId = window.setTimeout(() => {
+      titleNodeRef.current = null;
+      setShow(false);
+      setCloseTimeoutId('');
+    }, delayHide);
+    setCloseTimeoutId(String(closeTimeoutId));
 
-		if (showTimeoutId) {
-			window.clearTimeout(showTimeoutId);
-			setShowTimeoutId("");
-		}
-	}, [titleNodeRef, delayHide, showTimeoutId]);
+    if (showTimeoutId) {
+      window.clearTimeout(showTimeoutId);
+      setShowTimeoutId('');
+    }
+  }, [titleNodeRef, delayHide, showTimeoutId]);
 
-	useEffect(() => {
-		if (!show || !closeOnEsc) return;
-		const escHandler = (e: any) => {
-			if (e.key !== "Escape") return;
-			closeTooltip();
-		};
-		document.addEventListener("keydown", escHandler);
-		return () => document.removeEventListener("keydown", escHandler);
-	}, [show, closeOnEsc, closeTooltip]);
+  useEffect(() => {
+    if (!show || !closeOnEsc) return;
+    const escHandler = (e: any) => {
+      if (e.key !== 'Escape') return;
+      closeTooltip();
+    };
+    document.addEventListener('keydown', escHandler);
+    return () => document.removeEventListener('keydown', escHandler);
+  }, [show, closeOnEsc, closeTooltip]);
 
-	useEffect(() => {
-		if (!show) return;
-		const wheelHandler = () => {
-			closeTooltip();
-		};
-		document.addEventListener("wheel", wheelHandler);
-		return () => document.removeEventListener("wheel", wheelHandler);
-	}, [show, closeTooltip]);
+  useEffect(() => {
+    if (!show) return;
+    const wheelHandler = () => {
+      closeTooltip();
+    };
+    document.addEventListener('wheel', wheelHandler);
+    return () => document.removeEventListener('wheel', wheelHandler);
+  }, [show, closeTooltip]);
 
-	useEffect(() => {
-		if (!show) return;
-		const { x, y } = getTooltipPoint(
-			titleNodeRef.current,
-			tooltipRef.current,
-			position,
-			space,
-			noArrow ? 0 : arrowLength
-		);
+  useEffect(() => {
+    if (!show) return;
+    const { x, y } = getTooltipPoint(
+      titleNodeRef.current,
+      tooltipRef.current,
+      position,
+      space,
+      noArrow ? 0 : arrowLength
+    );
 
-		const { x: ax, y: ay } = getArrowBoxPoint(
-			titleNodeRef.current,
-			tooltipRef.current,
-			position,
-			space,
-			noArrow ? 0 : arrowLength
-		);
+    const { x: ax, y: ay } = getArrowBoxPoint(
+      titleNodeRef.current,
+      tooltipRef.current,
+      position,
+      space,
+      noArrow ? 0 : arrowLength
+    );
 
-		tooltipRef.current.style.left = `${x}px`;
-		tooltipRef.current.style.top = `${y}px`;
+    tooltipRef.current.style.left = `${x}px`;
+    tooltipRef.current.style.top = `${y}px`;
 
-		if (arrowRef.current) {
-			arrowRef.current.style.left = `${ax}px`;
-			arrowRef.current.style.top = `${ay}px`;
-		}
-	}, [show, noArrow, title, position, space, arrowLength]);
+    if (arrowRef.current) {
+      arrowRef.current.style.left = `${ax}px`;
+      arrowRef.current.style.top = `${ay}px`;
+    }
+  }, [show, noArrow, title, position, space, arrowLength]);
 
-	const onMouseOver = (e: any) => {
-		const target = e.target;
-		const node = getClosestAncestor(
-			target,
-			`${scopeSelector}[${titleAttribute}]`
-		);
-		if (!node) {
-			if (show || showTimeoutId) closeTooltip();
-		} else if (node !== titleNodeRef.current) {
-			closeTooltip();
-			showTooltip(node);
-		} else {
-			if (!show) showTooltip(node);
-		}
-	};
+  const onMouseOver = (e: any) => {
+    const { target } = e;
+    const node = getClosestAncestor(
+      target,
+      `${scopeSelector}[${titleAttribute}]`
+    );
+    if (!node) {
+      if (show || showTimeoutId) closeTooltip();
+    } else if (node !== titleNodeRef.current) {
+      closeTooltip();
+      showTooltip(node);
+    } else if (!show) showTooltip(node);
+  };
 
-	const getArrowClasses = (position: string) => {
-		switch (position) {
-			case "top":
-				return "translate-x-[-50%] border-t-black";
-			case "bottom":
-				return "translate-x-[-50%] border-b-black";
-			case "left":
-				return "translate-y-[-50%] border-l-black";
-			case "right":
-				return "translate-y-[-50%] border-r-black";
-			default:
-				return "";
-		}
-	};
+  const getArrowClasses = (position: string) => {
+    switch (position) {
+      case 'top':
+        return 'translate-x-[-50%] border-t-black';
+      case 'bottom':
+        return 'translate-x-[-50%] border-b-black';
+      case 'left':
+        return 'translate-y-[-50%] border-l-black';
+      case 'right':
+        return 'translate-y-[-50%] border-r-black';
+      default:
+        return '';
+    }
+  };
 
-	const getTranslateClasses = (position: string) => {
-		switch (position) {
-			case "top":
-				return show
-					? "translate-x-0 translate-y-0"
-					: "translate-x-0 -translate-y-3";
-			case "bottom":
-				return show
-					? "translate-x-0 translate-y-0"
-					: "translate-x-0 translate-y-3";
-			case "left":
-				return show
-					? "translate-x-0 translate-y-0"
-					: "translate-y-0 -translate-x-3";
-			case "right":
-				return show
-					? "translate-x-0 translate-y-0"
-					: "translate-y-0 translate-x-3";
-			default:
-				return "";
-		}
-	};
+  const getTranslateClasses = (position: string) => {
+    switch (position) {
+      case 'top':
+        return show
+          ? 'translate-x-0 translate-y-0'
+          : 'translate-x-0 -translate-y-3';
+      case 'bottom':
+        return show
+          ? 'translate-x-0 translate-y-0'
+          : 'translate-x-0 translate-y-3';
+      case 'left':
+        return show
+          ? 'translate-x-0 translate-y-0'
+          : 'translate-y-0 -translate-x-3';
+      case 'right':
+        return show
+          ? 'translate-x-0 translate-y-0'
+          : 'translate-y-0 translate-x-3';
+      default:
+        return '';
+    }
+  };
 
-	return (
-		<>
-			{React.cloneElement(children, {
-				...children.props,
-				onMouseOver,
-				onMouseLeave: () => setShow(false),
-			})}
+  return (
+    <>
+      {React.cloneElement(children, {
+        ...children.props,
+        onMouseOver,
+        onMouseLeave: () => setShow(false),
+      })}
 
-			<Portal>
-				<div>
-					{!noArrow && (
-						<div
-							ref={arrowRef}
-							className={`fixed z-[200] border-transparent
-                ${show ? "opacity-100" : "opacity-0"}
+      <Portal>
+        <div>
+          {!noArrow && (
+            <div
+              ref={arrowRef}
+              className={`fixed z-[200] border-transparent
+                ${show ? 'opacity-100' : 'opacity-0'}
                 ${getArrowClasses(position)}
                 ${!noTranslateAnimation && getTranslateClasses(position)}
               `}
-							style={{
-								borderWidth: ["top", "bottom"].includes(position)
-									? `${arrowLength}px ${arrowLength / 2}px`
-									: `${arrowLength / 2}px ${arrowLength}px`,
-								transition: show
-									? `transform 200ms ${
-											noTranslateAnimation ? "step-start" : "linear"
-									  }, opacity 200ms ${
-											noOpacityAnimation ? "step-start" : "linear"
-									  }`
-									: `transform 200ms ${
-											noTranslateAnimation ? "step-end" : "linear"
-									  }, opacity 200ms ${
-											noOpacityAnimation ? "step-end" : "linear"
-									  }`,
-							}}
-						/>
-					)}
+              style={{
+                borderWidth: ['top', 'bottom'].includes(position)
+                  ? `${arrowLength}px ${arrowLength / 2}px`
+                  : `${arrowLength / 2}px ${arrowLength}px`,
+                transition: show
+                  ? `transform 200ms ${
+                      noTranslateAnimation ? 'step-start' : 'linear'
+                    }, opacity 200ms ${
+                      noOpacityAnimation ? 'step-start' : 'linear'
+                    }`
+                  : `transform 200ms ${
+                      noTranslateAnimation ? 'step-end' : 'linear'
+                    }, opacity 200ms ${
+                      noOpacityAnimation ? 'step-end' : 'linear'
+                    }`,
+              }}
+            />
+          )}
 
-					<div
-						ref={tooltipRef}
-						className={`pointer-events-none fixed z-[200] min-w-min max-w-[100vw] overflow-hidden
-              ${show ? "opacity-100" : "opacity-0"}
+          <div
+            ref={tooltipRef}
+            className={`pointer-events-none fixed z-[200] min-w-min max-w-[100vw] overflow-hidden
+              ${show ? 'opacity-100' : 'opacity-0'}
               ${!noTranslateAnimation && getTranslateClasses(position)}
             `}
-						style={{
-							transition: show
-								? `transform 200ms ${
-										noTranslateAnimation ? "step-start" : "linear"
-								  }, opacity 200ms ${
-										noOpacityAnimation ? "step-start" : "linear"
-								  }`
-								: `transform 200ms ${
-										noTranslateAnimation ? "step-end" : "linear"
-								  }, opacity 200ms ${
-										noOpacityAnimation ? "step-end" : "linear"
-								  }`,
-						}}
-					>
-						{renderTooltip?.({ element: titleNodeRef, title }) || (
-							<div
-								style={{ fontSize }}
-								className={`rounded-md bg-gray-900 px-3 py-1 text-center text-gray-300`}
-							>
-								{title}
-							</div>
-						)}
-					</div>
-				</div>
-			</Portal>
-		</>
-	);
+            style={{
+              transition: show
+                ? `transform 200ms ${
+                    noTranslateAnimation ? 'step-start' : 'linear'
+                  }, opacity 200ms ${
+                    noOpacityAnimation ? 'step-start' : 'linear'
+                  }`
+                : `transform 200ms ${
+                    noTranslateAnimation ? 'step-end' : 'linear'
+                  }, opacity 200ms ${
+                    noOpacityAnimation ? 'step-end' : 'linear'
+                  }`,
+            }}
+          >
+            {renderTooltip?.({ element: titleNodeRef, title }) || (
+              <div
+                style={{ fontSize }}
+                className="rounded-md bg-gray-900 px-3 py-1 text-center text-gray-300"
+              >
+                {title}
+              </div>
+            )}
+          </div>
+        </div>
+      </Portal>
+    </>
+  );
 };
 
 export default Tooltip;

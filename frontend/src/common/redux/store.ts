@@ -1,38 +1,38 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { DashboardApi, ChartApi } from "@/modules/superset/superset";
-import { ProcessApi } from "@/modules/process/process";
-import authReducer, { AuthApi, HopAuthApi } from "@/modules/auth/auth";
-import { PipelineApi } from "@/modules/pipeline/pipeline";
-import { UserApi } from "@/modules/user/user";
-import { RoleApi } from "@/modules/roles/role";
-import { DataApi } from "@/modules/data/data";
-import sidebarSlice from "../components/Dashboard/SidebarSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import { dashboardApi, chartApi } from '@/modules/superset/superset';
+import { processApi } from '@/modules/process/process';
+import authReducer, { authApi, hopAuthApi } from '@/modules/auth/auth';
+import { pipelineApi } from '@/modules/pipeline/pipeline';
+import { userApi } from '@/modules/user/user';
+import { roleApi } from '@/modules/roles/role';
+import { dataApi } from '@/modules/data/data';
+import sidebarSlice from '../components/Dashboard/SidebarSlice';
 
 export const store = configureStore({
   reducer: {
-    [DashboardApi.reducerPath]: DashboardApi.reducer,
-    [ChartApi.reducerPath]: ChartApi.reducer,
-    [ProcessApi.reducerPath]: ProcessApi.reducer,
-    [DataApi.reducerPath]: DataApi.reducer,
-    [PipelineApi.reducerPath]: PipelineApi.reducer,
-    [AuthApi.reducerPath]: AuthApi.reducer,
-    [HopAuthApi.reducerPath]: HopAuthApi.reducer,
-    [UserApi.reducerPath]: UserApi.reducer,
-    [RoleApi.reducerPath]: RoleApi.reducer,
+    [dashboardApi.reducerPath]: dashboardApi.reducer,
+    [chartApi.reducerPath]: chartApi.reducer,
+    [processApi.reducerPath]: processApi.reducer,
+    [dataApi.reducerPath]: dataApi.reducer,
+    [pipelineApi.reducerPath]: pipelineApi.reducer,
+    [authApi.reducerPath]: authApi.reducer,
+    [hopAuthApi.reducerPath]: hopAuthApi.reducer,
+    [userApi.reducerPath]: userApi.reducer,
+    [roleApi.reducerPath]: roleApi.reducer,
     auth: authReducer,
     sidebar: sidebarSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
-      .concat(DashboardApi.middleware)
-      .concat(ChartApi.middleware)
-      .concat(ProcessApi.middleware)
-      .concat(DataApi.middleware)
-      .concat(AuthApi.middleware)
-      .concat(HopAuthApi.middleware)
-      .concat(PipelineApi.middleware)
-      .concat(UserApi.middleware)
-      .concat(RoleApi.middleware),
+      .concat(dashboardApi.middleware)
+      .concat(chartApi.middleware)
+      .concat(processApi.middleware)
+      .concat(dataApi.middleware)
+      .concat(authApi.middleware)
+      .concat(hopAuthApi.middleware)
+      .concat(pipelineApi.middleware)
+      .concat(userApi.middleware)
+      .concat(roleApi.middleware),
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
