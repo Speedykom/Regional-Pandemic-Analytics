@@ -16,7 +16,6 @@ export type Credentials = {
   permissions: Permissions;
 };
 
-
 export interface JwtInfos {
   realm_access: {
     roles: string[];
@@ -62,7 +61,7 @@ export interface UserProfile extends JwtInfos {
 }
 
 export type OAuthParams = {
-  code: string
-  state: string
-  session_state: string
-}
+  code: string;
+  state: string;
+  session_state: string;
+};

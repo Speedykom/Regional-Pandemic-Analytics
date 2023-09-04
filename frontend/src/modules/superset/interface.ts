@@ -1,6 +1,6 @@
-
-
-export interface SupersetListResponse<T = DashboardListResult | ChartListResult> {
+export interface SupersetListResponse<
+  T = DashboardListResult | ChartListResult,
+> {
   count: number;
   description_columns: DescriptionColumns;
   ids: number[];
@@ -100,57 +100,56 @@ export interface DashboardStatusResult {
 }
 
 export interface ChartListResult {
-  cache_timeout: any
-  certification_details: any
-  certified_by: any
-  changed_by: ChangedBy
-  changed_by_name: string
-  changed_by_url: string
-  changed_on_delta_humanized: string
-  changed_on_utc: string
-  created_by: CreatedBy
-  created_on_delta_humanized: string
-  dashboards: Dashboard[]
-  datasource_id: number
-  datasource_name_text: string
-  datasource_type: string
-  datasource_url: string
-  description: any
-  description_markeddown: string
-  edit_url: string
-  id: number
-  is_managed_externally: boolean
-  last_saved_at: string
-  last_saved_by: LastSavedBy
-  owners: Owner[]
-  params: string
-  slice_name: string
-  table: Table
-  thumbnail_url: string
-  url: string
-  viz_type: string
+  cache_timeout: any;
+  certification_details: any;
+  certified_by: any;
+  changed_by: ChangedBy;
+  changed_by_name: string;
+  changed_by_url: string;
+  changed_on_delta_humanized: string;
+  changed_on_utc: string;
+  created_by: CreatedBy;
+  created_on_delta_humanized: string;
+  dashboards: Dashboard[];
+  datasource_id: number;
+  datasource_name_text: string;
+  datasource_type: string;
+  datasource_url: string;
+  description: any;
+  description_markeddown: string;
+  edit_url: string;
+  id: number;
+  is_managed_externally: boolean;
+  last_saved_at: string;
+  last_saved_by: LastSavedBy;
+  owners: Owner[];
+  params: string;
+  slice_name: string;
+  table: Table;
+  thumbnail_url: string;
+  url: string;
+  viz_type: string;
 }
 
 export interface ChangedBy {
-  first_name: string
-  last_name: string
+  first_name: string;
+  last_name: string;
 }
 
-
 export interface Dashboard {
-  dashboard_title: string
-  id: number
+  dashboard_title: string;
+  id: number;
 }
 
 export interface LastSavedBy {
-  first_name: string
-  id: number
-  last_name: string
+  first_name: string;
+  id: number;
+  last_name: string;
 }
 
 export interface Table {
-  default_endpoint: any
-  table_name: string
+  default_endpoint: any;
+  table_name: string;
 }
 
 export type DashboardList = SupersetListResponse<DashboardListResult>;
