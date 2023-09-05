@@ -268,7 +268,13 @@ class ProcessRunView(ViewSet):
             airflow_json = airflow_response.json()["task_instances"]
             tasks = []
             for task in airflow_json:
-                tasks.append({"task_id": task["task_id"], "state": task["state"]})
+                tasks.append(
+                    {
+                        "task_id": task["task_id"],
+                        "state": task["state"],
+                        "start_date": task["start_date"],
+                    }
+                )
 
             return Response({"tasks": tasks}, status=status.HTTP_200_OK)
         else:
