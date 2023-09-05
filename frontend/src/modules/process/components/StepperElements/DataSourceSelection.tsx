@@ -11,6 +11,7 @@ import { useState } from 'react';
 import { useUpdateProcessPipelineByIdMutation } from '../../process';
 import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
+import { toast } from 'react-toastify';
 
 interface DataSourceSelectionProps {
   dagId: string;
@@ -71,16 +72,21 @@ export default function DataSourceSelection({
               old_pipeline: pipeline,
               new_pipeline: newPipeline + '.hpl',
               dag_id: dagId,
-            }).then(() => {
-              // WARNING !!!
-              // The only reason why we're using setTimeout
-              // is because Airflow takes time to rescan the dags directory
-              // NEED TO BE CHANGED !!!
-              setTimeout(() => {
-                refetch();
-                setNewPipeline('');
-              }, 3000);
-            });
+            })
+              .then(() => {
+                // WARNING !!!
+                // The only reason why we're using setTimeout
+                // is because Airflow takes time to rescan the dags directory
+                // NEED TO BE CHANGED !!!
+                setTimeout(() => {
+                  refetch();
+                  toast.success('Pipeline is updated !');
+                  setNewPipeline('');
+                }, 3000);
+              })
+              .catch(() => {
+                toast.error('An error has occured');
+              });
           }}
         >
           Save
