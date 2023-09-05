@@ -29,12 +29,7 @@ export default function Orchestration({
         <Table className="flex justify-center overflow-visible w-1/2">
           <TableRow>
             <TableHeaderCell>description</TableHeaderCell>
-            <TableCell className="whitespace-normal">
-              {description} hello there this is a basic description element that
-              should be working. By the way, have fun in the demo. There is no
-              description field in the Add component so please remember to add
-              it
-            </TableCell>
+            <TableCell className="whitespace-normal">{description}</TableCell>
           </TableRow>
           <TableRow>
             <TableHeaderCell>Last update</TableHeaderCell>

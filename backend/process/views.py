@@ -17,8 +17,11 @@ class AirflowInstance:
 class DagDTO:
     factory_id = "FACTORY"
 
-    def __init__(self, owner, user_id, dag_id, schedule_interval, pipeline_name):
+    def __init__(
+        self, owner, description, user_id, dag_id, schedule_interval, pipeline_name
+    ):
         self.owner = owner
+        self.description = description
         self.user_id = user_id
         self.dag_id = dag_id
         self.schedule_interval = schedule_interval
@@ -88,8 +91,9 @@ class ProcessView(ViewSet):
             auth=(AirflowInstance.username, AirflowInstance.password),
         )
 
-        airflow_json = airflow_response.json()["dags"]
         if airflow_response.ok:
+            airflow_json = airflow_response.json()["dags"]
+            print(airflow_json)
             # Only returns the dags which owners flag is the same as the username
             for dag in airflow_json:
                 if user_name in dag["owners"]:
@@ -114,6 +118,7 @@ class ProcessView(ViewSet):
         # Object contains config that will be passed to the dag factory to create new dag from templates
         new_dag_config = DagDTO(
             owner=get_current_user_name(request),
+            description=request.data["description"],
             user_id=get_current_user_id(request),
             dag_id=request.data["name"].replace(" ", "-").lower(),
             pipeline_name=request.data["pipeline"],
@@ -128,6 +133,7 @@ class ProcessView(ViewSet):
             json={
                 "dag_conf": {
                     "owner": f"{new_dag_config.owner}",
+                    "description": f"{new_dag_config.description}",
                     "user_id": f"{new_dag_config.user_id}",
                     "dag_id": f"{new_dag_config.dag_id}",
                     "schedule_interval": f"{new_dag_config.schedule_interval}",

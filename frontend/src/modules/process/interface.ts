@@ -2,6 +2,7 @@ export interface DagForm {
   name: string;
   pipeline: string;
   schedule_interval: string;
+  description: string;
 }
 
 export interface DagDetails {
