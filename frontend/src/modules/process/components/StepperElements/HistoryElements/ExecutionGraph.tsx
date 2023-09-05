@@ -47,11 +47,9 @@ function Graph({ dagId, dagRunId }: ExecutionGraphProps) {
 
     const insertArrows = (arr: JSX.Element[]) => {
       const legend = <ArrowLongRightIcon className="w-6" />;
-      return arr.reduce((acc, val, ind, array) => {
-        // ts error : Argument of type 'Element' is not assignable to parameter of type 'never'
+      return arr.reduce((acc: JSX.Element[], val, ind, array) => {
         acc.push(val);
         if (ind < array.length - 1) {
-          // ts error : Argument of type 'Element' is not assignable to parameter of type 'never'
           acc.push(legend);
         }
         return acc;
