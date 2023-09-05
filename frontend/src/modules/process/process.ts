@@ -5,6 +5,8 @@ import {
   DagRunsResponse,
   DagPipelineResponse,
   DagPipelineRequest,
+  DagRunTasksResponse,
+  DagRunTasksRequest,
 } from '../../modules/process/interface';
 import { baseQuery } from '@/common/redux/api';
 
@@ -49,7 +51,10 @@ export const processApi = createApi({
       query: (dag_id) => `/process/${dag_id}/dagRuns`,
       providesTags: ['process'],
     }),
-    getProcessHistoryTasksbyId: builder.query<any, any>({
+    getProcessHistoryTasksbyId: builder.query<
+      DagRunTasksResponse,
+      DagRunTasksRequest
+    >({
       query: ({ dag_id, dag_run_id }) =>
         `/process/${dag_id}/dagRuns/${dag_run_id}/taskInstances`,
     }),
