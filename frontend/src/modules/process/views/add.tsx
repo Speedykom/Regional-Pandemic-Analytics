@@ -11,8 +11,9 @@ import { useCreateProcessMutation } from '../process';
 import { DagForm } from '../interface';
 import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
+import { toast } from 'react-toastify';
 
-interface IAddProcessProps {
+interface AddProcessProps {
   pipelineList: PipelineList;
   refetch: () => QueryActionCreatorResult<any>;
   panelState: boolean;
@@ -24,7 +25,7 @@ export const AddProcess = ({
   refetch,
   panelState,
   closePanel,
-}: IAddProcessProps) => {
+}: AddProcessProps) => {
   const { register, handleSubmit, control } = useForm();
 
   const [createProcess] = useCreateProcessMutation();
@@ -38,10 +39,20 @@ export const AddProcess = ({
             name: values.processName,
             pipeline: values.pipelineTemplate,
             schedule_interval: values.scheduleInterval,
-          } as DagForm).then(() => {
-            setTimeout(refetch, 1000);
-            closePanel();
-          });
+            description: values.description,
+          } as DagForm)
+            .then(() => {
+              // WARNING !!!
+              // The only reason why we're using setTimeout
+              // is because Airflow takes time to rescan the dags directory
+              // NEED TO BE CHANGED !!!
+              setTimeout(refetch, 1000);
+              toast.success('A new Process Chain is created !');
+              closePanel();
+            })
+            .catch(() => {
+              toast.error('An error has occured');
+            });
         })}
       >
         Submit
@@ -83,7 +94,7 @@ export const AddProcess = ({
               render={({ field }) => {
                 return (
                   <SearchSelect {...field} placeholder="Pipeline Template">
-                    {pipelineList.data.map((pipeline: any) => {
+                    {pipelineList.data.map((pipeline) => {
                       return (
                         <SearchSelectItem
                           key={pipeline.name}
@@ -108,7 +119,7 @@ export const AddProcess = ({
               render={({ field }) => {
                 return (
                   <SearchSelect {...field} placeholder="Schedule Interval">
-                    {schedule_intervals.map((interval: any) => {
+                    {schedule_intervals.map((interval) => {
                       return (
                         <SearchSelectItem key={interval} value={interval}>
                           {interval}
@@ -118,6 +129,14 @@ export const AddProcess = ({
                   </SearchSelect>
                 );
               }}
+            />
+          </div>
+
+          <div>
+            <label>Description</label>
+            <TextInput
+              {...register('description', { required: true })}
+              placeholder="Description"
             />
           </div>
         </form>
