@@ -22,6 +22,12 @@ export interface DagRun {
   state: string;
 }
 
+export interface DagRunTask {
+  task_id: string;
+  state: string;
+  start_date: string;
+}
+
 export interface DagDetailsResponse {
   dags: DagDetails[];
 }
@@ -38,4 +44,13 @@ export interface DagPipelineRequest {
   old_pipeline: string;
   new_pipeline: string;
   dag_id: string;
+}
+
+export interface DagRunTasksRequest {
+  dag_id: string;
+  dag_run_id: string;
+}
+
+export interface DagRunTasksResponse {
+  tasks: DagRunTask[];
 }
