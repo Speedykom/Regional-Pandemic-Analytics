@@ -3,6 +3,10 @@ import {
   DagForm,
   DagDetailsResponse,
   DagRunsResponse,
+  DagPipelineResponse,
+  DagPipelineRequest,
+  DagRunTasksResponse,
+  DagRunTasksRequest,
 } from '../../modules/process/interface';
 import { baseQuery } from '@/common/redux/api';
 
@@ -23,6 +27,19 @@ export const processApi = createApi({
       }),
       invalidatesTags: ['process'],
     }),
+    getProcessPipelineById: builder.query<DagPipelineResponse, string>({
+      query: (dag_id) => ({
+        url: `/process/${dag_id}`,
+      }),
+    }),
+    updateProcessPipelineById: builder.mutation<void, DagPipelineRequest>({
+      query: ({ old_pipeline, new_pipeline, dag_id }) => ({
+        url: `/process/${dag_id}`,
+        body: { old_pipeline, new_pipeline },
+        method: 'POST',
+      }),
+      invalidatesTags: ['process'],
+    }),
     toggleProcessStatus: builder.mutation<void, string>({
       query: (dag_id) => ({
         url: `/process/${dag_id}`,
@@ -33,6 +50,13 @@ export const processApi = createApi({
     getProcessHistoryById: builder.query<DagRunsResponse, string>({
       query: (dag_id) => `/process/${dag_id}/dagRuns`,
       providesTags: ['process'],
+    }),
+    getProcessHistoryTasksbyId: builder.query<
+      DagRunTasksResponse,
+      DagRunTasksRequest
+    >({
+      query: ({ dag_id, dag_run_id }) =>
+        `/process/${dag_id}/dagRuns/${dag_run_id}/taskInstances`,
     }),
     runProcessById: builder.mutation<void, string>({
       query: (dag_id) => ({
@@ -47,7 +71,10 @@ export const processApi = createApi({
 export const {
   useGetProcessQuery,
   useCreateProcessMutation,
+  useGetProcessPipelineByIdQuery,
+  useUpdateProcessPipelineByIdMutation,
   useToggleProcessStatusMutation,
   useGetProcessHistoryByIdQuery,
+  useGetProcessHistoryTasksbyIdQuery,
   useRunProcessByIdMutation,
 } = processApi;
