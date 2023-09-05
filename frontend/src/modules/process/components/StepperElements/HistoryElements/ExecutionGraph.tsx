@@ -2,20 +2,20 @@ import { useGetProcessHistoryTasksbyIdQuery } from '@/modules/process/process';
 import { Button, Card } from '@tremor/react';
 import { BiLoaderAlt, BiCheck } from 'react-icons/bi';
 import { IconContext } from 'react-icons';
-import { DagRunTask } from '@/modules/process/interface';
-import { ArrowLongRightIcon } from '@heroicons/react/24/solid';
+import { DagRunTask, DagRunTasksResponse } from '@/modules/process/interface';
+import { ArrowLongRightIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
 interface ExecutionGraphProps {
   dagId: string;
   dagRunId: string;
 }
 
-function Graph({ dagId, dagRunId }: ExecutionGraphProps) {
-  const { data, isSuccess } = useGetProcessHistoryTasksbyIdQuery({
-    dag_id: dagId,
-    dag_run_id: dagRunId,
-  });
+interface GraphProps {
+  data: DagRunTasksResponse | undefined;
+  isSuccess: boolean;
+}
 
-  if (isSuccess) {
+function Graph({ data, isSuccess }: GraphProps) {
+  if (isSuccess && data) {
     // data.tasks is an immutable array
     const tasks = data.tasks.slice();
 
@@ -58,7 +58,9 @@ function Graph({ dagId, dagRunId }: ExecutionGraphProps) {
 
     return (
       <div>
-        <div className="flex space-x-2">{insertArrows(tasksJSX)}</div>
+        <div className="flex space-x-2 justify-center">
+          {insertArrows(tasksJSX)}
+        </div>
       </div>
     );
   } else {
@@ -70,15 +72,31 @@ export default function ExecutionGraph({
   dagId,
   dagRunId,
 }: ExecutionGraphProps) {
+  const { data, isSuccess, refetch } = useGetProcessHistoryTasksbyIdQuery({
+    dag_id: dagId,
+    dag_run_id: dagRunId,
+  });
+
   return (
     <Card className="h-72">
-      <div className="flex flex space-x-2">
-        {dagRunId === '' ? (
-          'Please select an execution'
-        ) : (
-          <Graph dagId={dagId} dagRunId={dagRunId} />
-        )}
-      </div>
+      {dagRunId === '' ? (
+        'Please select an execution'
+      ) : (
+        <div className="flex flex-col h-full text-center">
+          <div className="basis-1/4 flex flex-row-reverse">
+            <div>
+              <Button size="sm" onClick={refetch}>
+                <ArrowPathIcon className="w-5" />
+              </Button>
+            </div>
+          </div>
+          <div className="basis-3/4 flex justify-center">
+            <div>
+              <Graph data={data} isSuccess={isSuccess} />
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }
