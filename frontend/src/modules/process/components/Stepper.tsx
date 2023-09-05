@@ -6,6 +6,8 @@ import DataSourceSelection from './StepperElements/DataSourceSelection';
 import Orchestration from './StepperElements/Orchestration';
 import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
+import AnalyticsDataModel from './StepperElements/AnalyticsDataModel';
+import Charts from './StepperElements/Charts';
 
 interface StepperProps {
   pipeline: string;
@@ -77,8 +79,12 @@ export default function Stepper({
               nextDagRun={nextDagRun}
             />
           </TabPanel>
-          <TabPanel className="px-20 pt-2">Work in progress</TabPanel>
-          <TabPanel className="px-20 pt-2">Work in progress</TabPanel>
+          <TabPanel className="px-20 pt-2">
+            <AnalyticsDataModel />
+          </TabPanel>
+          <TabPanel className="px-20 pt-2">
+            <Charts />
+          </TabPanel>
         </TabPanels>
       </TabGroup>
     </div>
