@@ -2,7 +2,7 @@ import { useGetProcessHistoryTasksbyIdQuery } from '@/modules/process/process';
 import { Button, Card } from '@tremor/react';
 import { BiLoaderAlt, BiCheck } from 'react-icons/bi';
 import { IconContext } from 'react-icons';
-import { DagRunTask, DagRunTasksResponse } from '@/modules/process/interface';
+import { DagRunTask } from '@/modules/process/interface';
 import { ArrowLongRightIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
 interface ExecutionGraphProps {
   dagId: string;
@@ -10,62 +10,53 @@ interface ExecutionGraphProps {
 }
 
 interface GraphProps {
-  data: DagRunTasksResponse | undefined;
-  isSuccess: boolean;
+  tasks: DagRunTask[];
 }
 
-function Graph({ data, isSuccess }: GraphProps) {
-  if (isSuccess && data) {
-    // data.tasks is an immutable array
-    const tasks = data.tasks.slice();
-
-    tasks.sort((a, b) => {
-      const dateA = new Date(a.start_date);
-      const dateB = new Date(b.start_date);
-      return dateA.getTime() - dateB.getTime();
-    });
-
-    const tasksJSX = tasks.map((element: DagRunTask) => {
-      return (
-        <Button
-          color={element.state === 'success' ? 'green' : 'blue'}
-          key={element.task_id}
-        >
-          <div className="flex space-x-1">
-            {element.state === 'success' ? (
-              <BiCheck />
-            ) : (
-              <IconContext.Provider value={{ className: 'animate-spin' }}>
-                <BiLoaderAlt />
-              </IconContext.Provider>
-            )}
-            <span>{element.task_id}</span>
-          </div>
-        </Button>
-      );
-    });
-
-    const insertArrows = (arr: JSX.Element[]) => {
-      const legend = <ArrowLongRightIcon className="w-6" />;
-      return arr.reduce((acc: JSX.Element[], val, ind, array) => {
-        acc.push(val);
-        if (ind < array.length - 1) {
-          acc.push(legend);
-        }
-        return acc;
-      }, []);
-    };
-
+function Graph({ tasks }: GraphProps) {
+  tasks.sort((a, b) => {
+    const dateA = new Date(a.start_date);
+    const dateB = new Date(b.start_date);
+    return dateA.getTime() - dateB.getTime();
+  });
+  const tasksJSX = tasks.map((element: DagRunTask) => {
     return (
-      <div>
-        <div className="flex space-x-2 justify-center">
-          {insertArrows(tasksJSX)}
+      <Button
+        color={element.state === 'success' ? 'green' : 'blue'}
+        key={element.task_id}
+      >
+        <div className="flex space-x-1">
+          {element.state === 'success' ? (
+            <BiCheck />
+          ) : (
+            <IconContext.Provider value={{ className: 'animate-spin' }}>
+              <BiLoaderAlt />
+            </IconContext.Provider>
+          )}
+          <span>{element.task_id}</span>
         </div>
-      </div>
+      </Button>
     );
-  } else {
-    return <div></div>;
-  }
+  });
+
+  const insertArrows = (arr: JSX.Element[]) => {
+    const legend = <ArrowLongRightIcon className="w-6" />;
+    return arr.reduce((acc: JSX.Element[], val, ind, array) => {
+      acc.push(val);
+      if (ind < array.length - 1) {
+        acc.push(legend);
+      }
+      return acc;
+    }, []);
+  };
+
+  return (
+    <div>
+      <div className="flex space-x-2 justify-center">
+        {insertArrows(tasksJSX)}
+      </div>
+    </div>
+  );
 }
 
 export default function ExecutionGraph({
@@ -91,9 +82,7 @@ export default function ExecutionGraph({
             </div>
           </div>
           <div className="basis-3/4 flex justify-center">
-            <div>
-              <Graph data={data} isSuccess={isSuccess} />
-            </div>
+            <div>{isSuccess && <Graph tasks={data.tasks.slice()} />}</div>
           </div>
         </div>
       )}
