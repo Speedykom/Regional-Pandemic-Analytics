@@ -16,7 +16,6 @@ task_logger = logging.getLogger('airflow.task')
 
 default_args = {
     "owner": "{{owner}}",
-    "description": "{{dag_id}}",
     "depend_on_past": False,
     "start_date": datetime(2023, 3, 24),
     "email_on_failure": False,
@@ -133,7 +132,7 @@ class DruidOperator(BaseOperator):
     task_logger.debug('Druid ingestion still running')
     self.wait_for_completion(process_id)
 
-with DAG("{{dag_id}}", default_args=default_args, schedule_interval="{{schedule_interval}}", catchup=False, is_paused_upon_creation=False) as dag:
+with DAG("{{dag_id}}", default_args=default_args, schedule_interval="{{schedule_interval}}", description="{{description}}", catchup=False, is_paused_upon_creation=False) as dag:
 
     task_logger.debug('Setting up components of DAG')
 
