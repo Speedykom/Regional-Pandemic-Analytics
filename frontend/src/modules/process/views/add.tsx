@@ -39,6 +39,7 @@ export const AddProcess = ({
             name: values.processName,
             pipeline: values.pipelineTemplate,
             schedule_interval: values.scheduleInterval,
+            description: values.description,
           } as DagForm)
             .then(() => {
               // WARNING !!!
@@ -128,6 +129,14 @@ export const AddProcess = ({
                   </SearchSelect>
                 );
               }}
+            />
+          </div>
+
+          <div>
+            <label>Description</label>
+            <TextInput
+              {...register('description', { required: true })}
+              placeholder="Description"
             />
           </div>
         </form>
