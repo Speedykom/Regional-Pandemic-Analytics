@@ -4,6 +4,7 @@ from flask_appbuilder import expose, BaseView as AppBuilderBaseView
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
 from airflow.www.app import csrf
+from flask import Response
 
 bp = Blueprint("factory_endpoint", __name__)
 
@@ -32,15 +33,22 @@ class Factory(AppBuilderBaseView):
     @csrf.exempt
     def factory(self):
         if request.method == "POST":
-            generate_dag(request.json["dag_conf"])
-            return {"Status": "Success"}
+            try:
+                generate_dag(request.json["dag_conf"])
+                return Response(status=201)
+            except:
+                return Response(status=502)
+
         elif request.method == "PUT":
-            update_dag(
-                request.json["old_pipeline"],
-                request.json["new_pipeline"],
-                request.json["dag"],
-            )
-            return {"Status": "Success"}
+            try:
+                update_dag(
+                    request.json["old_pipeline"],
+                    request.json["new_pipeline"],
+                    request.json["dag"],
+                )
+                return Response(status=201)
+            except:
+                return Response(status=502)
 
 
 v_appbuilder_view = Factory()
