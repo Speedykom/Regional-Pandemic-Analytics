@@ -2,6 +2,7 @@ import { useGetProcessHistoryTasksbyIdQuery } from '@/modules/process/process';
 import { Button, Card } from '@tremor/react';
 import { BiLoaderAlt, BiCheck } from 'react-icons/bi';
 import { IconContext } from 'react-icons';
+import { DagRunTask } from '@/modules/process/interface';
 interface ExecutionGraphProps {
   dagId: string;
   dagRunId: string;
@@ -13,28 +14,43 @@ function Graph({ dagId, dagRunId }: ExecutionGraphProps) {
     dag_run_id: dagRunId,
   });
 
-  return (
-    isSuccess &&
-    data.tasks.map((element: any) => {
-      return element.state === 'success' ? (
-        <Button color="green" key={element.task_id}>
-          <div className="flex space-x-1">
-            <BiCheck />
-            <span>{element.task_id}</span>
-          </div>
-        </Button>
-      ) : (
-        <Button key={element.task_id}>
-          <div className="flex space-x-1">
-            <IconContext.Provider value={{ className: 'animate-spin' }}>
-              <BiLoaderAlt />
-            </IconContext.Provider>
-            <span>{element.task_id}</span>
-          </div>
-        </Button>
-      );
-    })
-  );
+  if (isSuccess) {
+    // data.tasks is an immutable array
+    const tasks = data.tasks.slice();
+    tasks.sort((a, b) => {
+      const dateA = new Date(a.start_date);
+      const dateB = new Date(b.start_date);
+      return dateA.getTime() - dateB.getTime();
+    });
+
+    return (
+      <div>
+        <div className="flex space-x-2">
+          {tasks.map((element: DagRunTask) => {
+            return (
+              <Button
+                color={element.state === 'success' ? 'green' : 'blue'}
+                key={element.task_id}
+              >
+                <div className="flex space-x-1">
+                  {element.state === 'success' ? (
+                    <BiCheck />
+                  ) : (
+                    <IconContext.Provider value={{ className: 'animate-spin' }}>
+                      <BiLoaderAlt />
+                    </IconContext.Provider>
+                  )}
+                  <span>{element.task_id}</span>
+                </div>
+              </Button>
+            );
+          })}
+        </div>
+      </div>
+    );
+  } else {
+    return <div></div>;
+  }
 }
 
 export default function ExecutionGraph({
