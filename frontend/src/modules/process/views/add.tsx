@@ -11,6 +11,7 @@ import { useCreateProcessMutation } from '../process';
 import { DagForm } from '../interface';
 import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
+import { toast } from 'react-toastify';
 
 interface AddProcessProps {
   pipelineList: PipelineList;
@@ -38,14 +39,19 @@ export const AddProcess = ({
             name: values.processName,
             pipeline: values.pipelineTemplate,
             schedule_interval: values.scheduleInterval,
-          } as DagForm).then(() => {
-            // WARNING !!!
-            // The only reason why we're using setTimeout
-            // is because Airflow takes time to rescan the dags directory
-            // NEED TO BE CHANGED !!!
-            setTimeout(refetch, 1000);
-            closePanel();
-          });
+          } as DagForm)
+            .then(() => {
+              // WARNING !!!
+              // The only reason why we're using setTimeout
+              // is because Airflow takes time to rescan the dags directory
+              // NEED TO BE CHANGED !!!
+              setTimeout(refetch, 1000);
+              toast.success('A new Process Chain is created !');
+              closePanel();
+            })
+            .catch(() => {
+              toast.error('An error has occured');
+            });
         })}
       >
         Submit
