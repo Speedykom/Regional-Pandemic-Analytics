@@ -52,10 +52,16 @@ export default function ProcessChainList() {
             </div>
           </div>
         )}
-        {isSuccess && (
+        {isSuccess && pipelineList && (
           <div>
             {data.dags.map((process: DagDetails) => {
-              return <ProcessCard key={process.dag_id} process={process} />;
+              return (
+                <ProcessCard
+                  key={process.dag_id}
+                  process={process}
+                  pipelineList={pipelineList}
+                />
+              );
             })}
           </div>
         )}
