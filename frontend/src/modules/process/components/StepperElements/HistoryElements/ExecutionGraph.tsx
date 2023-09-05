@@ -3,6 +3,7 @@ import { Button, Card } from '@tremor/react';
 import { BiLoaderAlt, BiCheck } from 'react-icons/bi';
 import { IconContext } from 'react-icons';
 import { DagRunTask } from '@/modules/process/interface';
+import { ArrowLongRightIcon } from '@heroicons/react/24/solid';
 interface ExecutionGraphProps {
   dagId: string;
   dagRunId: string;
@@ -17,35 +18,49 @@ function Graph({ dagId, dagRunId }: ExecutionGraphProps) {
   if (isSuccess) {
     // data.tasks is an immutable array
     const tasks = data.tasks.slice();
+
     tasks.sort((a, b) => {
       const dateA = new Date(a.start_date);
       const dateB = new Date(b.start_date);
       return dateA.getTime() - dateB.getTime();
     });
 
+    const tasksJSX = tasks.map((element: DagRunTask) => {
+      return (
+        <Button
+          color={element.state === 'success' ? 'green' : 'blue'}
+          key={element.task_id}
+        >
+          <div className="flex space-x-1">
+            {element.state === 'success' ? (
+              <BiCheck />
+            ) : (
+              <IconContext.Provider value={{ className: 'animate-spin' }}>
+                <BiLoaderAlt />
+              </IconContext.Provider>
+            )}
+            <span>{element.task_id}</span>
+          </div>
+        </Button>
+      );
+    });
+
+    const insertArrows = (arr: JSX.Element[]) => {
+      const legend = <ArrowLongRightIcon className="w-6" />;
+      return arr.reduce((acc, val, ind, array) => {
+        // ts error : Argument of type 'Element' is not assignable to parameter of type 'never'
+        acc.push(val);
+        if (ind < array.length - 1) {
+          // ts error : Argument of type 'Element' is not assignable to parameter of type 'never'
+          acc.push(legend);
+        }
+        return acc;
+      }, []);
+    };
+
     return (
       <div>
-        <div className="flex space-x-2">
-          {tasks.map((element: DagRunTask) => {
-            return (
-              <Button
-                color={element.state === 'success' ? 'green' : 'blue'}
-                key={element.task_id}
-              >
-                <div className="flex space-x-1">
-                  {element.state === 'success' ? (
-                    <BiCheck />
-                  ) : (
-                    <IconContext.Provider value={{ className: 'animate-spin' }}>
-                      <BiLoaderAlt />
-                    </IconContext.Provider>
-                  )}
-                  <span>{element.task_id}</span>
-                </div>
-              </Button>
-            );
-          })}
-        </div>
+        <div className="flex space-x-2">{insertArrows(tasksJSX)}</div>
       </div>
     );
   } else {
