@@ -1,39 +1,27 @@
 import { Disclosure } from '@headlessui/react';
 import { Badge, Button, Accordion, AccordionBody } from '@tremor/react';
 import { DagDetails } from '../interface';
-import { BiChart, BiGitMerge, BiTable } from 'react-icons/bi';
-import { AiOutlineSchedule } from 'react-icons/ai';
 import {
+  useGetProcessPipelineByIdQuery,
   useRunProcessByIdMutation,
   useToggleProcessStatusMutation,
 } from '../process';
 import { ChevronRightIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
-import { History } from './History';
-interface IProcessCard {
+import Stepper from './Stepper';
+import { PipelineList } from '@/modules/pipeline/interface';
+interface ProcessCardProps {
   process: DagDetails;
+  pipelineList: PipelineList;
 }
 
-const steps = [
-  {
-    title: 'Data Source Selection',
-    icon: <BiGitMerge />,
-  },
-  {
-    title: 'Orchestration',
-    icon: <AiOutlineSchedule />,
-  },
-  {
-    title: 'Analytics Data Model',
-    icon: <BiTable />,
-  },
-  {
-    title: 'Charts',
-    icon: <BiChart />,
-  },
-];
-
-export default function ProcessCard({ process }: IProcessCard) {
+export default function ProcessCard({
+  process,
+  pipelineList,
+}: ProcessCardProps) {
+  const { data, isSuccess, refetch } = useGetProcessPipelineByIdQuery(
+    process.dag_id
+  );
   const [runProcessById] = useRunProcessByIdMutation();
   const [toggleProcessStatus] = useToggleProcessStatusMutation();
 
@@ -46,7 +34,7 @@ export default function ProcessCard({ process }: IProcessCard) {
           as="div"
           className="w-full flex items-center justify-between text-tremor-content-emphasis pr-9 m-3"
         >
-          <div className="w-fulL flex justify-between">
+          <div className="w-fulL flex justify-between items-center">
             <span className="flex space-x-10 ml-3">
               <span>
                 <div className="mb-2 text-xs font-bold">Name</div>
@@ -119,20 +107,18 @@ export default function ProcessCard({ process }: IProcessCard) {
             />
           </div>
         </Disclosure.Button>
-        {open && (
+        {open && isSuccess && (
           <AccordionBody>
-            <div className="flex flex-col">
-              <div className="flex justify-center space-x-10">
-                {steps.map((step) => {
-                  return (
-                    <div key={step.title} className="p-2 flex space-x-2">
-                      <span>{step.icon}</span>
-                      <span>{step.title}</span>
-                    </div>
-                  );
-                })}
-              </div>
-              <History dagId={process.dag_id} />
+            <div className="flex flex-col space-y-2 pt-2 px-10 pb-1">
+              <Stepper
+                pipeline={data.pipeline}
+                pipelineList={pipelineList}
+                dagId={process.dag_id}
+                refetch={refetch}
+                description={process.description}
+                nextDagRun={process.next_dagrun}
+                lastParsedTime={process.last_parsed_time}
+              />
             </div>
           </AccordionBody>
         )}
