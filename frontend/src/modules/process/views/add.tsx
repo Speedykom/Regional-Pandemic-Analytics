@@ -2,6 +2,7 @@ import Drawer from '@/common/components/common/Drawer';
 import { schedule_intervals } from '@/common/utils/processs';
 import {
   Button,
+  DatePicker,
   SearchSelect,
   SearchSelectItem,
   TextInput,
@@ -26,7 +27,7 @@ export const AddProcess = ({
   panelState,
   closePanel,
 }: AddProcessProps) => {
-  const { register, handleSubmit, control } = useForm();
+  const { register, handleSubmit, control, setValue } = useForm();
 
   const [createProcess] = useCreateProcessMutation();
 
@@ -35,9 +36,13 @@ export const AddProcess = ({
       <Button
         className="bg-prim text-white border-0 hover:bg-prim-hover"
         onClick={handleSubmit((values) => {
+          values.date.setHours(12, 0, 0);
           createProcess({
             name: values.processName,
             pipeline: values.pipelineTemplate,
+            // sending date without seconds because the backend is python3.9
+            // and it can not handle seconds in isoString
+            date: values.date.toISOString().split('T')[0],
             schedule_interval: values.scheduleInterval,
             description: values.description,
           } as DagForm)
@@ -76,7 +81,7 @@ export const AddProcess = ({
       footer={footer}
     >
       <div className="w-96 px-3">
-        <form className="flex flex-col space-y-3">
+        <div className="flex flex-col space-y-3">
           <div>
             <label>Process Chain</label>
             <TextInput
@@ -111,6 +116,28 @@ export const AddProcess = ({
           </div>
 
           <div>
+            <label>Start Date</label>
+            <Controller
+              name="date"
+              control={control}
+              render={({ field }) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { value: _, ...rest } = field;
+                return (
+                  <DatePicker
+                    {...rest}
+                    onValueChange={(v) => {
+                      // the backend is using python 3.9 and it does not support iso string with milliseconds
+                      setValue('date', v);
+                    }}
+                    placeholder="Select Date"
+                  />
+                );
+              }}
+            />
+          </div>
+
+          <div>
             <label>Schedule Interval</label>
             <Controller
               name="scheduleInterval"
@@ -139,7 +166,7 @@ export const AddProcess = ({
               placeholder="Description"
             />
           </div>
-        </form>
+        </div>
       </div>
     </Drawer>
   );
