@@ -36,14 +36,13 @@ export const AddProcess = ({
       <Button
         className="bg-prim text-white border-0 hover:bg-prim-hover"
         onClick={handleSubmit((values) => {
-          const date = values.date;
-
+          values.date.setHours(12, 0, 0);
           createProcess({
             name: values.processName,
             pipeline: values.pipelineTemplate,
             // sending date without seconds because the backend is python3.9
             // and it can not handle seconds in isoString
-            date: date.toISOString().split('T')[0],
+            date: values.date.toISOString().split('T')[0],
             schedule_interval: values.scheduleInterval,
             description: values.description,
           } as DagForm)
