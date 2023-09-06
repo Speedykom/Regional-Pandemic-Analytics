@@ -132,7 +132,6 @@ class ProcessView(ViewSet):
             schedule_interval=request.data["schedule_interval"],
             date=datetime.fromisoformat(request.data["date"]),
         )
-        print(new_dag_config.date)
 
         # Run factory by passing config to create a process chain
         airflow_internal_url = AirflowInstance.url.removesuffix("/api/v1")
