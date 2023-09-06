@@ -2,8 +2,9 @@ import React from 'react';
 
 const LearnMore: React.FC = () => {
   return (
-    <div className="p-4 bg-gray-200 border border-gray-300 rounded">
+    <div className="m-4 p-4 bg-gray-200 border border-gray-300 rounded">
       <h2 className="text-xl font-bold text-green-600 mb-2">
+        {' '}
         Learn More about RePan
       </h2>
       <p className="text-base text-gray-700">
