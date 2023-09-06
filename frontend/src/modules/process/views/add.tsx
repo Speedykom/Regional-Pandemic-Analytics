@@ -37,9 +37,6 @@ export const AddProcess = ({
         className="bg-prim text-white border-0 hover:bg-prim-hover"
         onClick={handleSubmit((values) => {
           const date = values.date;
-          // when you select a date in the calender the value returned from the component
-          // is the date selected -1 day
-          date?.setDate(date.getDate() + 1);
 
           createProcess({
             name: values.processName,
@@ -131,7 +128,6 @@ export const AddProcess = ({
                   <DatePicker
                     {...rest}
                     onValueChange={(v) => {
-                      // v?.setDate(v.getDate() + 1);
                       // the backend is using python 3.9 and it does not support iso string with milliseconds
                       setValue('date', v);
                     }}
