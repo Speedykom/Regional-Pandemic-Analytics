@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 import requests
 import os
 from rest_framework.viewsets import ViewSet
@@ -18,12 +18,20 @@ class DagDTO:
     factory_id = "FACTORY"
 
     def __init__(
-        self, owner, description, user_id, dag_id, schedule_interval, pipeline_name
+        self,
+        owner,
+        description,
+        user_id,
+        dag_id,
+        date,
+        schedule_interval,
+        pipeline_name,
     ):
         self.owner = owner
         self.description = description
         self.user_id = user_id
         self.dag_id = dag_id
+        self.date = date
         self.schedule_interval = schedule_interval
         self.pipeline_name = pipeline_name
 
@@ -93,7 +101,6 @@ class ProcessView(ViewSet):
 
         if airflow_response.ok:
             airflow_json = airflow_response.json()["dags"]
-            print(airflow_json)
             # Only returns the dags which owners flag is the same as the username
             for dag in airflow_json:
                 if user_name in dag["owners"]:
@@ -123,7 +130,9 @@ class ProcessView(ViewSet):
             dag_id=request.data["name"].replace(" ", "-").lower(),
             pipeline_name=request.data["pipeline"],
             schedule_interval=request.data["schedule_interval"],
+            date=datetime.fromisoformat(request.data["date"]),
         )
+        print(new_dag_config.date)
 
         # Run factory by passing config to create a process chain
         airflow_internal_url = AirflowInstance.url.removesuffix("/api/v1")
@@ -136,6 +145,7 @@ class ProcessView(ViewSet):
                     "description": f"{new_dag_config.description}",
                     "user_id": f"{new_dag_config.user_id}",
                     "dag_id": f"{new_dag_config.dag_id}",
+                    "date": f"{new_dag_config.date.year}, {new_dag_config.date.month}, {new_dag_config.date.day}",
                     "schedule_interval": f"{new_dag_config.schedule_interval}",
                     "pipeline_name": f"{new_dag_config.pipeline_name}.hpl",
                 }
@@ -242,7 +252,6 @@ class ProcessRunView(ViewSet):
                         state=dag_run["state"],
                     ).__dict__
                 )
-            print(dag_runs)
             return Response({"dag_runs": dag_runs}, status=status.HTTP_200_OK)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
@@ -254,7 +263,6 @@ class ProcessRunView(ViewSet):
             auth=(AirflowInstance.username, AirflowInstance.password),
             json={},
         )
-        print(airflow_response)
 
         if airflow_response.ok:
             return Response({"status": "success"}, status=status.HTTP_201_CREATED)
