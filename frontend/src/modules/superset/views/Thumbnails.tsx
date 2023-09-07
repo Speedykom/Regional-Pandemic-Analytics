@@ -65,7 +65,7 @@ export const ThumbnailList = () => {
                             className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
                           >
                             <BsFillPieChartFill className="mt-1 text-prim" />{' '}
-                            <span>Chart Preview</span>
+                            <span>Preview Dashboard</span>
                           </button>
                         </li>
                         <li>
@@ -76,7 +76,7 @@ export const ThumbnailList = () => {
                             className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
                           >
                             <BsFillEyeFill className="mt-1 text-indigo-700" />{' '}
-                            <span className="text-sm">Chart Details</span>
+                            <span className="text-sm">Dashboard Details</span>
                           </button>
                         </li>
                         <li>
