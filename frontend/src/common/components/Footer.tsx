@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
       <div className="container mx-auto max-w-screen-lg">
         <div className="px-4 flex flex-col md:flex-row items-center justify-between text-gray-600">
           <div className="mb-4 md:mb-0 flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
-            <ul className="mb-4 md:mb-0 flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
+            <ul className="mb-4 md:mb-0 flex space-x-4">
               <li>
                 <Link href="/footer/learn-more" className="text-prim text-xs">
                   Learn More
