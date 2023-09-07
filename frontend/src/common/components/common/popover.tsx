@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import React, { ReactNode, useRef, useState } from 'react';
 import ReactDom from 'react-dom';
@@ -19,11 +19,7 @@ const Portal = ({ children }: portalProps) => {
 
 // @param space: it is the dist between the tip and the element
 // @param children: It is expected to have only 2 children: first for main element and second for popover element
-const Popover = ({
-  children,
-  position = 'left',
-  space = 5,
-}: popoverProps) => {
+const Popover = ({ children, position = 'left', space = 5 }: popoverProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const popoverRef: any = useRef();
   const elementRef: any = useRef();
