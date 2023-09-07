@@ -71,7 +71,7 @@ export const ThumbnailList = () => {
                         <li>
                           <button
                             onClick={() =>
-                              alert(`Details preview in progress`)
+                              alert('Details preview in progress')
                             }
                             className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
                           >
@@ -82,7 +82,7 @@ export const ThumbnailList = () => {
                         <li>
                           <button
                             onClick={() =>
-                              alert(`Make favorite in progress`)
+                              alert('Make favorite in progress')
                             }
                             className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
                           >
