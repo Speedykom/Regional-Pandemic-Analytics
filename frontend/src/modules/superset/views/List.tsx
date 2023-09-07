@@ -32,8 +32,6 @@ export const DashboardList = () => {
 
   const thumbDash = (ids: string) => {
     setId(ids);
-    console.log(id);
-    console.log(data);
   };
 
   return (
