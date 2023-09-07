@@ -75,7 +75,7 @@ urlpatterns = [
     path('superset/csrf/token', superset_view.CsrfTokenApi.as_view()),  # get csrf token
     path('superset/dashboard/enable-embed', superset_view.EnableEmbed.as_view()),  # enable embed
     path('superset/dashboard/embed/<str:id>', superset_view.GetEmbeddable.as_view()),  # get embedded dashboard
-    path('superset/dashboard/thumbnail/<str:id>', superset_view.GetThumbnail.as_view()), # get dashboard thumbnail
+    path('superset/dashboard/thumbnail/<str:thumbnail_url>', superset_view.GetThumbnail.as_view()), # get dashboard thumbnail
     
     # ---------------------- Piepline  Endpoints ------------------------------------------
     path("pipeline", include("pipeline.urls")),
