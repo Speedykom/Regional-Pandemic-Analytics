@@ -70,9 +70,6 @@ export const ThumbnailList = () => {
                         </li>
                         <li>
                           <button
-                            onClick={() =>
-                              alert('Details preview in progress')
-                            }
                             className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
                           >
                             <BsFillEyeFill className="mt-1 text-indigo-700" />{' '}
@@ -81,9 +78,6 @@ export const ThumbnailList = () => {
                         </li>
                         <li>
                           <button
-                            onClick={() =>
-                              alert('Make favorite in progress')
-                            }
                             className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
                           >
                             <BsFillHeartFill className="mt-1 text-red-600" />{' '}
