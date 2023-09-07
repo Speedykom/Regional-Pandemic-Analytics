@@ -5,6 +5,7 @@ from superset.security import SupersetSecurityManager
 from flask_appbuilder.security.sqla.models import (
     User
 )
+import jose
 from flask import Request
 from flask_appbuilder.views import expose
 from werkzeug.wrappers import Response as WerkzeugResponse
@@ -225,21 +226,27 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
                     keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
                 options = {"verify_signature": True,
                            "verify_aud": False, "verify_exp": True}
-                full_data = keycloak_openid.decode_token(access_token, key=KEYCLOAK_PUBLIC_KEY, options=options)
-                keycloak_admin = KeycloakAdmin(
-                        server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL + "/auth",
-                        username=SUPERSET_KEYCLOAK_ADMIN_USERNAME,
-                        password=SUPERSET_KEYCLOAK_ADMIN_PASSWORD,
-                        realm_name=SUPERSET_KEYCLOAK_APP_REALM,
-                        user_realm_name="master",
-                        verify=False)
-                sessions = keycloak_admin.get_sessions(user_id=full_data["sub"])
+                try:
+                    full_data = keycloak_openid.decode_token(access_token, key=KEYCLOAK_PUBLIC_KEY, options=options)
+                        
+                    keycloak_admin = KeycloakAdmin(
+                            server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL + "/auth",
+                            username=SUPERSET_KEYCLOAK_ADMIN_USERNAME,
+                            password=SUPERSET_KEYCLOAK_ADMIN_PASSWORD,
+                            realm_name=SUPERSET_KEYCLOAK_APP_REALM,
+                            user_realm_name="master",
+                            verify=False)
+                    sessions = keycloak_admin.get_sessions(user_id=full_data["sub"])
 
-                if (len(sessions) > 0):
-                    session["last_sso_check"] = ts
-                else:
-                    logout_user()
-                    redirect("/")
+                    if (len(sessions) > 0):
+                        session["last_sso_check"] = ts
+                    else:
+                        logout_user()
+                        redirect("/")
+                except jose.exceptions.ExpiredSignatureError:
+                    session.clear()
+                    redirect("/login")
+                
 
 GUEST_ROLE_NAME = "Alpha"
 CUSTOM_SECURITY_MANAGER = CustomSupersetSecurityManager
