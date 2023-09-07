@@ -4,3 +4,4 @@ yarn.lock
 .env
 next-env.d.ts
 public/charts
+public/books
