@@ -15,6 +15,12 @@ if [ ! -f "$ENV_FILE" ]; then
   exit 1
 fi
 
+if [ "$ENV_FILE" == ".env.dev" && "$ENV_FILE" == "./.env.dev"]; then
+  dockerfile=docker-compose.dev.yml
+else
+  dockerfile=docker-compose.prod.yml
+fi  
+
 # Load environment variables from the provided .env file
 source "$ENV_FILE"
 
@@ -51,7 +57,7 @@ for domain in "${domain_names[@]}"; do
   echo "### Creating dummy certificate for $domain ..."
   path="/etc/letsencrypt/live/$domain"
   mkdir -p "$data_path/conf/live/$domain"
-  docker compose --env-file ./.env.prod -f docker-compose.yml -f docker-compose.prod.yml run --rm --entrypoint "\
+  docker compose -f $dockerfile run --rm --entrypoint "\
     openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
       -keyout '$path/privkey.pem' \
       -out '$path/fullchain.pem' \
@@ -62,13 +68,13 @@ for domain in "${domain_names[@]}"; do
 done 
 
 echo "### Starting nginx ..."
-docker compose --env-file ./.env.prod -f docker-compose.yml -f docker-compose.prod.yml up --force-recreate -d nginx
+make start-dev
 echo
 
 for domain in "${domain_names[@]}"; do
 
   echo "### Deleting dummy certificate for $domain ..."
-  docker compose --env-file ./.env.prod -f docker-compose.yml -f docker-compose.prod.yml run --rm --entrypoint "\
+  docker compose -f $dockerfile run --rm --entrypoint "\
     rm -Rf /etc/letsencrypt/live/$domain && \
     rm -Rf /etc/letsencrypt/archive/$domain && \
     rm -Rf /etc/letsencrypt/renewal/$domain.conf" certbot
@@ -88,7 +94,7 @@ esac
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
 for domain in "${domain_names[@]}"; do
-  docker compose --env-file ./.env.prod -f docker-compose.yml -f docker-compose.prod.yml run --rm --entrypoint "\
+  docker compose -f $dockerfile run --rm --entrypoint "\
   certbot certonly --cert-name $domain --webroot -w /var/www/certbot \
       $staging_arg \
       $email_arg \
@@ -100,4 +106,4 @@ for domain in "${domain_names[@]}"; do
 done
 
 echo "### Reloading nginx ..."
-docker compose exec nginx nginx -s reload
+make start-dev service=nginx
