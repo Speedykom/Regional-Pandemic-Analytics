@@ -3,23 +3,23 @@
 import React, { ReactNode, useRef, useState } from 'react';
 import ReactDom from 'react-dom';
 
-interface portalProps {
+interface PortalProps {
   children: ReactNode;
 }
 
-interface popoverProps {
+interface PopoverProps {
   children: any;
   position?: string;
   space?: number;
 }
 
-const Portal = ({ children }: portalProps) => {
+const Portal = ({ children }: PortalProps) => {
   return ReactDom.createPortal(children, document.body);
 };
 
 // @param space: it is the dist between the tip and the element
 // @param children: It is expected to have only 2 children: first for main element and second for popover element
-const Popover = ({ children, position = 'left', space = 5 }: popoverProps) => {
+const Popover = ({ children, position = 'left', space = 5 }: PopoverProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const popoverRef: any = useRef();
   const elementRef: any = useRef();

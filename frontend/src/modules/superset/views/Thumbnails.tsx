@@ -69,17 +69,13 @@ export const ThumbnailList = () => {
                           </button>
                         </li>
                         <li>
-                          <button
-                            className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
-                          >
+                          <button className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white">
                             <BsFillEyeFill className="mt-1 text-indigo-700" />{' '}
                             <span className="text-sm">Dashboard Details</span>
                           </button>
                         </li>
                         <li>
-                          <button
-                            className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white"
-                          >
+                          <button className="flex space-x-2 border-b w-full py-1 px-3 hover:bg-orange-600 hover:text-white">
                             <BsFillHeartFill className="mt-1 text-red-600" />{' '}
                             <span>Make Favorite</span>
                           </button>
