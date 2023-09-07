@@ -18,20 +18,13 @@ import {
   ExclamationCircleIcon,
   EyeIcon,
 } from '@heroicons/react/24/outline';
-import { useState } from 'react';
 
 export const DashboardList = () => {
   const { data } = useGetDashboardsQuery();
-  const [id, setId] = useState('');
-  // const { data: thumb } = useGetThumbnailQuery(String(2))
   const router = useRouter();
 
   const embedDashboard = (id: string) => {
     router.push(`/dashboards/${id}`);
-  };
-
-  const thumbDash = (ids: string) => {
-    setId(ids);
   };
 
   return (
@@ -123,15 +116,6 @@ export const DashboardList = () => {
                         onClick={() => embedDashboard(String(item?.id))}
                       >
                         Preview
-                      </Button>
-                      <Button
-                        icon={EyeIcon}
-                        title="Thumbnail"
-                        variant="primary"
-                        className="text-white shadow-md bg-prim hover:bg-prim-hover"
-                        onClick={() => thumbDash(String(item?.id))}
-                      >
-                        Thumbnail
                       </Button>
                     </div>
                   </TableCell>
