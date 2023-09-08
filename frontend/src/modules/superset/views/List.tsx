@@ -64,30 +64,30 @@ export const DashboardList = () => {
               {(data?.result || []).map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>
-                    <Text className="font-sans">{item.dashboard_title}</Text>
+                    <Text className="font-sans">{item?.dashboard_title}</Text>
                   </TableCell>
                   <MediaQuery minWidth={768}>
                     <TableCell className="">
                       <Text>
-                        {item.created_by.first_name} {item.created_by.last_name}
+                        {item?.created_by?.first_name} {item?.created_by?.last_name}
                       </Text>
                     </TableCell>
                   </MediaQuery>
                   <MediaQuery minWidth={1090}>
                     <TableCell className="">
-                      <Text>{item.created_on_delta_humanized}</Text>
+                      <Text>{item?.created_on_delta_humanized}</Text>
                     </TableCell>
                   </MediaQuery>
                   <MediaQuery minWidth={1220}>
                     <TableCell className="">
                       <Text>
-                        {item.changed_by.first_name} {item.changed_by.last_name}
+                        {item?.changed_by?.first_name} {item?.changed_by?.last_name}
                       </Text>
                     </TableCell>
                   </MediaQuery>
                   <MediaQuery minWidth={1350}>
                     <TableCell className="">
-                      <Text> {item.changed_on_delta_humanized}</Text>
+                      <Text> {item?.changed_on_delta_humanized}</Text>
                     </TableCell>
                     <TableCell className="">
                       {item.status == 'published' ? (
