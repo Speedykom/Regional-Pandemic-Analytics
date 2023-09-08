@@ -69,7 +69,8 @@ export const DashboardList = () => {
                   <MediaQuery minWidth={768}>
                     <TableCell className="">
                       <Text>
-                        {item?.created_by?.first_name} {item?.created_by?.last_name}
+                        {item?.created_by?.first_name}{' '}
+                        {item?.created_by?.last_name}
                       </Text>
                     </TableCell>
                   </MediaQuery>
@@ -81,7 +82,8 @@ export const DashboardList = () => {
                   <MediaQuery minWidth={1220}>
                     <TableCell className="">
                       <Text>
-                        {item?.changed_by?.first_name} {item?.changed_by?.last_name}
+                        {item?.changed_by?.first_name}{' '}
+                        {item?.changed_by?.last_name}
                       </Text>
                     </TableCell>
                   </MediaQuery>
