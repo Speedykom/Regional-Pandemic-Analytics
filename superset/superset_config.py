@@ -211,7 +211,8 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
     @staticmethod
     def before_request():
         g.user = current_user
-        if current_user.is_authenticated:
+        api_token = request.headers.get('X-KeycloakToken')
+        if current_user.is_authenticated and not api_token:
             access_token, _ = session.get('oauth', "")
             ts = time.time()
             last_check = session.get('last_sso_check', None)
