@@ -71,7 +71,7 @@ export const ChartList = () => {
                   <MediaQuery minWidth={1220}>
                     <TableCell className="">
                       <Text>
-                        {item?.created_by?.first_name} {' '}
+                        {item?.created_by?.first_name}{' '}
                         {item?.created_by?.last_name}
                       </Text>
                     </TableCell>
@@ -82,7 +82,7 @@ export const ChartList = () => {
                     </TableCell>
                     <TableCell className="">
                       <Text>
-                        {item?.changed_by?.first_name} {' '}
+                        {item?.changed_by?.first_name}{' '}
                         {item?.changed_by?.last_name}
                       </Text>
                     </TableCell>
@@ -90,7 +90,7 @@ export const ChartList = () => {
                   <MediaQuery minWidth={1624}>
                     <TableCell className="">
                       <Text>
-                        {item?.changed_by?.first_name} {' '}
+                        {item?.changed_by?.first_name}{' '}
                         {item?.changed_by?.last_name}
                       </Text>
                     </TableCell>
