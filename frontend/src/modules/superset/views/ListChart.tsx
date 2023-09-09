@@ -60,41 +60,44 @@ export const ChartList = () => {
                   </TableCell>
                   <MediaQuery minWidth={768}>
                     <TableCell className="">
-                      <Text>{item.viz_type}</Text>
+                      <Text>{item?.viz_type}</Text>
                     </TableCell>
                   </MediaQuery>
                   <MediaQuery minWidth={1090}>
                     <TableCell className="">
-                      <Text>{item.datasource_name_text}</Text>
+                      <Text>{item?.datasource_name_text}</Text>
                     </TableCell>
                   </MediaQuery>
                   <MediaQuery minWidth={1220}>
                     <TableCell className="">
                       <Text>
-                        {item.created_by.first_name} {item.created_by.last_name}
+                        {item?.created_by?.first_name}{' '}
+                        {item?.created_by?.last_name}
                       </Text>
                     </TableCell>
                   </MediaQuery>
                   <MediaQuery minWidth={1350}>
                     <TableCell className="">
-                      <Text>{item.created_on_delta_humanized}</Text>
+                      <Text>{item?.created_on_delta_humanized}</Text>
                     </TableCell>
                     <TableCell className="">
                       <Text>
-                        {item.changed_by.first_name} {item.changed_by.last_name}
+                        {item?.changed_by?.first_name}{' '}
+                        {item?.changed_by?.last_name}
                       </Text>
                     </TableCell>
                   </MediaQuery>
                   <MediaQuery minWidth={1624}>
                     <TableCell className="">
                       <Text>
-                        {item.changed_by.first_name} {item.changed_by.last_name}
+                        {item?.changed_by?.first_name}{' '}
+                        {item?.changed_by?.last_name}
                       </Text>
                     </TableCell>
                   </MediaQuery>
                   <TableCell>
                     <div className="flex space-x-2 justify-end">
-                      <Text>{item.changed_on_delta_humanized}</Text>
+                      <Text>{item?.changed_on_delta_humanized}</Text>
                     </div>
                   </TableCell>
                 </TableRow>
