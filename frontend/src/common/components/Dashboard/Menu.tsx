@@ -1,6 +1,5 @@
 import {
   BiChart,
-  BiData,
   BiGitMerge,
   BiGitPullRequest,
   BiHome,
@@ -51,12 +50,7 @@ export const MenuData = [
         icon: BiGitPullRequest,
         scope: 'process:read',
       },
-      {
-        title: 'Data',
-        href: '/data',
-        icon: BiData,
-        scope: 'data:read',
-      },
+
       {
         title: 'My Pipelines',
         href: '/pipelines',
