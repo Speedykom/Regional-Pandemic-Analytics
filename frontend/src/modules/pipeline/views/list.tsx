@@ -76,7 +76,7 @@ export const MyPipelines = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Name</TableHeaderCell>
+                <TableHeaderCell>My pipeline</TableHeaderCell>
                 <MediaQuery minWidth={1090}>
                   <TableHeaderCell className="">Description</TableHeaderCell>
                 </MediaQuery>
