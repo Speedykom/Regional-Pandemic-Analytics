@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const LearnMore: React.FC = () => {
@@ -13,4 +12,3 @@ const LearnMore: React.FC = () => {
 };
 
 export default LearnMore;
-

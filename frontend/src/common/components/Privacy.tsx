@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const Privacy: React.FC = () => {
@@ -13,4 +12,3 @@ const Privacy: React.FC = () => {
 };
 
 export default Privacy;
-

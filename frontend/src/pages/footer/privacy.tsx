@@ -1,5 +1,5 @@
 import React from 'react';
-import Privacy from '../../common/components/Privacy'; 
+import Privacy from '../../common/components/Privacy';
 
 const PrivacyPage: React.FC = () => {
   return (
@@ -11,4 +11,3 @@ const PrivacyPage: React.FC = () => {
 };
 
 export default PrivacyPage;
-

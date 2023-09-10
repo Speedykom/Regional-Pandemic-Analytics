@@ -1,7 +1,6 @@
 import React from 'react';
 import TermsOfService from '../../common/components/TermsOfServices';
 
-
 const TermsOfServicePage: React.FC = () => {
   return (
     <div className="footerSection">
@@ -12,4 +11,3 @@ const TermsOfServicePage: React.FC = () => {
 };
 
 export default TermsOfServicePage;
-
