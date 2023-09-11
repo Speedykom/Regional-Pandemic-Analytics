@@ -56,6 +56,19 @@ OAUTH_PROVIDERS = [
     }
 ]
 
+# JWTs are decyphered by `JWTManager` from `flask-jwt-extended`. That library fetches its
+# configuration from Flask's `current_app.config`. Short of subclassing the `Config` class and
+# convincing Superset of using that subclass there does not appear to be a way to have a dynamic
+# property in the config for the `JWT_PUBLIC_KEY`. Therefore, we read the key from Keycloak once
+# here, even though that strips us of the ability to replace the public key at runtime.
+JWT_ALGORITHM="RS256"
+keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_INTERNAL_URL,
+                                client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
+                                realm_name=SUPERSET_KEYCLOAK_APP_REALM,
+                                client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET)
+# Decode token to get the roles
+JWT_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" + keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
+
 # Will allow user self registration, allowing to create Flask users from Authorized User
 AUTH_USER_REGISTRATION = True
 AUTH_ROLES_SYNC_AT_LOGIN = True
@@ -69,6 +82,12 @@ AUTH_ROLES_MAPPING = {
 }
 # The default user self registration role
 AUTH_USER_REGISTRATION_ROLE = os.getenv('AUTH_USER_REGISTRATION_ROLE','Public')
+
+# Mapping of Keycloak user names or ids to superset user names. This is used in JWT-based
+# authentication.
+REPAN_JWT_USER_MAPPING = {
+    "service-account-airflow": "speedykom"
+}
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +147,7 @@ class CustomAuthOAuthView(AuthOAuthView):
         else:
             try:
                 state = jwt.decode(
-                    request.args["state"], session["oauth_state"], algorithms=["HS256"]
+                    request.args["state"], session["oauth_state"], algorithms=["HS256", "RS256"]
                 )
             except (jwt.InvalidTokenError, KeyError):
                 flash(as_unicode("Invalid state signature"), "warning")
@@ -168,7 +187,7 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
             options = {"verify_signature": True, "verify_aud": False, "verify_exp": True}
             full_data = keycloak_openid.decode_token(resp['access_token'], key=KEYCLOAK_PUBLIC_KEY, options=options)
             #logger.debug("Full User info from Keycloak: %s", full_data)
-            
+
             return {
                 "username": data.get("preferred_username", ""),
                 "first_name": data.get("given_name", ""),
@@ -201,10 +220,10 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
                 return user
             else:
                 raise ValueError("Keycloak Token is invalid")
-        
+
         if feature_flag_manager.is_feature_enabled("EMBEDDED_SUPERSET"):
             return self.get_guest_user_from_request(request)
-        
+
         # finally, return None if both methods did not login the user
         return None
 
@@ -229,7 +248,7 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
                            "verify_aud": False, "verify_exp": True}
                 try:
                     full_data = keycloak_openid.decode_token(access_token, key=KEYCLOAK_PUBLIC_KEY, options=options)
-                        
+
                     keycloak_admin = KeycloakAdmin(
                             server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL + "/auth",
                             username=SUPERSET_KEYCLOAK_ADMIN_USERNAME,
@@ -247,7 +266,23 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
                 except jose.exceptions.ExpiredSignatureError:
                     session.clear()
                     redirect("/login")
-                
+
+    # The default implementation will simply look for the numeric user ID in `sub`. Override in
+    # order to implement a slightly more complex user account lookup logic
+    def load_user_jwt(self, _jwt_header, jwt_data):
+        superset_user_name = None
+        for claim in ["sub", "preferred_username"]:
+            remote = jwt_data[claim]
+            if remote in REPAN_JWT_USER_MAPPING:
+                superset_user_name = REPAN_JWT_USER_MAPPING[remote]
+                break
+        if superset_user_name is None:
+            superset_user_name = jwt_data["preferred_username"]
+        user = self.find_user(username = superset_user_name)
+        g.user = user
+        return user
+
+
 
 GUEST_ROLE_NAME = "Alpha"
 CUSTOM_SECURITY_MANAGER = CustomSupersetSecurityManager
