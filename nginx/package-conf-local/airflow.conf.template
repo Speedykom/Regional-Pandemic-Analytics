@@ -12,6 +12,7 @@ server {
 	}
 }
 
+
 server {
 	listen 443 ssl;
 	server_name $NGINX_AIRFLOW_DOMAIN_NAME;
@@ -21,13 +22,17 @@ server {
 	#include /etc/letsencrypt/options-ssl-nginx.conf;
 	#ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
+	# if ($cookie_session) {
+	# 	return 301 https://$host$request_uri/login;
+	# }
+
 	location / {
 		proxy_set_header Host                    $host;
     	proxy_set_header X-Real-IP               $remote_addr;
     	proxy_set_header X-Scheme                $scheme;
-    	proxy_set_header X-Auth-Request-Redirect $request_uri;
-		proxy_set_header X-Auth-Request-Redirect $scheme://$host$request_uri;
-		proxy_pass http://$NGINX_UPSTREAM_AIRFLOW:8080/;
+    	proxy_set_header X-Auth-Request-Redirect $request_uri/home;
+		proxy_set_header X-Auth-Request-Redirect $scheme://$host$request_uri/home;
+		proxy_pass http://$NGINX_UPSTREAM_AIRFLOW:8080;
 		error_log /var/log/airflow_end_errors.log;
 	}
 }
