@@ -17,7 +17,7 @@ jobs:
   #             ignore_draft: false
   #         use_local: true
 
-  build-and-test:
+  frontend-integration:
     runs-on: ubuntu-latest
     name: Build and test frontend
     steps:
@@ -36,9 +36,12 @@ jobs:
       - run: npm run build --if-present
         working-directory: frontend
 
-      # Build Backend
-      - name: Build Backend
-        uses: actions/setup-python@v4
+  backend-integration:
+    runs-on: ubuntu-latest
+    name: Build and test frontend
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
         with:
           python-version: "3.x"
           architecture: "x64"
