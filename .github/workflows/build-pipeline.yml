@@ -19,7 +19,7 @@ jobs:
 
   frontend-integration:
     runs-on: ubuntu-latest
-    name: Build and test frontend
+    name: Frontend Integration
     steps:
       - uses: actions/checkout@v3
 
@@ -38,7 +38,7 @@ jobs:
 
   backend-integration:
     runs-on: ubuntu-latest
-    name: Build and test frontend
+    name: Backend Integration
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
