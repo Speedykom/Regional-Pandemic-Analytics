@@ -1,7 +1,4 @@
-on:
-  pull_request:
-    types:
-      - created
+on: [push]
 
 jobs:
   # auto-request-review:
