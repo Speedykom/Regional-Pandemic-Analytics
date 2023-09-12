@@ -1,11 +1,30 @@
-on: [push]
+on:
+  pull_request:
+    types:
+      - created
 
 jobs:
+  # auto-request-review:
+  #   name: Auto Request Review
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Request review based on files changes and/or groups the author belongs to
+  #       uses: necojackarc/auto-request-review@v0.12.0
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         config:
+  #           reviewers:
+  #             defaults:
+  #               -
+  #           options:
+  #             ignore_draft: false
+  #         use_local: true
+
   build-and-test:
     runs-on: ubuntu-latest
     name: Build and test frontend
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       # Build Frontend
       - name: Build Frontend
@@ -13,10 +32,11 @@ jobs:
         with:
           node-version: "18.x"
           working-directory: frontend
+          cache: "npm"
       - run: npm install
         working-directory: frontend
       - run: npm run pre-commit
-        working-directory: frontend
+        working-directory: frontends
       - run: npm run build --if-present
         working-directory: frontend
 
@@ -27,6 +47,7 @@ jobs:
           python-version: "3.x"
           architecture: "x64"
           working-directory: backend
+          cache: "pip"
       - name: Install backend modules
         run: pip install -r requirements.txt
         working-directory: backend
