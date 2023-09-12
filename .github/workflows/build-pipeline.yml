@@ -18,7 +18,7 @@ jobs:
   #         use_local: true
 
   frontend-integration:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Frontend Integration
     steps:
       - uses: actions/checkout@v3
@@ -37,7 +37,7 @@ jobs:
         working-directory: frontend
 
   backend-integration:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     name: Backend Integration
     steps:
       - uses: actions/checkout@v3
