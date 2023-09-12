@@ -107,3 +107,4 @@ done
 
 echo "### Reloading nginx ..."
 make start-dev service=nginx
+make start-dev service=certbot
