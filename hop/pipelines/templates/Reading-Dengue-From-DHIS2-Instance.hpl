@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pipeline>
   <info>
-    <name>Reading-Data-From-DHIS2-Server</name>
+    <name>Reading-Dengue-From-DHIS2-Instance</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
     <description/>
     <extended_description/>
