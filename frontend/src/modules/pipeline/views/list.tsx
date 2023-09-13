@@ -57,7 +57,7 @@ export const MyPipelines = () => {
     <div className="">
       <nav className="mb-5 flex justify-between items-center">
         <div>
-          <h2 className="text-3xl">My Pipeline</h2>
+          <h2 className="text-3xl">My Pipelines</h2>
           <p className="my-2 text-gray-600">Create your hop pipeline.</p>
         </div>
         <div>
