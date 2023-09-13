@@ -60,4 +60,4 @@ jobs:
           script: |
             cd Regional-Pandemic-Analytics/
             git pull
-            make start
+            make start-dev
