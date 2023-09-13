@@ -84,10 +84,19 @@ AUTH_ROLES_MAPPING = {
 AUTH_USER_REGISTRATION_ROLE = os.getenv('AUTH_USER_REGISTRATION_ROLE','Public')
 
 # Mapping of Keycloak user names or ids to superset user names. This is used in JWT-based
-# authentication.
-REPAN_JWT_USER_MAPPING = {
-    "service-account-airflow": "speedykom"
-}
+# authentication. Taken from env, where `SUPERSET_JWT_USER_MAPPING` is a semicolon(;) separated list
+# of colon (:) separated pairs of JWT `sub` or `preferred_username` values to superset usernames,
+# e.g.: `jwt_user:superset_user;foo:bar;another:user`
+REPAN_JWT_USER_MAPPING = dict(
+    (jwt, ass) for jwt, ass in
+        map(
+            lambda pair: pair.split(':'),
+            filter(
+                lambda str: str != '',
+                os.getenv('SUPERSET_JWT_USER_MAPPING', '').split(';')
+            )
+        )
+)
 
 logger = logging.getLogger(__name__)
 
