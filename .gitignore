@@ -20,5 +20,9 @@ certbot/conf/live/*
 !certbot/conf/live/.gitkeep
 certbot/conf/renewal/*
 !certbot/conf/renewal/.gitkeep
+certbot/conf/accounts/*
+!certbot/conf/accounts/.gitkeep
+certbot/conf/archive/*
+!certbot/conf/archive/.gitkeep
 certbot/conf/options-ssl-nginx.conf
 certbot/conf/ssl-dhparams.pem
