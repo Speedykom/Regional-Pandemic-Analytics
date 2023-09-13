@@ -63,34 +63,8 @@
         returned from the FHIR API</note>
       <width>254</width>
     </notepad>
-    <notepad>
-      <backgroundcolorblue>210</backgroundcolorblue>
-      <backgroundcolorgreen>136</backgroundcolorgreen>
-      <backgroundcolorred>15</backgroundcolorred>
-      <bordercolorblue>250</bordercolorblue>
-      <bordercolorgreen>231</bordercolorgreen>
-      <bordercolorred>200</bordercolorred>
-      <fontbold>N</fontbold>
-      <fontcolorblue>250</fontcolorblue>
-      <fontcolorgreen>231</fontcolorgreen>
-      <fontcolorred>200</fontcolorred>
-      <fontitalic>N</fontitalic>
-      <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <height>42</height>
-      <xloc>224</xloc>
-      <yloc>176</yloc>
-      <note>Test server is used here we are querying for all dataSets
-        https://play.dhis2.org/40.0.0/api/dataSets</note>
-      <width>349</width>
-    </notepad>
   </notepads>
   <order>
-    <hop>
-      <from>Read Json Data from Rest Client</from>
-      <to>Select values</to>
-      <enabled>Y</enabled>
-    </hop>
     <hop>
       <from>Generate rows</from>
       <to>REST client</to>
@@ -99,6 +73,16 @@
     <hop>
       <from>REST client</from>
       <to>Read Json Data from Rest Client</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Read Json Data from Rest Client</from>
+      <to>JavaScript</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>JavaScript</from>
+      <to>Select values</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
@@ -135,8 +119,49 @@
     <row_time_field>now</row_time_field>
     <attributes/>
     <GUI>
-      <xloc>96</xloc>
-      <yloc>80</yloc>
+      <xloc>32</xloc>
+      <yloc>48</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>JavaScript</name>
+    <type>ScriptValueMod</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <optimizationLevel>9</optimizationLevel>
+    <jsScripts>
+      <jsScript>
+        <jsScript_type>0</jsScript_type>
+        <jsScript_name>Script 1</jsScript_name>
+        <jsScript_script>//Script here
+if(month){
+var year = month.substr(0,4)
+var m = month.substr(4,2)
+var date = new Date(year+'-'+m+'-01')
+date.setHours(23,59,59,999)
+}</jsScript_script>
+      </jsScript>
+    </jsScripts>
+    <fields>
+      <field>
+        <name>date</name>
+        <rename>date</rename>
+        <type>Date</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <replace>N</replace>
+      </field>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>448</xloc>
+      <yloc>112</yloc>
     </GUI>
   </transform>
   <transform>
@@ -155,8 +180,8 @@
     <dictionary_page_size>1048576</dictionary_page_size>
     <fields>
       <field>
-        <source_field>Month</source_field>
-        <target_field>Month</target_field>
+        <source_field>date</source_field>
+        <target_field>Date</target_field>
       </field>
       <field>
         <source_field>Cases</source_field>
@@ -177,8 +202,8 @@
     <version>1.0</version>
     <attributes/>
     <GUI>
-      <xloc>976</xloc>
-      <yloc>224</yloc>
+      <xloc>672</xloc>
+      <yloc>48</yloc>
     </GUI>
   </transform>
   <transform>
@@ -222,8 +247,8 @@
     </result>
     <attributes/>
     <GUI>
-      <xloc>208</xloc>
-      <yloc>240</yloc>
+      <xloc>144</xloc>
+      <yloc>160</yloc>
     </GUI>
   </transform>
   <transform>
@@ -297,8 +322,8 @@
     <sizeFieldName/>
     <attributes/>
     <GUI>
-      <xloc>512</xloc>
-      <yloc>240</yloc>
+      <xloc>336</xloc>
+      <yloc>192</yloc>
     </GUI>
   </transform>
   <transform>
@@ -314,19 +339,36 @@
     </partitioning>
     <fields>
       <field>
-        <name>month</name>
-        <rename>Month</rename>
+        <name>date</name>
+        <rename>Date</rename>
       </field>
       <field>
         <name>cases</name>
         <rename>Cases</rename>
       </field>
       <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>date</name>
+        <rename>date</rename>
+        <type>Date</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask>yyyy/MM/dd HH:mm:ss.SSS</conversion_mask>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>816</xloc>
-      <yloc>240</yloc>
+      <xloc>528</xloc>
+      <yloc>208</yloc>
     </GUI>
   </transform>
   <transform_error_handling>
