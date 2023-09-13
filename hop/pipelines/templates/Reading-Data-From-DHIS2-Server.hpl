@@ -106,7 +106,7 @@
       <field>
         <length>-1</length>
         <name>api</name>
-        <nullif>https://snis-dhis2.gouv.dj/dhis/api/analytics.json?dimension=dx:AVgqKbYOaee&amp;dimension=pe:LAST_12_MONTHS&amp;dimension=ou:woYcQIRMIwR</nullif>
+        <nullif>https://snis-dhis2.gouv.dj/dhis/api/analytics.json?dimension=dx:Sb2zPrgsYxz&amp;dimension=pe:LAST_12_MONTHS&amp;dimension=ou:woYcQIRMIwR</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
