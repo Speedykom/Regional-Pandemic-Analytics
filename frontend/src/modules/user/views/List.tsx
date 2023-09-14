@@ -18,7 +18,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/router';
 import MediaQuery from 'react-responsive';
-import { FiDelete, FiEdit, FiEye } from 'react-icons/fi';
+import { FiDelete, FiEye } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import Popconfirm from '@/common/components/common/popconfirm';
 import { useDisableUserMutation, useGetUsersQuery } from '../user';
@@ -184,14 +184,7 @@ export const UserList = () => {
                       >
                         <FiEye />
                       </Button>
-                      <Button
-                        title="Edit Details"
-                        variant="secondary"
-                        className="text-green-500 bg-gray-200 border-0"
-                        onClick={() => router.push(`users/${item.id}/edit`)}
-                      >
-                        <FiEdit />
-                      </Button>
+
                       <Popconfirm
                         title="This user will be denied assces, continue?"
                         cancelText="Cancel"
