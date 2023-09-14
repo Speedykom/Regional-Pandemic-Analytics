@@ -3,7 +3,6 @@ import {
   UserIcon,
   ChevronDownIcon,
   ArrowLeftOnRectangleIcon,
-  Cog8ToothIcon,
 } from '@heroicons/react/24/solid';
 import { Bars3CenterLeftIcon } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
@@ -107,15 +106,7 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
                     Your Profile
                   </Link>
                 </Menu.Item>
-                <Menu.Item>
-                  <Link
-                    href="javascript:void(0)"
-                    className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
-                  >
-                    <Cog8ToothIcon className="h-4 w-4 mr-2" />
-                    Settings
-                  </Link>
-                </Menu.Item>
+
                 <Menu.Item>
                   <Link
                     href="javascript:void(0)"
