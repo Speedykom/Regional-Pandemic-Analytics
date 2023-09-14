@@ -225,7 +225,7 @@ export const ProfileSettings = () => {
                       onClick={() => setGender('Male')}
                       className={`rounded-l ${
                         gender == 'Male' ? 'bg-indigo-400 text-white' : ''
-                      }`}
+                      } text-sm`}
                     >
                       Male
                     </Button>
@@ -233,7 +233,7 @@ export const ProfileSettings = () => {
                       onClick={() => setGender('Female')}
                       className={`rounded-r ${
                         gender == 'Female' && 'bg-indigo-400 text-white'
-                      }`}
+                      } text-sm ml-2`} //
                     >
                       Female
                     </Button>
@@ -259,13 +259,15 @@ export const ProfileSettings = () => {
           <Card className="bg-white">
             <div className="mt-1 border-b-2 mb-6 flex items-center justify-between">
               <h1 className="">Credential Settings</h1>
-              <Button
-                onClick={triggerPasswordChange}
-                className="flex items-center border-0"
-                icon={PencilSquareIcon}
-              >
-                Change Password
-              </Button>
+              <div className="flex items-center justify-center mt-4 mb-4">
+                <Button
+                  onClick={triggerPasswordChange}
+                  className="flex items-center border-0 text-sm"
+                  icon={PencilSquareIcon}
+                >
+                  Change Password
+                </Button>
+              </div>
             </div>
             <div className="mt-3">
               <div className="flex mb-3 space-x-1 md:justify-between">
