@@ -1,10 +1,8 @@
 import {
   BiChart,
-  BiData,
   BiGitMerge,
   BiGitPullRequest,
   BiHome,
-  BiLock,
   BiTable,
   BiUser,
 } from 'react-icons/bi';
@@ -51,12 +49,7 @@ export const MenuData = [
         icon: BiGitPullRequest,
         scope: 'process:read',
       },
-      {
-        title: 'Data',
-        href: '/data',
-        icon: BiData,
-        scope: 'data:read',
-      },
+
       {
         title: 'My Pipelines',
         href: '/pipelines',
@@ -68,12 +61,6 @@ export const MenuData = [
   {
     name: 'Settings',
     items: [
-      {
-        title: 'Roles',
-        href: '/roles',
-        icon: BiLock,
-        scope: 'user:read',
-      },
       {
         title: 'Accounts',
         href: '/users',
