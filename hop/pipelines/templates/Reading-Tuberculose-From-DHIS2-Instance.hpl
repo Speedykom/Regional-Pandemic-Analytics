@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pipeline>
   <info>
-    <name>Reading-Data-From-DHIS2-Server</name>
+    <name>Reading-Tuberculose-From-DHIS2-Instance</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
     <description/>
     <extended_description/>
@@ -106,7 +106,7 @@
       <field>
         <length>-1</length>
         <name>api</name>
-        <nullif>https://snis-dhis2.gouv.dj/dhis/api/analytics.json?dimension=dx:Sb2zPrgsYxz&amp;dimension=pe:LAST_12_MONTHS&amp;dimension=ou:woYcQIRMIwR</nullif>
+        <nullif>https://snis-dhis2.gouv.dj/dhis/api/analytics.json?dimension=dx:yCZQxbag1V0&amp;dimension=pe:LAST_12_MONTHS&amp;dimension=ou:woYcQIRMIwR</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>

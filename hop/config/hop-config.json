@@ -63,6 +63,16 @@
       "name": "dengue_fever_output_source",
       "value": "/opt/hop/config/projects/default/dengue-fever",
       "description": ""
+    },
+    {
+      "name": "djibouti_username",
+      "value": "igadregio",
+      "description": ""
+    },
+    {
+      "name": "djibouti_password",
+      "value": "Encrypted 2be98c68f2be3c3d6f84dfb2689caf6fa",
+      "description": ""
     }
   ]
 }
