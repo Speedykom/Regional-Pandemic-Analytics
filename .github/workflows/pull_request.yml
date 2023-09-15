@@ -1,10 +1,22 @@
-name: Build Pipeline
-
-on:
-  push:
-    branches: [main]
+on: [push] # to be changed
 
 jobs:
+  # auto-request-review:
+  #   name: Auto Request Review
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Request review based on files changes and/or groups the author belongs to
+  #       uses: necojackarc/auto-request-review@v0.12.0
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         config:
+  #           reviewers:
+  #             defaults:
+  #               -
+  #           options:
+  #             ignore_draft: false
+  #         use_local: true
+
   frontend-integration:
     runs-on: self-hosted
     name: Frontend Integration
@@ -44,20 +56,3 @@ jobs:
       - name: Run tests
         run: python manage.py test
         working-directory: backend
-
-  deploy-dev:
-    name: Deploy
-    runs-on: self-hosted
-    needs: [frontend-integration, backend-integration]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Connect dev server and deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          script: |
-            cd Regional-Pandemic-Analytics/
-            git pull
-            make start-dev
