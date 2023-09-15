@@ -233,7 +233,7 @@ export const ProfileSettings = () => {
                       onClick={() => setGender('Female')}
                       className={`rounded-r ${
                         gender == 'Female' && 'bg-indigo-400 text-white'
-                      } text-sm ml-2`} //
+                      } text-sm ml-2`} 
                     >
                       Female
                     </Button>
