@@ -9,7 +9,9 @@ interface HopUIProps {
 }
 
 export const HopUI = ({ name }: HopUIProps) => {
-  const { data } = useGetPipelineQuery(name);
+  const { data } = useGetPipelineQuery(name, {
+    refetchOnMountOrArgChange: true,
+  });
   const [updatePipeline] = useUpdatePipelineMutation();
 
   const savePipeline = async () => {
