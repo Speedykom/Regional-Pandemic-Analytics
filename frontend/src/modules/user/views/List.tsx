@@ -10,6 +10,7 @@ import {
   TableHeaderCell,
   TableRow,
 } from '@tremor/react';
+import { useTranslation } from 'react-i18next';
 import {
   CheckIcon,
   SignalSlashIcon,
@@ -27,6 +28,7 @@ export const UserList = () => {
   const { data, refetch } = useGetUsersQuery();
   const [disableUser, { isLoading }] = useDisableUserMutation();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const onDelete = (id: string) => {
     disableUser(id).then((res: any) => {
@@ -42,21 +44,19 @@ export const UserList = () => {
       }
     });
   };
-
+  //{t('')}
   return (
     <div className="">
       <nav className="mb-5 flex justify-between items-center">
         <div>
-          <h2 className="text-3xl">App Accounts</h2>
-          <p className="my-2 text-gray-600">
-            View and manage settings related to app users.
-          </p>
+          <h2 className="text-3xl">{t('appAccounts')}</h2>
+          <p className="my-2 text-gray-600">{t('viewAndManage')}</p>
         </div>
         <Button
           className="bg-prim hover:bg-prim-hover text-white border-0"
           onClick={() => router.push('/users/add')}
         >
-          New User
+          {t('newUser')}
         </Button>
       </nav>
       <div>
@@ -64,23 +64,28 @@ export const UserList = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Full Name</TableHeaderCell>
+                <TableHeaderCell>{t('fullName')}</TableHeaderCell>
                 <MediaQuery minWidth={768}>
-                  <TableHeaderCell className="">Username</TableHeaderCell>
+                  <TableHeaderCell className="">
+                    {t('userName')}
+                  </TableHeaderCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1090}>
-                  <TableHeaderCell className="">Email</TableHeaderCell>
+                  <TableHeaderCell className="">{t('email')}</TableHeaderCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1220}>
-                  <TableHeaderCell className="">Phone</TableHeaderCell>
+                  <TableHeaderCell className="">{t('phone')}</TableHeaderCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1350}>
-                  <TableHeaderCell className="">Gender</TableHeaderCell>
-                  <TableHeaderCell className="">Country</TableHeaderCell>
+                  <TableHeaderCell className="">{t('gender')}</TableHeaderCell>
+                  <TableHeaderCell className="">{t('country')}</TableHeaderCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1624}>
-                  <TableHeaderCell className="">Email Verified</TableHeaderCell>
-                  <TableHeaderCell className="">Status</TableHeaderCell>
+                  <TableHeaderCell className="">
+                    {' '}
+                    {t('emailVerified')}
+                  </TableHeaderCell>
+                  <TableHeaderCell className="">{t('status')}</TableHeaderCell>
                 </MediaQuery>
                 <TableHeaderCell />
               </TableRow>
@@ -178,7 +183,7 @@ export const UserList = () => {
                   <TableCell>
                     <div className="flex space-x-2 justify-end">
                       <Button
-                        title="View Details"
+                        title={t('viewDetails')}
                         variant="primary"
                         onClick={() => router.push(`users/${item.id}/details`)}
                       >
@@ -192,7 +197,7 @@ export const UserList = () => {
                         onConfirm={() => onDelete(item.id)}
                       >
                         <Button
-                          title="Disable User"
+                          title={t('disableUser')}
                           loading={isLoading}
                           className="text-white bg-red-500 border-0"
                         >

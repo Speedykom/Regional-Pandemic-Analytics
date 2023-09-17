@@ -21,6 +21,11 @@ const frTranslation = {
   description: 'Description',
   createPipeline: 'Créer un pipeline',
   view: 'Voir',
+
+  processChain: 'Chaîne de processus',
+  viewAndManageProcessChains:
+    'Afficher et gérer toutes les chaînes de processus',
+  addProcessChain: 'Ajouter une chaîne de processus',
 };
 
 export default frTranslation;
