@@ -19,6 +19,9 @@ const enTranslation = {
   description: 'Description',
   createPipeline: 'Create Pipeline',
   view: 'View',
+  processChain: 'Process Chain',
+  viewAndManageProcessChains: 'View and manage all process chains',
+  addProcessChain: 'Add Process Chain',
 };
 
 export default enTranslation;
