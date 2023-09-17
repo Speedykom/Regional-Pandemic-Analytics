@@ -16,6 +16,7 @@ import {
   useLogoutMutation,
 } from '@/modules/auth/auth';
 import { toast } from 'react-toastify';
+import LanguageSelector from '../LanguageSelector';
 
 interface props {
   isOpen: boolean;
@@ -64,6 +65,7 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
         <p className="text-xl">Regional Pandemic Analytics</p>
       </div>
       <div className="flex pr-4 md:pr-16 items-center">
+        <LanguageSelector />
         <Menu as="div" className="relative inline-block text-left">
           <div>
             <Menu.Button className="inline-flex w-full justify-center items-center">
@@ -125,7 +127,3 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
     </div>
   );
 }
-
-// ${
-//   showNav ? "pl-56" : "pl-16"
-// }`
