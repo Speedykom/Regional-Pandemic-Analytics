@@ -1,4 +1,5 @@
 import React, { Dispatch, Fragment, SetStateAction } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   UserIcon,
   ChevronDownIcon,
@@ -31,7 +32,7 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
   const [logoutFromHop] = useLogoutFromHopMutation();
   const currentUser = useSelector(selectCurrentUser);
   const username = currentUser?.given_name;
-
+  const { t } = useTranslation();
   const handleLogout = async () => {
     logout()
       .then(() => {
@@ -47,7 +48,7 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
       .catch((err) => {
         /* eslint-disable no-console */
         console.log(err);
-        toast.error('Something went wrong!', { position: 'top-right' });
+        toast.error(t('somethingWentWrong'), { position: 'top-right' });
       });
   };
 
@@ -105,7 +106,7 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
                     className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
                   >
                     <UserIcon className="h-4 w-4 mr-2" />
-                    Your Profile
+                    {t('yourProfile')}
                   </Link>
                 </Menu.Item>
 
@@ -116,7 +117,7 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
                     onClick={handleLogout}
                   >
                     <ArrowLeftOnRectangleIcon className="h-4 w-4 mr-2" />
-                    Log Out
+                    {t('logOut')}
                   </Link>
                 </Menu.Item>
               </div>
