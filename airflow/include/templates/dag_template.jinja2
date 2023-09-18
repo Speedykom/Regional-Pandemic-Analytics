@@ -11,6 +11,8 @@ from minio import Minio
 import os
 import requests
 from requests.auth import HTTPBasicAuth
+from superset.superset_client import SupersetClient
+import urllib.parse
 
 task_logger = logging.getLogger('airflow.task')
 
@@ -52,6 +54,7 @@ class DruidOperator(BaseOperator):
       "spec": {
         "ioConfig": {
           "type": "index_parallel",
+          "drop_existing": True,
           "inputSource": {
             "type": "s3",
             "endpointConfig": {
@@ -132,6 +135,23 @@ class DruidOperator(BaseOperator):
     task_logger.debug('Druid ingestion still running')
     self.wait_for_completion(process_id)
 
+class SupersetOperator(BaseOperator):
+  def __init__(self, **kwargs):
+    super().__init__(task_id = 'link_dataset_to_superset', **kwargs)
+
+  def execute(self, context: Context):
+    client = SupersetClient(base_url = os.getenv('AIRFLOW_SUPERSET_BASE_URL'))
+    db_id = self.prepare_db(client)
+    client.create_or_update_dataset(name = '{{dag_id}}', db_name = db_id)
+
+  def prepare_db(self, client: SupersetClient) -> int:
+    druid_url = urllib.parse.urlparse(os.getenv('DRUID_ROUTER_URL'))
+    connection_str = "druid://admin:{}@{}/druid/v2/sql/".format(druid_admin_password, druid_url.netloc)
+    task_logger.info(connection_str)
+    db_id = client.ensure_db_exists('RePAn DB', connection_str)
+    return db_id
+
+
 with DAG("{{dag_id}}", default_args=default_args, schedule_interval="{{schedule_interval}}", description="{{description}}", catchup=False, is_paused_upon_creation=False) as dag:
 
     task_logger.debug('Setting up components of DAG')
@@ -155,6 +175,8 @@ with DAG("{{dag_id}}", default_args=default_args, schedule_interval="{{schedule_
     # Run Druid ingestion
     druid = DruidOperator()
 
+    superset = SupersetOperator()
+
     task_logger.debug('Now starting DAG…')
 
-    pipeline_minio >> hop >> druid
+    pipeline_minio >> hop >> druid >> superset
