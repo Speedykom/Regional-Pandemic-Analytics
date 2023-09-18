@@ -17,9 +17,12 @@ import {
   ExclamationCircleIcon,
   EyeIcon,
 } from '@heroicons/react/24/outline';
+import { useTranslation } from 'react-i18next';
 import { useGetDashboardsQuery } from '../superset';
 
 export const DashboardList = () => {
+  const { t } = useTranslation();
+
   const { data } = useGetDashboardsQuery();
   const router = useRouter();
 
@@ -30,9 +33,9 @@ export const DashboardList = () => {
     <div className="">
       <nav className="mb-5">
         <div>
-          <h2 className="text-3xl">Superset Dashboards</h2>
+          <h2 className="text-3xl">{t('supersetDashboards')}</h2>
           <p className="mt-2 text-gray-600">
-            Dashboard list created on Apache Superset.
+            {t('dashboardListCreatedOnSuperset')}
           </p>
         </div>
       </nav>
@@ -41,21 +44,33 @@ export const DashboardList = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Title</TableHeaderCell>
+                <TableHeaderCell>{t('title')}</TableHeaderCell>
                 <MediaQuery minWidth={768}>
-                  <TableHeaderCell className="">Created By</TableHeaderCell>
+                  <TableHeaderCell className="">
+                    {' '}
+                    {t('createdBy')}
+                  </TableHeaderCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1090}>
-                  <TableHeaderCell className="">Created</TableHeaderCell>
+                  <TableHeaderCell className="">
+                    {' '}
+                    {t('created')}
+                  </TableHeaderCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1220}>
-                  <TableHeaderCell className="">Modified By</TableHeaderCell>
+                  <TableHeaderCell className="">
+                    {' '}
+                    {t('modifiedBy')}
+                  </TableHeaderCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1350}>
-                  <TableHeaderCell className="">Modified</TableHeaderCell>
+                  <TableHeaderCell className="">
+                    {' '}
+                    {t('modified')}
+                  </TableHeaderCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1624}>
-                  <TableHeaderCell className="">Status</TableHeaderCell>
+                  <TableHeaderCell className=""> {t('status')}</TableHeaderCell>
                 </MediaQuery>
                 <TableHeaderCell />
               </TableRow>
@@ -111,12 +126,12 @@ export const DashboardList = () => {
                     <div className="flex space-x-2 justify-end">
                       <Button
                         icon={EyeIcon}
-                        title="View Details"
+                        title={t('viewDetails')}
                         variant="primary"
                         className="text-white shadow-md bg-prim hover:bg-prim-hover"
                         onClick={() => embedDashboard(String(item?.id))}
                       >
-                        Preview
+                        {t('preview')}
                       </Button>
                     </div>
                   </TableCell>
