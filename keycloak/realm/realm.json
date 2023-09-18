@@ -750,6 +750,9 @@
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": ["default-roles-stack"],
+      "clientRoles": {
+        "superset": ["superset_admin"]
+      },
       "notBefore": 0,
       "groups": []
     }
