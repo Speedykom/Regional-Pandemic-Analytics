@@ -9,6 +9,7 @@ import {
 import { motion, AnimationControls } from 'framer-motion';
 import { usePermission } from '@/common/hooks/use-permission';
 import { NavLink } from '../link';
+import { useTranslation } from 'react-i18next';
 
 interface MenuProps {
   controlstextopacity?: AnimationControls;
@@ -73,6 +74,7 @@ export const MenuData = [
 
 export const SideNavLinks = (prop: MenuProps) => {
   const { hasPermission } = usePermission();
+  const { t } = useTranslation();
   return (
     <>
       {MenuData.map((group) => (
@@ -81,7 +83,7 @@ export const SideNavLinks = (prop: MenuProps) => {
             animate={prop.controlstextopacity}
             className="text-gray-500 ml-4 text-sm font-bold mb-2"
           >
-            {prop?.isOpen ? group?.name : ''}
+            {prop?.isOpen ? t(group?.name) : ''}
           </motion.p>
 
           {group.items
@@ -98,7 +100,7 @@ export const SideNavLinks = (prop: MenuProps) => {
                 <item.icon className="text-lg" />
 
                 <motion.p animate={prop?.controlstext} className="ml-4 text-sm">
-                  {prop?.isOpen ? item?.title : ''}
+                  {prop?.isOpen ? t(item?.title) : ''}
                 </motion.p>
               </NavLink>
             ))}
