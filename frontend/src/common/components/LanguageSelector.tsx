@@ -1,35 +1,24 @@
-import React, { useState } from 'react';
-import { languages, defaultLanguage } from '../config/language';
-import { useRouter } from 'next/router';
+import React from 'react';
+
+import { useTranslation } from 'react-i18next';
 
 const LanguageSelector: React.FC = () => {
-  const router = useRouter();
-  const [selectedLanguage, setSelectedLanguage] = useState<string>(
-    router.locale || defaultLanguage
-  );
+  const { i18n } = useTranslation();
 
-  const handleLanguageChange = (languageCode: string) => {
-    setSelectedLanguage(languageCode);
-    router.push(router.pathname, undefined, { locale: languageCode });
-    //router.reload();
-    //console.log(`Lang chang to ${languageCode}`);
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
   };
-
   return (
     <div className="language-selector flex items-center">
       <select
         className="border rounded-md px-2 py-1 focus:outline-none focus:ring focus:border-blue-300 mr-2"
-        onChange={(e) => handleLanguageChange(e.target.value)}
-        value={selectedLanguage}
+        onChange={(e) => changeLanguage(e.target.value)}
+        value={i18n.language}
       >
-        {languages.map((language) => (
-          <option key={language.code} value={language.code}>
-            {language.name}
-          </option>
-        ))}
+        <option value="en">English</option>
+        <option value="fr">French</option>
       </select>
     </div>
   );
 };
-
 export default LanguageSelector;
