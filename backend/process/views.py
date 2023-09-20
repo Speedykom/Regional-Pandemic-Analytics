@@ -141,7 +141,6 @@ class ProcessView(ViewSet):
         )
         
         if airflow_response.ok:
-            print(">>>>>>>>> FOUND THE DAAAAG")
             return Response({"message":"process chain already created"}, status=status.HTTP_409_CONFLICT)
         
         # Run factory by passing config to create a process chain
