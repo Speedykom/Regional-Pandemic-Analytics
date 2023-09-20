@@ -13,7 +13,7 @@ export default function Pipeline() {
 
   useEffect(() => {
     if (name && hasPermission('pipeline:read')) {
-      toast.success('Please make sure you are saving changes in Hop UI', {
+      toast.info('Please make sure you are saving changes in Hop UI', {
         position: 'bottom-right',
       });
     }
