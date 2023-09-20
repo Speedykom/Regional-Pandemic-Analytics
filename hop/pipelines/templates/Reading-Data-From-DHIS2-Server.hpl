@@ -77,11 +77,26 @@
     </hop>
     <hop>
       <from>Read Json Data from Rest Client</from>
-      <to>JavaScript</to>
+      <to>Seperate year and month</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>JavaScript</from>
+      <from>Seperate year and month</from>
+      <to>create a date format</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>create a date format</from>
+      <to>Organisation Unit Mapper</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Organisation Unit Mapper</from>
+      <to>Data Element Mapper</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Data Element Mapper</from>
       <to>Select values</to>
       <enabled>Y</enabled>
     </hop>
@@ -91,6 +106,58 @@
       <enabled>Y</enabled>
     </hop>
   </order>
+  <transform>
+    <name>Data Element Mapper</name>
+    <type>ValueMapper</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <field_to_use>datae</field_to_use>
+    <fields>
+      <field>
+        <source_value>X5HRzv4wfX4</source_value>
+        <target_value>Morbidité_Autrepatho-Rougeole</target_value>
+      </field>
+      <field>
+        <source_value>PEmOXKpPZR9</source_value>
+        <target_value>Morbidité_Autrepatho-Fièvre typhoïde</target_value>
+      </field>
+      <field>
+        <source_value>HdMxagiCWKX</source_value>
+        <target_value>Morbidité_Autrepatho-Rougeole Décès</target_value>
+      </field>
+      <field>
+        <source_value>R5BPlusolD9</source_value>
+        <target_value>Morbidité_Autrepatho-Fièvre typhoïde Décès</target_value>
+      </field>
+      <field>
+        <source_value>ziigozNncky</source_value>
+        <target_value>Morbidité_SDNC-Diarrhée glairo sanglante Décès</target_value>
+      </field>
+      <field>
+        <source_value>QKmgup86Fye</source_value>
+        <target_value>Morbidité_SDNC-Diarrhée glairo sanglante</target_value>
+      </field>
+      <field>
+        <source_value>M8PDtnxruzA</source_value>
+        <target_value>Morbidité_SAP-Dengue Décès</target_value>
+      </field>
+      <field>
+        <source_value>AVgqKbYOaee</source_value>
+        <target_value>Morbidité_SAP-Dengue</target_value>
+      </field>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>672</xloc>
+      <yloc>176</yloc>
+    </GUI>
+  </transform>
   <transform>
     <name>Generate rows</name>
     <type>RowGenerator</type>
@@ -106,7 +173,7 @@
       <field>
         <length>-1</length>
         <name>api</name>
-        <nullif>https://snis-dhis2.gouv.dj/dhis/api/analytics.json?dimension=dx:Sb2zPrgsYxz&amp;dimension=pe:LAST_12_MONTHS&amp;dimension=ou:woYcQIRMIwR</nullif>
+        <nullif>https://snis-dhis2.gouv.dj/dhis/api/analytics.json?dimension=dx:ziigozNncky;QKmgup86Fye;PEmOXKpPZR9;R5BPlusolD9;X5HRzv4wfX4;HdMxagiCWKX&amp;dimension=pe:LAST_12_MONTHS&amp;dimension=ou:WldKlZ2ePvu;l1O2UMCx1e3;tzEhlDZ3KJc;o8gco2FACA3;xNeUWDH1DIL;znUCPAEhJvD</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
@@ -120,12 +187,12 @@
     <attributes/>
     <GUI>
       <xloc>32</xloc>
-      <yloc>48</yloc>
+      <yloc>80</yloc>
     </GUI>
   </transform>
   <transform>
-    <name>JavaScript</name>
-    <type>ScriptValueMod</type>
+    <name>Organisation Unit Mapper</name>
+    <type>ValueMapper</type>
     <description/>
     <distribute>Y</distribute>
     <custom_distribution/>
@@ -134,34 +201,37 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <optimizationLevel>9</optimizationLevel>
-    <jsScripts>
-      <jsScript>
-        <jsScript_type>0</jsScript_type>
-        <jsScript_name>Script 1</jsScript_name>
-        <jsScript_script>//Script here
-if(month){
-var year = month.substr(0,4)
-var m = month.substr(4,2)
-var date = new Date(year+'-'+m+'-01')
-date.setHours(23,59,59,999)
-}</jsScript_script>
-      </jsScript>
-    </jsScripts>
+    <field_to_use>orgunit</field_to_use>
     <fields>
       <field>
-        <name>date</name>
-        <rename>date</rename>
-        <type>Date</type>
-        <length>-1</length>
-        <precision>-1</precision>
-        <replace>N</replace>
+        <source_value>znUCPAEhJvD</source_value>
+        <target_value>Djibouti-ville</target_value>
+      </field>
+      <field>
+        <source_value>xNeUWDH1DIL</source_value>
+        <target_value>Tadjourah</target_value>
+      </field>
+      <field>
+        <source_value>o8gco2FACA3</source_value>
+        <target_value>Obock</target_value>
+      </field>
+      <field>
+        <source_value>tzEhlDZ3KJc</source_value>
+        <target_value>Dikhil</target_value>
+      </field>
+      <field>
+        <source_value>l1O2UMCx1e3</source_value>
+        <target_value>Arta</target_value>
+      </field>
+      <field>
+        <source_value>WldKlZ2ePvu</source_value>
+        <target_value>Ali-Sabieh</target_value>
       </field>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>448</xloc>
-      <yloc>112</yloc>
+      <xloc>528</xloc>
+      <yloc>176</yloc>
     </GUI>
   </transform>
   <transform>
@@ -184,6 +254,14 @@ date.setHours(23,59,59,999)
         <target_field>Date</target_field>
       </field>
       <field>
+        <source_field>disease</source_field>
+        <target_field>Disease</target_field>
+      </field>
+      <field>
+        <source_field>City</source_field>
+        <target_field>City</target_field>
+      </field>
+      <field>
         <source_field>Cases</source_field>
         <target_field>Cases</target_field>
       </field>
@@ -202,8 +280,8 @@ date.setHours(23,59,59,999)
     <version>1.0</version>
     <attributes/>
     <GUI>
-      <xloc>672</xloc>
-      <yloc>48</yloc>
+      <xloc>784</xloc>
+      <yloc>80</yloc>
     </GUI>
   </transform>
   <transform>
@@ -225,8 +303,8 @@ date.setHours(23,59,59,999)
     <methodFieldName/>
     <urlField>api</urlField>
     <bodyField/>
-    <httpLogin>${djibouti_username}</httpLogin>
-    <httpPassword>${djibouti_password}</httpPassword>
+    <httpLogin>igadregio</httpLogin>
+    <httpPassword>Encrypted 2be98c68f2be3c3d6f84dfb2689caf6fa</httpPassword>
     <proxyHost/>
     <proxyPort/>
     <preemptive>N</preemptive>
@@ -247,8 +325,8 @@ date.setHours(23,59,59,999)
     </result>
     <attributes/>
     <GUI>
-      <xloc>144</xloc>
-      <yloc>160</yloc>
+      <xloc>112</xloc>
+      <yloc>80</yloc>
     </GUI>
   </transform>
   <transform>
@@ -307,6 +385,32 @@ date.setHours(23,59,59,999)
         <trim_type>none</trim_type>
         <repeat>N</repeat>
       </field>
+      <field>
+        <name>orgunit</name>
+        <path>$.rows.*.[2]</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>datae</name>
+        <path>$.rows.*.[0]</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
     </fields>
     <limit>0</limit>
     <IsInFields>Y</IsInFields>
@@ -322,15 +426,15 @@ date.setHours(23,59,59,999)
     <sizeFieldName/>
     <attributes/>
     <GUI>
-      <xloc>336</xloc>
-      <yloc>192</yloc>
+      <xloc>112</xloc>
+      <yloc>176</yloc>
     </GUI>
   </transform>
   <transform>
     <name>Select values</name>
     <type>SelectValues</type>
     <description/>
-    <distribute>Y</distribute>
+    <distribute>N</distribute>
     <custom_distribution/>
     <copies>1</copies>
     <partitioning>
@@ -345,6 +449,14 @@ date.setHours(23,59,59,999)
       <field>
         <name>cases</name>
         <rename>Cases</rename>
+      </field>
+      <field>
+        <name>orgunit</name>
+        <rename>City</rename>
+      </field>
+      <field>
+        <name>datae</name>
+        <rename>disease</rename>
       </field>
       <select_unspecified>N</select_unspecified>
       <meta>
@@ -367,8 +479,67 @@ date.setHours(23,59,59,999)
     </fields>
     <attributes/>
     <GUI>
-      <xloc>528</xloc>
-      <yloc>208</yloc>
+      <xloc>672</xloc>
+      <yloc>80</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Seperate year and month</name>
+    <type>Formula</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <formulas>
+      <formula>
+        <field_name>y</field_name>
+        <formula>LEFT([month],4)</formula>
+        <value_length>4</value_length>
+        <value_precision>-1</value_precision>
+        <value_type>2</value_type>
+      </formula>
+      <formula>
+        <field_name>m</field_name>
+        <formula>RIGHT([month],2)</formula>
+        <value_length>2</value_length>
+        <value_precision>-1</value_precision>
+        <value_type>2</value_type>
+      </formula>
+    </formulas>
+    <attributes/>
+    <GUI>
+      <xloc>272</xloc>
+      <yloc>176</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>create a date format</name>
+    <type>Formula</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <formulas>
+      <formula>
+        <field_name>date</field_name>
+        <formula>EOMONTH(DATE([y],[m],1),0)+Time(23,59,59)</formula>
+        <value_length>-1</value_length>
+        <value_precision>-1</value_precision>
+        <value_type>3</value_type>
+      </formula>
+    </formulas>
+    <attributes/>
+    <GUI>
+      <xloc>400</xloc>
+      <yloc>176</yloc>
     </GUI>
   </transform>
   <transform_error_handling>
