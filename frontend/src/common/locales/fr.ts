@@ -99,16 +99,17 @@ const frTranslation = {
   yourProfile: 'Votre Profil',
   logOut: 'Déconnexion',
   somethingWentWrong: "Quelque chose s'est mal passé !",
-
-  dashboard: 'Tableau de bord',
-  home: 'Accueil',
-  dashboards: 'Tableaux de bord',
-  charts: 'Graphiques',
-  manage: 'Gérer',
-  processChains: 'Chaînes de processus',
-  settings: 'Paramètres',
-  accounts: 'Comptes',
-
+  menu: {
+    dashboard: 'Tableau de bord',
+    home: 'Accueil',
+    dashboards: 'Tableaux de bord',
+    charts: 'Graphiques',
+    manage: 'Gérer',
+    processChains: 'Chaînes de processus',
+    settings: 'Paramètres',
+    accounts: 'Comptes',
+    pipelines: 'Mes pipelines',
+  },
   addProcess: {
     title: 'Ajouter une chaîne de processus',
     processChainLabel: 'Chaîne de processus',

@@ -92,16 +92,17 @@ const enTranslation = {
   yourProfile: 'Your Profile',
   logOut: 'Log Out',
   somethingWentWrong: 'Something went wrong!',
-
-  dashboard: 'Dashboard',
-  home: 'Home',
-  dashboards: 'Dashboards',
-  charts: 'Charts',
-  manage: 'Manage',
-  processChains: 'Process Chains',
-  settings: 'Settings',
-  accounts: 'Accounts',
-
+  menu: {
+    dashboard: 'Dashboard',
+    home: 'Home',
+    dashboards: 'Dashboards',
+    charts: 'Charts',
+    manage: 'Manage',
+    processChains: 'Process Chains',
+    settings: 'Settings',
+    accounts: 'Accounts',
+    pipelines: 'My pipelines',
+  },
   addProcess: {
     title: 'Add Process Chain',
     processChainLabel: 'Process Chain',
