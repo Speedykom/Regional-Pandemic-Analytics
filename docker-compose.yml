@@ -570,7 +570,8 @@ services:
   # Nginx
   # =======
   nginx:
-    image: nginx:1.25.1-alpine
+    build: 
+      context: ./nginx
     container_name: nginx
     ports:
       - "80:80"
