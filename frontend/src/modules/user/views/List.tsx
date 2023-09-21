@@ -67,7 +67,7 @@ export const UserList = () => {
                 <TableHeaderCell>{t('fullName')}</TableHeaderCell>
                 <MediaQuery minWidth={768}>
                   <TableHeaderCell className="">
-                    {t('userName')}
+                    {t('username')}
                   </TableHeaderCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1090}>
