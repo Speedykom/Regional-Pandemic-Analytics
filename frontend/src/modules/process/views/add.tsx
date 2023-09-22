@@ -7,7 +7,7 @@ import {
   SearchSelectItem,
   TextInput,
 } from '@tremor/react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, FieldValues } from 'react-hook-form';
 import { useCreateProcessMutation } from '../process';
 import { DagForm } from '../interface';
 import { PipelineList } from '@/modules/pipeline/interface';
@@ -41,7 +41,7 @@ export const AddProcess = ({
     return true;
   };
 
-  const createNewProcess = (values: any) => {
+  const createNewProcess = (values: FieldValues) => {
     values.date.setHours(12, 0, 0);
     if (isNameValid(values.processName)) {
       createProcess({
