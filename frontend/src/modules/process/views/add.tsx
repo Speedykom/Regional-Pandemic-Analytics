@@ -7,12 +7,14 @@ import {
   SearchSelectItem,
   TextInput,
 } from '@tremor/react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, FieldValues } from 'react-hook-form';
 import { useCreateProcessMutation } from '../process';
 import { DagForm } from '../interface';
 import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
 import { toast } from 'react-toastify';
+import { useGetProcessQuery } from '../process';
+import { DagDetails } from '../interface';
 
 interface AddProcessProps {
   pipelineList: PipelineList;
@@ -28,37 +30,51 @@ export const AddProcess = ({
   closePanel,
 }: AddProcessProps) => {
   const { register, handleSubmit, control, setValue } = useForm();
-
   const [createProcess] = useCreateProcessMutation();
+  const { data } = useGetProcessQuery();
+
+  const isNameValid = (inputname: string) => {
+    if (data) {
+      const processNames = data.dags.map((process: DagDetails) => process.name);
+      return !processNames.includes(inputname);
+    }
+    return true;
+  };
+
+  const createNewProcess = (values: FieldValues) => {
+    values.date.setHours(12, 0, 0);
+    if (isNameValid(values.processName)) {
+      createProcess({
+        name: values.processName,
+        pipeline: values.pipelineTemplate,
+        // sending date without seconds because the backend is python3.9
+        // and it can not handle seconds in isoString
+        date: values.date.toISOString().split('T')[0],
+        schedule_interval: values.scheduleInterval,
+        description: values.description,
+      } as DagForm)
+        .then(() => {
+          // WARNING !!!
+          // The only reason why we're using setTimeout
+          // is because Airflow takes time to rescan the dags directory
+          // NEED TO BE CHANGED !!!
+          setTimeout(refetch, 1000);
+          toast.success('A new Process Chain is created !');
+          closePanel();
+        })
+        .catch(() => {
+          toast.error('An error has occured');
+        });
+    } else {
+      toast.error('Process chain name already exists');
+    }
+  };
 
   const footer = (
     <div className="space-x-2 p-2">
       <Button
         className="bg-prim text-white border-0 hover:bg-prim-hover"
-        onClick={handleSubmit((values) => {
-          values.date.setHours(12, 0, 0);
-          createProcess({
-            name: values.processName,
-            pipeline: values.pipelineTemplate,
-            // sending date without seconds because the backend is python3.9
-            // and it can not handle seconds in isoString
-            date: values.date.toISOString().split('T')[0],
-            schedule_interval: values.scheduleInterval,
-            description: values.description,
-          } as DagForm)
-            .then(() => {
-              // WARNING !!!
-              // The only reason why we're using setTimeout
-              // is because Airflow takes time to rescan the dags directory
-              // NEED TO BE CHANGED !!!
-              setTimeout(refetch, 1000);
-              toast.success('A new Process Chain is created !');
-              closePanel();
-            })
-            .catch(() => {
-              toast.error('An error has occured');
-            });
-        })}
+        onClick={handleSubmit((values) => createNewProcess(values))}
       >
         Submit
       </Button>
@@ -85,11 +101,12 @@ export const AddProcess = ({
           <div>
             <label>Process Chain</label>
             <TextInput
-              {...register('processName', { required: true })}
+              {...register('processName', {
+                required: true,
+              })}
               placeholder="Process Chain"
             />
           </div>
-
           <div>
             <label>Pipeline Template</label>
             <Controller
@@ -114,7 +131,6 @@ export const AddProcess = ({
               }}
             />
           </div>
-
           <div>
             <label>Start Date</label>
             <Controller
@@ -136,7 +152,6 @@ export const AddProcess = ({
               }}
             />
           </div>
-
           <div>
             <label>Schedule Interval</label>
             <Controller
@@ -158,7 +173,6 @@ export const AddProcess = ({
               }}
             />
           </div>
-
           <div>
             <label>Description</label>
             <TextInput
