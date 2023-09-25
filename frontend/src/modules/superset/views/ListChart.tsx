@@ -10,17 +10,18 @@ import {
 } from '@tremor/react';
 import MediaQuery from 'react-responsive';
 import { useGetChartsQuery } from '../superset';
+import { useTranslation } from 'react-i18next';
 
 export const ChartList = () => {
   const { data } = useGetChartsQuery();
-
+  const { t } = useTranslation();
   return (
     <div className="">
       <nav className="mb-5">
         <div>
-          <h2 className="text-3xl">Superset Charts</h2>
+          <h2 className="text-3xl">{t('supersetCharts')}</h2>
           <p className="mt-2 text-gray-600">
-            Chart list created on Apache Superset.
+            {t('chartListCreatedOnSuperset')}{' '}
           </p>
         </div>
       </nav>
@@ -29,26 +30,32 @@ export const ChartList = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Chart Title</TableHeaderCell>
+                <TableHeaderCell>{t('chartTitle')}</TableHeaderCell>
                 <MediaQuery minWidth={768}>
                   <TableHeaderCell className="">
-                    Visualization Type
+                    {t('visualizationType')}
                   </TableHeaderCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1090}>
-                  <TableHeaderCell className="">Dataset</TableHeaderCell>
+                  <TableHeaderCell className="">{t('dataset')}</TableHeaderCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1220}>
-                  <TableHeaderCell className="">Created By</TableHeaderCell>
+                  <TableHeaderCell className="">
+                    {t('createdBy')}
+                  </TableHeaderCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1350}>
-                  <TableHeaderCell className="">Created On</TableHeaderCell>
+                  <TableHeaderCell className="">
+                    {t('createdOn')}
+                  </TableHeaderCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1624}>
-                  <TableHeaderCell className="">Modified By</TableHeaderCell>
+                  <TableHeaderCell className="">
+                    {t('modifiedBy')}
+                  </TableHeaderCell>
                 </MediaQuery>
                 <TableHeaderCell className="justify-end">
-                  Last Modified
+                  {t('lastModified')}
                 </TableHeaderCell>
               </TableRow>
             </TableHead>
