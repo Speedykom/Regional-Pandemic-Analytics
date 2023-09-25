@@ -31,16 +31,17 @@
       <fontcolorred>200</fontcolorred>
       <fontitalic>N</fontitalic>
       <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <height>90</height>
-      <xloc>48</xloc>
-      <yloc>320</yloc>
+      <fontsize>16</fontsize>
+      <height>100</height>
+      <xloc>0</xloc>
+      <yloc>0</yloc>
       <note>Please ensure that the URL, Login Username and
         password are entered correctly
 
-        Please fill up in addition the Field tab with the
-        fields you want to return from the api</note>
-      <width>310</width>
+You can costumize the period dimension in the API
+https://docs.dhis2.org/archive/en/2.25/developer/html/webapi_date_perid_format.html
+</note>
+      <width>550</width>
     </notepad>
     <notepad>
       <backgroundcolorblue>251</backgroundcolorblue>
@@ -55,13 +56,57 @@
       <fontcolorred>14</fontcolorred>
       <fontitalic>N</fontitalic>
       <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <height>42</height>
-      <xloc>368</xloc>
-      <yloc>336</yloc>
+      <fontsize>14</fontsize>
+      <height>62</height>
+      <xloc>0</xloc>
+      <yloc>240</yloc>
       <note>Use this transform to read the json data
-        returned from the FHIR API</note>
-      <width>254</width>
+        returned from the FHIR API
+Please fill up in addition the Field tab with the
+    fields you want to return from the api</note>
+      <width>276</width>
+    </notepad>
+    <notepad>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorred>201</backgroundcolorred>
+      <bordercolorblue>90</bordercolorblue>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorred>14</bordercolorred>
+      <fontbold>N</fontbold>
+      <fontcolorblue>90</fontcolorblue>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorred>14</fontcolorred>
+      <fontitalic>N</fontitalic>
+      <fontname>Verdana, "Lucida Sans", Arial, Helvetica, sans-serif</fontname>
+      <fontsize>13</fontsize>
+      <height>32</height>
+      <xloc>176</xloc>
+      <yloc>144</yloc>
+      <note>The Formula tasks are made for customizing the date format
+You may need to update them depending on the used periode dimension</note>
+      <width>300</width>
+    </notepad>
+    <notepad>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorred>201</backgroundcolorred>
+      <bordercolorblue>90</bordercolorblue>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorred>14</bordercolorred>
+      <fontbold>N</fontbold>
+      <fontcolorblue>90</fontcolorblue>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorred>14</fontcolorred>
+      <fontitalic>N</fontitalic>
+      <fontname>Verdana, "Lucida Sans", Arial, Helvetica, sans-serif</fontname>
+      <fontsize>13</fontsize>
+      <height>32</height>
+      <xloc>512</xloc>
+      <yloc>240</yloc>
+      <note>The value mapper tasks are to map fields ids by their values.
+You can map your OrganisationUnits and DataElements here.</note>
+      <width>256</width>
     </notepad>
   </notepads>
   <order>
