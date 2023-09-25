@@ -9,6 +9,7 @@ import {
   TableRow,
   Text,
 } from '@tremor/react';
+import { useTranslation } from 'react-i18next';
 import MediaQuery from 'react-responsive';
 import { useState } from 'react';
 import { usePermission } from '@/common/hooks/use-permission';
@@ -24,7 +25,7 @@ export const MyPipelines = () => {
   const { hasPermission } = usePermission();
   const [template, setTemplate] = useState<any>();
   const [drawer, setDrawer] = useState<boolean>(false);
-
+  const { t } = useTranslation();
   const close = () => {
     setDrawer(false);
     setTemplate(null);
@@ -57,8 +58,8 @@ export const MyPipelines = () => {
     <div className="">
       <nav className="mb-5 flex justify-between items-center">
         <div>
-          <h2 className="text-3xl">My Pipelines</h2>
-          <p className="my-2 text-gray-600">Create your hop pipeline.</p>
+          <h2 className="text-3xl">{t('myPipelines')}</h2>
+          <p className="my-2 text-gray-600"> {t('createYourPipeline')}</p>
         </div>
         <div>
           {hasPermission('pipeline:add') && (
@@ -66,7 +67,7 @@ export const MyPipelines = () => {
               className="bg-prim hover:bg-prim-hover border-0"
               onClick={showConfirmModal}
             >
-              Create Pipeline
+              {t('createPipeline')}
             </Button>
           )}
         </div>
@@ -76,9 +77,11 @@ export const MyPipelines = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableHeaderCell>Name</TableHeaderCell>
+                <TableHeaderCell>{t('name')}</TableHeaderCell>
                 <MediaQuery minWidth={1090}>
-                  <TableHeaderCell className="">Description</TableHeaderCell>
+                  <TableHeaderCell className="">
+                    {t('description')}
+                  </TableHeaderCell>
                 </MediaQuery>
                 <TableHeaderCell />
               </TableRow>
@@ -104,7 +107,7 @@ export const MyPipelines = () => {
                         }
                         className="hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white"
                       >
-                        View
+                        {t('view')}
                       </Button>
                     </div>
                   </TableCell>

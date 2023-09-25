@@ -1,6 +1,6 @@
 import Layout from '@/common/components/Dashboard/Layout';
 import { countries } from '@/common/utils/countries';
-
+import { useTranslation } from 'react-i18next';
 import { Fragment, useEffect, useState } from 'react';
 import {
   Badge,
@@ -30,6 +30,7 @@ import { useSelector } from 'react-redux';
 export const ProfileSettings = () => {
   const [changePassword, setChangePassword] = useState(false);
   const currentUser = useSelector(selectCurrentUser);
+  const { t } = useTranslation();
 
   const myId: any = currentUser?.id;
   const { data } = useGetUserQuery(myId);
@@ -103,25 +104,33 @@ export const ProfileSettings = () => {
               </p>
             </div>
             <div className="mt-5">
-              <span className="text-gray-500 leading-8 my-1">Username</span>
+              <span className="text-gray-500 leading-8 my-1">
+                {t('username')}
+              </span>
               <p id="emailId" className="">
                 {data?.username}
               </p>
             </div>
             <div className="mt-5">
-              <span className="text-gray-500 leading-8 my-1">Gender</span>
+              <span className="text-gray-500 leading-8 my-1">
+                {t('gender')}
+              </span>
               <p id="emailId" className="">
                 {data?.attributes?.gender}
               </p>
             </div>
             <div className="mt-5 mb-8">
-              <span className="text-gray-500 leading-8 my-1">Country</span>
+              <span className="text-gray-500 leading-8 my-1">
+                {t('country')}
+              </span>
               <p id="emailId" className="">
                 {data?.attributes?.country}
               </p>
             </div>
             <div className="">
-              <span className="text-gray-500 leading-8 my-1">Access Roles</span>
+              <span className="text-gray-500 leading-8 my-1">
+                {t('accessRoles')}
+              </span>
               <div>
                 <div className="flex">
                   {data?.roles.map((role, index) => (
@@ -136,7 +145,9 @@ export const ProfileSettings = () => {
               </div>
             </div>
             <div className="mt-5">
-              <span className="text-gray-500 leading-8 my-1">Email Status</span>
+              <span className="text-gray-500 leading-8 my-1">
+                {t('emailStatus')}
+              </span>
               <p>
                 {data?.emailVerified ? (
                   <Badge color="indigo" icon={CheckIcon}>
@@ -150,15 +161,17 @@ export const ProfileSettings = () => {
               </p>
             </div>
             <div className="mt-5">
-              <span className="text-gray-500 leading-8 my-1">My Status</span>
+              <span className="text-gray-500 leading-8 my-1">
+                {t('myStatus')}
+              </span>
               <p>
                 {data?.enabled ? (
                   <Badge color="green" icon={WifiIcon}>
-                    Active
+                    {t('active')}
                   </Badge>
                 ) : (
                   <Badge color="red" icon={SignalSlashIcon}>
-                    Inactive
+                    {t('inactive')}{' '}
                   </Badge>
                 )}
               </p>
@@ -169,26 +182,26 @@ export const ProfileSettings = () => {
         <div className="w-full md:w-full md:mx-2">
           <Card className="bg-white mb-8">
             <div className="border-b-2 mb-6 flex items-center justify-between">
-              <p className="flex items-center">Edit Profile</p>
+              <p className="flex items-center">{t('editProfile')}</p>
             </div>
             <div className="lg:col-span-2">
               <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
                 <div className="md:col-span-5">
-                  <label htmlFor="firstName">Given Names*</label>
+                  <label htmlFor="firstName">{t('givenNames')}</label>
                   <TextInput
                     value={firstName}
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                   />
                 </div>
                 <div className="md:col-span-5">
-                  <label htmlFor="lastName">Last Name*</label>
+                  <label htmlFor="lastName">{t('lastName2')}</label>
                   <TextInput
                     value={lastName}
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                   />
                 </div>
                 <div className="md:col-span-5">
-                  <label htmlFor="phone">Phone Number*</label>
+                  <label htmlFor="phone">{t('phoneNumber')}</label>
                   <NumberInput
                     enableStepper={false}
                     onInput={(e: any) => setPhone(e.target.value)}
@@ -199,7 +212,7 @@ export const ProfileSettings = () => {
                   />
                 </div>
                 <div className="md:col-span-3">
-                  <label htmlFor="country">Country*</label>
+                  <label htmlFor="country">{t('country2')}</label>
                   <SearchSelect
                     onValueChange={(e) => {
                       setCountry(e);
@@ -219,23 +232,23 @@ export const ProfileSettings = () => {
                   </SearchSelect>
                 </div>
                 <div className="md:col-span-2 w-full">
-                  <label htmlFor="gender">Gender*</label>
+                  <label htmlFor="gender">{t('gender2')}</label>
                   <div className="flex">
                     <Button
                       onClick={() => setGender('Male')}
                       className={`rounded-l ${
                         gender == 'Male' ? 'bg-indigo-400 text-white' : ''
-                      }`}
+                      } text-sm`}
                     >
-                      Male
+                      {t('male')}
                     </Button>
                     <Button
                       onClick={() => setGender('Female')}
                       className={`rounded-r ${
                         gender == 'Female' && 'bg-indigo-400 text-white'
-                      }`}
+                      } text-sm ml-2`} //
                     >
-                      Female
+                      {t('female')}
                     </Button>
                   </div>
                 </div>
@@ -250,7 +263,7 @@ export const ProfileSettings = () => {
                     className="flex items-center hover:bg-prim-hover text-white"
                     icon={PlusCircleIcon}
                   >
-                    Save Changes
+                    {t('saveChanges')}
                   </Button>
                 </div>
               </div>
@@ -258,26 +271,28 @@ export const ProfileSettings = () => {
           </Card>
           <Card className="bg-white">
             <div className="mt-1 border-b-2 mb-6 flex items-center justify-between">
-              <h1 className="">Credential Settings</h1>
-              <Button
-                onClick={triggerPasswordChange}
-                className="flex items-center border-0"
-                icon={PencilSquareIcon}
-              >
-                Change Password
-              </Button>
+              <h1 className="">{t('credentialSettings')}</h1>
+              <div className="flex items-center justify-center mt-4 mb-4">
+                <Button
+                  onClick={triggerPasswordChange}
+                  className="flex items-center border-0 text-sm"
+                  icon={PencilSquareIcon}
+                >
+                  {t('changePassword')}
+                </Button>
+              </div>
             </div>
             <div className="mt-3">
               <div className="flex mb-3 space-x-1 md:justify-between">
-                <p>Email</p>
+                <p> {t('email')}</p>
                 <p>{data?.email}</p>
               </div>
               <div className="flex space-x-2 mb-3 md:justify-between">
-                <p>Username</p>
+                <p> {t('username')}</p>
                 <p>{data?.username}</p>
               </div>
               <div className="flex mb-3 justify-between">
-                <p>Password</p>
+                <p> {t('password')}</p>
                 <p>*************</p>
               </div>
             </div>
@@ -317,7 +332,7 @@ export const ProfileSettings = () => {
                       as="h3"
                       className="text-lg font-medium leading-6 text-gray-900"
                     >
-                      Change Password
+                      {t('changePassword')}
                     </Dialog.Title>
                     <div className="mt-5 flex-auto px-4 py-10 pt-0">
                       <form
@@ -328,7 +343,7 @@ export const ProfileSettings = () => {
                             className="block text-blueGray-600 text-xs font-bold mb-2"
                             htmlFor="descriptiond"
                           >
-                            New Password
+                            {t('new')}
                           </label>
                           <TextInput
                             type="password"
@@ -341,7 +356,7 @@ export const ProfileSettings = () => {
                           />
                           {errors.description && (
                             <span className="text-sm text-red-600">
-                              provide role description
+                              {t('provideRoleDescrip')}{' '}
                             </span>
                           )}
                         </div>
@@ -350,7 +365,7 @@ export const ProfileSettings = () => {
                             className="block text-blueGray-600 text-xs font-bold mb-2"
                             htmlFor="descriptiond"
                           >
-                            Confirm Password
+                            {t('confirmPass')}
                           </label>
                           <TextInput
                             type="password"
@@ -359,7 +374,7 @@ export const ProfileSettings = () => {
                           />
                           {errors.description && (
                             <span className="text-sm text-red-600">
-                              provide role description
+                              {t('provideRoleDescrip')}{' '}
                             </span>
                           )}
                         </div>
@@ -378,7 +393,7 @@ export const ProfileSettings = () => {
                             type="submit"
                             className="inline-flex justify-center rounded-md border border-transparent bg-prim px-4 py-2 text-sm font-medium text-white hover:bg-prim-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                           >
-                            Save Changes
+                            {t('saveChanges')}
                           </Button>
                         </div>
                       </form>

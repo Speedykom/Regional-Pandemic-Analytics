@@ -13,6 +13,7 @@ import { DagForm } from '../interface';
 import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 interface AddProcessProps {
   pipelineList: PipelineList;
@@ -28,6 +29,7 @@ export const AddProcess = ({
   closePanel,
 }: AddProcessProps) => {
   const { register, handleSubmit, control, setValue } = useForm();
+  const { t } = useTranslation();
 
   const [createProcess] = useCreateProcessMutation();
 
@@ -52,21 +54,21 @@ export const AddProcess = ({
               // is because Airflow takes time to rescan the dags directory
               // NEED TO BE CHANGED !!!
               setTimeout(refetch, 1000);
-              toast.success('A new Process Chain is created !');
+              toast.success(t('addProcess.successMessage'));
               closePanel();
             })
             .catch(() => {
-              toast.error('An error has occured');
+              toast.error(t('addProcess.errorMessage'));
             });
         })}
       >
-        Submit
+        {t('addProcess.submitButton')}{' '}
       </Button>
       <Button
         className="bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
         onClick={closePanel}
       >
-        Cancel
+        {t('addProcess.cancelButton')}
       </Button>
     </div>
   );
@@ -83,7 +85,7 @@ export const AddProcess = ({
       <div className="w-96 px-3">
         <div className="flex flex-col space-y-3">
           <div>
-            <label>Process Chain</label>
+            <label>{t('addProcess.title')}</label>
             <TextInput
               {...register('processName', { required: true })}
               placeholder="Process Chain"
@@ -91,7 +93,7 @@ export const AddProcess = ({
           </div>
 
           <div>
-            <label>Pipeline Template</label>
+            <label>{t('addProcess.pipelineTemplateLabel')}</label>
             <Controller
               name="pipelineTemplate"
               control={control}
@@ -116,7 +118,7 @@ export const AddProcess = ({
           </div>
 
           <div>
-            <label>Start Date</label>
+            <label>{t('addProcess.startDateLabel')}</label>
             <Controller
               name="date"
               control={control}
@@ -138,7 +140,7 @@ export const AddProcess = ({
           </div>
 
           <div>
-            <label>Schedule Interval</label>
+            <label>{t('addProcess.scheduleIntervalLabel')}</label>
             <Controller
               name="scheduleInterval"
               control={control}
@@ -160,7 +162,7 @@ export const AddProcess = ({
           </div>
 
           <div>
-            <label>Description</label>
+            <label>{t('addProcess.descriptionLabel')}</label>
             <TextInput
               {...register('description', { required: true })}
               placeholder="Description"

@@ -15,6 +15,7 @@ import {
   PhoneIcon,
   UserIcon,
 } from '@heroicons/react/24/outline';
+
 import { Switch } from '@headlessui/react';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
@@ -23,8 +24,11 @@ import { SerialUser } from '@/modules/user/interface';
 import { useRouter } from 'next/router';
 import { useGetRolesQuery } from '@/modules/roles/role';
 import { usePermission } from '@/common/hooks/use-permission';
+import { useTranslation } from 'react-i18next';
 
 export const AddUser = () => {
+  const { t } = useTranslation();
+
   const [enabled, setEnabled] = useState<boolean>(false);
   const [emailVerified, setVerify] = useState<boolean>(false);
   const [country, setCountry] = useState<string>('');
@@ -73,14 +77,14 @@ export const AddUser = () => {
           <div className="rounded-t bg-white mb-0 px-6 py-6">
             <div className="text-center flex justify-between">
               <h6 className="text-blueGray-700 text-xl font-bold">
-                Create User
+                {t('createUser')}
               </h6>
             </div>
           </div>
           <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
             <form onSubmit={handleSubmit((data: any) => onSubmit(data))}>
               <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-                Basic Information
+                {t('basicInformation')}
               </h6>
               <div className="flex flex-wrap">
                 <div className="w-full lg:w-6/12 px-4">
@@ -89,7 +93,7 @@ export const AddUser = () => {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      First Name
+                      {t('firsName')}
                     </label>
                     <TextInput
                       {...register('firstName', {
@@ -113,7 +117,7 @@ export const AddUser = () => {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      Last Name
+                      {t('lastName')}
                     </label>
                     <TextInput
                       {...register('lastName', {
@@ -137,7 +141,7 @@ export const AddUser = () => {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      Gender
+                      {t('gender')}
                     </label>
                     <div className="block pt-3 pb-2 space-x-4">
                       <label>
@@ -148,7 +152,7 @@ export const AddUser = () => {
                           value="Male"
                           className="mr-2 text-black border-2 border-gray-300 focus:border-gray-300 focus:ring-black"
                         />
-                        Male
+                        {t('male')}
                       </label>
                       <label>
                         <input
@@ -157,13 +161,13 @@ export const AddUser = () => {
                           name="gender"
                           value="Female"
                           className="mr-2 text-black border-2 border-gray-300 focus:border-gray-300 focus:ring-black"
-                        />
-                        Female
+                        />{' '}
+                        {t('female')}
                       </label>
                     </div>
                     {errors.gender && (
                       <span className="text-sm text-red-600">
-                        gender has to be selected
+                        {t('genderSelected')}
                       </span>
                     )}
                   </fieldset>
@@ -174,7 +178,7 @@ export const AddUser = () => {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      Country
+                      {t('country')}
                     </label>
                     <SearchSelect
                       onValueChange={(e) => {
@@ -198,7 +202,7 @@ export const AddUser = () => {
                     </SearchSelect>
                     {!countryValid && (
                       <span className="text-sm text-red-500 flex space-x-6 items-center justify-between">
-                        select country{' '}
+                        {t('selectCountry')}{' '}
                         <ExclamationCircleIcon className="text-sm w-4 h-4" />
                       </span>
                     )}
@@ -210,7 +214,7 @@ export const AddUser = () => {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="phone"
                     >
-                      Contact Number
+                      {t('contactNumber')}
                     </label>
                     <NumberInput
                       {...register('phone', { required: true, minLength: 10 })}
@@ -227,7 +231,7 @@ export const AddUser = () => {
                 </div>
               </div>
               <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-                User Information
+                {t('userInformation')}
               </h6>
               <div className="flex flex-wrap">
                 <div className="w-full lg:w-6/12 px-4">
@@ -236,7 +240,7 @@ export const AddUser = () => {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      Username
+                      {t('username')}
                     </label>
                     <TextInput
                       {...register('username', {
@@ -262,7 +266,7 @@ export const AddUser = () => {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      Email address
+                      {t('emailAddress')}
                     </label>
                     <TextInput
                       {...register('email', {
@@ -286,7 +290,7 @@ export const AddUser = () => {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="emailVerify"
                     >
-                      Is Email Verified
+                      {t('validEmail')}{' '}
                     </label>
                     <Switch
                       id="emailVerify"
@@ -296,7 +300,7 @@ export const AddUser = () => {
                         emailVerified ? 'bg-blue-600' : 'bg-gray-200'
                       } relative inline-flex h-6 w-11 items-center rounded-full`}
                     >
-                      <span className="sr-only">Verify Emails</span>
+                      <span className="sr-only">{t('verifyEmails')}</span>
                       <span
                         className={`${
                           emailVerified ? 'translate-x-6' : 'translate-x-1'
@@ -311,7 +315,7 @@ export const AddUser = () => {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="enable"
                     >
-                      Enable User
+                      {t('enableUser')}{' '}
                     </label>
                     <Switch
                       id="enable"
@@ -321,7 +325,7 @@ export const AddUser = () => {
                         enabled ? 'bg-blue-600' : 'bg-gray-200'
                       } relative inline-flex h-6 w-11 items-center rounded-full`}
                     >
-                      <span className="sr-only">Enable User</span>
+                      <span className="sr-only">{t('enableUser')} </span>
                       <span
                         className={`${
                           enabled ? 'translate-x-6' : 'translate-x-1'
@@ -336,7 +340,7 @@ export const AddUser = () => {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="role"
                     >
-                      User Role
+                      {t('userRole')}{' '}
                     </label>
                     <SearchSelect
                       onValueChange={(e) => {
@@ -363,7 +367,7 @@ export const AddUser = () => {
                     </SearchSelect>
                     {!roleValid && (
                       <span className="text-sm text-red-600">
-                        select user role
+                        {t('selectUserRole')}
                       </span>
                     )}
                   </div>
@@ -378,7 +382,7 @@ export const AddUser = () => {
                   className="bg-prim hover:bg-prim-hover p-3  text-white"
                   loading={isLoading}
                 >
-                  Save User
+                  {t('saveUser')}{' '}
                 </Button>
               </div>
             </form>

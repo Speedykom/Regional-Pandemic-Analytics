@@ -67,7 +67,7 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
   return (
     <div className="border-t">
       <p className="bg-yellow-200 px-3 py-2 rounded-md mt-3 text-gray-500 w-full">
-        Note: select your template you want to create from and press continue
+        Note: select a template and press continue
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-3">
         {(templates?.data || []).map((template, index) => (

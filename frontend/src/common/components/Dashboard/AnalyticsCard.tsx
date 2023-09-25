@@ -7,6 +7,7 @@ import {
   Flex,
   Grid,
 } from '@tremor/react';
+import { useTranslation } from 'react-i18next';
 
 interface AnalyticsType {
   title: string;
@@ -69,6 +70,7 @@ const categories: Array<AnalyticsType> = [
 ];
 
 export default function AnalyticsCard() {
+  const { t } = useTranslation();
   return (
     <Grid numItemsMd={2} numItemsLg={3} className="gap-6">
       {categories.map((item) => (
@@ -83,7 +85,9 @@ export default function AnalyticsCard() {
             alignItems="baseline"
           >
             <Metric>{item.metric}</Metric>
-            <Text>from {item.metricPrev}</Text>
+            <Text>
+              {t('from')} {item.metricPrev}
+            </Text>
           </Flex>
           <AreaChart
             className="mt-6 h-28"
