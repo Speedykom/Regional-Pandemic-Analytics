@@ -97,7 +97,7 @@ class SupersetClient:
         if dataset_id is None:
             raise RuntimeError("Dataset {} not found in Superset".format(name))
         auth_header = "Bearer {}".format(token)
-        update_dataset_url = urllib.parse.urljoin(self._base_url, "/api/v1/dataset/{}/refresh/".format(dataset_id))
+        update_dataset_url = urllib.parse.urljoin(self._base_url, "/api/v1/dataset/{}/refresh".format(dataset_id))
         update_dataset_response = requests.put(url = update_dataset_url, headers = { "Authorization": auth_header })
         if update_dataset_response.status_code >= 400:
             raise RuntimeError("Failed to update dataset {}".format(name))

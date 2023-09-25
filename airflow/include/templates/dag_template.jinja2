@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from airflow.utils.context import Context
 from minio import Minio
 import os
+from read_parquet_schema.parquet_functions import read_parquet_schema_for_druid
 import requests
 from requests.auth import HTTPBasicAuth
 from superset.superset_client import SupersetClient
@@ -49,6 +50,7 @@ class DruidOperator(BaseOperator):
     self.base_url = "{}/druid/indexer/v1/task".format(os.environ['DRUID_COORDINATOR_URL'])
 
   def execute(self, context: Context):
+    timestamp_spec, schema = read_parquet_schema_for_druid(file = "{{dag_id}}.parquet", path = "{{user_id}}")
     payload = {
       "type": "index_parallel",
       "spec": {
@@ -93,13 +95,9 @@ class DruidOperator(BaseOperator):
         },
         "dataSchema": {
           "dataSource": "{{dag_id}}",
-          "timestampSpec": {
-            "column": "Date",
-            "format": "millis",
-            "missingValue": 0
-          },
+          "timestampSpec": timestamp_spec,
           "dimensionsSpec": {
-            "dimensions": []
+            "dimensions": schema
           },
           "granularitySpec": {
             "queryGranularity": "none",
