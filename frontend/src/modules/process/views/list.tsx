@@ -7,11 +7,11 @@ import { DagDetails } from '../interface';
 import ProcessCard from '../components/ProcessCard';
 import { AddProcess } from './add';
 import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
-
+import { useTranslation } from 'react-i18next';
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();
   const [addComponent, setAddComponent] = useState(false);
-
+  const { t } = useTranslation();
   const closePanel = () => {
     setAddComponent(false);
   };
@@ -25,9 +25,9 @@ export default function ProcessChainList() {
     <div>
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl">Process Chain</h2>
+          <h2 className="text-3xl">{t('processChain')}</h2>
           <p className="my-2 text-gray-600">
-            View and manage all process chains
+            {t('viewAndManageProcessChains')}{' '}
           </p>
         </div>
         <div>
@@ -39,7 +39,7 @@ export default function ProcessChainList() {
                 setAddComponent(true);
               }}
             >
-              Add Process Chain
+              {t('addProcessChain')}
             </Button>
           )}
         </div>
