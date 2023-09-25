@@ -9,6 +9,7 @@ import {
 import { motion, AnimationControls } from 'framer-motion';
 import { usePermission } from '@/common/hooks/use-permission';
 import { NavLink } from '../link';
+import { useTranslation } from 'react-i18next';
 
 interface MenuProps {
   controlstextopacity?: AnimationControls;
@@ -18,22 +19,22 @@ interface MenuProps {
 
 export const MenuData = [
   {
-    name: 'Dashboard',
+    name: 'dashboard',
     items: [
       {
-        title: 'Home',
+        title: 'home',
         href: '/home',
         icon: BiHome,
         scope: '',
       },
       {
-        title: 'Dashboards',
+        title: 'dashboards',
         href: '/dashboards',
         icon: BiTable,
         scope: 'dashboard:read',
       },
       {
-        title: 'Charts',
+        title: 'charts',
         href: '/charts',
         icon: BiChart,
         scope: 'chart:read',
@@ -41,17 +42,17 @@ export const MenuData = [
     ],
   },
   {
-    name: 'Manage',
+    name: 'manage',
     items: [
       {
-        title: 'Process Chains',
+        title: 'processChains',
         href: '/process-chains',
         icon: BiGitPullRequest,
         scope: 'process:read',
       },
 
       {
-        title: 'My Pipelines',
+        title: 'pipelines',
         href: '/pipelines',
         icon: BiGitMerge,
         scope: 'pipeline:read',
@@ -59,10 +60,10 @@ export const MenuData = [
     ],
   },
   {
-    name: 'Settings',
+    name: 'settings',
     items: [
       {
-        title: 'Accounts',
+        title: 'accounts',
         href: '/users',
         icon: BiUser,
         scope: 'user:read',
@@ -73,6 +74,7 @@ export const MenuData = [
 
 export const SideNavLinks = (prop: MenuProps) => {
   const { hasPermission } = usePermission();
+  const { t } = useTranslation();
   return (
     <>
       {MenuData.map((group) => (
@@ -81,12 +83,13 @@ export const SideNavLinks = (prop: MenuProps) => {
             animate={prop.controlstextopacity}
             className="text-gray-500 ml-4 text-sm font-bold mb-2"
           >
-            {prop?.isOpen ? group?.name : ''}
+            {prop?.isOpen ? t(`menu.${group?.name}`) : ''}
           </motion.p>
 
           {group.items
             .filter(
-              ({ title, scope }) => title == 'Home' || hasPermission(scope)
+              ({ title, scope }) =>
+                t(`menu.${title}`) === t('menu.home') || hasPermission(scope)
             )
             .map((item) => (
               <NavLink
@@ -98,7 +101,7 @@ export const SideNavLinks = (prop: MenuProps) => {
                 <item.icon className="text-lg" />
 
                 <motion.p animate={prop?.controlstext} className="ml-4 text-sm">
-                  {prop?.isOpen ? item?.title : ''}
+                  {prop?.isOpen ? t(`menu.${item?.title}`) : ''}
                 </motion.p>
               </NavLink>
             ))}

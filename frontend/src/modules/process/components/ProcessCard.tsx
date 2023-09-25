@@ -9,6 +9,8 @@ import {
 import { ChevronRightIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 import Stepper from './Stepper';
+import { useTranslation } from 'react-i18next';
+
 import { PipelineList } from '@/modules/pipeline/interface';
 interface ProcessCardProps {
   process: DagDetails;
@@ -19,6 +21,8 @@ export default function ProcessCard({
   process,
   pipelineList,
 }: ProcessCardProps) {
+  const { t } = useTranslation();
+
   const { data, isSuccess, refetch } = useGetProcessPipelineByIdQuery(
     process.dag_id
   );
@@ -37,26 +41,32 @@ export default function ProcessCard({
           <div className="w-fulL flex justify-between items-center">
             <span className="flex space-x-10 ml-3">
               <span>
-                <div className="mb-2 text-xs font-bold">Name</div>
+                <div className="mb-2 text-xs font-bold">
+                  {t('addProcess.name')}
+                </div>
                 <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
                   {process.name}
                 </Badge>
               </span>
               <span>
-                <div className="mb-2 text-xs font-bold">Schedule Interval</div>
+                <div className="mb-2 text-xs font-bold">
+                  {t('addProcess.scheduleIntervalLabel')}
+                </div>
                 <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
                   {process.schedule_interval}
                 </Badge>
               </span>
               <span>
-                <div className="mb-2 text-xs font-bold">Status</div>
+                <div className="mb-2 text-xs font-bold">
+                  {t('addProcess.status')}
+                </div>
                 {process.status ? (
                   <Badge className="bg-red-100 text-red-500 rounded-full p-1 px-3">
-                    <span>inactive</span>
+                    <span>{t('addProcess.inactive')}</span>
                   </Badge>
                 ) : (
                   <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                    <span>active</span>
+                    <span>{t('addProcess.active')}</span>
                   </Badge>
                 )}
               </span>
@@ -70,7 +80,7 @@ export default function ProcessCard({
                     runProcessById(process.dag_id);
                   }}
                 >
-                  Run
+                  {t('addProcess.run')}{' '}
                 </Button>
               )}
 
@@ -82,7 +92,7 @@ export default function ProcessCard({
                     toggleProcessStatus(process.dag_id);
                   }}
                 >
-                  Enable
+                  {t('addProcess.enable')}{' '}
                 </Button>
               ) : (
                 <Button
@@ -92,7 +102,7 @@ export default function ProcessCard({
                     toggleProcessStatus(process.dag_id);
                   }}
                 >
-                  Disable
+                  {t('addProcess.disable')}{' '}
                 </Button>
               )}
             </span>
