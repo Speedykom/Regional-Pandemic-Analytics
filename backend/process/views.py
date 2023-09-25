@@ -133,6 +133,16 @@ class ProcessView(ViewSet):
             date=datetime.fromisoformat(request.data["date"]),
         )
 
+        # Checks if the process chain already exists or not
+        route = f"{AirflowInstance.url}/dags/{new_dag_config.dag_id}"
+
+        airflow_response = requests.get(
+            route, auth=(AirflowInstance.username, AirflowInstance.password)
+        )
+        
+        if airflow_response.ok:
+            return Response({"message":"process chain already created"}, status=status.HTTP_409_CONFLICT)
+        
         # Run factory by passing config to create a process chain
         airflow_internal_url = AirflowInstance.url.removesuffix("/api/v1")
         airflow_response = requests.post(
