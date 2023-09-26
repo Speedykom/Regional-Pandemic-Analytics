@@ -11,10 +11,18 @@ import {
 import MediaQuery from 'react-responsive';
 import { useGetChartsQuery } from '../superset';
 import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 
 export const ChartList = () => {
   const { data } = useGetChartsQuery();
   const { t } = useTranslation();
+
+  const [searchInput, setSearchInput] = useState<string>('');
+
+  const filteredCharts = data?.result.filter((item) =>
+    item.slice_name.toLowerCase().includes(searchInput.toLowerCase())
+  );
+
   return (
     <div className="">
       <nav className="mb-5">
@@ -25,6 +33,13 @@ export const ChartList = () => {
           </p>
         </div>
       </nav>
+      <input
+        type="text"
+        placeholder="Search for charts..."
+        className="w-full border border-gray-300 rounded-md p-2 mb-3"
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+      />
       <div>
         <Card className="bg-white">
           <Table>
@@ -60,7 +75,7 @@ export const ChartList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {(data?.result || []).map((item, index) => (
+              {filteredCharts?.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>
                     <Text className="font-sans">{item.slice_name}</Text>

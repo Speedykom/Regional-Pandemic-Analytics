@@ -19,12 +19,22 @@ import {
 } from '@heroicons/react/24/outline';
 import { useTranslation } from 'react-i18next';
 import { useGetDashboardsQuery } from '../superset';
+import { useState } from 'react';
 
 export const DashboardList = () => {
   const { t } = useTranslation();
 
   const { data } = useGetDashboardsQuery();
   const router = useRouter();
+
+  const [searchInput, setSearchInput] = useState<string>('');
+
+  // const filteredDashboards = data?.list_title
+  //   .toLowerCase()
+  //   .includes(searchInput.toLowerCase());
+  const filteredDashboards = data?.result.filter((item) =>
+    item.dashboard_title.toLowerCase().includes(searchInput.toLowerCase())
+  );
 
   const embedDashboard = (id: string) => {
     router.push(`/dashboards/${id}`);
@@ -39,6 +49,13 @@ export const DashboardList = () => {
           </p>
         </div>
       </nav>
+      <input
+        type="text"
+        placeholder="Search for dashboards..."
+        className="w-full border border-gray-300 rounded-md p-2 mb-3"
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+      />
       <div>
         <Card className="bg-white">
           <Table>
@@ -76,7 +93,7 @@ export const DashboardList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {(data?.result || []).map((item, index) => (
+              {filteredDashboards?.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>
                     <Text className="font-sans">{item?.dashboard_title}</Text>
