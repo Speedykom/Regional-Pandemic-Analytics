@@ -47,7 +47,11 @@ export const baseQuery: BaseQueryFn<
     router.push('/');
   }
   if (result.error) {
-    toast.error('An error has occurred');
+    toast.error(
+      (result.error?.data as { message: string })?.message
+        ? (result.error?.data as { message: string })?.message
+        : 'An error has occurred'
+    );
   }
   return result;
 };
