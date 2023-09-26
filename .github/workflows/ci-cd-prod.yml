@@ -45,13 +45,13 @@ jobs:
         run: python manage.py test
         working-directory: backend
 
-  deploy-dev:
+  deploy-prod:
     name: Deploy
     runs-on: self-hosted
     needs: [frontend-integration, backend-integration]
     steps:
       - uses: actions/checkout@v2
-      - name: Connect dev server and deploy
+      - name: Connect prod server and deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST_PROD }}
@@ -60,4 +60,4 @@ jobs:
           script: |
             cd Regional-Pandemic-Analytics/
             git pull
-            make start-dev
+            make start-prod
