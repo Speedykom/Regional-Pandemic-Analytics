@@ -17,6 +17,10 @@ services:
       - "backend.igad.local:host-gateway"
     volumes:
       - ./frontend/src/:/frontend/src
+    deploy:
+      resources:
+        limits:
+          memory: 1300M
 
   superset:
     container_name: superset
@@ -41,10 +45,18 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
+    deploy:
+      resources:
+        limits:
+          memory: 4G
 
   hop-server:
     ports:
       - "9999:8080"
+    deploy:      
+      resources:
+        limits:
+          memory: 600M
 
   # =====
   #  Minio
@@ -56,6 +68,11 @@ services:
       - "host.docker.internal:host-gateway"
       - "minio.igad.local:host-gateway"
       - "keycloak.igad.local:host-gateway"
+    deploy:      
+      resources:
+        limits:
+          memory: 600M
+          
   # ========
   # Backend
   # ========
@@ -68,6 +85,10 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
+    deploy:
+      resources:
+        limits:
+          memory: 300M
 
   # ========
   # Airflow
@@ -78,3 +99,85 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
+    deploy:
+      resources:
+        limits:
+          memory: 900M
+
+  airflow-scheduler:
+    deploy:
+      resources:
+        limits:
+          memory: 900M
+  
+  airflow-triggerer:
+    deploy:
+      resources:
+        limits:
+          memory: 600M  
+  
+  airflow-pg:
+    deploy:
+      resources:
+        limits:
+          memory: 200M  
+
+  # =====
+  #  Keycloak
+  # =====
+  keycloak:
+    deploy:
+      resources:
+        limits:
+          memory: 600M
+  keycloak-pg:
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+
+  # =====
+  #  Superset
+  # =====
+  superset_cache:
+    deploy:
+      resources:
+        limits:
+          memory: 30M
+  superset_db:
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+
+  # =====
+  #  OpenHIM
+  # =====
+
+  mongo-db:
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+
+  openhim-core:
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+
+  openhim-console:
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+
+  # =====
+  #  Nginx
+  # =====
+  nginx:
+    deploy:
+      resources:
+        limits:
+          memory: 200M
+
