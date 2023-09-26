@@ -41,7 +41,7 @@
 You can costumize the period dimension in the API
 https://docs.dhis2.org/archive/en/2.25/developer/html/webapi_date_perid_format.html
 </note>
-      <width>550</width>
+      <width>611</width>
     </notepad>
     <notepad>
       <backgroundcolorblue>251</backgroundcolorblue>
@@ -61,10 +61,10 @@ https://docs.dhis2.org/archive/en/2.25/developer/html/webapi_date_perid_format.h
       <xloc>0</xloc>
       <yloc>240</yloc>
       <note>Use this transform to read the json data
-        returned from the FHIR API
+        returned from the DHIS2 API
 Please fill up in addition the Field tab with the
     fields you want to return from the api</note>
-      <width>276</width>
+      <width>305</width>
     </notepad>
     <notepad>
       <backgroundcolorblue>251</backgroundcolorblue>
