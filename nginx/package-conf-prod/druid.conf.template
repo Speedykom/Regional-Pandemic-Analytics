@@ -1,0 +1,29 @@
+# IGAD druid config
+server {
+    listen          80;
+    server_name     $NGINX_DRUID_DOMAIN_NAME;
+
+	location ^~ /.well-known/acme-challenge/ {
+		root /var/www/certbot;
+	}
+
+	location / {
+		return 301 https://$host$request_uri;
+	}
+}
+
+server {
+	listen 443 ssl;
+	server_name $NGINX_DRUID_DOMAIN_NAME;
+
+	ssl_certificate /etc/letsencrypt/live/$NGINX_DRUID_DOMAIN_NAME/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/$NGINX_DRUID_DOMAIN_NAME/privkey.pem;
+	include /etc/letsencrypt/options-ssl-nginx.conf;
+	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+	location / {
+		proxy_pass http://$NGINX_UPSTREAM_DRUID:8888/;
+		error_log /var/log/druid_errors.log;
+	}
+	
+}
