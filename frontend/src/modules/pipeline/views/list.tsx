@@ -42,6 +42,12 @@ export const MyPipelines = () => {
 
   const { showModal, hideModal } = useModal();
 
+  const [searchInput, setSearchInput] = useState<string>('');
+
+  const filteredPipelines = data?.data.filter((item) =>
+    item.name.toLowerCase().includes(searchInput.toLowerCase())
+  );
+
   const showConfirmModal = () =>
     showModal({
       title: 'Hop Template',
@@ -72,6 +78,13 @@ export const MyPipelines = () => {
           )}
         </div>
       </nav>
+      <input
+        type="text"
+        placeholder="Search for pipelines..."
+        className="w-full border border-gray-300 rounded-md p-2 mb-3"
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+      />
       <div>
         <Card className="bg-white">
           <Table>
@@ -87,7 +100,7 @@ export const MyPipelines = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {(data?.data || []).map((item, index) => (
+              {filteredPipelines?.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>
                     <Text className="font-sans">{item?.name}</Text>
