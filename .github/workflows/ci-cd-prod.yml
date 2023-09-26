@@ -1,0 +1,63 @@
+name: Build Pipeline
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  frontend-integration:
+    runs-on: self-hosted
+    name: Frontend Integration
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          working-directory: frontend
+          cache-dependency-path: frontend/package-lock.json
+          cache: "npm"
+      - run: npm install
+        working-directory: frontend
+      - run: npm run pre-commit
+        working-directory: frontend
+      - run: npm run build --if-present
+        working-directory: frontend
+
+  backend-integration:
+    runs-on: self-hosted
+    name: Backend Integration
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+          architecture: "x64"
+          working-directory: backend
+          cache: "pip"
+      - name: Install backend modules
+        run: pip install -r requirements.txt
+        working-directory: backend
+      - name: Run migrations
+        run: python manage.py migrate
+        working-directory: backend
+      - name: Run tests
+        run: python manage.py test
+        working-directory: backend
+
+  deploy-prod:
+    name: Deploy
+    runs-on: self-hosted
+    needs: [frontend-integration, backend-integration]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Connect prod server and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_PROD }}
+          username: ${{ secrets.USERNAME_PROD }}
+          password: ${{ secrets.PASSWORD_PROD }}
+          script: |
+            cd Regional-Pandemic-Analytics/
+            git pull
+            make start-prod
