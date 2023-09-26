@@ -14,8 +14,6 @@ import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import { SerializedError } from '@reduxjs/toolkit';
-import { FetchBaseQueryError } from '@reduxjs/toolkit/dist/query';
 
 interface AddProcessProps {
   pipelineList: PipelineList;
@@ -50,12 +48,8 @@ export const AddProcess = ({
             schedule_interval: values.scheduleInterval,
             description: values.description,
           } as DagForm)
-            .then((res) => {
-              if (
-                (res as { error: FetchBaseQueryError | SerializedError }).error
-              ) {
-                throw new Error('An error has occured');
-              }
+            .unwrap()
+            .then(() => {
               // WARNING !!!
               // The only reason why we're using setTimeout
               // is because Airflow takes time to rescan the dags directory
