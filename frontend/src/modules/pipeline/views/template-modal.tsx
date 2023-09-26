@@ -23,6 +23,7 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
       'api',
       'postgresql',
       'sheet',
+      'blank',
     ];
 
     const checkIcon = icons.find((e) => name.toLowerCase().indexOf(e) != -1);
@@ -46,6 +47,8 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
         return './images/postgresql.png';
       case 'sheet':
         return './images/sheet.png';
+      case 'blank':
+        return './images/blank.png';
     }
   };
 
