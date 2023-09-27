@@ -3,6 +3,7 @@ import { initReactI18next } from 'react-i18next';
 
 import enTranslation from './common/locales/en';
 import frTranslation from './common/locales/fr';
+import arTranslation from './common/locales/ar';
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -11,6 +12,9 @@ i18n.use(initReactI18next).init({
     },
     fr: {
       translation: frTranslation,
+    },
+    ar: {
+      translation: arTranslation,
     },
   },
   lng: 'en',
