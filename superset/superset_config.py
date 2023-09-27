@@ -125,7 +125,7 @@ class CustomAuthOAuthView(AuthOAuthView):
         if resp is None:
             flash("You denied the request to sign in.", "warning")
             return redirect(self.appbuilder.get_url_for_login)
-        log.debug("OAUTH Authorized resp: {0}".format(resp))
+        # log.debug("OAUTH Authorized resp: {0}".format(resp))
         # Retrieves specific user info from the provider
         try:
             self.appbuilder.sm.set_oauth_session(provider, resp)
@@ -134,7 +134,7 @@ class CustomAuthOAuthView(AuthOAuthView):
             log.error("Error returning OAuth user info: {0}".format(e))
             user = None
         else:
-            log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
+            # log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
             # User email is not whitelisted
             if provider in self.appbuilder.sm.oauth_whitelists:
                 whitelist = self.appbuilder.sm.oauth_whitelists[provider]
@@ -224,7 +224,7 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
             token_info = keycloak_openid.introspect(access_token)
             logger.info("Keycloak Introspect")
             if (token_info['active']):
-                user = self.find_user(email=token_info['email'])
+                user = self.find_user(username=token_info['preferred_username'])
                 logger.info("Keycloak auth success")
                 return user
             else:
