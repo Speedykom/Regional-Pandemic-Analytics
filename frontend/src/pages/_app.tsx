@@ -11,7 +11,11 @@ import { AuthProvider } from '@/common/hooks/use-auth';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../i18n';
 
+//const isRtl = localStorage.getItem('language') === 'ar';
 function CsrApp({ Component, pageProps }: AppProps) {
+  const isRtl =
+    typeof window !== 'undefined' && localStorage.getItem('language') === 'ar';
+
   return (
     <Provider store={store}>
       <ModalProvider>
@@ -26,7 +30,9 @@ function CsrApp({ Component, pageProps }: AppProps) {
             }}
           >
             <I18nextProvider i18n={i18n}>
-              <Component {...pageProps} />
+              <body className={isRtl ? 'rtl' : ''}>
+                <Component {...pageProps} />
+              </body>
             </I18nextProvider>
             <ToastContainer />
           </ConfigProvider>
@@ -42,6 +48,7 @@ function CsrApp({ Component, pageProps }: AppProps) {
 // will be different.
 //
 // See more info here: https://nextjs.org/docs/messages/react-hydration-error
+
 const App = dynamic(async () => CsrApp, { ssr: false });
 
 export default App;

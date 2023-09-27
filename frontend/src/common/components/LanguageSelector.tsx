@@ -8,7 +8,6 @@ const LanguageSelector: React.FC = () => {
   );
 
   const changeLanguage = (lng: string) => {
-    // Update the language using i18n and also set it in local storage
     i18n.changeLanguage(lng);
     setCurrentLanguage(lng);
     localStorage.setItem('language', lng);
@@ -23,6 +22,7 @@ const LanguageSelector: React.FC = () => {
       >
         <option value="en">English</option>
         <option value="fr">French</option>
+        <option value="ar">Arabic</option>
       </select>
     </div>
   );

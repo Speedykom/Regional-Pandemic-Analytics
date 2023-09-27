@@ -5,6 +5,8 @@
 body {
   background-color: #f3f4f6;
   font-size: 15px;
+  direction: ltr;
+
 }
 
 .bg-prim {
@@ -17,6 +19,10 @@ body {
 
 .text-prim {
   color: #007b38;
+}
+
+.rtl .bg-prim {
+  background-color: #31713b; 
 }
 
 .embed-iframe-container {
