@@ -1,22 +1,8 @@
-on: [push] # to be changed
+on:
+  pull_request:
+    types: [opened, reopened]
 
 jobs:
-  # auto-request-review:
-  #   name: Auto Request Review
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Request review based on files changes and/or groups the author belongs to
-  #       uses: necojackarc/auto-request-review@v0.12.0
-  #       with:
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-  #         config:
-  #           reviewers:
-  #             defaults:
-  #               -
-  #           options:
-  #             ignore_draft: false
-  #         use_local: true
-
   frontend-integration:
     runs-on: self-hosted
     name: Frontend Integration
