@@ -10,7 +10,7 @@ import sidebarSlice from '../components/Dashboard/SidebarSlice';
 
 export const store = configureStore({
   reducer: {
-    [dashboardApi?.reducerPath]: dashboardApi.reducer,
+    [dashboardApi.reducerPath]: dashboardApi.reducer,
     [chartApi.reducerPath]: chartApi.reducer,
     [processApi.reducerPath]: processApi.reducer,
     [dataApi.reducerPath]: dataApi.reducer,
