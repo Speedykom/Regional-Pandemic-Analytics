@@ -12,18 +12,15 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from '../i18n';
 
 function CsrApp({ Component, pageProps }: AppProps) {
-  // Lisez la langue sélectionnée depuis le localStorage
   const selectedLanguage =
     typeof window !== 'undefined' && localStorage.getItem('language');
 
-  // Définissez la direction du texte (RTL) en fonction de la langue sélectionnée
   if (selectedLanguage === 'ar') {
     document.body.classList.add('rtl');
   } else {
     document.body.classList.remove('rtl');
   }
 
-  // Initialisez la langue de l'application avec la langue sélectionnée ou par défaut
   const languageToUse = selectedLanguage || 'en';
   i18n.changeLanguage(languageToUse);
 
@@ -51,7 +48,6 @@ function CsrApp({ Component, pageProps }: AppProps) {
   );
 }
 
-// Désactivez le rendu côté serveur (SSR) pour toute l'application
 const App = dynamic(async () => CsrApp, { ssr: false });
 
 export default App;
