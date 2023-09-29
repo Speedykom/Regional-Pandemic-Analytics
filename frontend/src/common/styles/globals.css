@@ -24,6 +24,10 @@ body {
 .rtl .bg-prim {
   background-color: #31713b; 
 }
+.rtl {
+  direction: rtl;
+}
+
 
 .embed-iframe-container {
   position: relative;
