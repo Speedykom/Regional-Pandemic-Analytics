@@ -8,8 +8,8 @@ export const pipelineApi = createApi({
   baseQuery,
   tagTypes: ['pipelines'],
   endpoints: (builder) => ({
-    getAllPipelines: builder.query<PipelineList, void>({
-      query: () => '/pipeline/list',
+    getAllPipelines: builder.query<PipelineList, string>({
+      query: (query) => `/pipeline/list/${query}`,
       providesTags: ['pipelines'],
     }),
     getPipeline: builder.query<PipelineData, string>({
