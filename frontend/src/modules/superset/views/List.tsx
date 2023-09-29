@@ -24,11 +24,10 @@ import { useState } from 'react';
 export const DashboardList = () => {
   const { t } = useTranslation();
 
-  const { data } = useGetDashboardsQuery();
   const router = useRouter();
 
   const [searchInput, setSearchInput] = useState<string>('');
-
+  const { data } = useGetDashboardsQuery(searchInput);
   // const filteredDashboards = data?.list_title
   //   .toLowerCase()
   //   .includes(searchInput.toLowerCase());
