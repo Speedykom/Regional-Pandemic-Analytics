@@ -15,8 +15,8 @@ export const pipelineApi = createApi({
     getPipeline: builder.query<PipelineData, string>({
       query: (name) => `/pipeline/${name}`,
     }),
-    templates: builder.query<TemplateList, void>({
-      query: () => '/hop',
+    templates: builder.query<TemplateList, string>({
+      query: (query) => `/hop/${query}`,
     }),
     createPipeline: builder.mutation<any, string>({
       query: (body) => ({

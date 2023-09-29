@@ -91,6 +91,7 @@ urlpatterns = [
     # ---------------------- Hop Endpoints ------------------------------------------
     # endpoint for uploading data
     path("hop/", ListHopAPIView.as_view()),
+    path("hop/<str:query>", ListHopAPIView.as_view()),
     path("hop/new/", NewHopAPIView.as_view()),
     path("hop/<str:filename>/", GetSingleHopAPIView.as_view()),
 ]

@@ -10,9 +10,9 @@ type TemplateModalProps = {
 };
 
 export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
-  const { data: templates } = useTemplatesQuery();
   const [selected, setSelected] = useState<Template>();
   const [searchQuery, setSearchQuery] = useState<string>(''); // Step 1
+  const { data: templates } = useTemplatesQuery(searchQuery);
 
   const getIcon = (name: string) => {
     const icons = [
