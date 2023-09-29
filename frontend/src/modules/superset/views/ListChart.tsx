@@ -14,11 +14,10 @@ import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 
 export const ChartList = () => {
-  const { data } = useGetChartsQuery();
   const { t } = useTranslation();
 
   const [searchInput, setSearchInput] = useState<string>('');
-
+  const { data } = useGetChartsQuery(searchInput);
   const filteredCharts = data?.result.filter((item) =>
     item.slice_name.toLowerCase().includes(searchInput.toLowerCase())
   );

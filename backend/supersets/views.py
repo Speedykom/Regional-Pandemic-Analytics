@@ -16,7 +16,7 @@ class ListDashboardsAPI(APIView):
         "GET": "dashboard:read",
     }
 
-    def get(self, request):
+    def get(self, request, query=None):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/"
         headers = {
             "Content-Type": "application/json",
@@ -24,10 +24,16 @@ class ListDashboardsAPI(APIView):
                 "Bearer ", ""
             ),
         }
-        params = {
-            "q": '{"filters": [{"col": "published", "opr": "eq", "value": "true"}]}'
-        }
-        superset_response = requests.get(url=url, headers=headers, params=params)
+        if query:
+            params = {
+                "q": '{"filters": [{"col": "published", "opr": "eq", "value": "true"},{"col": "dashboard_title", "opr": "ct", "value": "'+query+'"}]}'
+            }
+            superset_response = requests.get(url=url, headers=headers, params=params)
+        else:
+            params = {
+                "q": '{"filters": [{"col": "published", "opr": "eq", "value": "true"}]}'
+            }
+            superset_response = requests.get(url=url, headers=headers, params=params)
 
         if superset_response.status_code != 200:
             return Response(
@@ -47,7 +53,7 @@ class ListChartsAPI(APIView):
         "GET": "chart:read",
     }
 
-    def get(self, request):
+    def get(self, request, query=None):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/chart/"
         headers = {
             "Content-Type": "application/json",
@@ -56,7 +62,15 @@ class ListChartsAPI(APIView):
             ),
         }
 
-        response = requests.get(url=url, headers=headers)
+        if query:
+            params = {
+                "q": '{"filters": [{"col": "slice_name", "opr": "ct", "value": "'+query+'"}]}'
+            }
+            response = requests.get(url=url, headers=headers, params=params)
+        else:
+            response = requests.get(url=url, headers=headers)
+
+
         if response.status_code != 200:
             return Response(
                 {"errorMessage": response.json()}, status=response.status_code
