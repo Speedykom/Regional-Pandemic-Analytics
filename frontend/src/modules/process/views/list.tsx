@@ -19,7 +19,7 @@ export default function ProcessChainList() {
   const { data, isLoading, isSuccess, refetch } = useGetProcessQuery();
 
   const { data: pipelineList, isSuccess: isSuccessPipeline } =
-    useGetAllPipelinesQuery();
+    useGetAllPipelinesQuery('');
 
   const [searchInput, setSearchInput] = useState<string>('');
 
