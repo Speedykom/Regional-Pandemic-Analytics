@@ -46,10 +46,6 @@ export const MyPipelines = () => {
 
   const { data, refetch } = useGetAllPipelinesQuery(searchInput);
 
-  const filteredPipelines = data?.data.filter((item) =>
-    item.name.toLowerCase().includes(searchInput.toLowerCase())
-  );
-
   const showConfirmModal = () =>
     showModal({
       title: 'Hop Template',
@@ -102,7 +98,7 @@ export const MyPipelines = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredPipelines?.map((item, index) => (
+              {data?.data.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>
                     <Text className="font-sans">{item?.name}</Text>

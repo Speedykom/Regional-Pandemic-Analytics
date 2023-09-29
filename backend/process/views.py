@@ -86,7 +86,8 @@ class ProcessView(ViewSet):
         "DELETE": "process:delete",
     }
 
-    def list(self, request, query = None):
+    def list(self, request):
+        query = request.GET.get('query')
         # Get username
         user_name = get_current_user_name(request)
 
