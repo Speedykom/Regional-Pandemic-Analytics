@@ -32,18 +32,26 @@ class ListHopAPIView(APIView):
     """
     permission_classes = [AllowAny]
 
-    def get(self, request):
+    def get(self, request, query=None):
       """ Return hop templates from minio bucket """
       
       pipelines_templates:list[str]=[]
-    
       objects=client.list_objects("pipelines",prefix="templates/")
       for object in objects:
-        pipelines_templates.append(
-          {
-            "name": object.object_name.removeprefix("templates/")
+        object_name=object.object_name.removeprefix("templates/")
+        if query:
+          if (object_name.find(query) != -1 ):
+            pipelines_templates.append(
+            {
+              "name": object_name
             }
-          )  
+            )       
+        pipelines_templates.append(
+            {
+              "name": object_name
+            }
+            )
+          
     
       return Response({'status': 'success', "data": pipelines_templates}, status=200)
      
