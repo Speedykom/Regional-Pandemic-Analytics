@@ -7,7 +7,6 @@ import {
 import getConfig from 'next/config';
 import router from 'next/router';
 import secureLocalStorage from 'react-secure-storage';
-import { toast } from 'react-toastify';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -47,11 +46,7 @@ export const baseQuery: BaseQueryFn<
     router.push('/');
   }
   if (result.error) {
-    toast.error(
-      (result.error?.data as { message: string })?.message
-        ? (result.error?.data as { message: string })?.message
-        : 'An error has occurred'
-    );
+    throw result.error;
   }
   return result;
 };
