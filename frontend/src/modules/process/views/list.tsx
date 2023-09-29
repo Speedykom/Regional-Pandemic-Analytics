@@ -16,16 +16,12 @@ export default function ProcessChainList() {
     setAddComponent(false);
   };
 
-  const { data, isLoading, isSuccess, refetch } = useGetProcessQuery();
-
   const { data: pipelineList, isSuccess: isSuccessPipeline } =
     useGetAllPipelinesQuery('');
 
   const [searchInput, setSearchInput] = useState<string>('');
-
-  const filteredPipelines = data?.dags.filter((item) =>
-    item.name.toLowerCase().includes(searchInput.toLowerCase())
-  );
+  const { data, isLoading, isSuccess, refetch } =
+    useGetProcessQuery(searchInput);
 
   return (
     <div>
@@ -67,7 +63,7 @@ export default function ProcessChainList() {
         )}
         {isSuccess && pipelineList && (
           <div>
-            {filteredPipelines?.map((process: DagDetails) => {
+            {data?.dags?.map((process: DagDetails) => {
               return (
                 <ProcessCard
                   key={process.dag_id}
