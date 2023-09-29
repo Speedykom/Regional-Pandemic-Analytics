@@ -1,15 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 const LanguageSelector: React.FC = () => {
   const { i18n } = useTranslation();
-  const [currentLanguage, setCurrentLanguage] = useState(
-    localStorage.getItem('language') || 'en'
-  );
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
-    setCurrentLanguage(lng);
     localStorage.setItem('language', lng);
   };
 
@@ -18,7 +14,7 @@ const LanguageSelector: React.FC = () => {
       <select
         className="border rounded-md px-2 py-1 focus:outline-none focus:ring focus:border-blue-300 mr-2"
         onChange={(e) => changeLanguage(e.target.value)}
-        value={currentLanguage}
+        value={i18n.language}
       >
         <option value="en">English</option>
         <option value="fr">French</option>
