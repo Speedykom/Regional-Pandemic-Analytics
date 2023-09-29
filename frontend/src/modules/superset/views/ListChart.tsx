@@ -18,9 +18,6 @@ export const ChartList = () => {
 
   const [searchInput, setSearchInput] = useState<string>('');
   const { data } = useGetChartsQuery(searchInput);
-  const filteredCharts = data?.result.filter((item) =>
-    item.slice_name.toLowerCase().includes(searchInput.toLowerCase())
-  );
 
   return (
     <div className="">
@@ -74,7 +71,7 @@ export const ChartList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredCharts?.map((item, index) => (
+              {data?.result.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>
                     <Text className="font-sans">{item.slice_name}</Text>

@@ -28,12 +28,6 @@ export const DashboardList = () => {
 
   const [searchInput, setSearchInput] = useState<string>('');
   const { data } = useGetDashboardsQuery(searchInput);
-  // const filteredDashboards = data?.list_title
-  //   .toLowerCase()
-  //   .includes(searchInput.toLowerCase());
-  const filteredDashboards = data?.result.filter((item) =>
-    item.dashboard_title.toLowerCase().includes(searchInput.toLowerCase())
-  );
 
   const embedDashboard = (id: string) => {
     router.push(`/dashboards/${id}`);
@@ -92,7 +86,7 @@ export const DashboardList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredDashboards?.map((item, index) => (
+              {data?.result.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>
                     <Text className="font-sans">{item?.dashboard_title}</Text>
