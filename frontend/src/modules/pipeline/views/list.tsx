@@ -21,7 +21,7 @@ import { TemplateModal } from './template-modal';
 
 export const MyPipelines = () => {
   const router = useRouter();
-  const { data, refetch } = useGetAllPipelinesQuery();
+
   const { hasPermission } = usePermission();
   const [template, setTemplate] = useState<any>();
   const [drawer, setDrawer] = useState<boolean>(false);
@@ -43,6 +43,8 @@ export const MyPipelines = () => {
   const { showModal, hideModal } = useModal();
 
   const [searchInput, setSearchInput] = useState<string>('');
+
+  const { data, refetch } = useGetAllPipelinesQuery(searchInput);
 
   const filteredPipelines = data?.data.filter((item) =>
     item.name.toLowerCase().includes(searchInput.toLowerCase())
