@@ -47,7 +47,7 @@ jobs:
 
   deploy-prod:
     name: Deploy
-    runs-on: self-hosted
+    runs-on: devserver
     needs: [frontend-integration, backend-integration]
     steps:
       - uses: actions/checkout@v2
