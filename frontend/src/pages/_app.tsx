@@ -20,7 +20,6 @@ function CsrApp({ Component, pageProps }: AppProps) {
   } else {
     document.body.classList.remove('rtl');
   }
-
   const languageToUse = selectedLanguage || 'en';
   i18n.changeLanguage(languageToUse);
 
