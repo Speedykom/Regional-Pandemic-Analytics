@@ -1,4 +1,10 @@
 const frTranslation = {
+  learnMore: 'Plus d´informations',
+  Privacy: 'Confidentialité',
+  TermsOfService: "Conditions d'utilisation",
+  BusinessAgreement: 'Accords de business',
+  AllRightsReserved: 'Tous droits réservés',
+
   appAccounts: "Comptes de l'application",
   viewAndManage:
     "Afficher et gérer les paramètres liés aux utilisateurs de l'application.",

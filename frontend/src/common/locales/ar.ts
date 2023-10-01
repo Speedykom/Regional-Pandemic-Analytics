@@ -1,4 +1,9 @@
 const arTranslation = {
+  learnMore: 'اقرأ المزيد',
+  Privacy: 'خصوصية',
+  TermsOfService: 'شروط الخدمة',
+  BusinessAgreement: 'الاتفاق التجاري',
+  AllRightsReserved: 'كل الحقوق محفوظة',
   appAccounts: 'حسابات التطبيق',
   viewAndManage: 'عرض وإدارة الإعدادات المتعلقة بمستخدمي التطبيق.',
   newUser: 'مستخدم جديد',
@@ -23,7 +28,7 @@ const arTranslation = {
   viewAndManageProcessChains: 'عرض وإدارة جميع سلاسل العمليات',
   addProcessChain: 'إضافة سلسلة العمليات',
 
-  supersetCharts: 'رسوم بيانية سوبرسيت',
+  supersetCharts: ' سوبرسيت',
   chartListCreatedOnSuperset:
     'قائمة الرسوم البيانية التي تم إنشاؤها في Apache Superset.',
   chartTitle: 'عنوان الرسم البياني',
@@ -34,7 +39,7 @@ const arTranslation = {
   modifiedBy: 'تم التعديل بواسطة',
   lastModified: 'آخر تعديل',
 
-  supersetDashboards: 'لوحات سوبرسيت',
+  supersetDashboards: ' سوبرسيت',
   dashboardListCreatedOnSuperset:
     'قائمة اللوحات التي تم إنشاؤها في Apache Superset',
   title: 'العنوان',
@@ -103,7 +108,7 @@ const arTranslation = {
     processChains: 'سلاسل العمليات',
     settings: 'الإعدادات',
     accounts: 'الحسابات',
-    pipelines: 'أنابيبي',
+    pipelines: 'أنابيب التجزئة ',
   },
   addProcess: {
     title: 'إضافة سلسلة العمليات',

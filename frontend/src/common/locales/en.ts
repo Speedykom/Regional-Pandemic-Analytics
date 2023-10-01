@@ -1,4 +1,10 @@
 const enTranslation = {
+  learnMore: 'Learn More',
+  Privacy: 'Privacy',
+  TermsOfService: 'Terms Of Service',
+  BusinessAgreement: 'Business Agreement',
+  AllRightsReserved: 'All Rights Reserved ',
+
   appAccounts: 'App Accounts',
   viewAndManage: 'View and manage settings related to app users.',
   newUser: 'New User',
