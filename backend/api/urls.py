@@ -69,8 +69,10 @@ urlpatterns = [
     path("role/", role_view.RoleApiView.as_view()),  # create role
     path("role/<str:name>/update", role_view.RoleApiView.as_view()),  # get role
     # ---------------------- API Superset Endpoints --------------------------
-    path("superset/list", superset_view.ListDashboardsAPI.as_view()),  # list dashboards
-    path("superset/list/charts", superset_view.ListChartsAPI.as_view()),  # list charts
+    path("superset/list/", superset_view.ListDashboardsAPI.as_view()),  # list dashboards
+        path("superset/list/<str:query>", superset_view.ListDashboardsAPI.as_view()),  # list dashboards
+    path("superset/list/charts/", superset_view.ListChartsAPI.as_view()),  # list charts
+        path("superset/list/charts/<str:query>", superset_view.ListChartsAPI.as_view()),  # list charts
     path(
         "superset/guest/token", superset_view.GuestTokenApi.as_view()
     ),  # get guest token
@@ -91,6 +93,7 @@ urlpatterns = [
     # ---------------------- Hop Endpoints ------------------------------------------
     # endpoint for uploading data
     path("hop/", ListHopAPIView.as_view()),
+    path("hop/<str:query>", ListHopAPIView.as_view()),
     path("hop/new/", NewHopAPIView.as_view()),
     path("hop/<str:filename>/", GetSingleHopAPIView.as_view()),
 ]
