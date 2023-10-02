@@ -1,4 +1,5 @@
 import os
+import re
 from typing import List
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -40,7 +41,7 @@ class ListHopAPIView(APIView):
       for object in objects:
         object_name=object.object_name.removeprefix("templates/")
         if query:
-          if (object_name.find(query) != -1 ):
+          if (re.search(query, object_name, re.IGNORECASE)):
             pipelines_templates.append(
             {
               "name": object_name
