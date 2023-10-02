@@ -45,12 +45,13 @@ class ListHopAPIView(APIView):
             {
               "name": object_name
             }
-            )       
-        pipelines_templates.append(
-            {
-              "name": object_name
-            }
             )
+        else:       
+          pipelines_templates.append(
+              {
+                "name": object_name
+              }
+              )
           
     
       return Response({'status': 'success', "data": pipelines_templates}, status=200)
