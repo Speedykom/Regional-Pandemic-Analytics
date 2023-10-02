@@ -16,10 +16,12 @@ export default function ProcessChainList() {
     setAddComponent(false);
   };
 
-  const { data, isLoading, isSuccess, refetch } = useGetProcessQuery();
-
   const { data: pipelineList, isSuccess: isSuccessPipeline } =
-    useGetAllPipelinesQuery();
+    useGetAllPipelinesQuery('');
+
+  const [searchInput, setSearchInput] = useState<string>('');
+  const { data, isLoading, isSuccess, refetch } =
+    useGetProcessQuery(searchInput);
 
   return (
     <div>
@@ -44,6 +46,13 @@ export default function ProcessChainList() {
           )}
         </div>
       </div>
+      <input
+        type="text"
+        placeholder="Search for process chains..."
+        className="w-full border border-gray-300 rounded-md p-2 mt-3"
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+      />
       <div className="mt-5">
         {isLoading && (
           <div className="flex h-96 bg-white shadow-md border rounded-md items-center justify-center">
@@ -54,7 +63,7 @@ export default function ProcessChainList() {
         )}
         {isSuccess && pipelineList && (
           <div>
-            {data.dags.map((process: DagDetails) => {
+            {data?.dags?.map((process: DagDetails) => {
               return (
                 <ProcessCard
                   key={process.dag_id}
