@@ -4,10 +4,8 @@ import {
   fetchBaseQuery,
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
-import { error } from 'console';
 import getConfig from 'next/config';
 import router from 'next/router';
-import { stringify } from 'querystring';
 import secureLocalStorage from 'react-secure-storage';
 
 const { publicRuntimeConfig } = getConfig();
