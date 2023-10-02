@@ -4,8 +4,10 @@ import {
   fetchBaseQuery,
   FetchBaseQueryError,
 } from '@reduxjs/toolkit/query/react';
+import { error } from 'console';
 import getConfig from 'next/config';
 import router from 'next/router';
+import { stringify } from 'querystring';
 import secureLocalStorage from 'react-secure-storage';
 
 const { publicRuntimeConfig } = getConfig();
@@ -38,15 +40,22 @@ export const baseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   const result = await baseQueryWithAuthHeader(args, api, extraOptions);
-  if (result.error && result.error.status === 401) {
-    api.dispatch({
-      payload: undefined,
-      type: 'auth/clearCredentials',
-    });
-    router.push('/');
-  }
   if (result.error) {
-    throw result.error;
+    if (result.error.status === 401) {
+      api.dispatch({
+        payload: undefined,
+        type: 'auth/clearCredentials',
+      });
+      router.push('/');
+    } else {
+      throw new Error(
+        result.error.data &&
+        typeof result.error.data === 'object' &&
+        'message' in result.error.data
+          ? (result.error.data?.message as string)
+          : 'Uknown error'
+      );
+    }
   }
   return result;
 };
