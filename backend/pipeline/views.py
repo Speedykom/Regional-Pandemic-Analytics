@@ -1,5 +1,6 @@
 import os
 import json
+import re
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -39,7 +40,7 @@ class PipelineListView(APIView):
                         f"pipelines-created/{user_id}/"
                     ).removesuffix(".hpl")
             if query:
-                if (object_name.find(query) != -1 ):
+                if (re.search(query, object_name, re.IGNORECASE)):
                     pipelines.append(
                         {
                             "name": object_name,
