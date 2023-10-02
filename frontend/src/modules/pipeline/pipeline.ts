@@ -8,15 +8,15 @@ export const pipelineApi = createApi({
   baseQuery,
   tagTypes: ['pipelines'],
   endpoints: (builder) => ({
-    getAllPipelines: builder.query<PipelineList, void>({
-      query: () => '/pipeline/list',
+    getAllPipelines: builder.query<PipelineList, string>({
+      query: (query) => `/pipeline/list/${query}`,
       providesTags: ['pipelines'],
     }),
     getPipeline: builder.query<PipelineData, string>({
       query: (name) => `/pipeline/${name}`,
     }),
-    templates: builder.query<TemplateList, void>({
-      query: () => '/hop',
+    templates: builder.query<TemplateList, string>({
+      query: (query) => `/hop/${query}`,
     }),
     createPipeline: builder.mutation<any, string>({
       query: (body) => ({

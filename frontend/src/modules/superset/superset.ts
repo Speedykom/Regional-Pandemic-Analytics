@@ -7,8 +7,8 @@ export const dashboardApi = createApi({
   reducerPath: 'dashboardApi',
   baseQuery,
   endpoints: (builder) => ({
-    getDashboards: builder.query<DashboardList, void>({
-      query: () => 'superset/list',
+    getDashboards: builder.query<DashboardList, string>({
+      query: (query) => `superset/list/${query}`,
     }),
     enableDashboard: builder.mutation<DashboardStatus, string>({
       query: (uid) => ({
@@ -31,8 +31,8 @@ export const chartApi = createApi({
   reducerPath: 'chartApi',
   baseQuery,
   endpoints: (builder) => ({
-    getCharts: builder.query<ChartList, void>({
-      query: () => 'superset/list/charts',
+    getCharts: builder.query<ChartList, string>({
+      query: (query) => `superset/list/charts/${query}`,
     }),
   }),
 });

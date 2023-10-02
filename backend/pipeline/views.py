@@ -1,5 +1,6 @@
 import os
 import json
+import re
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -25,7 +26,7 @@ class PipelineListView(APIView):
         "GET": "pipeline:read",
     }
 
-    def get(self, request):
+    def get(self, request , query = None):
         """Return a user created pipelines"""
         user_id = get_current_user_id(request)
 
@@ -35,13 +36,22 @@ class PipelineListView(APIView):
             "pipelines", prefix=f"pipelines-created/{user_id}/", include_user_meta=True
         )
         for object in objects:
-            pipelines.append(
-                {
-                    "name": object.object_name.removeprefix(
+            object_name = object.object_name.removeprefix(
                         f"pipelines-created/{user_id}/"
-                    ).removesuffix(".hpl"),
+                    ).removesuffix(".hpl")
+            if query:
+                if (re.search(query, object_name, re.IGNORECASE)):
+                    pipelines.append(
+                        {
+                            "name": object_name,
+                            "description": object.metadata["X-Amz-Meta-Description"],
+                        })
+            else:
+                pipelines.append(
+                {
+                    "name": object_name,
                     "description": object.metadata["X-Amz-Meta-Description"],
-                }
+                }    
             )
 
         return Response(

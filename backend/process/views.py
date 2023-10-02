@@ -87,17 +87,24 @@ class ProcessView(ViewSet):
     }
 
     def list(self, request):
+        query = request.GET.get('query')
         # Get username
         user_name = get_current_user_name(request)
 
         # Define processes array to store Airflow response
         processes = []
 
-        # Get the list of process chains defined in Airflow over REST API
-        airflow_response = requests.get(
-            f"{AirflowInstance.url}/dags",
-            auth=(AirflowInstance.username, AirflowInstance.password),
-        )
+        if query:
+            # Get the list of process chains defined in Airflow over REST API
+            airflow_response = requests.get(
+                f"{AirflowInstance.url}/dags",
+                auth=(AirflowInstance.username, AirflowInstance.password), params={"dag_id_pattern":query}
+            )
+        else:
+            airflow_response = requests.get(
+                f"{AirflowInstance.url}/dags",
+                auth=(AirflowInstance.username, AirflowInstance.password)
+            )
 
         if airflow_response.ok:
             airflow_json = airflow_response.json()["dags"]
