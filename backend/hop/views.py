@@ -1,4 +1,5 @@
 import os
+import re
 from typing import List
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -32,18 +33,27 @@ class ListHopAPIView(APIView):
     """
     permission_classes = [AllowAny]
 
-    def get(self, request):
+    def get(self, request, query=None):
       """ Return hop templates from minio bucket """
       
       pipelines_templates:list[str]=[]
-    
       objects=client.list_objects("pipelines",prefix="templates/")
       for object in objects:
-        pipelines_templates.append(
-          {
-            "name": object.object_name.removeprefix("templates/")
+        object_name=object.object_name.removeprefix("templates/")
+        if query:
+          if (re.search(query, object_name, re.IGNORECASE)):
+            pipelines_templates.append(
+            {
+              "name": object_name
             }
-          )  
+            )
+        else:       
+          pipelines_templates.append(
+              {
+                "name": object_name
+              }
+              )
+          
     
       return Response({'status': 'success', "data": pipelines_templates}, status=200)
      
