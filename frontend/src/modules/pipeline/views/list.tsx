@@ -21,7 +21,7 @@ import { TemplateModal } from './template-modal';
 
 export const MyPipelines = () => {
   const router = useRouter();
-  const { data, refetch } = useGetAllPipelinesQuery();
+
   const { hasPermission } = usePermission();
   const [template, setTemplate] = useState<any>();
   const [drawer, setDrawer] = useState<boolean>(false);
@@ -41,6 +41,10 @@ export const MyPipelines = () => {
   };
 
   const { showModal, hideModal } = useModal();
+
+  const [searchInput, setSearchInput] = useState<string>('');
+
+  const { data, refetch } = useGetAllPipelinesQuery(searchInput);
 
   const showConfirmModal = () =>
     showModal({
@@ -72,6 +76,13 @@ export const MyPipelines = () => {
           )}
         </div>
       </nav>
+      <input
+        type="text"
+        placeholder="Search for pipelines..."
+        className="w-full border border-gray-300 rounded-md p-2 mb-3"
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+      />
       <div>
         <Card className="bg-white">
           <Table>
@@ -87,7 +98,7 @@ export const MyPipelines = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {(data?.data || []).map((item, index) => (
+              {data?.data.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell>
                     <Text className="font-sans">{item?.name}</Text>
