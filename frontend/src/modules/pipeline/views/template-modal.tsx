@@ -10,9 +10,10 @@ type TemplateModalProps = {
 };
 
 export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
-  const { data: templates } = useTemplatesQuery();
   const [selected, setSelected] = useState<Template>();
-  // const dispatch = useDispatch();
+  const [searchQuery, setSearchQuery] = useState<string>(''); // Step 1
+  const { data: templates } = useTemplatesQuery(searchQuery);
+
   const getIcon = (name: string) => {
     const icons = [
       'dhis2',
@@ -53,15 +54,14 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
   };
 
   const handleOk = () => {
-    // only continue if the select exist
     if (selected != undefined) {
-      onSelect(selected); // return the select template to the process chain
+      onSelect(selected);
       setSelected(undefined);
       hideModal();
     }
   };
 
-  const handleCancle = () => {
+  const handleCancel = () => {
     onSelect(false);
     setSelected(undefined);
     hideModal();
@@ -72,6 +72,13 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
       <p className="bg-yellow-200 px-3 py-2 rounded-md mt-3 text-gray-500 w-full">
         Note: select a template and press continue
       </p>
+      <input
+        type="text"
+        placeholder="Search for templates..."
+        className="w-full border border-gray-300 rounded-md p-2 mt-3"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-3">
         {(templates?.data || []).map((template, index) => (
           <div key={index} className="">
@@ -107,7 +114,7 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
         <Button
           type="button"
           className=" bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
-          onClick={handleCancle}
+          onClick={handleCancel}
         >
           Cancel
         </Button>
