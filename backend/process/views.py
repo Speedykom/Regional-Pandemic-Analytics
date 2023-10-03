@@ -98,10 +98,17 @@ class ProcessView(ViewSet):
             processes = []
 
                 # Get the list of process chains defined in Airflow over REST API
-            airflow_response = requests.get(
+            if query:
+            # Get the list of process chains defined in Airflow over REST API
+                airflow_response = requests.get(
                     f"{AirflowInstance.url}/dags",
-                    auth=(AirflowInstance.username, AirflowInstance.password),
-             )
+                    auth=(AirflowInstance.username, AirflowInstance.password), params={"dag_id_pattern":query}
+            )
+            else:
+                airflow_response = requests.get(
+                    f"{AirflowInstance.url}/dags",
+                    auth=(AirflowInstance.username, AirflowInstance.password)
+            )
 
             if airflow_response.ok:
                     airflow_json = airflow_response.json()["dags"]
@@ -126,17 +133,7 @@ class ProcessView(ViewSet):
         except:
             return Response({"status": "failed", "message":"Internal Server Error" }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        if query:
-            # Get the list of process chains defined in Airflow over REST API
-            airflow_response = requests.get(
-                f"{AirflowInstance.url}/dags",
-                auth=(AirflowInstance.username, AirflowInstance.password), params={"dag_id_pattern":query}
-            )
-        else:
-            airflow_response = requests.get(
-                f"{AirflowInstance.url}/dags",
-                auth=(AirflowInstance.username, AirflowInstance.password)
-            )
+
 
 
     def create(self, request):
