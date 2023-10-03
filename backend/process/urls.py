@@ -1,8 +1,11 @@
-from django.urls import path
+from django.urls import path, re_path
 from .views import ProcessView, ProcessRunView
 
 urlpatterns = [
+    re_path(r"(?P<query>.+)/$", ProcessView.as_view({"get": "list"})),
+
     path("", ProcessView.as_view({"get": "list", "post": "create"})),
+
     path(
         "/<str:dag_id>",
         ProcessView.as_view(

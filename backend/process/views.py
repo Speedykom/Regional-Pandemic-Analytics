@@ -90,39 +90,53 @@ class ProcessView(ViewSet):
         try : 
             # Get username
             user_name = get_current_user_name(request)
+            query = request.GET.get('query')
+            # Get username
+            user_name = get_current_user_name(request)
 
-            # Define processes array to store Airflow response
+                # Define processes array to store Airflow response
             processes = []
 
-            # Get the list of process chains defined in Airflow over REST API
+                # Get the list of process chains defined in Airflow over REST API
             airflow_response = requests.get(
-                f"{AirflowInstance.url}/dags",
-                auth=(AirflowInstance.username, AirflowInstance.password),
-            )
+                    f"{AirflowInstance.url}/dags",
+                    auth=(AirflowInstance.username, AirflowInstance.password),
+             )
 
             if airflow_response.ok:
-                airflow_json = airflow_response.json()["dags"]
-                # Only returns the dags which owners flag is the same as the username
-                for dag in airflow_json:
-                    if user_name in dag["owners"]:
-                        processes.append(
-                            Dag(
-                                dag["dag_id"],
-                                dag["dag_id"],
-                                dag["dag_id"],
-                                dag["schedule_interval"]["value"],
-                                dag["is_paused"],
-                                dag["description"],
-                                dag["last_parsed_time"],
-                                dag["next_dagrun"],
-                            ).__dict__
-                        )
-                return Response({"dags": processes}, status=status.HTTP_200_OK)
+                    airflow_json = airflow_response.json()["dags"]
+                    # Only returns the dags which owners flag is the same as the username
+                    for dag in airflow_json:
+                        if user_name in dag["owners"]:
+                            processes.append(
+                                Dag(
+                                    dag["dag_id"],
+                                    dag["dag_id"],
+                                    dag["dag_id"],
+                                    dag["schedule_interval"]["value"],
+                                    dag["is_paused"],
+                                    dag["description"],
+                                    dag["last_parsed_time"],
+                                    dag["next_dagrun"],
+                                ).__dict__
+                            )
+                    return Response({"dags": processes}, status=status.HTTP_200_OK)
             else:
-                return Response({"status": "failed", "message":"Internal Server Error" }, status=airflow_response.status_code)
+                    return Response({"status": "failed", "message":"Internal Server Error" }, status=airflow_response.status_code)
         except:
             return Response({"status": "failed", "message":"Internal Server Error" }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        if query:
+            # Get the list of process chains defined in Airflow over REST API
+            airflow_response = requests.get(
+                f"{AirflowInstance.url}/dags",
+                auth=(AirflowInstance.username, AirflowInstance.password), params={"dag_id_pattern":query}
+            )
+        else:
+            airflow_response = requests.get(
+                f"{AirflowInstance.url}/dags",
+                auth=(AirflowInstance.username, AirflowInstance.password)
+            )
 
 
     def create(self, request):
