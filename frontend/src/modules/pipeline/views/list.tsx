@@ -7,7 +7,6 @@ import {
   TableHead,
   TableHeaderCell,
   TableRow,
-  Text,
 } from '@tremor/react';
 import { useTranslation } from 'react-i18next';
 import MediaQuery from 'react-responsive';
@@ -100,12 +99,10 @@ export const MyPipelines = () => {
             <TableBody>
               {data?.data.map((item, index) => (
                 <TableRow key={index}>
-                  <TableCell>
-                    <Text className="font-sans">{item?.name}</Text>
-                  </TableCell>
+                  <TableCell className="font-sans">{item?.name}</TableCell>
                   <MediaQuery minWidth={1090}>
-                    <TableCell className="">
-                      <Text>{item?.description}</Text>
+                    <TableCell className="whitespace-normal">
+                      {item?.description}
                     </TableCell>
                   </MediaQuery>
                   <TableCell>
