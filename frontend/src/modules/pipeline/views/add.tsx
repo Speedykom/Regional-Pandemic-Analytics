@@ -92,6 +92,7 @@ export const AddPipeline = ({
               type="text"
               className="w-full h-12"
               placeholder="Enter Name"
+              maxLength={35}
             />
           </div>
           <div className="relative w-full mb-3">
@@ -125,6 +126,7 @@ export const AddPipeline = ({
               type="text"
               className="w-full h-12"
               placeholder="Enter Description"
+              maxLength={75}
             />
           </div>
         </form>
