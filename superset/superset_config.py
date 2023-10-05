@@ -270,7 +270,7 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
                 }
                 sm.auth_user_oauth(userinfo)
                 logger.info("Keycloak auth success using API")
-        elif current_user.is_authenticated and not api_token:
+        elif current_user.is_authenticated and not api_token and session.get('oauth', ""):
             access_token, _ = session.get('oauth', "")
             ts = time.time()
             last_check = session.get('last_sso_check', None)
