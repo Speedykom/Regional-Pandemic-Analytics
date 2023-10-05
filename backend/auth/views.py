@@ -50,10 +50,8 @@ class Authorization (APIView):
         response = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/token/introspect",
                             data=form_data)
         
-        data = response.json()
-
-        if not data['active']:
-            return Response({'error': 'Authorization token is invalid or expired'}, status=status.HTTP_401_UNAUTHORIZED)
+        if response.status_code != 200:
+            return Response({'status': response.json()['active'], 'error': 'Authorization token is invalid or expired'}, status=status.HTTP_401_UNAUTHORIZED)
         
         return Response(response.json(), status=status.HTTP_200_OK)
     
