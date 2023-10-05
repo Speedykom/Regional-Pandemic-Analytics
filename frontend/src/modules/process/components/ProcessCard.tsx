@@ -30,6 +30,9 @@ export default function ProcessCard({
   const [toggleProcessStatus] = useToggleProcessStatusMutation();
 
   const [open, setOpen] = useState(false);
+
+  const dateProcess = new Date(process.start_date);
+
   return (
     <div>
       <Accordion defaultOpen={true}>
@@ -76,6 +79,11 @@ export default function ProcessCard({
                 <Button
                   variant="secondary"
                   color="green"
+                  disabled={
+                    !isNaN(dateProcess.getTime()) && dateProcess > new Date()
+                      ? true
+                      : false
+                  }
                   onClick={() => {
                     runProcessById(process.dag_id);
                   }}
