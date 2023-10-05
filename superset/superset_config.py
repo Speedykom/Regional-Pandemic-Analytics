@@ -225,12 +225,8 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
             logger.info("Keycloak Introspect")
             if (token_info['active']):
                 user = self.find_user(username=token_info['preferred_username'])
-                if user:
-                    logger.info("Keycloak auth success {}".format(vars(user)))
-                    return user
-                else:
-                    raise ValueError(
-                        "Unable to find user")
+                logger.info("Keycloak auth success")
+                return user
             else:
                 raise ValueError("Keycloak Token is invalid")
 
@@ -242,35 +238,9 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
 
     @staticmethod
     def before_request():
-        from superset import security_manager as sm
         g.user = current_user
         api_token = request.headers.get('X-KeycloakToken')
-        if api_token:
-            # Register user if he did his first sign-in via frontend
-            keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL,
-                                             client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
-                                             realm_name=SUPERSET_KEYCLOAK_APP_REALM,
-                                             client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET,
-                                             verify=False)  # @todo : add env var for local dev
-            KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" + \
-                keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
-            options = {"verify_signature": True,
-                       "verify_aud": False, "verify_exp": True}
-            full_data = keycloak_openid.decode_token(
-                api_token, key=KEYCLOAK_PUBLIC_KEY, options=options)
-
-            user = sm.find_user(username=full_data['preferred_username'])
-            if not user:
-                userinfo = {
-                    "username": full_data.get("preferred_username", ""),
-                    "first_name": full_data.get("given_name", ""),
-                    "last_name": full_data.get("family_name", ""),
-                    "email": full_data.get("email", ""),
-                    "role_keys": full_data["resource_access"][SUPERSET_KEYCLOAK_CLIENT_ID]["roles"]
-                }
-                sm.auth_user_oauth(userinfo)
-                logger.info("Keycloak auth success using API")
-        elif current_user.is_authenticated and not api_token:
+        if current_user.is_authenticated and not api_token:
             access_token, _ = session.get('oauth', "")
             ts = time.time()
             last_check = session.get('last_sso_check', None)

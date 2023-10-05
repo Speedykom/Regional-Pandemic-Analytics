@@ -30,9 +30,6 @@ export const authApi = createApi({
         method: 'POST',
       }),
     }),
-    me: builder.query({
-      query: () => `/auth/me`,
-    }),
   }),
 });
 
@@ -51,7 +48,7 @@ export const hopAuthApi = createApi({
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
-export const { useLoginMutation, useLogoutMutation, useMeQuery } = authApi;
+export const { useLoginMutation, useLogoutMutation } = authApi;
 export const { useLogoutFromHopMutation } = hopAuthApi;
 
 type UserAuth = {
