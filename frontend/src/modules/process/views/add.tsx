@@ -48,6 +48,7 @@ export const AddProcess = ({
             schedule_interval: values.scheduleInterval,
             description: values.description,
           } as DagForm)
+            .unwrap()
             .then(() => {
               // WARNING !!!
               // The only reason why we're using setTimeout
