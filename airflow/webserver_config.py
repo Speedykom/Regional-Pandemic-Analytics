@@ -182,7 +182,7 @@ class CustomSecurityManager(AirflowSecurityManager):
     @staticmethod
     def before_request():
         g.user = current_user
-        if current_user.is_authenticated:
+        if current_user.is_authenticated and session.get('oauth', ""):
             access_token, _ = session.get('oauth', "")
             ts = time.time()
             last_check = session.get('last_sso_check', None)
