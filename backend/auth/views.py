@@ -41,21 +41,13 @@ class Authorization (APIView):
         if reqToken is None:
             return Response({'error': 'Authorization header was not provider or invalid'})
         
-        serialToken = reqToken.replace("Bearer ", "")
-        form_data = {
-            "client_id": os.getenv("CLIENT_ID"),
-            "client_secret": os.getenv("CLIENT_SECRET"),
-            "token": serialToken
-        }
-        response = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/token/introspect",
-                            data=form_data)
-        
-        data = response.json()
-
-        if not data['active']:
+        access_token = reqToken.replace("Bearer ", "")
+        keycloak_openid = get_keycloak_openid(request)
+        token_info = keycloak_openid.introspect(access_token)
+        if (not token_info['active']):
             return Response({'error': 'Authorization token is invalid or expired'}, status=status.HTTP_401_UNAUTHORIZED)
         
-        return Response(response.json(), status=status.HTTP_200_OK)
+        return Response({'success': True}, status=status.HTTP_200_OK)
     
 class Logout (APIView):
     permission_classes = [AllowAny]
