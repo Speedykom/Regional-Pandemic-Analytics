@@ -6,7 +6,6 @@ import {
   selectIsAuthenticated,
   setCredentials,
   useLoginMutation,
-  useMeQuery,
 } from '@/modules/auth/auth';
 import { OAuthParams } from '@/modules/auth/interface';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,7 +24,6 @@ export interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
-  const { refetch } = useMeQuery('');
   const dispatch = useDispatch();
   const [login, { isLoading }] = useLoginMutation();
   const router = useRouter();
@@ -49,13 +47,6 @@ export const AuthProvider = ({ children }: AuthProviderProps): JSX.Element => {
       checkLoginIframe: false,
     });
   };
-
-  useEffect(() => {
-    // Check if token is not expired
-    if (isAuthenticated) {
-      refetch();
-    }
-  }, [router.asPath, isAuthenticated]);
 
   useEffect(() => {
     const { asPath } = router;
