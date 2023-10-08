@@ -119,7 +119,16 @@ export const AddProcess = ({
           </div>
 
           <div>
-            <label>{t('addProcess.startDateLabel')}</label>
+            <label>
+              <div>{t('addProcess.startDateLabel')}</div>
+              <div className="p-1 pb-2">
+                <p className="text-sm italic">
+                  Note: Start Date is the day when scheduling process chains
+                  begin. It is not possible to manually run a process chain that
+                  has an upcoming start date.
+                </p>
+              </div>
+            </label>
             <Controller
               name="date"
               control={control}
