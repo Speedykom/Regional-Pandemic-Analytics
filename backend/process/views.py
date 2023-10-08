@@ -42,6 +42,7 @@ class Dag:
         name,
         dag_id,
         data_source_name,
+        start_date,
         schedule_interval,
         status,
         description,
@@ -51,6 +52,7 @@ class Dag:
         self.name = name
         self.dag_id = dag_id
         self.data_source_name = data_source_name
+        self.start_date = (start_date,)
         self.schedule_interval = schedule_interval
         self.status = status
         self.description = description
@@ -87,54 +89,63 @@ class ProcessView(ViewSet):
     }
 
     def list(self, request):
-        try : 
+        try:
             # Get username
             user_name = get_current_user_name(request)
-            query = request.GET.get('query')
+            query = request.GET.get("query")
             # Get username
             user_name = get_current_user_name(request)
 
-                # Define processes array to store Airflow response
+            # Define processes array to store Airflow response
             processes = []
 
-                # Get the list of process chains defined in Airflow over REST API
-            if query:
             # Get the list of process chains defined in Airflow over REST API
+            if query:
+                # Get the list of process chains defined in Airflow over REST API
                 airflow_response = requests.get(
                     f"{AirflowInstance.url}/dags",
-                    auth=(AirflowInstance.username, AirflowInstance.password), params={"dag_id_pattern":query}
-            )
+                    auth=(AirflowInstance.username, AirflowInstance.password),
+                    params={"dag_id_pattern": query},
+                )
             else:
                 airflow_response = requests.get(
                     f"{AirflowInstance.url}/dags",
-                    auth=(AirflowInstance.username, AirflowInstance.password)
-            )
+                    auth=(AirflowInstance.username, AirflowInstance.password),
+                )
 
             if airflow_response.ok:
-                    airflow_json = airflow_response.json()["dags"]
-                    # Only returns the dags which owners flag is the same as the username
-                    for dag in airflow_json:
-                        if user_name in dag["owners"]:
-                            processes.append(
-                                Dag(
-                                    dag["dag_id"],
-                                    dag["dag_id"],
-                                    dag["dag_id"],
-                                    dag["schedule_interval"]["value"],
-                                    dag["is_paused"],
-                                    dag["description"],
-                                    dag["last_parsed_time"],
-                                    dag["next_dagrun"],
-                                ).__dict__
-                            )
-                    return Response({"dags": processes}, status=status.HTTP_200_OK)
+                airflow_json = airflow_response.json()["dags"]
+                # Only returns the dags which owners flag is the same as the username
+                for dag in airflow_json:
+                    if user_name in dag["owners"]:
+                        airflow_start_date_response = requests.get(
+                            f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
+                            auth=(AirflowInstance.username, AirflowInstance.password),
+                        )
+                        processes.append(
+                            Dag(
+                                dag["dag_id"],
+                                dag["dag_id"],
+                                dag["dag_id"],
+                                airflow_start_date_response.json()["start_date"],
+                                dag["schedule_interval"]["value"],
+                                dag["is_paused"],
+                                dag["description"],
+                                dag["last_parsed_time"],
+                                dag["next_dagrun"],
+                            ).__dict__
+                        )
+                return Response({"dags": processes}, status=status.HTTP_200_OK)
             else:
-                    return Response({"status": "failed", "message":"Internal Server Error" }, status=airflow_response.status_code)
+                return Response(
+                    {"status": "failed", "message": "Internal Server Error"},
+                    status=airflow_response.status_code,
+                )
         except:
-            return Response({"status": "failed", "message":"Internal Server Error" }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
+            return Response(
+                {"status": "failed", "message": "Internal Server Error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
     def create(self, request):
         try:
@@ -156,10 +167,13 @@ class ProcessView(ViewSet):
             airflow_response = requests.get(
                 route, auth=(AirflowInstance.username, AirflowInstance.password)
             )
-            
+
             if airflow_response.ok:
-                return Response({"message":"process chain already created"}, status=status.HTTP_409_CONFLICT)
-            
+                return Response(
+                    {"message": "process chain already created"},
+                    status=status.HTTP_409_CONFLICT,
+                )
+
             # Run factory by passing config to create a process chain
             airflow_internal_url = AirflowInstance.url.removesuffix("/api/v1")
             airflow_response = requests.post(
@@ -181,11 +195,16 @@ class ProcessView(ViewSet):
             if airflow_response.ok:
                 return Response({"status": "success"}, status=status.HTTP_201_CREATED)
             else:
-                return Response({"status": "failed","message":"Internal Server Error" }, status=airflow_response.status_code)
+                return Response(
+                    {"status": "failed", "message": "Internal Server Error"},
+                    status=airflow_response.status_code,
+                )
         except:
-            return Response({"status": "failed","message":"Internal Server Error" }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"status": "failed", "message": "Internal Server Error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
-        
     # Dag Pipeline
     def retrieve(self, request, dag_id=None):
         route = f"{AirflowInstance.url}/dags/{dag_id}/tasks"
