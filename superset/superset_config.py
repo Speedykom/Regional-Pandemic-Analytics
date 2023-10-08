@@ -162,6 +162,11 @@ class CustomAuthOAuthView(AuthOAuthView):
                 flash(as_unicode("Invalid state signature"), "warning")
                 return redirect(self.appbuilder.get_url_for_login)
 
+            # Update email on login
+            if (user.email != userinfo["email"]):
+                user.email = userinfo["email"]
+                self.appbuilder.sm.update_user(user)
+
             login_user(user)
             next_url = self.appbuilder.get_url_for_index
             # Check if there is a next url on state
