@@ -9,6 +9,7 @@ export interface DagDetails {
   name: string;
   dag_id: string;
   data_source_name: string;
+  start_date: any;
   schedule_interval: string;
   status: string;
   description: string;
