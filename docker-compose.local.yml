@@ -34,7 +34,7 @@ services:
         superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
         superset db upgrade
         superset superset init
-        superset import-dashboards -p /app/dashboard_export.zip
+        superset import-dashboards -p /app/dashboard_export_20231007.zip
         FLASK_ENV=development flask run -p 8088 --with-threads --reload --debugger --host=0.0.0.0
 
   # =====
@@ -53,7 +53,7 @@ services:
   hop-server:
     ports:
       - "9999:8080"
-    deploy:      
+    deploy:
       resources:
         limits:
           memory: 600M
@@ -68,11 +68,11 @@ services:
       - "host.docker.internal:host-gateway"
       - "minio.igad.local:host-gateway"
       - "keycloak.igad.local:host-gateway"
-    deploy:      
+    deploy:
       resources:
         limits:
           memory: 600M
-          
+
   # ========
   # Backend
   # ========
@@ -109,18 +109,18 @@ services:
       resources:
         limits:
           memory: 900M
-  
+
   airflow-triggerer:
     deploy:
       resources:
         limits:
-          memory: 600M  
-  
+          memory: 600M
+
   airflow-pg:
     deploy:
       resources:
         limits:
-          memory: 200M  
+          memory: 200M
 
   # =====
   #  Keycloak
@@ -180,4 +180,3 @@ services:
       resources:
         limits:
           memory: 200M
-
