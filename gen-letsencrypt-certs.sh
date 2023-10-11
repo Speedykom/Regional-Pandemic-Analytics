@@ -22,7 +22,7 @@ if [ "$NGINX_ENV" == "dev" ]; then
   docker_composefile=docker-compose.dev.yml
 else
   docker_composefile=docker-compose.prod.yml
-fi  
+fi
 
 if ! [ -x "$(command -v docker)" ]; then
   echo 'Error: docker is not installed.' >&2
@@ -34,16 +34,14 @@ data_path="./certbot"
 email="hamza@speedykom.de" # Adding a valid address is strongly recommended
 staging=0                  # Set to 1 if you're testing your setup to avoid hitting request limits
 
-
 if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
-    echo "### Downloading recommended TLS parameters ..."
-    mkdir -p "$data_path/conf"
-    curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf >"$data_path/conf/options-ssl-nginx.conf"
-    curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem >"$data_path/conf/ssl-dhparams.pem"
-    echo
+  echo "### Downloading recommended TLS parameters ..."
+  mkdir -p "$data_path/conf"
+  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf >"$data_path/conf/options-ssl-nginx.conf"
+  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem >"$data_path/conf/ssl-dhparams.pem"
+  echo
 fi
-
-domain_names=($NGINX_FRONTEND_DOMAIN_NAME $NGINX_BACKEND_DOMAIN_NAME $NGINX_KEYCLOAK_DOMAIN_NAME $NGINX_MINIO_DOMAIN_NAME $NGINX_CONSOLE_MINIO_DOMAIN_NAME $NGINX_SUPERSET_DOMAIN_NAME $NGINX_AIRFLOW_DOMAIN_NAME $NGINX_OPENHIM_DOMAIN_NAME $NGINX_CONSOLE_OPENHIM_DOMAIN_NAME $NGINX_DRUID_DOMAIN_NAME $NGINX_DRUID_COORDINATOR_DOMAIN_NAME)
+domain_names=($NGINX_FRONTEND_DOMAIN_NAME $NGINX_BACKEND_DOMAIN_NAME $NGINX_KEYCLOAK_DOMAIN_NAME $NGINX_MINIO_DOMAIN_NAME $NGINX_CONSOLE_MINIO_DOMAIN_NAME $NGINX_SUPERSET_DOMAIN_NAME $NGINX_SUPERSET_GUEST_DOMAIN_NAME $NGINX_AIRFLOW_DOMAIN_NAME $NGINX_OPENHIM_DOMAIN_NAME $NGINX_CONSOLE_OPENHIM_DOMAIN_NAME $NGINX_DRUID_DOMAIN_NAME $NGINX_DRUID_COORDINATOR_DOMAIN_NAME)
 #Geneate certificates for each service
 for domain in "${domain_names[@]}"; do
 
@@ -64,8 +62,7 @@ for domain in "${domain_names[@]}"; do
       -subj '/CN=localhost'" certbot
   echo
 
-
-done 
+done
 
 echo "### Starting nginx ..."
 docker compose --env-file $ENV_FILE -f docker-compose.yml -f $docker_composefile up --force-recreate -d nginx
@@ -82,7 +79,6 @@ for domain in "${domain_names[@]}"; do
 done
 
 echo "### Requesting Let's Encrypt certificate for $domains ..."
-
 
 # Select appropriate email arg
 case "$email" in
@@ -107,4 +103,3 @@ done
 
 echo "### Reloading nginx ..."
 docker compose --env-file $ENV_FILE -f docker-compose.yml -f $docker_composefile exec nginx nginx -s reload
-
