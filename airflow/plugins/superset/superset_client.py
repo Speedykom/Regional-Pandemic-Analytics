@@ -34,7 +34,7 @@ class SupersetClient:
 
     def get_csrf_token(self) -> str:
         get_csrf_url = urllib.parse.urljoin(self._base_url, "/api/v1/security/csrf_token/")
-        csrf_response = requests.get(get_csrf_url, headers = self.authorize({}))
+        csrf_response = requests.get(get_csrf_url, headers = self.authorize({})).json()
         return csrf_response['result']
 
     def get_db_ids(self, db_name: Union[str, int]) -> Union[int, None]:
