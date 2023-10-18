@@ -2,7 +2,7 @@ from json import JSONEncoder
 from keycloak import KeycloakOpenID
 import os
 import requests
-from typing import Union
+from typing import Dict, Union
 import urllib.parse
 
 class SupersetClient:
@@ -24,15 +24,26 @@ class SupersetClient:
         self._token = keycloak.token(grant_type = 'client_credentials')
         return self._token['access_token']
 
+    def authorize(self, headers: Dict, with_csrf: bool = False) -> Dict:
+        token = self.get_access_token()
+        auth_header = "Bearer {}".format(token)
+        headers['Authorization'] = auth_header
+        if with_csrf:
+            headers['X-CSRF-TOKEN'] = self.get_csrf_token()
+        return headers
+
+    def get_csrf_token(self) -> str:
+        get_csrf_url = urllib.parse.urljoin(self._base_url, "/api/v1/security/csrf_token/")
+        csrf_response = requests.get(get_csrf_url, headers = self.authorize({})).json()
+        return csrf_response['result']
+
     def get_db_ids(self, db_name: Union[str, int]) -> Union[int, None]:
         if isinstance(db_name, int):
             return db_name
 
-        token = self.get_access_token()
-        auth_header = "Bearer {}".format(token)
         db_query = urllib.parse.urlencode({ "q": JSONEncoder().encode({ "columns": ["id"], "filters": [{"col": "database_name", "opr": "eq", "value": db_name }] }) })
         get_db_url = urllib.parse.urljoin(self._base_url, "/api/v1/database/?{}".format(db_query))
-        lookup_response = requests.get(url = get_db_url, headers = { "Authorization": auth_header })
+        lookup_response = requests.get(url = get_db_url, headers = self.authorize({}))
         if lookup_response.status_code >= 400:
             raise RuntimeError("Unable to retrieve list of databases from Superset with status {}: {} – {}".format(lookup_response.status, lookup_result.text()))
         lookup_result = lookup_response.json()
@@ -46,14 +57,12 @@ class SupersetClient:
         if db_id is not None:
             return db_id
         else:
-            token = self.get_access_token()
-            auth_header = "Bearer {}".format(token)
             create_db_url = urllib.parse.urljoin(self._base_url, "/api/v1/database/")
             create_db_body = {
                 "database_name": name,
                 "sqlalchemy_uri": connection
             }
-            create_response = requests.post(url = create_db_url, headers = { "Authorization": auth_header }, json = create_db_body)
+            create_response = requests.post(url = create_db_url, headers = self.authorize({}, True), json = create_db_body)
             if create_response.status_code >= 400:
                 raise RuntimeError("Unable to establish DB link from Superset")
             create_result = create_response.json()
@@ -66,11 +75,9 @@ class SupersetClient:
         db_id = self.get_db_ids(db_name)
         if db_id is None:
             raise RuntimeError("DB {} does not exist in Superset".format(db_name))
-        token = self.get_access_token()
-        auth_header = "Bearer {}".format(token)
         dataset_query = urllib.parse.urlencode({ "q": JSONEncoder().encode({ "columns": ["id"], "filters": [{ "col": "database", "opr": "is", "value": db_id }, { "col": "table_name", "opr": "eq", "value": name }] }) })
         get_dataset_url = urllib.parse.urljoin(self._base_url, "/api/v1/dataset/?{}".format(dataset_query))
-        dataset_response = requests.get(url = get_dataset_url, headers = { "Authorization": auth_header })
+        dataset_response = requests.get(url = get_dataset_url, headers = self.authorize({}))
         if dataset_response.status_code >= 400:
             raise RuntimeError("Failed to look up dataset {}".format(name))
         dataset_result = dataset_response.json()
@@ -80,11 +87,9 @@ class SupersetClient:
         db_id = self.get_db_ids(db_name)
         if db_id is None:
             raise RuntimeError("DB {} does not exist in Superset".format(db_name))
-        token = self.get_access_token()
-        auth_header = "Bearer {}".format(token)
         create_dataset_url = urllib.parse.urljoin(self._base_url, "/api/v1/dataset/")
         create_dataset_body = { "database": db_id, "table_name": name }
-        create_response = requests.post(url = create_dataset_url, headers = { "Authorization": auth_header }, json = create_dataset_body)
+        create_response = requests.post(url = create_dataset_url, headers = self.authorize({}, True), json = create_dataset_body)
         if create_response.status_code >= 400:
             raise RuntimeError("Failed to create Superset dataset {}".format(name))
 
@@ -92,13 +97,11 @@ class SupersetClient:
         db_id = self.get_db_ids(db_name)
         if db_id is None:
             raise RuntimeError("DB {} does not exist in Superset".format(db_name))
-        token = self.get_access_token()
         dataset_id = self.find_dataset(name, db_id)
         if dataset_id is None:
             raise RuntimeError("Dataset {} not found in Superset".format(name))
-        auth_header = "Bearer {}".format(token)
         update_dataset_url = urllib.parse.urljoin(self._base_url, "/api/v1/dataset/{}/refresh".format(dataset_id))
-        update_dataset_response = requests.put(url = update_dataset_url, headers = { "Authorization": auth_header })
+        update_dataset_response = requests.put(url = update_dataset_url, headers = self.authorize({}))
         if update_dataset_response.status_code >= 400:
             raise RuntimeError("Failed to update dataset {}".format(name))
 
