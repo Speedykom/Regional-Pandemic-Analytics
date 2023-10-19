@@ -24,6 +24,7 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
       'api',
       'postgresql',
       'sheet',
+      'sormas',
       'blank',
     ];
 
@@ -48,6 +49,8 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
         return './images/postgresql.png';
       case 'sheet':
         return './images/sheet.png';
+      case 'sormas':
+        return './images/sormas.jpg';
       case 'blank':
         return './images/blank.png';
     }
@@ -87,11 +90,10 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
                 key={index}
                 title={template?.name}
                 onClick={() => setSelected(template)}
-                className={`border-2 ${
-                  selected?.name === template?.name
+                className={`border-2 ${selected?.name === template?.name
                     ? `border-green-800`
                     : `border-gray-300 hover:border-green-800`
-                } cursor-pointer`}
+                  } cursor-pointer`}
               >
                 <div className="">
                   <Title className="w-full border-b text-sm font-normal text-prim whitespace-nowrap overflow-hidden text-ellipsis">
