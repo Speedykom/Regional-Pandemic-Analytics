@@ -24,6 +24,7 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
       'api',
       'postgresql',
       'sheet',
+      'sormas',
       'blank',
     ];
 
@@ -48,6 +49,8 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
         return './images/postgresql.png';
       case 'sheet':
         return './images/sheet.png';
+      case 'sormas':
+        return './images/sormas.jpg';
       case 'blank':
         return './images/blank.png';
     }
