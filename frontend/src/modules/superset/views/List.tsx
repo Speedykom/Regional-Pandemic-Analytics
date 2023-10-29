@@ -86,7 +86,7 @@ export const DashboardList = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {data?.result.map((item, index) => (
+              {data?.result.map((item: any, index: any) => (
                 <TableRow key={index}>
                   <TableCell>
                     <Text className="font-sans">{item?.dashboard_title}</Text>

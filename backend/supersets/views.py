@@ -137,6 +137,27 @@ class GetEmbeddable(APIView):
 
         return Response(response.json(), status=response.status_code)  # result.uuid
 
+class GetThumbnail(APIView):
+    """
+    API view to get superset dashboard thumbnail
+    """
+    keycloak_scopes = {
+        'GET': 'dashboard:read',
+    }
+
+    def get(self, request, *args, **kwargs):
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['thumbnail_url']}"
+
+        headers = {
+            "Content-Type": "application/json",
+            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace("Bearer ", '')
+        }
+
+        response = requests.get(url, headers=headers)
+
+        if not response.ok :
+            return Response({'errorMessage': response.json()}, status=response.status_code)
+        return Response({ 'thumbnail': response.json()}, status=response.status_code)
 
 class GuestTokenApi(APIView):
     """

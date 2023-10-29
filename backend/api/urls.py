@@ -83,6 +83,7 @@ urlpatterns = [
     path(
         "superset/dashboard/embed/<str:id>", superset_view.GetEmbeddable.as_view()
     ),  # get embedded dashboard
+    path("superset/dashboard/thumbnail/<str:thumbnail_url>", superset_view.GetThumbnail.as_view()), # get dashboards thumbnail
     # ---------------------- Piepline  Endpoints ------------------------------------------
     path("pipeline", include("pipeline.urls")),
     # ---------------------- Process Chain  Endpoints ------------------------------------------
