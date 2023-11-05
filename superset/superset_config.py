@@ -6,7 +6,7 @@ from flask_appbuilder.security.sqla.models import (
     User
 )
 import jose
-from flask import Request
+from flask import Flask, Request
 from flask_appbuilder.views import expose
 from werkzeug.wrappers import Response as WerkzeugResponse
 from flask import flash, redirect, request, session, g
@@ -19,6 +19,9 @@ import jwt
 from typing import Optional
 import logging
 from keycloak import KeycloakOpenID, KeycloakAdmin
+from superset.tasks.types import ExecutorType
+from flask_caching import Cache
+from superset.superset_typing import CacheConfig
 
 log = logging.getLogger(__name__)
 
@@ -326,14 +329,129 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
         g.user = user
         return user
 
-
-
 GUEST_ROLE_NAME = "Alpha"
 CUSTOM_SECURITY_MANAGER = CustomSupersetSecurityManager
 ENABLE_PROXY_FIX = True
 WTF_CSRF_ENABLED = False
 SQLALCHEMY_DATABASE_URI = SUPERSET_DATABASE_URI
-FEATURE_FLAGS = { 
-                 "THUMBNAILS" : True,
-                 "THUMBNAILS_SQLA_LISTENERS": True, 
-                 }
+
+REDIS_HOST = "superset_cache"
+REDIS_PORT = "6379"
+
+GLOBAL_ASYNC_QUERIES_POLLING_DELAY = 4000
+
+GLOBAL_ASYNC_QUERIES_TRANSPORT = "polling"
+GLOBAL_ASYNC_QUERIES_REDIS_CONFIG = {
+    "port": REDIS_PORT,
+    "host": REDIS_HOST,
+    "password": "",
+    "db": 0,
+    "ssl": False,
+}
+FEATURE_FLAGS = {
+    "THUMBNAILS": True,
+    "LISTVIEWS_DEFAULT_CARD_VIEW" : True,
+    "THUMBNAILS_SQLA_LISTENERS": True,
+    #"DASHBOARD_CACHE": True,
+    #"ALERT_REPORTS": True,
+    #"UX_BETA": True,
+    #"DASHBOARD_RBAC": True,  
+    #"EMBEDDED_SUPERSET": True,
+    #"GLOBAL_ASYNC_QUERIES": True,
+}
+
+# # Metadata Caching (optional)
+# CACHE_CONFIG: CacheConfig = {
+#     'CACHE_TYPE': 'RedisCache',
+#     'CACHE_DEFAULT_TIMEOUT': 24*60*60, # 1 day
+#     'CACHE_KEY_PREFIX': 'superset_',
+#     'CACHE_REDIS_PORT': 6379,
+#     'CACHE_NO_NULL_WARNING': True,
+#     'CACHE_REDIS_DB': 1,
+#     'CACHE_REDIS_URL': 'redis://%s:%s/1' % (REDIS_HOST, REDIS_PORT)
+# }
+
+# # Cache for filters state
+FILTER_STATE_CACHE_CONFIG: CacheConfig = {
+    "CACHE_TYPE": "RedisCache",
+    'CACHE_DEFAULT_TIMEOUT': 86400,
+    'CACHE_KEY_PREFIX': 'filter_',
+    'CACHE_REDIS_URL': 'redis://%s:%s/0' % (REDIS_HOST, REDIS_PORT)
+}
+
+# # Cache for chart form data
+EXPLORE_FORM_DATA_CACHE_CONFIG: CacheConfig = {
+    "CACHE_TYPE": "RedisCache",
+    'CACHE_DEFAULT_TIMEOUT': 86400,
+    'CACHE_KEY_PREFIX': 'Chart_',
+    'CACHE_REDIS_URL': 'redis://%s:%s/1' % (REDIS_HOST, REDIS_PORT)
+}
+
+# #Caching the Data from the Database shown in the Dashboards
+DATA_CACHE_CONFIG: CacheConfig = {
+    "CACHE_TYPE": "RedisCache",
+    'CACHE_DEFAULT_TIMEOUT': 86400,
+    'CACHE_KEY_PREFIX': 'data_',
+    'CACHE_REDIS_URL': 'redis://%s:%s/2' % (REDIS_HOST, REDIS_PORT)
+}
+
+THUMBNAIL_CACHE_CONFIG: CacheConfig = {
+    'CACHE_TYPE': 'RedisCache',
+    'CACHE_DEFAULT_TIMEOUT': 86400,
+    'CACHE_KEY_PREFIX': 'thumbnail_',
+    #'CACHE_NO_NULL_WARNING': True,
+    'CACHE_REDIS_URL': 'redis://%s:%s/0' % (REDIS_HOST, REDIS_PORT)
+}
+
+class CeleryConfig:
+    broker_url = 'redis://%s:%s/0' % (REDIS_HOST, REDIS_PORT)
+    imports = ('superset.sql_lab', 'superset.tasks', 'superset.tasks.thumbnails')
+    result_backend = 'redis://%s:%s/0' % (REDIS_HOST, REDIS_PORT)
+    worker_prefetch_multiplier = 10
+    task_acks_late = True
+    task_annotations = {
+        'sql_lab.get_sql_results': {
+            'rate_limit': '100/s',
+        },
+        'email_reports.send': {
+            'rate_limit': '1/s',
+            'time_limit': 120,
+            'soft_time_limit': 150,
+            'ignore_result': True,
+        },
+    }
+    beat_schedule = {
+        'thumbnails.schedule_hourly': {
+            'task': 'thumbnails.schedule_hourly',
+            # 'schedule': crontab(minute=1, hour='*'),
+        },
+    }
+
+CELERY_CONFIG = CeleryConfig
+
+SCREENSHOT_LOCATE_WAIT = 100
+SCREENSHOT_LOAD_WAIT = 600
+
+# # these are the default settings and included for reference reasons 
+WEBDRIVER_TYPE= "chrome"
+
+WEBDRIVER_OPTION_ARGS = [
+        "--force-device-scale-factor=2.0",
+        "--high-dpi-support=2.0",
+        "--headless",
+        "--disable-gpu",
+        "--disable-dev-shm-usage",
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-extensions",
+        ]
+
+WEBDRIVER_BASEURL="http://superset:8088"
+#WEBDRIVER_BASEURL_USER_FRIENDLY="http://localhost:8088"
+
+# Thumbnail Caching
+#THUMBNAIL_SELENIUM_USER = "admin"
+#THUMBNAIL_EXECUTE_AS = [ExecutorType.SELENIUM]
+
+#WEBDRIVER_AUTH_FUNC = CustomAuthOAuthView
+

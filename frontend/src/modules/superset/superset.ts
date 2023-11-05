@@ -1,4 +1,6 @@
 // Need to use the React-specific entry point to import createApi
+/* eslint-disable prettier/prettier */
+
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from '@/common/redux/api';
 import { ChartList, DashboardStatus } from './interface';
@@ -18,7 +20,12 @@ export const dashboardApi = createApi({
       }),
     }),
     getThumbnail: builder.query<any, string>({
-      query: (thumbnailUrl) => `superset/dashboard/thumbnail/${thumbnailUrl}`,
+      query: (query) => {
+        const parts = query.split('+++');
+        const id = parts[0];
+        const digest = parts[1];
+        return `/superset/dashboard/${id}/thumbnail/${digest}/`;
+      },
     }),
     generateGuestToken: builder.mutation<{ token: string }, string>({
       query: (id) => ({
