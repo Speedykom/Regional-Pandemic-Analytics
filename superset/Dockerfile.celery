@@ -1,0 +1,8 @@
+FROM python:3.10.2-slim-buster
+
+RUN pip install celery==5.2.3
+RUN pip install Flask==2.0.3
+RUN pip install Flask-WTF==1.0.0
+RUN pip install flower==1.0.0
+RUN pip install pytest==7.0.1
+RUN pip install redis==4.1.4

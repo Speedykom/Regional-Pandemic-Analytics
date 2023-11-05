@@ -146,11 +146,14 @@ class GetThumbnail(APIView):
     }
 
     def get(self, request, *args, **kwargs):
-        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['thumbnail_url']}"
+        id = kwargs['id']
+        digest = kwargs['digest']
 
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{id}/thumbnail/{digest}/"
         headers = {
             "Content-Type": "application/json",
-            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace("Bearer ", '')
+            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
+                "Bearer ", "")
         }
 
         response = requests.get(url, headers=headers)

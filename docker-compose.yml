@@ -356,10 +356,37 @@ services:
   # =======
   # Superset
   # =======
+
+  # superset-worker:
+  #   build:
+  #     context: ./superset/.
+  #     dockerfile: Dockerfile.celery
+  #   command: ["celery", "worker", "--app=superset.tasks.celery_app:app", "-Ofair"]
+  #   # env_file: docker/.env
+  #   restart: unless-stopped
+  #   depends_on:   
+  #     - superset_db
+  #     - superset_cache
+  #   # volumes: 
+  #   #   - ./superset/superset_config.py:/app/pythonpath/superset_config.py
+
+  # superset-beat:
+  #   build:
+  #     context: ./superset/.
+  #     dockerfile: Dockerfile.celery
+  #   command: ["celery", "beat", "--app=superset.tasks.celery_app:app", "--pidfile=", "-f", "/app/celery_beat.log"]
+  #   # env_file: docker/.env
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - superset_db
+  #     - superset_cache
+  
   superset_cache:
     container_name: superset_cache
     image: redis:5
     restart: always
+    ports: 
+      - "6379:6379"
 
   superset_db:
     container_name: superset_db

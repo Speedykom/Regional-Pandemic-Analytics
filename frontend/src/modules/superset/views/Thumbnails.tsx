@@ -1,32 +1,55 @@
 /* eslint-disable prettier/prettier */
-'use client';
-import { useRouter } from 'next/router';
+// import { useRouter } from 'next/router';
 import { Card, Title } from '@tremor/react';
-import Popover from '@/common/components/common/popover';
-import { FiMoreVertical } from 'react-icons/fi';
-import Image from 'next/image';
-import {
-    BsFillEyeFill,
-    BsFillHeartFill,
-    BsFillPieChartFill,
-} from 'react-icons/bs';
+// import Popover from '@/common/components/common/popover';
+// import { FiMoreVertical } from 'react-icons/fi';
+// import {
+//     BsFillEyeFill,
+//     BsFillHeartFill,
+//     BsFillPieChartFill,
+// } from 'react-icons/bs';
 import { useGetThumbnailQuery, useGetDashboardsQuery } from '../superset';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { DashboardListResult } from '../interface';
 
 export const ThumbnailList = () => {
     const [searchInput] = useState<string>('');
     const { data } = useGetDashboardsQuery(searchInput);
-    const [url, setUrl] = useState('');
-    const { data: thumbnail } = useGetThumbnailQuery(url);
-    const router = useRouter();
+    const [thumbnailUrl, setThumbnailUrl] = useState('test+++test');
+    const { data: thumbnail, refetch: refetchThumbnail } = useGetThumbnailQuery(thumbnailUrl);
+  
+    useEffect(() => {
+      if (data && data.result) {
+        // Fetch the thumbnail data when the dashboard data is available
+        data.result.forEach((dashboardData: DashboardListResult) => {
+        /* eslint-disable no-console */
+        console.log(dashboardData)
+        const thumbnailUrl = dashboardData.thumbnail_url;
+        /* eslint-disable no-console */
+        const parts = thumbnailUrl.split('/');
+        const id = dashboardData.id;
+        const digest = parts[parts.length - 2];
 
-    const embedDashboard = (id: string) => {
-        router.push(`/dashboards/${id}`);
-    };
+        const combinedString = id+'+++'+digest
+        // Make a backend call to fetch the thumbnail data
+        setThumbnailUrl(combinedString)
+        refetchThumbnail();
+        });
+      }
+    }, [data, refetchThumbnail]);
+  
+    // const router = useRouter();
 
-    const getThumbnail = (_url: string) => {
-        setUrl(_url);
-    };
+    // const embedDashboard = (id: string) => {
+    //     router.push(`/dashboards/${id}`);
+    // };
+
+    // const updateThumbnail = (thumbnail_url: string) => {
+    //     /* eslint-disable no-console */
+    //     console.log('#################### Target: ')
+    //     console.log(thumbnail_url);
+    //     setThumbnailUrl(thumbnail_url);
+    // };
 
     return (
         <div className="">
@@ -44,19 +67,13 @@ export const ThumbnailList = () => {
                         <div key={index} className="">
                             <Card className="bg-white h-96">
                                 <div className="mb-5 h-72">
-                                    <Image
-                                        className="object-cover h-full"
-                                        src={thumbnail?.message}
-                                        onLoad={() => getThumbnail(data?.thumbnail_url)}
-                                        alt="icon"
-                                    />
+                                    <img className="object-cover h-full" src={thumbnail? thumbnail.message : '/avater.png'} alt="icon"/>
                                 </div>
-                                <div>{thumbnail?.message}</div>
                                 <div className="border-t flex justify-between pt-3">
                                     <Title className="w-full text-xs font-normal whitespace-nowrap overflow-hidden text-ellipsis">
                                         {data?.dashboard_title}
                                     </Title>
-                                    <Popover>
+                                    {/* <Popover>
                                         <button>
                                             <FiMoreVertical className="text-xl" />
                                         </button>
@@ -86,7 +103,7 @@ export const ThumbnailList = () => {
                                                 </li>
                                             </ul>
                                         </div>
-                                    </Popover>
+                                    </Popover> */}
                                 </div>
                             </Card>
                         </div>
