@@ -2,7 +2,7 @@ from json import JSONEncoder
 from keycloak import KeycloakOpenID
 import os
 import requests
-from typing import Dict, Union
+from typing import Dict, Tuple, Union
 import urllib.parse
 
 class SupersetClient:
@@ -68,22 +68,23 @@ class SupersetClient:
             create_result = create_response.json()
             return create_result["id"]
 
-    def find_dataset(self, name: Union[str, int], db_name: Union[str, int]) -> Union[int, None]:
-        if isinstance(name, int):
-            return name
-
+    def find_dataset(self, name: str, db_name: Union[str, int]) -> Union[Tuple[int, str], None]:
         db_id = self.get_db_ids(db_name)
         if db_id is None:
             raise RuntimeError("DB {} does not exist in Superset".format(db_name))
-        dataset_query = urllib.parse.urlencode({ "q": JSONEncoder().encode({ "columns": ["id"], "filters": [{ "col": "database", "opr": "is", "value": db_id }, { "col": "table_name", "opr": "eq", "value": name }] }) })
+        dataset_query = urllib.parse.urlencode({ "q": JSONEncoder().encode({ "columns": ["id", "explore_url"], "filters": [{ "col": "database", "opr": "is", "value": db_id }, { "col": "table_name", "opr": "eq", "value": name }] }) })
         get_dataset_url = urllib.parse.urljoin(self._base_url, "/api/v1/dataset/?{}".format(dataset_query))
         dataset_response = requests.get(url = get_dataset_url, headers = self.authorize({}))
         if dataset_response.status_code >= 400:
             raise RuntimeError("Failed to look up dataset {}".format(name))
         dataset_result = dataset_response.json()
-        return dataset_result["result"][0]["id"] if dataset_result["count"] > 0 else None
+        return [
+            dataset_result["result"][0]["id"],
+            dataset_result["result"][0]["explore_url"]
 
-    def create_dataset(self, name: str, db_name: Union[str, int]):
+        ] if dataset_result["count"] > 0 else None
+
+    def create_dataset(self, name: str, db_name: Union[str, int]) -> Tuple[int, str]:
         db_id = self.get_db_ids(db_name)
         if db_id is None:
             raise RuntimeError("DB {} does not exist in Superset".format(db_name))
@@ -92,12 +93,17 @@ class SupersetClient:
         create_response = requests.post(url = create_dataset_url, headers = self.authorize({}, True), json = create_dataset_body)
         if create_response.status_code >= 400:
             raise RuntimeError("Failed to create Superset dataset {}".format(name))
+        create_result = create_response.json()
+        return [
+            create_result["result"]["id"],
+            create_result["result"]["explore_url"]
+        ]
 
     def update_dataset(self, name: Union[str, int], db_name: Union[str, int]):
         db_id = self.get_db_ids(db_name)
         if db_id is None:
             raise RuntimeError("DB {} does not exist in Superset".format(db_name))
-        dataset_id = self.find_dataset(name, db_id)
+        dataset_id = name if isinstance(name, int) else self.find_dataset(name, db_id)[0]
         if dataset_id is None:
             raise RuntimeError("Dataset {} not found in Superset".format(name))
         update_dataset_url = urllib.parse.urljoin(self._base_url, "/api/v1/dataset/{}/refresh".format(dataset_id))
@@ -105,9 +111,11 @@ class SupersetClient:
         if update_dataset_response.status_code >= 400:
             raise RuntimeError("Failed to update dataset {}".format(name))
 
-    def create_or_update_dataset(self, name: str, db_name: Union[str, int]):
-        dataset_id = self.find_dataset(name, db_name)
-        if dataset_id is None:
-            self.create_dataset(name, db_name)
+    def create_or_update_dataset(self, name: str, db_name: Union[str, int]) -> Tuple[int, str]:
+        found = self.find_dataset(name, db_name)
+        if found is None:
+            return self.create_dataset(name, db_name)
         else:
+            dataset_id, explore_url = found
             self.update_dataset(dataset_id, db_name)
+            return [dataset_id, explore_url]
