@@ -16,6 +16,8 @@ export interface DagDetails {
   last_parsed_time: string;
   next_dagrun: string;
   next_dagrun_create_after: string;
+  dataset_id: number;
+  dataset_url: string;
 }
 
 export interface DagRun {
@@ -55,4 +57,11 @@ export interface DagRunTasksRequest {
 
 export interface DagRunTasksResponse {
   tasks: DagRunTask[];
+}
+
+export interface DagDatasetResponse {
+  dataset: {
+    id: number;
+    url: string;
+  };
 }
