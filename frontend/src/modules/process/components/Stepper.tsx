@@ -17,6 +17,7 @@ interface StepperProps {
   description: string;
   nextDagRun: string;
   lastParsedTime: string;
+  createChartUrl: string | null;
 }
 
 export default function Stepper({
@@ -27,6 +28,7 @@ export default function Stepper({
   description,
   nextDagRun,
   lastParsedTime,
+  createChartUrl
 }: StepperProps) {
   const steps = [
     {
@@ -83,7 +85,7 @@ export default function Stepper({
             <AnalyticsDataModel />
           </TabPanel>
           <TabPanel className="px-20 pt-2">
-            <Charts />
+            <Charts createChartUrl={createChartUrl} dagId={dagId} />
           </TabPanel>
         </TabPanels>
       </TabGroup>
