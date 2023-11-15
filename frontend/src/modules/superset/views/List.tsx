@@ -10,7 +10,7 @@ import {
   useGetFavoriteDashboardsQuery,
 } from '../superset';
 import { useState } from 'react';
-import * as DummyDashboards from './DummyDashboards.json';
+// import * as DummyDashboards from './DummyDashboards.json';
 
 export const DashboardList = () => {
   const { t } = useTranslation();
