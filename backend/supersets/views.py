@@ -137,6 +137,29 @@ class GetEmbeddable(APIView):
 
         return Response(response.json(), status=response.status_code)  # result.uuid
 
+class GetFavoriteStatus(APIView):
+    """
+    API view to get dashboard favorite status for the current user
+    """
+
+    keycloak_scopes = {
+        "GET": "dashboard:read",
+    }
+
+    def get(self, request, *args, **kwargs):
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/favorite_status/"
+
+        headers = {
+            "Content-Type": "application/json",
+            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
+                "Bearer ", ""
+            ),
+        }
+
+        response = requests.get(url, headers=headers)
+
+        return Response(response.json(), status=response.status_code)  # result.uuid
+
 
 class GuestTokenApi(APIView):
     """
