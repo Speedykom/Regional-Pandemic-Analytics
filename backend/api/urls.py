@@ -84,7 +84,7 @@ urlpatterns = [
         "superset/dashboard/embed/<str:id>", superset_view.GetEmbeddable.as_view()
     ),  # get embedded dashboard
     path(
-        "superset/dashboard/favorite-status", superset_view.GetFavoriteStatus.as_view()
+        "superset/dashboard/favorite-status/<str:id>", superset_view.GetFavoriteStatus.as_view()
     ),  # get dashboard favorite status for current user
     # ---------------------- Piepline  Endpoints ------------------------------------------
     path("pipeline", include("pipeline.urls")),
