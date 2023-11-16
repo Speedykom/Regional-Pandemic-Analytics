@@ -20,17 +20,21 @@ export const DashboardList = () => {
   const [searchInput, setSearchInput] = useState<string>('');
   const [isFavorite, setIsFavorite] = useState(false);
 
-  const toggleFavorite = () => {
-    setIsFavorite((prev) => !prev);
-  };
-
   var { data } = useGetDashboardsQuery(searchInput);
-  var { data: favoriteStatus } = useGetFavoriteDashboardsQuery();
+  var { data: favoriteStatus } = useGetFavoriteDashboardsQuery('1');
 
   // eslint-disable-next-line no-console
   console.log(favoriteStatus);
 
   // data = DummyDashboards;
+
+  const toggleFavorite = (dashboardId: string) => {
+    // eslint-disable-next-line no-console
+    console.log('#########################');
+    // eslint-disable-next-line no-console
+    console.log(dashboardId);
+    setIsFavorite((prev) => !prev);
+  };
 
   const embedDashboard = (id: string) => {
     router.push(`/dashboards/${id}`);
@@ -82,7 +86,7 @@ export const DashboardList = () => {
                     icon={StarSolid}
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent the event from reaching the Card component
-                      toggleFavorite();
+                      toggleFavorite(String(data?.id));
                     }}
                   />
                 ) : (
@@ -92,7 +96,7 @@ export const DashboardList = () => {
                     icon={StarOutline}
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent the event from reaching the Card component
-                      toggleFavorite();
+                      toggleFavorite(String(data?.id));
                     }}
                   />
                 )}
