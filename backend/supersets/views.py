@@ -147,7 +147,7 @@ class GetFavoriteStatus(APIView):
     }
 
     def get(self, request, *args, **kwargs):
-        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/favorite_status/"
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/favorite_status/?q=[{kwargs['id']}]"
 
         headers = {
             "Content-Type": "application/json",
