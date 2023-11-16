@@ -10,8 +10,8 @@ export const dashboardApi = createApi({
     getDashboards: builder.query<any, string>({
       query: (query) => `superset/list/${query}`,
     }),
-    getFavoriteDashboards: builder.query<any, void>({
-      query: () => `/superset/dashboard/favorite-status`,
+    getFavoriteDashboards: builder.query<any, string>({
+      query: (query) => `/superset/dashboard/favorite-status/${query}`,
     }),
     enableDashboard: builder.mutation<DashboardStatus, string>({
       query: (uid) => ({
