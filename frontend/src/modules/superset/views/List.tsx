@@ -24,6 +24,9 @@ export const DashboardList = () => {
 
   const [searchInput, setSearchInput] = useState<string>('');
 
+  // eslint-disable-next-line no-console
+  console.log(isFavorite);
+
   var { data } = useGetDashboardsQuery(searchInput);
   // data = DummyDashboards;
 
@@ -48,6 +51,9 @@ export const DashboardList = () => {
     return favoriteStatus?.result.find(
       (fav: FavoriteDashboardResult) => fav.id === id
     )?.value;
+  };
+  const getIsFavorite = (id: number) => {
+    return favoriteStatus?.result.find((fav: any) => fav.id === id)?.value;
   };
 
   const embedDashboard = (id: number) => {
