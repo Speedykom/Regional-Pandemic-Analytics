@@ -146,9 +146,9 @@ class GetFavoriteStatus(APIView):
         "GET": "dashboard:read",
     }
 
-    def get(self, request, *args, **kwargs):
-        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/favorite_status/?q=[{kwargs['id']}]"
-
+    def get(self, request, query=None):
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/favorite_status/?q={query}"
+        print (url)
         headers = {
             "Content-Type": "application/json",
             "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
