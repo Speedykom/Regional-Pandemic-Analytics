@@ -20,6 +20,9 @@ export const DashboardList = () => {
   const [searchInput, setSearchInput] = useState<string>('');
   const [isFavorite, setIsFavorite] = useState(false);
 
+  // eslint-disable-next-line no-console
+  console.log(isFavorite);
+
   var { data } = useGetDashboardsQuery(searchInput);
   // data = DummyDashboards;
 
@@ -32,12 +35,13 @@ export const DashboardList = () => {
   // eslint-disable-next-line no-console
   console.log(favoriteStatus);
 
-  const toggleFavorite = (dashboardId: string) => {
-    // eslint-disable-next-line no-console
-    console.log('#########################');
+  const toggleFavorite = (dashboardId: number) => {
     // eslint-disable-next-line no-console
     console.log(dashboardId);
     setIsFavorite((prev) => !prev);
+  };
+  const getIsFavorite = (id: number) => {
+    return favoriteStatus?.result.find((fav: any) => fav.id === id)?.value;
   };
 
   const embedDashboard = (id: number) => {
@@ -83,14 +87,14 @@ export const DashboardList = () => {
                 <div className="flex items-center">
                   <Subtitle>{data?.dashboard_title}</Subtitle>
                 </div>
-                {isFavorite ? (
+                {getIsFavorite(Number(data?.id)) ? (
                   <Icon
                     color="yellow"
                     size="md"
                     icon={StarSolid}
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent the event from reaching the Card component
-                      toggleFavorite(String(data?.id));
+                      toggleFavorite(Number(data?.id));
                     }}
                   />
                 ) : (
@@ -100,7 +104,7 @@ export const DashboardList = () => {
                     icon={StarOutline}
                     onClick={(e) => {
                       e.stopPropagation(); // Prevent the event from reaching the Card component
-                      toggleFavorite(String(data?.id));
+                      toggleFavorite(Number(data?.id));
                     }}
                   />
                 )}
