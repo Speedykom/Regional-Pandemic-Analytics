@@ -21,12 +21,16 @@ export const DashboardList = () => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   var { data } = useGetDashboardsQuery(searchInput);
-  var { data: favoriteStatus } = useGetFavoriteDashboardsQuery('1');
+  // data = DummyDashboards;
+
+  const dashboardIds = data?.result.map((dashboard: any) =>
+    Number(dashboard?.id)
+  ) || [0];
+
+  var { data: favoriteStatus } = useGetFavoriteDashboardsQuery(dashboardIds);
 
   // eslint-disable-next-line no-console
   console.log(favoriteStatus);
-
-  // data = DummyDashboards;
 
   const toggleFavorite = (dashboardId: string) => {
     // eslint-disable-next-line no-console
@@ -36,7 +40,7 @@ export const DashboardList = () => {
     setIsFavorite((prev) => !prev);
   };
 
-  const embedDashboard = (id: string) => {
+  const embedDashboard = (id: number) => {
     router.push(`/dashboards/${id}`);
   };
   return (
@@ -66,7 +70,7 @@ export const DashboardList = () => {
               className="bg-white h-96 cursor-pointer transition-transform transform hover:scale-105 focus:outline-none"
               decoration="top"
               decorationColor="emerald"
-              onClick={() => embedDashboard(String(data?.id))}
+              onClick={() => embedDashboard(Number(data?.id))}
             >
               <div className="mb-5 h-72">
                 <img
