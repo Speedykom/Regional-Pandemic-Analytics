@@ -148,7 +148,6 @@ class GetFavoriteStatus(APIView):
 
     def get(self, request, query=None):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/favorite_status/?q={query}"
-        print (url)
         headers = {
             "Content-Type": "application/json",
             "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
@@ -156,6 +155,8 @@ class GetFavoriteStatus(APIView):
             ),
         }
 
+        if(query == [0]):
+            return
         response = requests.get(url, headers=headers)
 
         return Response(response.json(), status=response.status_code)  # result.uuid
