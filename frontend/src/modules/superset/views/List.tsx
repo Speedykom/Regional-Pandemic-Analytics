@@ -32,9 +32,6 @@ export const DashboardList = () => {
 
   var { data: favoriteStatus } = useGetFavoriteDashboardsQuery(dashboardIds);
 
-  // eslint-disable-next-line no-console
-  console.log(favoriteStatus);
-
   const toggleFavorite = (dashboardId: number) => {
     // eslint-disable-next-line no-console
     console.log(dashboardId);
