@@ -53,7 +53,9 @@ export const DashboardList = () => {
     )?.value;
   };
   const getIsFavorite = (id: number) => {
-    return favoriteStatus?.result.find((fav: any) => fav.id === id)?.value;
+    return favoriteStatus?.result.find(
+      (fav: FavoriteDashboardResult) => fav.id === id
+    )?.value;
   };
 
   const embedDashboard = (id: number) => {
