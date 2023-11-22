@@ -73,6 +73,10 @@ export interface DashboardListResult {
   url: string;
 }
 
+export interface FavoriteDashboardResult {
+  id: number;
+  value: boolean;
+}
 export interface CreatedBy {
   first_name: string;
   id: number;
