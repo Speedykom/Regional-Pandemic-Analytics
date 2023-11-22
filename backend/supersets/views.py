@@ -161,6 +161,70 @@ class GetFavoriteStatus(APIView):
 
         return Response(response.json(), status=response.status_code)  # result.uuid
 
+class AddFavorite(APIView):
+    """
+    API view to add a superset dashboard to favorites
+    """
+
+    keycloak_scopes = {
+        "POST": "dashboard:read",
+    }
+
+    def post(self, request):
+        id = request.data.get("id", None)
+
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{id}/favorites/"
+        headers = {
+            "Content-Type": "application/json",
+            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
+                "Bearer ", ""
+            ),
+        }
+
+        response = requests.post(
+            url,
+            json={},
+            headers=headers,
+        )
+
+        if response.status_code != 200:
+            return Response(
+                {"errorMessage": response.json()}, status=response.status_code
+            )
+
+        return Response(response.json(), status=status.HTTP_200_OK)
+    
+class RemoveFavorite(APIView):
+    """
+    API view to remove a superset dashboard from favorites
+    """
+
+    keycloak_scopes = {
+        "DELETE": "dashboard:read",
+    }
+
+    def delete(self, request):
+        id = request.data.get("id", None)
+
+        url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{id}/favorites/"
+        headers = {
+            "Content-Type": "application/json",
+            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
+                "Bearer ", ""
+            ),
+        }
+
+        response = requests.delete(
+            url,
+            json={},
+            headers=headers,
+        )
+        if response.status_code != 200:
+            return Response(
+                {"errorMessage": response.json()}, status=response.status_code
+            )
+
+        return Response(response.json(), status=status.HTTP_200_OK)
 
 class GuestTokenApi(APIView):
     """

@@ -22,6 +22,22 @@ export const dashboardApi = createApi({
         body: { uid },
       }),
     }),
+    addDashboardToFavorites: builder.mutation<any, number>({
+      query: (id) => ({
+        url: `/superset/dashboard/add-favorite`,
+        method: 'POST',
+        body: { id },
+      }),
+    }),
+
+    removeDashboardFromFavorites: builder.mutation<any, number>({
+      query: (id) => ({
+        url: `/superset/dashboard/remove-favorite`,
+        method: 'DELETE',
+        body: { id },
+      }),
+    }),
+
     generateGuestToken: builder.mutation<{ token: string }, string>({
       query: (id) => ({
         url: `/superset/guest/token`,
@@ -47,6 +63,8 @@ export const {
   useGetFavoriteDashboardsQuery,
   useEnableDashboardMutation,
   useGenerateGuestTokenMutation,
+  useAddDashboardToFavoritesMutation,
+  useRemoveDashboardFromFavoritesMutation,
 } = dashboardApi;
 
 export const { useGetChartsQuery } = chartApi;
