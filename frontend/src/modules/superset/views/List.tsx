@@ -10,6 +10,7 @@ import {
   useGetFavoriteDashboardsQuery,
 } from '../superset';
 import { useState } from 'react';
+import { FavoriteDashboardResult } from '../interface';
 // import * as DummyDashboards from './DummyDashboards.json';
 
 export const DashboardList = () => {
@@ -38,7 +39,9 @@ export const DashboardList = () => {
     setIsFavorite((prev) => !prev);
   };
   const getIsFavorite = (id: number) => {
-    return favoriteStatus?.result.find((fav: any) => fav.id === id)?.value;
+    return favoriteStatus?.result.find(
+      (fav: FavoriteDashboardResult) => fav.id === id
+    )?.value;
   };
 
   const embedDashboard = (id: number) => {
