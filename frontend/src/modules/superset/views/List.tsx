@@ -6,8 +6,10 @@ import { StarIcon as StarOutline } from '@heroicons/react/24/outline';
 import { Icon } from '@tremor/react';
 import { useTranslation } from 'react-i18next';
 import {
+  useAddDashboardToFavoritesMutation,
   useGetDashboardsQuery,
   useGetFavoriteDashboardsQuery,
+  useRemoveDashboardFromFavoritesMutation,
 } from '../superset';
 import { useState } from 'react';
 import { FavoriteDashboardResult } from '../interface';
@@ -15,14 +17,12 @@ import { FavoriteDashboardResult } from '../interface';
 
 export const DashboardList = () => {
   const { t } = useTranslation();
+  const [addFavorite] = useAddDashboardToFavoritesMutation();
+  const [removeFavorite] = useRemoveDashboardFromFavoritesMutation();
 
   const router = useRouter();
 
   const [searchInput, setSearchInput] = useState<string>('');
-  const [isFavorite, setIsFavorite] = useState(false);
-
-  // eslint-disable-next-line no-console
-  console.log(isFavorite);
 
   var { data } = useGetDashboardsQuery(searchInput);
   // data = DummyDashboards;
@@ -33,10 +33,13 @@ export const DashboardList = () => {
 
   var { data: favoriteStatus } = useGetFavoriteDashboardsQuery(dashboardIds);
 
-  const toggleFavorite = (dashboardId: number) => {
-    // eslint-disable-next-line no-console
-    console.log(dashboardId);
-    setIsFavorite((prev) => !prev);
+  const toggleFavorite = async (dashboardId: number) => {
+    const isFavorite = getIsFavorite(dashboardId);
+    if (isFavorite) {
+      await removeFavorite(dashboardId);
+    } else {
+      await addFavorite(dashboardId);
+    }
   };
   const getIsFavorite = (id: number) => {
     return favoriteStatus?.result.find(
