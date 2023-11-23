@@ -1,4 +1,4 @@
-FROM apache/superset:2.1.0
+FROM apache/superset:3.0.2
 RUN pip install Authlib
 RUN pip install python-keycloak
 RUN pip install psycopg2
