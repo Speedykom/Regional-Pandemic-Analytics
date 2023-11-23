@@ -161,9 +161,6 @@ export default function Home() {
       <nav className="mb-5">
         <div>
           <h2 className="text-3xl">Favorite Dashboards</h2>
-          <p className="mt-2 text-gray-600">
-            User specific favorite dashboards
-          </p>
         </div>
       </nav>
       <TabGroup className="m-0">
