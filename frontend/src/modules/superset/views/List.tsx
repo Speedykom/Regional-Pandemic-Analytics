@@ -31,14 +31,17 @@ export const DashboardList = () => {
     Number(dashboard?.id)
   ) || [0];
 
-  var { data: favoriteStatus } = useGetFavoriteDashboardsQuery(dashboardIds);
+  var { data: favoriteStatus, refetch } =
+    useGetFavoriteDashboardsQuery(dashboardIds);
 
   const toggleFavorite = async (dashboardId: number) => {
     const isFavorite = getIsFavorite(dashboardId);
     if (isFavorite) {
       await removeFavorite(dashboardId);
+      refetch();
     } else {
       await addFavorite(dashboardId);
+      refetch();
     }
   };
   const getIsFavorite = (id: number) => {
