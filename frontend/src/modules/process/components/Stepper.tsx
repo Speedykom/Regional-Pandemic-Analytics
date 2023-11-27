@@ -28,7 +28,7 @@ export default function Stepper({
   description,
   nextDagRun,
   lastParsedTime,
-  createChartUrl
+  createChartUrl,
 }: StepperProps) {
   const steps = [
     {
