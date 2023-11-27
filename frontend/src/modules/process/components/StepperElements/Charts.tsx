@@ -1,5 +1,5 @@
-import React from "react";
-import CreateChartButton from "./ChartsElements/CreateChartButton";
+import React from 'react';
+import CreateChartButton from './ChartsElements/CreateChartButton';
 
 interface ChartsProps {
   dagId: string;
