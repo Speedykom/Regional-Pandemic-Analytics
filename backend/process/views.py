@@ -13,6 +13,7 @@ class AirflowInstance:
     username = os.getenv("AIRFLOW_USER")
     password = os.getenv("AIRFLOW_PASSWORD")
 
+SupersetUrl = os.getenv("SUPERSET_BASE_URL")
 
 class DagDTO:
     factory_id = "FACTORY"
@@ -128,7 +129,7 @@ class ProcessView(ViewSet):
                             f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
                             auth=(AirflowInstance.username, AirflowInstance.password),
                         )
-                        dataset_info_success, dataset_info = self.get_dataset_info_internal(dag['dag_id'])
+                        dataset_info_success, dataset_info = self._get_dataset_info_internal(dag['dag_id'])
                         processes.append(
                             Dag(
                                 dag["dag_id"],
@@ -273,7 +274,7 @@ class ProcessView(ViewSet):
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
-    def get_dataset_info_internal(self, dag_id) -> Tuple[bool, Union[Tuple[int, str], None]]:
+    def _get_dataset_info_internal(self, dag_id) -> Tuple[bool, Union[Tuple[int, str], None]]:
         route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns"
 
         get_runs_response = requests.get(
@@ -312,12 +313,12 @@ class ProcessView(ViewSet):
             True,
             [
                 dataset_id,
-                f"https://superset.igad.local{dataset_url}"
+                f"${SupersetUrl}{dataset_url}"
             ]
         ]
 
     def get_dataset_info(self, request, dag_id) -> Response:
-        success, dataset = self.get_dataset_info_internal(dag_id)
+        success, dataset = self._get_dataset_info_internal(dag_id)
         if not success:
             return Response({"status": "failed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response({
