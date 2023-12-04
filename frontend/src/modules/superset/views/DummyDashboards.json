@@ -1,0 +1,289 @@
+{
+  "count": 4,
+  "description_columns": {},
+  "ids": [2, 3, 1, 31],
+  "label_columns": {
+    "certification_details": "Certification Details",
+    "certified_by": "Certified By",
+    "changed_by.first_name": "Changed By First Name",
+    "changed_by.id": "Changed By Id",
+    "changed_by.last_name": "Changed By Last Name",
+    "changed_by.username": "Changed By Username",
+    "changed_by_name": "Changed By Name",
+    "changed_by_url": "Changed By Url",
+    "changed_on_delta_humanized": "Changed On Delta Humanized",
+    "changed_on_utc": "Changed On Utc",
+    "created_by.first_name": "Created By First Name",
+    "created_by.id": "Created By Id",
+    "created_by.last_name": "Created By Last Name",
+    "created_on_delta_humanized": "Created On Delta Humanized",
+    "css": "Css",
+    "dashboard_title": "Dashboard Title",
+    "id": "Id",
+    "is_managed_externally": "Is Managed Externally",
+    "json_metadata": "Json Metadata",
+    "owners.email": "Owners Email",
+    "owners.first_name": "Owners First Name",
+    "owners.id": "Owners Id",
+    "owners.last_name": "Owners Last Name",
+    "owners.username": "Owners Username",
+    "position_json": "Position Json",
+    "published": "Published",
+    "roles.id": "Roles Id",
+    "roles.name": "Roles Name",
+    "slug": "Slug",
+    "status": "Status",
+    "thumbnail_url": "Thumbnail Url",
+    "url": "Url"
+  },
+  "list_columns": [
+    "id",
+    "published",
+    "status",
+    "slug",
+    "url",
+    "css",
+    "position_json",
+    "json_metadata",
+    "thumbnail_url",
+    "certified_by",
+    "certification_details",
+    "changed_by.first_name",
+    "changed_by.last_name",
+    "changed_by.username",
+    "changed_by.id",
+    "changed_by_name",
+    "changed_by_url",
+    "changed_on_utc",
+    "changed_on_delta_humanized",
+    "created_on_delta_humanized",
+    "created_by.first_name",
+    "created_by.id",
+    "created_by.last_name",
+    "dashboard_title",
+    "owners.id",
+    "owners.username",
+    "owners.first_name",
+    "owners.last_name",
+    "owners.email",
+    "roles.id",
+    "roles.name",
+    "is_managed_externally"
+  ],
+  "list_title": "List Dashboard",
+  "order_columns": [
+    "changed_by.first_name",
+    "changed_on_delta_humanized",
+    "created_by.first_name",
+    "dashboard_title",
+    "published",
+    "changed_on"
+  ],
+  "result": [
+    {
+      "certification_details": null,
+      "certified_by": null,
+      "changed_by": null,
+      "changed_by_name": "",
+      "changed_by_url": "",
+      "changed_on_delta_humanized": "3 minutes ago",
+      "changed_on_utc": "2023-11-14T20:47:35.432593+0000",
+      "created_by": {
+        "first_name": "Superset",
+        "id": 1,
+        "last_name": "Admin"
+      },
+      "created_on_delta_humanized": "6 months ago",
+      "css": ".superset-legacy-chart-world-map .datamap {\n  transform: scaleY(3.5) scaleX(3.5) translateX(-20px) translateY(-10px);\n}\n\n.header-with-actions {\n  background-color: #00833F;\n}\n\n.title-panel {\n  color: #F4be49;\n}",
+      "dashboard_title": "IGAD: Dengue Fever Dashboard",
+      "id": 2,
+      "is_managed_externally": false,
+      "json_metadata": "{\"show_native_filters\": true, \"chart_configuration\": {}, \"color_scheme\": \"\", \"refresh_frequency\": 0, \"expanded_slices\": {}, \"label_colors\": {}, \"timed_refresh_immune_slices\": [], \"default_filters\": \"{}\", \"native_filter_configuration\": [], \"remote_id\": 46, \"import_time\": 1683322182, \"shared_label_colors\": {\"CFR (%)\": \"#ff5a5f\", \"Total Cases\": \"#6BD3B3\"}, \"color_scheme_domain\": [], \"cross_filters_enabled\": false}",
+      "owners": [
+        {
+          "email": "info@speedykom.de",
+          "first_name": "SpeedyKom",
+          "id": 2,
+          "last_name": "SpeedyKom",
+          "username": "speedykom"
+        },
+        {
+          "email": "ahmed.amri@speedykom.com",
+          "first_name": "Ahmed",
+          "id": 4,
+          "last_name": "Amri",
+          "username": "ahmed"
+        },
+        {
+          "email": "james.kamara@speedykom.de",
+          "first_name": "Superset",
+          "id": 1,
+          "last_name": "Admin",
+          "username": "admin"
+        }
+      ],
+      "position_json": "{\"CHART-5OSNHVAJ\": {\"children\": [], \"id\": \"CHART-5OSNHVAJ\", \"meta\": {\"chartId\": 12, \"height\": 59, \"sliceName\": \"Map of Dengue Fever Cases\", \"uuid\": \"5b19008a-1bed-44d3-94f2-a2fbb4d8945b\", \"width\": 5}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-N-X8XHVQDK\"], \"type\": \"CHART\"}, \"CHART-B5Q9QF21\": {\"children\": [], \"id\": \"CHART-B5Q9QF21\", \"meta\": {\"chartId\": 16, \"height\": 59, \"sliceName\": \"Dengue Fever CFR (%) by Administrative Level\", \"uuid\": \"629f3abb-4698-490e-b0e5-92ec030861d3\", \"width\": 4}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-N-X8XHVQDK\"], \"type\": \"CHART\"}, \"CHART-D9IX3MEO\": {\"children\": [], \"id\": \"CHART-D9IX3MEO\", \"meta\": {\"chartId\": 15, \"height\": 59, \"sliceName\": \"Dengue Fever Total Cases by Administrative Level\", \"uuid\": \"d2938fd1-a7b6-4f49-b416-d899280ff65f\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-N-X8XHVQDK\"], \"type\": \"CHART\"}, \"CHART-JW2hb9pXZU\": {\"children\": [], \"id\": \"CHART-JW2hb9pXZU\", \"meta\": {\"chartId\": 10, \"height\": 16, \"sliceName\": \"Total Deaths\", \"uuid\": \"7036b1ec-f238-440f-9137-cba7b445b45a\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-0wkETG-Njd\", \"COLUMN-Pn6aEtSNwx\"], \"type\": \"CHART\"}, \"CHART-ewfhMoNtXh\": {\"children\": [], \"id\": \"CHART-ewfhMoNtXh\", \"meta\": {\"chartId\": 13, \"height\": 16, \"sliceName\": \"Dengue Fever Positivity Rate %\", \"sliceNameOverride\": \"Positivity Rate %\", \"uuid\": \"9f909af9-f662-4f53-aab9-9e59f21c5418\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-0wkETG-Njd\", \"COLUMN-RkRJSFtPdz\"], \"type\": \"CHART\"}, \"CHART-explore-60-1\": {\"children\": [], \"id\": \"CHART-explore-60-1\", \"meta\": {\"chartId\": 60, \"height\": 16, \"sliceName\": \"Total Cases\", \"uuid\": \"13e0e68d-b63d-4da1-85c3-30b3991ba621\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-0wkETG-Njd\", \"COLUMN-075fsp_5A5\"], \"type\": \"CHART\"}, \"CHART-explore-61-1\": {\"children\": [], \"id\": \"CHART-explore-61-1\", \"meta\": {\"chartId\": 62, \"height\": 16, \"sliceName\": \"Total CFR (%)\", \"uuid\": \"5795b0c9-0789-41a8-8042-d820917855a1\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-0wkETG-Njd\", \"COLUMN-dMOa13eNTF\"], \"type\": \"CHART\"}, \"COLUMN-075fsp_5A5\": {\"children\": [\"CHART-explore-60-1\"], \"id\": \"COLUMN-075fsp_5A5\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-0wkETG-Njd\"], \"type\": \"COLUMN\"}, \"COLUMN-Pn6aEtSNwx\": {\"children\": [\"CHART-JW2hb9pXZU\"], \"id\": \"COLUMN-Pn6aEtSNwx\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-0wkETG-Njd\"], \"type\": \"COLUMN\"}, \"COLUMN-RkRJSFtPdz\": {\"children\": [\"CHART-ewfhMoNtXh\"], \"id\": \"COLUMN-RkRJSFtPdz\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-0wkETG-Njd\"], \"type\": \"COLUMN\"}, \"COLUMN-dMOa13eNTF\": {\"children\": [\"CHART-explore-61-1\"], \"id\": \"COLUMN-dMOa13eNTF\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-0wkETG-Njd\"], \"type\": \"COLUMN\"}, \"DASHBOARD_VERSION_KEY\": \"v2\", \"DIVIDER-HbRAyMsXBi\": {\"children\": [], \"id\": \"DIVIDER-HbRAyMsXBi\", \"meta\": {}, \"parents\": [\"ROOT_ID\", \"GRID_ID\"], \"type\": \"DIVIDER\"}, \"GRID_ID\": {\"children\": [\"DIVIDER-HbRAyMsXBi\", \"ROW-0wkETG-Njd\", \"ROW-N-X8XHVQDK\"], \"id\": \"GRID_ID\", \"parents\": [\"ROOT_ID\"], \"type\": \"GRID\"}, \"HEADER_ID\": {\"id\": \"HEADER_ID\", \"meta\": {\"text\": \"IGAD: Dengue Fever Dashboard\"}, \"type\": \"HEADER\"}, \"ROOT_ID\": {\"children\": [\"GRID_ID\"], \"id\": \"ROOT_ID\", \"type\": \"ROOT\"}, \"ROW-0wkETG-Njd\": {\"children\": [\"COLUMN-075fsp_5A5\", \"COLUMN-Pn6aEtSNwx\", \"COLUMN-RkRJSFtPdz\", \"COLUMN-dMOa13eNTF\"], \"id\": \"ROW-0wkETG-Njd\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\"}, \"parents\": [\"ROOT_ID\", \"GRID_ID\"], \"type\": \"ROW\"}, \"ROW-N-X8XHVQDK\": {\"children\": [\"CHART-B5Q9QF21\", \"CHART-5OSNHVAJ\", \"CHART-D9IX3MEO\"], \"id\": \"ROW-N-X8XHVQDK\", \"meta\": {\"0\": \"ROOT_ID\", \"background\": \"BACKGROUND_TRANSPARENT\"}, \"parents\": [\"ROOT_ID\", \"GRID_ID\"], \"type\": \"ROW\"}}",
+      "published": true,
+      "roles": [],
+      "slug": null,
+      "status": "published",
+      "thumbnail_url": "/api/v1/dashboard/2/thumbnail/1c62b577bad22bffac4ea182bc5dac4f/",
+      "url": "/superset/dashboard/2/"
+    },
+    {
+      "certification_details": "",
+      "certified_by": "",
+      "changed_by": null,
+      "changed_by_name": "",
+      "changed_by_url": "",
+      "changed_on_delta_humanized": "3 minutes ago",
+      "changed_on_utc": "2023-11-14T20:47:35.422559+0000",
+      "created_by": {
+        "first_name": "Superset",
+        "id": 1,
+        "last_name": "Admin"
+      },
+      "created_on_delta_humanized": "6 months ago",
+      "css": ".superset-legacy-chart-world-map .datamap {\n  transform: scaleY(3.5) scaleX(3.5) translateX(-20px) translateY(-10px);\n}\n\n.header-with-actions {\n  background-color: #00833F;\n}\n\n.title-panel {\n  color: #F4be49;\n}",
+      "dashboard_title": "IGAD: Ebola Dashboard",
+      "id": 3,
+      "is_managed_externally": false,
+      "json_metadata": "{\"show_native_filters\": true, \"chart_configuration\": {}, \"color_scheme\": \"\", \"refresh_frequency\": 0, \"expanded_slices\": {}, \"label_colors\": {}, \"timed_refresh_immune_slices\": [], \"default_filters\": \"{}\", \"native_filter_configuration\": [], \"remote_id\": 9, \"import_time\": 1683322552, \"cross_filters_enabled\": false, \"shared_label_colors\": {\"Bunyangabu\": \"#00a1b3\", \"Jinja\": \"#cc0086\", \"Kagadi\": \"#ffb400\", \"Kampala\": \"#00d1c1\", \"Kassanda\": \"#007A87\", \"Kyegegwa\": \"#b4a76c\", \"Masaka\": \"#ff8083\", \"Mubende\": \"#7b0051\", \"Wakiso\": \"#8ce071\", \"Positivity Rate (%)\": \"#1FA8C9\"}, \"color_scheme_domain\": []}",
+      "owners": [
+        {
+          "email": "james.kamara@speedykom.de",
+          "first_name": "Superset",
+          "id": 1,
+          "last_name": "Admin",
+          "username": "admin"
+        },
+        {
+          "email": "info@speedykom.de",
+          "first_name": "SpeedyKom",
+          "id": 2,
+          "last_name": "SpeedyKom",
+          "username": "speedykom"
+        }
+      ],
+      "position_json": "{\"CHART-Bn1uKgqaVp\": {\"children\": [], \"id\": \"CHART-Bn1uKgqaVp\", \"meta\": {\"chartId\": 19, \"height\": 19, \"sliceName\": \"Total Cases\", \"uuid\": \"6d08704c-71bb-4890-b2e9-70a85a67bc70\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-RZ28DzFJOh\"], \"type\": \"CHART\"}, \"CHART-JSCku64PCO\": {\"children\": [], \"id\": \"CHART-JSCku64PCO\", \"meta\": {\"chartId\": 21, \"height\": 62, \"sliceName\": \"Map of Ebola Cases\", \"uuid\": \"97ca9b10-fe7c-4607-a6e0-2438fccfac6f\", \"width\": 12}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-GLzI_v5it\"], \"type\": \"CHART\"}, \"CHART-NoclOD5dOH\": {\"children\": [], \"id\": \"CHART-NoclOD5dOH\", \"meta\": {\"chartId\": 18, \"height\": 19, \"sliceName\": \"Total CFR %\", \"uuid\": \"dde0ad5c-bf9f-4f60-8fc0-0014ac518179\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-RZ28DzFJOh\"], \"type\": \"CHART\"}, \"CHART-QJS0KilUnA\": {\"children\": [], \"id\": \"CHART-QJS0KilUnA\", \"meta\": {\"chartId\": 22, \"height\": 19, \"sliceName\": \"Total Recoveries\", \"uuid\": \"eda57969-f803-4e9c-ba63-bdb2c10a0edf\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-RZ28DzFJOh\"], \"type\": \"CHART\"}, \"CHART-dBd3P9Ql8S\": {\"children\": [], \"id\": \"CHART-dBd3P9Ql8S\", \"meta\": {\"chartId\": 23, \"height\": 50, \"sliceName\": \"Ebola Positivity Rate (%) per District\", \"uuid\": \"ac010bf2-8f9e-46e6-b7be-68a976481ec5\", \"width\": 6}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-1pYtP4mkX\"], \"type\": \"CHART\"}, \"CHART-rrcmBoIPCK\": {\"children\": [], \"id\": \"CHART-rrcmBoIPCK\", \"meta\": {\"chartId\": 20, \"height\": 19, \"sliceName\": \"Total Deaths\", \"uuid\": \"6bd65e65-c160-454e-a2e1-a4c284074649\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-RZ28DzFJOh\"], \"type\": \"CHART\"}, \"CHART-vC-3BTjlyG\": {\"children\": [], \"id\": \"CHART-vC-3BTjlyG\", \"meta\": {\"chartId\": 17, \"height\": 50, \"sliceName\": \"Cumulative Ebola Cases per Administrative Level\", \"uuid\": \"01e89361-cd07-4e8f-85c3-e4eb7b938fca\", \"width\": 6}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-1pYtP4mkX\", \"COLUMN-eMZDlj2H6h\"], \"type\": \"CHART\"}, \"COLUMN-eMZDlj2H6h\": {\"children\": [\"CHART-vC-3BTjlyG\"], \"id\": \"COLUMN-eMZDlj2H6h\", \"meta\": {\"background\": \"BACKGROUND_WHITE\", \"width\": 6}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-1pYtP4mkX\"], \"type\": \"COLUMN\"}, \"DASHBOARD_VERSION_KEY\": \"v2\", \"DIVIDER-7Kx2kaYKyO\": {\"children\": [], \"id\": \"DIVIDER-7Kx2kaYKyO\", \"meta\": {}, \"parents\": [\"ROOT_ID\", \"GRID_ID\"], \"type\": \"DIVIDER\"}, \"DIVIDER-hqY4Wbvl82\": {\"children\": [], \"id\": \"DIVIDER-hqY4Wbvl82\", \"meta\": {}, \"parents\": [\"ROOT_ID\", \"GRID_ID\"], \"type\": \"DIVIDER\"}, \"GRID_ID\": {\"children\": [\"DIVIDER-7Kx2kaYKyO\", \"ROW-RZ28DzFJOh\", \"ROW-1pYtP4mkX\", \"DIVIDER-hqY4Wbvl82\", \"ROW-GLzI_v5it\"], \"id\": \"GRID_ID\", \"parents\": [\"ROOT_ID\"], \"type\": \"GRID\"}, \"HEADER_ID\": {\"id\": \"HEADER_ID\", \"meta\": {\"text\": \"IGAD: Ebola Dashboard\"}, \"type\": \"HEADER\"}, \"ROOT_ID\": {\"children\": [\"GRID_ID\"], \"id\": \"ROOT_ID\", \"type\": \"ROOT\"}, \"ROW-1pYtP4mkX\": {\"children\": [\"COLUMN-eMZDlj2H6h\", \"CHART-dBd3P9Ql8S\"], \"id\": \"ROW-1pYtP4mkX\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\"}, \"parents\": [\"ROOT_ID\", \"GRID_ID\"], \"type\": \"ROW\"}, \"ROW-GLzI_v5it\": {\"children\": [\"CHART-JSCku64PCO\"], \"id\": \"ROW-GLzI_v5it\", \"meta\": {\"0\": \"ROOT_ID\", \"background\": \"BACKGROUND_TRANSPARENT\"}, \"parents\": [\"ROOT_ID\", \"GRID_ID\"], \"type\": \"ROW\"}, \"ROW-RZ28DzFJOh\": {\"children\": [\"CHART-Bn1uKgqaVp\", \"CHART-NoclOD5dOH\", \"CHART-QJS0KilUnA\", \"CHART-rrcmBoIPCK\"], \"id\": \"ROW-RZ28DzFJOh\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\"}, \"parents\": [\"ROOT_ID\", \"GRID_ID\"], \"type\": \"ROW\"}}",
+      "published": true,
+      "roles": [],
+      "slug": null,
+      "status": "published",
+      "thumbnail_url": "/api/v1/dashboard/3/thumbnail/da911328e9ff37e6e1d40ebfb5678b77/",
+      "url": "/superset/dashboard/3/"
+    },
+    {
+      "certification_details": "",
+      "certified_by": "",
+      "changed_by": null,
+      "changed_by_name": "",
+      "changed_by_url": "",
+      "changed_on_delta_humanized": "3 minutes ago",
+      "changed_on_utc": "2023-11-14T20:47:35.411342+0000",
+      "created_by": {
+        "first_name": "Superset",
+        "id": 1,
+        "last_name": "Admin"
+      },
+      "created_on_delta_humanized": "6 months ago",
+      "css": ".superset-legacy-chart-world-map .datamap {\n  transform: scaleY(3.5) scaleX(3.5) translateX(-20px) translateY(-10px);\n}\n\n.header-with-actions {\n  background-color: #00833F;\n}\n\n.title-panel {\n  color: #F4be49;\n}",
+      "dashboard_title": "IGAD: Covid-19 Dashboard",
+      "id": 1,
+      "is_managed_externally": false,
+      "json_metadata": "{\"show_native_filters\": true, \"chart_configuration\": {}, \"color_scheme\": \"\", \"refresh_frequency\": 0, \"expanded_slices\": {}, \"label_colors\": {\"Total Deaths\": \"#FF5A5F\", \"Total Recoveries\": \"#1FA8C9\", \"Total Cases\": \"#5AC189\"}, \"timed_refresh_immune_slices\": [], \"default_filters\": \"{}\", \"native_filter_configuration\": [], \"remote_id\": 11, \"import_time\": 1683321712, \"cross_filters_enabled\": false, \"shared_label_colors\": {\"Total Cases\": \"#5AC189\", \"Total Recoveries\": \"#1FA8C9\", \"Total Deaths\": \"#FF5A5F\", \"Positivty Rate(%)\": \"#ff5a5f\", \"CFR(%) by Member State\": \"#ff5a5f\"}, \"color_scheme_domain\": []}",
+      "owners": [
+        {
+          "email": "james.kamara@speedykom.de",
+          "first_name": "Superset",
+          "id": 1,
+          "last_name": "Admin",
+          "username": "admin"
+        },
+        {
+          "email": "info@speedykom.de",
+          "first_name": "SpeedyKom",
+          "id": 2,
+          "last_name": "SpeedyKom",
+          "username": "speedykom"
+        }
+      ],
+      "position_json": "{\"CHART-explore-33-1\": {\"children\": [], \"id\": \"CHART-explore-33-1\", \"meta\": {\"chartId\": 67, \"height\": 19, \"sliceName\": \"Total Cases\", \"uuid\": \"204931a8-735c-42e7-83bc-499a61d5c694\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fdzWo9nBjC\", \"COLUMN-OMGA3S73nj\"], \"type\": \"CHART\"}, \"CHART-explore-34-1\": {\"children\": [], \"id\": \"CHART-explore-34-1\", \"meta\": {\"chartId\": 65, \"height\": 19, \"sliceName\": \"Total Recoveries\", \"uuid\": \"ebeed435-9abf-4c83-a38f-6a14461a1ba4\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fdzWo9nBjC\", \"COLUMN-mGbn15uYgy\"], \"type\": \"CHART\"}, \"CHART-explore-35-1\": {\"children\": [], \"id\": \"CHART-explore-35-1\", \"meta\": {\"chartId\": 61, \"height\": 19, \"sliceName\": \"Total Deaths\", \"uuid\": \"32fda277-c8ad-45e5-80cb-bfd5cd91d544\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fdzWo9nBjC\", \"COLUMN-2jV-OvOU9l\"], \"type\": \"CHART\"}, \"CHART-explore-36-1\": {\"children\": [], \"id\": \"CHART-explore-36-1\", \"meta\": {\"chartId\": 63, \"height\": 19, \"sliceName\": \"Total CFR %\", \"uuid\": \"baf59b8f-12a7-422a-abfa-29fc5b1c1e65\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fdzWo9nBjC\", \"COLUMN-4tdDa5G5Vg\"], \"type\": \"CHART\"}, \"CHART-explore-37-1\": {\"children\": [], \"id\": \"CHART-explore-37-1\", \"meta\": {\"chartId\": 68, \"height\": 35, \"sliceName\": \"Covid-19 Vaccination by Member State\", \"uuid\": \"3cde166b-6b5b-49e4-81fa-3f4a3702ca33\", \"width\": 4}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fC9HlFs-vE\", \"COLUMN--dOzdw-A6d\"], \"type\": \"CHART\"}, \"CHART-explore-38-1\": {\"children\": [], \"id\": \"CHART-explore-38-1\", \"meta\": {\"chartId\": 64, \"height\": 66, \"sliceName\": \"Covid-19 Cummulative Cases, Recoveries & Deaths per Member State\", \"uuid\": \"90ff0fb2-cc8b-4605-9931-81820dc31aec\", \"width\": 4}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fC9HlFs-vE\", \"COLUMN-qVSLtoxuBt\"], \"type\": \"CHART\"}, \"CHART-explore-39-1\": {\"children\": [], \"id\": \"CHART-explore-39-1\", \"meta\": {\"chartId\": 66, \"height\": 66, \"sliceName\": \"Covid-19 CFR (%) by Member State\", \"uuid\": \"f5ee5824-486f-49ea-9118-33b84ebbe9a2\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fC9HlFs-vE\", \"COLUMN-Hz0y7UkPFH\"], \"type\": \"CHART\"}, \"CHART-explore-40-1\": {\"children\": [], \"id\": \"CHART-explore-40-1\", \"meta\": {\"chartId\": 59, \"height\": 29, \"sliceName\": \"Covid-19 Positivity Rate (%) per Member State\", \"uuid\": \"4828ed5c-d370-42c3-b96b-fe0fc083484f\", \"width\": 4}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fC9HlFs-vE\", \"COLUMN--dOzdw-A6d\"], \"type\": \"CHART\"}, \"COLUMN--dOzdw-A6d\": {\"children\": [\"CHART-explore-37-1\", \"CHART-explore-40-1\"], \"id\": \"COLUMN--dOzdw-A6d\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\", \"width\": 5}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fC9HlFs-vE\"], \"type\": \"COLUMN\"}, \"COLUMN-2jV-OvOU9l\": {\"children\": [\"CHART-explore-35-1\"], \"id\": \"COLUMN-2jV-OvOU9l\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fdzWo9nBjC\"], \"type\": \"COLUMN\"}, \"COLUMN-4tdDa5G5Vg\": {\"children\": [\"CHART-explore-36-1\"], \"id\": \"COLUMN-4tdDa5G5Vg\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fdzWo9nBjC\"], \"type\": \"COLUMN\"}, \"COLUMN-Hz0y7UkPFH\": {\"children\": [\"CHART-explore-39-1\"], \"id\": \"COLUMN-Hz0y7UkPFH\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fC9HlFs-vE\"], \"type\": \"COLUMN\"}, \"COLUMN-OMGA3S73nj\": {\"children\": [\"CHART-explore-33-1\"], \"id\": \"COLUMN-OMGA3S73nj\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fdzWo9nBjC\"], \"type\": \"COLUMN\"}, \"COLUMN-mGbn15uYgy\": {\"children\": [\"CHART-explore-34-1\"], \"id\": \"COLUMN-mGbn15uYgy\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\", \"width\": 3}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fdzWo9nBjC\"], \"type\": \"COLUMN\"}, \"COLUMN-qVSLtoxuBt\": {\"children\": [\"CHART-explore-38-1\"], \"id\": \"COLUMN-qVSLtoxuBt\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\", \"width\": 4}, \"parents\": [\"ROOT_ID\", \"GRID_ID\", \"ROW-fC9HlFs-vE\"], \"type\": \"COLUMN\"}, \"DASHBOARD_VERSION_KEY\": \"v2\", \"GRID_ID\": {\"children\": [\"ROW-fdzWo9nBjC\", \"ROW-fC9HlFs-vE\"], \"id\": \"GRID_ID\", \"parents\": [\"ROOT_ID\"], \"type\": \"GRID\"}, \"HEADER_ID\": {\"id\": \"HEADER_ID\", \"meta\": {\"text\": \"IGAD: Covid-19 Dashboard\"}, \"type\": \"HEADER\"}, \"ROOT_ID\": {\"children\": [\"GRID_ID\"], \"id\": \"ROOT_ID\", \"type\": \"ROOT\"}, \"ROW-fC9HlFs-vE\": {\"children\": [\"COLUMN-qVSLtoxuBt\", \"COLUMN--dOzdw-A6d\", \"COLUMN-Hz0y7UkPFH\"], \"id\": \"ROW-fC9HlFs-vE\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\"}, \"parents\": [\"ROOT_ID\", \"GRID_ID\"], \"type\": \"ROW\"}, \"ROW-fdzWo9nBjC\": {\"children\": [\"COLUMN-OMGA3S73nj\", \"COLUMN-mGbn15uYgy\", \"COLUMN-2jV-OvOU9l\", \"COLUMN-4tdDa5G5Vg\"], \"id\": \"ROW-fdzWo9nBjC\", \"meta\": {\"background\": \"BACKGROUND_TRANSPARENT\"}, \"parents\": [\"ROOT_ID\", \"GRID_ID\"], \"type\": \"ROW\"}}",
+      "published": true,
+      "roles": [],
+      "slug": null,
+      "status": "published",
+      "thumbnail_url": "/api/v1/dashboard/1/thumbnail/499ab40339f73aa0ead1354b1a4c1621/",
+      "url": "/superset/dashboard/1/"
+    },
+    {
+      "certification_details": null,
+      "certified_by": null,
+      "changed_by": {
+        "first_name": "Hamza",
+        "id": 13,
+        "last_name": "Zbidi",
+        "username": "repan"
+      },
+      "changed_by_name": "Hamza Zbidi",
+      "changed_by_url": "/superset/profile/repan",
+      "changed_on_delta_humanized": "12 days ago",
+      "changed_on_utc": "2023-11-01T22:15:19.661263+0000",
+      "created_by": {
+        "first_name": "Superset",
+        "id": 1,
+        "last_name": "Admin"
+      },
+      "created_on_delta_humanized": "14 days ago",
+      "css": "",
+      "dashboard_title": "Thumbnail Test",
+      "id": 31,
+      "is_managed_externally": false,
+      "json_metadata": "{\"chart_configuration\": {}, \"global_chart_configuration\": {\"scope\": {\"rootPath\": [\"ROOT_ID\"], \"excluded\": []}, \"chartsInScope\": [74]}, \"color_scheme\": \"\", \"refresh_frequency\": 0, \"expanded_slices\": {}, \"label_colors\": {}, \"timed_refresh_immune_slices\": [], \"cross_filters_enabled\": true, \"default_filters\": \"{}\", \"shared_label_colors\": {}, \"color_scheme_domain\": []}",
+      "owners": [
+        {
+          "email": "james.kamara@speedykom.de",
+          "first_name": "Superset",
+          "id": 1,
+          "last_name": "Admin",
+          "username": "admin"
+        },
+        {
+          "email": "ahmed.amri@speedykom.com",
+          "first_name": "Ahmed",
+          "id": 4,
+          "last_name": "Amri",
+          "username": "ahmed"
+        },
+        {
+          "email": "info@speedykom.de",
+          "first_name": "SpeedyKom",
+          "id": 2,
+          "last_name": "SpeedyKom",
+          "username": "speedykom"
+        },
+        {
+          "email": "repan@igad.com",
+          "first_name": "Hamza",
+          "id": 13,
+          "last_name": "Zbidi",
+          "username": "repan"
+        },
+        {
+          "email": "schoel@gfa-bis.de",
+          "first_name": "Thorsten",
+          "id": 12,
+          "last_name": "Schoel",
+          "username": "thorsten"
+        }
+      ],
+      "position_json": "{\"CHART-3nF_uyFOj_\":{\"children\":[],\"id\":\"CHART-3nF_uyFOj_\",\"meta\":{\"chartId\":74,\"height\":50,\"sliceName\":\"Covid Thumbnail Test\",\"uuid\":\"e70acc44-3115-4d4a-b01c-66c4029c4e8a\",\"width\":12},\"parents\":[\"ROOT_ID\",\"GRID_ID\",\"ROW-m8DRK1Ifje\"],\"type\":\"CHART\"},\"DASHBOARD_VERSION_KEY\":\"v2\",\"GRID_ID\":{\"children\":[\"ROW-m8DRK1Ifje\"],\"id\":\"GRID_ID\",\"parents\":[\"ROOT_ID\"],\"type\":\"GRID\"},\"HEADER_ID\":{\"id\":\"HEADER_ID\",\"meta\":{\"text\":\"Thumbnail Test\"},\"type\":\"HEADER\"},\"ROOT_ID\":{\"children\":[\"GRID_ID\"],\"id\":\"ROOT_ID\",\"type\":\"ROOT\"},\"ROW-m8DRK1Ifje\":{\"children\":[\"CHART-3nF_uyFOj_\"],\"id\":\"ROW-m8DRK1Ifje\",\"meta\":{\"background\":\"BACKGROUND_TRANSPARENT\"},\"parents\":[\"ROOT_ID\",\"GRID_ID\"],\"type\":\"ROW\"}}",
+      "published": true,
+      "roles": [],
+      "slug": null,
+      "status": "published",
+      "thumbnail_url": "/api/v1/dashboard/31/thumbnail/ded34274f07955de5c1b8a700a30c828/",
+      "url": "/superset/dashboard/31/"
+    }
+  ]
+}

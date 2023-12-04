@@ -1,14 +1,19 @@
 // Need to use the React-specific entry point to import createApi
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from '@/common/redux/api';
-import { ChartList, DashboardList, DashboardStatus } from './interface';
+import { ChartList, DashboardStatus } from './interface';
 
 export const dashboardApi = createApi({
   reducerPath: 'dashboardApi',
   baseQuery,
   endpoints: (builder) => ({
-    getDashboards: builder.query<DashboardList, string>({
+    getDashboards: builder.query<any, string>({
       query: (query) => `superset/list/${query}`,
+    }),
+    getFavoriteDashboards: builder.query<any, number[]>({
+      query: (query) => ({
+        url: '/superset/dashboard/favorite-status/' + JSON.stringify(query),
+      }),
     }),
     enableDashboard: builder.mutation<DashboardStatus, string>({
       query: (uid) => ({
@@ -17,6 +22,22 @@ export const dashboardApi = createApi({
         body: { uid },
       }),
     }),
+    addDashboardToFavorites: builder.mutation<any, number>({
+      query: (id) => ({
+        url: `/superset/dashboard/add-favorite`,
+        method: 'POST',
+        body: { id },
+      }),
+    }),
+
+    removeDashboardFromFavorites: builder.mutation<any, number>({
+      query: (id) => ({
+        url: `/superset/dashboard/remove-favorite`,
+        method: 'DELETE',
+        body: { id },
+      }),
+    }),
+
     generateGuestToken: builder.mutation<{ token: string }, string>({
       query: (id) => ({
         url: `/superset/guest/token`,
@@ -39,8 +60,11 @@ export const chartApi = createApi({
 
 export const {
   useGetDashboardsQuery,
+  useGetFavoriteDashboardsQuery,
   useEnableDashboardMutation,
   useGenerateGuestTokenMutation,
+  useAddDashboardToFavoritesMutation,
+  useRemoveDashboardFromFavoritesMutation,
 } = dashboardApi;
 
 export const { useGetChartsQuery } = chartApi;
