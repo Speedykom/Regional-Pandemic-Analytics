@@ -14,6 +14,7 @@ from flask_appbuilder._compat import as_unicode
 from flask_login import login_user, logout_user, current_user
 from flask_appbuilder.utils.base import get_safe_redirect
 from flask_appbuilder.security.views import AuthOAuthView
+import html
 import time
 import jwt
 from typing import Optional
@@ -171,7 +172,8 @@ class CustomAuthOAuthView(AuthOAuthView):
             next_url = self.appbuilder.get_url_for_index
             # Check if there is a next url on state
             if "next" in state and len(state["next"]) > 0:
-                next_url = get_safe_redirect(state["next"][0])
+                # Need to run it through html.unescape because Flask will encode `&` in query params as `&amp;`
+                next_url = get_safe_redirect(html.unescape(state["next"][0]))
             return redirect(next_url)
 
 class CustomSupersetSecurityManager(SupersetSecurityManager):
