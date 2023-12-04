@@ -270,32 +270,6 @@ You can map your OrganisationUnits and DataElements here.</note>
     </GUI>
   </transform>
   <transform>
-    <name>Merge join by organisation unit ids</name>
-    <type>MergeJoin</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <join_type>RIGHT OUTER</join_type>
-    <keys_1>
-      <key>id</key>
-    </keys_1>
-    <keys_2>
-      <key>City</key>
-    </keys_2>
-    <transform1>Sort by orgunits descending</transform1>
-    <transform2>Sort by orgunits descending 2</transform2>
-    <attributes/>
-    <GUI>
-      <xloc>1600</xloc>
-      <yloc>144</yloc>
-    </GUI>
-  </transform>
-  <transform>
     <name>Merge join by disease name ids</name>
     <type>MergeJoin</type>
     <description/>
@@ -319,6 +293,32 @@ You can map your OrganisationUnits and DataElements here.</note>
     <GUI>
       <xloc>1392</xloc>
       <yloc>512</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Merge join by organisation unit ids</name>
+    <type>MergeJoin</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <join_type>RIGHT OUTER</join_type>
+    <keys_1>
+      <key>id</key>
+    </keys_1>
+    <keys_2>
+      <key>City</key>
+    </keys_2>
+    <transform1>Sort by orgunits descending</transform1>
+    <transform2>Sort by orgunits descending 2</transform2>
+    <attributes/>
+    <GUI>
+      <xloc>1600</xloc>
+      <yloc>144</yloc>
     </GUI>
   </transform>
   <transform>
@@ -353,7 +353,7 @@ You can map your OrganisationUnits and DataElements here.</note>
         <target_field>OrgUnit</target_field>
       </field>
     </fields>
-    <filename_base>dhis2-test</filename_base>
+    <filename_base>ftp://${minio_ftp}/parquets/${user_id}/${dag_id}</filename_base>
     <filename_create_parent_folders>Y</filename_create_parent_folders>
     <filename_datetime_format>yyyyMMdd-HHmmss</filename_datetime_format>
     <filename_ext>parquet</filename_ext>
