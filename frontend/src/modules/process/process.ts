@@ -7,6 +7,7 @@ import {
   DagPipelineRequest,
   DagRunTasksResponse,
   DagRunTasksRequest,
+  DagDatasetResponse,
 } from '../../modules/process/interface';
 import { baseQuery } from '@/common/redux/api';
 
@@ -18,6 +19,9 @@ export const processApi = createApi({
     getProcess: builder.query<DagDetailsResponse, string>({
       query: (query) => `/process?query=${query}`,
       providesTags: ['process'],
+    }),
+    getDatasetInfo: builder.query<DagDatasetResponse, string>({
+      query: (dag_id) => `/process/${dag_id}/dataset`,
     }),
     createProcess: builder.mutation<void, DagForm>({
       query: (dagForm) => ({
@@ -71,6 +75,7 @@ export const processApi = createApi({
 export const {
   useGetProcessQuery,
   useCreateProcessMutation,
+  useGetDatasetInfoQuery,
   useGetProcessPipelineByIdQuery,
   useUpdateProcessPipelineByIdMutation,
   useToggleProcessStatusMutation,
