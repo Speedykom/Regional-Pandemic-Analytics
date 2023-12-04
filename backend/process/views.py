@@ -5,14 +5,15 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from typing import Tuple, Union
 from utils.keycloak_auth import get_current_user_id, get_current_user_name
-
 
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")
     username = os.getenv("AIRFLOW_USER")
     password = os.getenv("AIRFLOW_PASSWORD")
 
+SupersetUrl = os.getenv("SUPERSET_BASE_URL")
 
 class DagDTO:
     factory_id = "FACTORY"
@@ -48,6 +49,9 @@ class Dag:
         description,
         last_parsed_time,
         next_dagrun,
+        dataset_success,
+        dataset_id,
+        dataset_url
     ):
         self.name = name
         self.dag_id = dag_id
@@ -58,6 +62,9 @@ class Dag:
         self.description = description
         self.last_parsed_time = last_parsed_time
         self.next_dagrun = next_dagrun
+        self.dataset_success = dataset_success
+        self.dataset_id = dataset_id
+        self.dataset_url = dataset_url
 
 
 class DagRun:
@@ -122,6 +129,7 @@ class ProcessView(ViewSet):
                             f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
                             auth=(AirflowInstance.username, AirflowInstance.password),
                         )
+                        dataset_info_success, dataset_info = self._get_dataset_info_internal(dag['dag_id'])
                         processes.append(
                             Dag(
                                 dag["dag_id"],
@@ -133,6 +141,9 @@ class ProcessView(ViewSet):
                                 dag["description"],
                                 dag["last_parsed_time"],
                                 dag["next_dagrun"],
+                                dataset_info_success,
+                                dataset_info[0] if dataset_info != None else None,
+                                dataset_info[1] if dataset_info != None else None
                             ).__dict__
                         )
                 return Response({"dags": processes}, status=status.HTTP_200_OK)
@@ -259,10 +270,61 @@ class ProcessView(ViewSet):
         )
 
         if airflow_response.ok:
-            return Response({"status": "success"}, status=status.HTTP_200_OK)
+            return Response({"status": "success"})
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
+    def _get_dataset_info_internal(self, dag_id) -> Tuple[bool, Union[Tuple[int, str], None]]:
+        route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns"
+
+        get_runs_response = requests.get(
+            route, auth=(AirflowInstance.username, AirflowInstance.password)
+        )
+
+        if not get_runs_response.ok:
+            return [False, None]
+        successful_runs = sorted(
+            [dag for dag in get_runs_response.json()["dag_runs"] if dag["state"] == "success"],
+            key=lambda r: r["end_date"],
+            reverse=True
+        )
+
+        if len(successful_runs) == 0:
+            return [True, None]
+        last_run_id = successful_runs[0]["dag_run_id"]
+        get_dataset_id_route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns/{last_run_id}/taskInstances/link_dataset_to_superset/xcomEntries/superset_dataset_id"
+        get_dataset_id_response = requests.get(
+            get_dataset_id_route,
+            auth=(AirflowInstance.username, AirflowInstance.password)
+        )
+        get_dataset_url_route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns/{last_run_id}/taskInstances/link_dataset_to_superset/xcomEntries/superset_dataset_url"
+        get_dataset_url_response = requests.get(
+            get_dataset_url_route,
+            auth=(AirflowInstance.username, AirflowInstance.password)
+        )
+
+        if not (get_dataset_id_response.ok and get_dataset_url_response.ok):
+            return [False, None]
+
+        dataset_id = int(get_dataset_id_response.json()["value"])
+        dataset_url = get_dataset_url_response.json()["value"]
+
+        return [
+            True,
+            [
+                dataset_id,
+                f"${SupersetUrl}{dataset_url}"
+            ]
+        ]
+
+    def get_dataset_info(self, request, dag_id) -> Response:
+        success, dataset = self._get_dataset_info_internal(dag_id)
+        if not success:
+            return Response({"status": "failed"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({
+            "status": "success",
+            "dataset": None if dataset == None else { "id": dataset[0], "url": dataset[1] }
+        }, status=status.HTTP_200_OK)
 
 class ProcessRunView(ViewSet):
     """
