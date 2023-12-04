@@ -83,6 +83,15 @@ urlpatterns = [
     path(
         "superset/dashboard/embed/<str:id>", superset_view.GetEmbeddable.as_view()
     ),  # get embedded dashboard
+    path(
+        "superset/dashboard/favorite-status/<str:query>", superset_view.GetFavoriteStatus.as_view()
+    ),  # get dashboard favorite status for current user
+    path(
+        "superset/dashboard/add-favorite", superset_view.AddFavorite.as_view()
+    ),  # add dashboard to favorites
+    path(
+        "superset/dashboard/remove-favorite", superset_view.RemoveFavorite.as_view()
+    ),  # remove dashboard from favorites
     # ---------------------- Piepline  Endpoints ------------------------------------------
     path("pipeline", include("pipeline.urls")),
     # ---------------------- Process Chain  Endpoints ------------------------------------------
