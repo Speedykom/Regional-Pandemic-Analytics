@@ -20,6 +20,7 @@ import jwt
 from typing import Optional
 import logging
 from keycloak import KeycloakOpenID, KeycloakAdmin
+from superset.superset_typing import CacheConfig
 
 log = logging.getLogger(__name__)
 
@@ -338,3 +339,79 @@ CUSTOM_SECURITY_MANAGER = CustomSupersetSecurityManager
 ENABLE_PROXY_FIX = True
 WTF_CSRF_ENABLED = False
 SQLALCHEMY_DATABASE_URI = SUPERSET_DATABASE_URI
+
+FEATURE_FLAGS = {
+    "THUMBNAILS": True,
+    "LISTVIEWS_DEFAULT_CARD_VIEW": True,
+    "THUMBNAILS_SQLA_LISTENERS": True
+}
+
+REDIS_HOST = "superset_cache"
+REDIS_PORT = "6379"
+
+GLOBAL_ASYNC_QUERIES_TRANSPORT = "polling"
+GLOBAL_ASYNC_QUERIES_REDIS_CONFIG = {
+    "port": REDIS_PORT,
+    "host": REDIS_HOST,
+    "password": "",
+    "db": 0,
+    "ssl": False
+}
+
+FILTER_STATE_CACHE_CONFIG: CacheConfig = {
+    "CACHE_TYPE": "RedisCache",
+    'CACHE_DEFAULT_TIMEOUT': 86400,
+    'CACHE_KEY_PREFIX': 'filter_',
+    'CACHE_REDIS_URL': 'redis://%s:%s/0' % (REDIS_HOST, REDIS_PORT)
+}
+
+# # Cache for chart form data
+EXPLORE_FORM_DATA_CACHE_CONFIG: CacheConfig = {
+    "CACHE_TYPE": "RedisCache",
+    'CACHE_DEFAULT_TIMEOUT': 86400,
+    'CACHE_KEY_PREFIX': 'Chart_',
+    'CACHE_REDIS_URL': 'redis://%s:%s/1' % (REDIS_HOST, REDIS_PORT)
+}
+
+# #Caching the Data from the Database shown in the Dashboards
+DATA_CACHE_CONFIG: CacheConfig = {
+    "CACHE_TYPE": "RedisCache",
+    'CACHE_DEFAULT_TIMEOUT': 86400,
+    'CACHE_KEY_PREFIX': 'data_',
+    'CACHE_REDIS_URL': 'redis://%s:%s/2' % (REDIS_HOST, REDIS_PORT)
+}
+
+THUMBNAIL_CACHE_CONFIG: CacheConfig = {
+    'CACHE_TYPE': 'RedisCache',
+    'CACHE_DEFAULT_TIMEOUT': 86400,
+    'CACHE_KEY_PREFIX': 'thumbnail_',
+    'CACHE_REDIS_URL': 'redis://%s:%s/0' % (REDIS_HOST, REDIS_PORT)
+}
+
+class CeleryConfig:
+    broker_url = 'redis://%s:%s/0' % (REDIS_HOST, REDIS_PORT)
+    imports = ('superset.sql_lab', 'superset.tasks', 'superset.tasks.thumbnails')
+    result_backend = 'redis://%s:%s/0' % (REDIS_HOST, REDIS_PORT)
+    worker_prefetch_multiplier = 10
+    task_acks_late = True
+
+CELERY_CONFIG = CeleryConfig
+
+SCREENSHOT_LOCATE_WAIT = 100
+SCREENSHOT_LOAD_WAIT = 600
+
+WEBDRIVER_TYPE= "chrome"
+
+WEBDRIVER_BASEURL = "http://superset:8088"
+
+WEBDRIVER_OPTION_ARGS = [
+    "--force-device-scale-factor=2.0",
+    "--high-dpi-support=2.0",
+    "--headless",
+    "--disable-gpu"
+    "--disable-dev-shm-usage",
+    "--no-sandbox",
+    "--disable-setuid-sandbox",
+    "--disable-extensions",
+    "--whitelisted-ips="
+]
