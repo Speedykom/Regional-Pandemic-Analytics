@@ -520,6 +520,9 @@ services:
       - start-dev
       - --import-realm
       - --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true
+      - -Dkeycloak.profile.feature.token_exchange=enabled
+      - -Dkeycloak.profile.feature.account_api=enabled
+      - -Dkeycloak.profile.feature.admin_fine_grained_authz=enabled
     environment:
       - KC_DB=${KEYCLOAK_DB}
       - KC_DB_URL_DATABASE=${KEYCLOAK_DB_URL_DATABASE}
