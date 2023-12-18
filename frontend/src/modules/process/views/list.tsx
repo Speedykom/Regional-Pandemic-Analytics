@@ -3,7 +3,7 @@ import { Button } from '@tremor/react';
 import { Loader } from '@/common/components/Loader';
 import { usePermission } from '@/common/hooks/use-permission';
 import { useGetProcessQuery } from '../process';
-import { DagDetails } from '../interface';
+import { DagDetails, DagDetailsResponse } from '../interface';
 import ProcessCard from '../components/ProcessCard';
 import { AddProcess } from './add';
 import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
@@ -22,6 +22,74 @@ export default function ProcessChainList() {
   const [searchInput, setSearchInput] = useState<string>('');
   const { data, isLoading, isSuccess, refetch } =
     useGetProcessQuery(searchInput);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const defaultPageSize = 5;
+
+  const renderPagination = (processChainList: DagDetailsResponse) => {
+    if (!defaultPageSize || !processChainList) return null;
+
+    const totalPages = Math.ceil(
+      processChainList?.dags?.length / defaultPageSize
+    );
+    const startItem = (currentPage - 1) * defaultPageSize + 1;
+    const endItem = Math.min(
+      currentPage * defaultPageSize,
+      processChainList?.dags?.length
+    );
+
+    return (
+      <div className="flex justify-between items-center">
+        <div>
+          Showing {startItem} – {endItem} of {processChainList.dags?.length}
+        </div>
+        <div className="flex">
+          <button
+            className="bg-prim hover:bg-green-900  border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+          >
+            &larr; Prev
+          </button>
+          <button
+            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4  focus:outline-none cursor-pointer"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(currentPage + 1)}
+          >
+            Next &rarr;
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const renderProcessChainData = (processChainList: DagDetails[]) => {
+    if (!defaultPageSize && !!pipelineList) {
+      return processChainList.map((process) => {
+        return (
+          <ProcessCard
+            key={process.dag_id}
+            process={process}
+            pipelineList={pipelineList}
+          />
+        );
+      });
+    }
+
+    const startIndex = (currentPage - 1) * defaultPageSize;
+    const endIndex = startIndex + defaultPageSize;
+    if (!!pipelineList) {
+      return processChainList?.slice(startIndex, endIndex).map((process) => {
+        return (
+          <ProcessCard
+            key={process.dag_id}
+            process={process}
+            pipelineList={pipelineList}
+          />
+        );
+      });
+    }
+  };
 
   return (
     <div>
@@ -63,15 +131,8 @@ export default function ProcessChainList() {
         )}
         {isSuccess && pipelineList && (
           <div>
-            {data?.dags?.map((process: DagDetails) => {
-              return (
-                <ProcessCard
-                  key={process.dag_id}
-                  process={process}
-                  pipelineList={pipelineList}
-                />
-              );
-            })}
+            {renderProcessChainData(data?.dags)}
+            {renderPagination(data)}
           </div>
         )}
       </div>
