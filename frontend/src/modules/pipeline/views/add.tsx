@@ -24,8 +24,16 @@ export const AddPipeline = ({
     formState: { errors },
   } = useForm();
   const [addPipeline, { isLoading }] = useCreatePipelineMutation();
+  const isWhitespace = /\s/;
 
   const onFinish = (value: any) => {
+    if (isWhitespace.test(value?.name)) {
+      toast.error('Pipeline name cannot contain whitespaces', {
+        position: 'top-right',
+      });
+
+      return;
+    }
     addPipeline({ ...value, template: template.name }).then((res: any) => {
       if (res.error) {
         const { data } = res.error;
@@ -35,7 +43,9 @@ export const AddPipeline = ({
         return;
       }
 
-      toast.success('Process created successfully', { position: 'top-right' });
+      toast.success('Process created successfully', {
+        position: 'top-right',
+      });
       cancel();
       refetch();
     });
