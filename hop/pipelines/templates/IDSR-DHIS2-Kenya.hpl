@@ -189,11 +189,6 @@ This is a prerequisite to make this pipeline working</note>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Select values 2</from>
-      <to>Parquet File Output </to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
       <from>Generate rows</from>
       <to>REST client IDSR</to>
       <enabled>Y</enabled>
@@ -243,6 +238,16 @@ This is a prerequisite to make this pipeline working</note>
       <to>Sort by orgunits descending 2</to>
       <enabled>Y</enabled>
     </hop>
+    <hop>
+      <from>Select values 2</from>
+      <to>Sort by date</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Sort by date</from>
+      <to>Parquet File Output </to>
+      <enabled>Y</enabled>
+    </hop>
   </order>
   <transform>
     <name>Generate rows</name>
@@ -263,7 +268,7 @@ This is a prerequisite to make this pipeline working</note>
         <group/>
         <length>-1</length>
         <name>api</name>
-        <nullif>https://hiskenya.org/api/analytics.json?dimension=dx:ycHTiTrGfHi;wajkorhT4I5;wU5FlwAagjX;tn0o15uvfgP;sL7vw21TOKw;rnUg5fAPgxU;mQlnrUnoiDB;lJotmrRnSnD;jm11FQme3t0;gAajLA4JPwm;eH7m94f1Mrv;dvgrSof8WCi;ZQiG8Aidl8J;ZNP6Ta4SEoi;ZIhQIb9Gvap;YjkS8YBwtM3;WXmC1SmmY8j;Tz0tiCQ8o6X;TVbSuL9AdcI;SLnpLPVE4RI;S8DADvgv6Gy;RGozddXpuwI;P7K9TkpEjl5;ODvEuLyeZP5;NQwgklXIeG2;LwwVppGxNJk;LsOkVqvtIrA;JVnFrA3WVI5;IYnqoV2vlRq;IVT5avXg4CC;HW4qfFRzitH;GdvTuIX28yI;GJDppyWOYYM;BBZVk4BJ62Y;AyO5TjcPFNa&amp;dimension=pe:LAST_12_MONTHS&amp;dimension=ou:LEVEL-2&amp;displayProperty=SHORTNAME</nullif>
+        <nullif>https://hiskenya.org/api/analytics.json?dimension=dx:ycHTiTrGfHi;wajkorhT4I5;wU5FlwAagjX;tn0o15uvfgP;sL7vw21TOKw;rnUg5fAPgxU;mQlnrUnoiDB;lJotmrRnSnD;jm11FQme3t0;gAajLA4JPwm;eH7m94f1Mrv;dvgrSof8WCi;ZQiG8Aidl8J;ZNP6Ta4SEoi;ZIhQIb9Gvap;YjkS8YBwtM3;WXmC1SmmY8j;Tz0tiCQ8o6X;TVbSuL9AdcI;SLnpLPVE4RI;S8DADvgv6Gy;RGozddXpuwI;P7K9TkpEjl5;ODvEuLyeZP5;NQwgklXIeG2;LwwVppGxNJk;LsOkVqvtIrA;JVnFrA3WVI5;IYnqoV2vlRq;IVT5avXg4CC;HW4qfFRzitH;GdvTuIX28yI;GJDppyWOYYM;BBZVk4BJ62Y;AyO5TjcPFNa&amp;dimension=pe:LAST_5_YEARS&amp;dimension=ou:LEVEL-3&amp;displayProperty=SHORTNAME&amp;paging=false</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
@@ -275,7 +280,7 @@ This is a prerequisite to make this pipeline working</note>
         <group/>
         <length>-1</length>
         <name>orgunits</name>
-        <nullif>https://hiskenya.org/api/organisationUnits?filter=level:eq:2</nullif>
+        <nullif>https://hiskenya.org/api/organisationUnits?filter=level:eq:3&amp;fields=id,name,parent[id,name,parent[id,name]&amp;paging=false</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
@@ -287,7 +292,7 @@ This is a prerequisite to make this pipeline working</note>
         <group/>
         <length>-1</length>
         <name>idsr</name>
-        <nullif>https://hiskenya.org/api/dataElements?filter=name:like:IDSR</nullif>
+        <nullif>https://hiskenya.org/api/dataElements?filter=name:like:IDSR&amp;paging=false</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
@@ -343,7 +348,7 @@ This is a prerequisite to make this pipeline working</note>
     </partitioning>
     <join_type>RIGHT OUTER</join_type>
     <keys_1>
-      <key>id</key>
+      <key>orgUnitsLevel3Id</key>
     </keys_1>
     <keys_2>
       <key>City</key>
@@ -384,8 +389,16 @@ This is a prerequisite to make this pipeline working</note>
         <target_field>Cases</target_field>
       </field>
       <field>
-        <source_field>orgunit</source_field>
-        <target_field>OrgUnit</target_field>
+        <source_field>orgUnitsLevel3DisplayName</source_field>
+        <target_field>OrgUnitLevel3</target_field>
+      </field>
+      <field>
+        <source_field>orgUnitsLevel2DisplayName</source_field>
+        <target_field>OrgUnitLevel2</target_field>
+      </field>
+      <field>
+        <source_field>orgUnitsLevel1DisplayName</source_field>
+        <target_field>OrgUnitLevel1</target_field>
       </field>
     </fields>
     <filename_base>ftp://${minio_ftp}/parquets/${user_id}/${dag_id}</filename_base>
@@ -402,7 +415,7 @@ This is a prerequisite to make this pipeline working</note>
     <version>1.0</version>
     <attributes/>
     <GUI>
-      <xloc>2016</xloc>
+      <xloc>2192</xloc>
       <yloc>144</yloc>
     </GUI>
   </transform>
@@ -748,8 +761,8 @@ This is a prerequisite to make this pipeline working</note>
     </file>
     <fields>
       <field>
-        <name>orgunit</name>
-        <path>$.organisationUnits.*.displayName</path>
+        <name>orgUnitsLevel3Id</name>
+        <path>$.organisationUnits.*.id</path>
         <type>String</type>
         <format/>
         <currency/>
@@ -761,8 +774,60 @@ This is a prerequisite to make this pipeline working</note>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>id</name>
-        <path>$.organisationUnits.*.id</path>
+        <name>orgUnitsLevel3DisplayName</name>
+        <path>$.organisationUnits.*.name</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>orgUnitsLevel2Id</name>
+        <path>$.organisationUnits.*.parent.id</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>orgUnitsLevel2DisplayName</name>
+        <path>$.organisationUnits.*.parent.name</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>orgUnitsLevel1Id</name>
+        <path>$.organisationUnits.*.parent.parent.id</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>orgUnitsLevel1DisplayName</name>
+        <path>$.organisationUnits.*.parent.parent.name</path>
         <type>String</type>
         <format/>
         <currency/>
@@ -831,10 +896,16 @@ This is a prerequisite to make this pipeline working</note>
     </partitioning>
     <fields>
       <field>
-        <name>id</name>
+        <name>orgUnitsLevel3Id</name>
       </field>
       <field>
-        <name>orgunit</name>
+        <name>orgUnitsLevel3DisplayName</name>
+      </field>
+      <field>
+        <name>orgUnitsLevel2DisplayName</name>
+      </field>
+      <field>
+        <name>orgUnitsLevel1DisplayName</name>
       </field>
       <select_unspecified>N</select_unspecified>
     </fields>
@@ -920,7 +991,13 @@ This is a prerequisite to make this pipeline working</note>
         <name>Cases</name>
       </field>
       <field>
-        <name>orgunit</name>
+        <name>orgUnitsLevel1DisplayName</name>
+      </field>
+      <field>
+        <name>orgUnitsLevel2DisplayName</name>
+      </field>
+      <field>
+        <name>orgUnitsLevel3DisplayName</name>
       </field>
       <select_unspecified>N</select_unspecified>
     </fields>
@@ -1030,6 +1107,40 @@ This is a prerequisite to make this pipeline working</note>
     </GUI>
   </transform>
   <transform>
+    <name>Sort by date</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <directory>${java.io.tmpdir}</directory>
+    <prefix>out</prefix>
+    <sort_size>1000000</sort_size>
+    <free_memory/>
+    <compress>N</compress>
+    <compress_variable/>
+    <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>date</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>2000</xloc>
+      <yloc>144</yloc>
+    </GUI>
+  </transform>
+  <transform>
     <name>Sort by disease Id descending</name>
     <type>SortRows</type>
     <description/>
@@ -1083,7 +1194,7 @@ This is a prerequisite to make this pipeline working</note>
     <unique_rows>N</unique_rows>
     <fields>
       <field>
-        <name>id</name>
+        <name>orgUnitsLevel3Id</name>
         <ascending>N</ascending>
         <case_sensitive>N</case_sensitive>
         <collator_enabled>N</collator_enabled>
