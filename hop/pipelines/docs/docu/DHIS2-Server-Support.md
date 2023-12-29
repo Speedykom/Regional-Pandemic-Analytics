@@ -52,3 +52,9 @@ https://snis-dhis2.gouv.dj/dhis/api/analytics.json?dimension=dx:ziigozNncky;QKmg
 
 Get all dataElements which have Morbidity as dataElementGroup
 https://snis-dhis2.gouv.dj/dhis/api/dataElements?filter=dataElementGroups.id:eq:gYgL47r1njG&paging=false
+
+https://snis-dhis2.gouv.dj/dhis/api/analytics.json?dimension=dx:&dimension=pe:LAST_12_MONTHS&dimension=ou:LEVEL-2&displayProperty=SHORTNAME
+
+Get IDSR Data from kenya
+
+https://hiskenya.org/api/analytics.json?dimension=dx:ycHTiTrGfHi;wajkorhT4I5;wU5FlwAagjX;tn0o15uvfgP;sL7vw21TOKw;rnUg5fAPgxU;mQlnrUnoiDB;lJotmrRnSnD;jm11FQme3t0;gAajLA4JPwm;eH7m94f1Mrv;dvgrSof8WCi;ZQiG8Aidl8J;ZNP6Ta4SEoi;ZIhQIb9Gvap;YjkS8YBwtM3;WXmC1SmmY8j;Tz0tiCQ8o6X;TVbSuL9AdcI;SLnpLPVE4RI;S8DADvgv6Gy;RGozddXpuwI;P7K9TkpEjl5;ODvEuLyeZP5;NQwgklXIeG2;LwwVppGxNJk;LsOkVqvtIrA;JVnFrA3WVI5;IYnqoV2vlRq;IVT5avXg4CC;HW4qfFRzitH;GdvTuIX28yI;GJDppyWOYYM;BBZVk4BJ62Y;AyO5TjcPFNa&dimension=pe:LAST_12_MONTHS&dimension=ou:LEVEL-2&displayProperty=SHORTNAME
