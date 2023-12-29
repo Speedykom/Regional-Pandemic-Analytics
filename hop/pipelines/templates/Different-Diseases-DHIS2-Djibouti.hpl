@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pipeline>
   <info>
-    <name>Reading-Data-From-DHIS2-Server</name>
+    <name>Different-Diseases-DHIS2-Djibouti</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
     <description/>
     <extended_description/>
@@ -32,16 +32,16 @@
       <fontitalic>N</fontitalic>
       <fontname>.AppleSystemUIFont</fontname>
       <fontsize>16</fontsize>
-      <height>100</height>
-      <xloc>0</xloc>
-      <yloc>0</yloc>
+      <height>118</height>
+      <xloc>32</xloc>
+      <yloc>48</yloc>
       <note>Please ensure that the URL, Login Username and
         password are entered correctly
 
 You can costumize the period dimension in the API
 https://docs.dhis2.org/archive/en/2.25/developer/html/webapi_date_perid_format.html
 </note>
-      <width>611</width>
+      <width>634</width>
     </notepad>
     <notepad>
       <backgroundcolorblue>251</backgroundcolorblue>
@@ -57,9 +57,9 @@ https://docs.dhis2.org/archive/en/2.25/developer/html/webapi_date_perid_format.h
       <fontitalic>N</fontitalic>
       <fontname>.AppleSystemUIFont</fontname>
       <fontsize>14</fontsize>
-      <height>62</height>
-      <xloc>0</xloc>
-      <yloc>240</yloc>
+      <height>78</height>
+      <xloc>64</xloc>
+      <yloc>336</yloc>
       <note>Use this transform to read the json data
         returned from the DHIS2 API
 Please fill up in addition the Field tab with the
@@ -80,12 +80,12 @@ Please fill up in addition the Field tab with the
       <fontitalic>N</fontitalic>
       <fontname>Verdana, "Lucida Sans", Arial, Helvetica, sans-serif</fontname>
       <fontsize>13</fontsize>
-      <height>32</height>
-      <xloc>176</xloc>
-      <yloc>144</yloc>
+      <height>42</height>
+      <xloc>240</xloc>
+      <yloc>240</yloc>
       <note>The Formula tasks are made for customizing the date format
 You may need to update them depending on the used periode dimension</note>
-      <width>300</width>
+      <width>450</width>
     </notepad>
     <notepad>
       <backgroundcolorblue>251</backgroundcolorblue>
@@ -101,12 +101,35 @@ You may need to update them depending on the used periode dimension</note>
       <fontitalic>N</fontitalic>
       <fontname>Verdana, "Lucida Sans", Arial, Helvetica, sans-serif</fontname>
       <fontsize>13</fontsize>
-      <height>32</height>
-      <xloc>512</xloc>
-      <yloc>240</yloc>
+      <height>42</height>
+      <xloc>784</xloc>
+      <yloc>336</yloc>
       <note>The value mapper tasks are to map fields ids by their values.
 You can map your OrganisationUnits and DataElements here.</note>
-      <width>256</width>
+      <width>378</width>
+    </notepad>
+    <notepad>
+      <backgroundcolorblue>11</backgroundcolorblue>
+      <backgroundcolorgreen>33</backgroundcolorgreen>
+      <backgroundcolorred>204</backgroundcolorred>
+      <bordercolorblue>250</bordercolorblue>
+      <bordercolorgreen>231</bordercolorgreen>
+      <bordercolorred>200</bordercolorred>
+      <fontbold>N</fontbold>
+      <fontcolorblue>250</fontcolorblue>
+      <fontcolorgreen>231</fontcolorgreen>
+      <fontcolorred>200</fontcolorred>
+      <fontitalic>N</fontitalic>
+      <fontname>.AppleSystemUIFont</fontname>
+      <fontsize>13</fontsize>
+      <height>74</height>
+      <xloc>1152</xloc>
+      <yloc>96</yloc>
+      <note>Please do not edit or remove the 
+Parquet File Output transform
+
+This is a prerequisite to make this pipeline working</note>
+      <width>316</width>
     </notepad>
   </notepads>
   <order>
@@ -199,8 +222,8 @@ You can map your OrganisationUnits and DataElements here.</note>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>672</xloc>
-      <yloc>176</yloc>
+      <xloc>1072</xloc>
+      <yloc>272</yloc>
     </GUI>
   </transform>
   <transform>
@@ -231,8 +254,8 @@ You can map your OrganisationUnits and DataElements here.</note>
     <row_time_field>now</row_time_field>
     <attributes/>
     <GUI>
-      <xloc>32</xloc>
-      <yloc>80</yloc>
+      <xloc>64</xloc>
+      <yloc>176</yloc>
     </GUI>
   </transform>
   <transform>
@@ -275,8 +298,8 @@ You can map your OrganisationUnits and DataElements here.</note>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>528</xloc>
-      <yloc>176</yloc>
+      <xloc>768</xloc>
+      <yloc>272</yloc>
     </GUI>
   </transform>
   <transform>
@@ -325,8 +348,8 @@ You can map your OrganisationUnits and DataElements here.</note>
     <version>1.0</version>
     <attributes/>
     <GUI>
-      <xloc>784</xloc>
-      <yloc>80</yloc>
+      <xloc>1296</xloc>
+      <yloc>176</yloc>
     </GUI>
   </transform>
   <transform>
@@ -370,8 +393,8 @@ You can map your OrganisationUnits and DataElements here.</note>
     </result>
     <attributes/>
     <GUI>
-      <xloc>112</xloc>
-      <yloc>80</yloc>
+      <xloc>176</xloc>
+      <yloc>176</yloc>
     </GUI>
   </transform>
   <transform>
@@ -471,8 +494,8 @@ You can map your OrganisationUnits and DataElements here.</note>
     <sizeFieldName/>
     <attributes/>
     <GUI>
-      <xloc>112</xloc>
-      <yloc>176</yloc>
+      <xloc>176</xloc>
+      <yloc>272</yloc>
     </GUI>
   </transform>
   <transform>
@@ -524,8 +547,8 @@ You can map your OrganisationUnits and DataElements here.</note>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>672</xloc>
-      <yloc>80</yloc>
+      <xloc>1072</xloc>
+      <yloc>176</yloc>
     </GUI>
   </transform>
   <transform>
@@ -557,8 +580,8 @@ You can map your OrganisationUnits and DataElements here.</note>
     </formulas>
     <attributes/>
     <GUI>
-      <xloc>272</xloc>
-      <yloc>176</yloc>
+      <xloc>384</xloc>
+      <yloc>272</yloc>
     </GUI>
   </transform>
   <transform>
@@ -583,8 +606,8 @@ You can map your OrganisationUnits and DataElements here.</note>
     </formulas>
     <attributes/>
     <GUI>
-      <xloc>400</xloc>
-      <yloc>176</yloc>
+      <xloc>544</xloc>
+      <yloc>272</yloc>
     </GUI>
   </transform>
   <transform_error_handling>
