@@ -262,10 +262,6 @@ This is a prerequisite to make this pipeline working</note>
     </partitioning>
     <fields>
       <field>
-        <currency/>
-        <decimal/>
-        <format/>
-        <group/>
         <length>-1</length>
         <name>api</name>
         <nullif>https://hiskenya.org/api/analytics.json?dimension=dx:ycHTiTrGfHi;wajkorhT4I5;wU5FlwAagjX;tn0o15uvfgP;sL7vw21TOKw;rnUg5fAPgxU;mQlnrUnoiDB;lJotmrRnSnD;jm11FQme3t0;gAajLA4JPwm;eH7m94f1Mrv;dvgrSof8WCi;ZQiG8Aidl8J;ZNP6Ta4SEoi;ZIhQIb9Gvap;YjkS8YBwtM3;WXmC1SmmY8j;Tz0tiCQ8o6X;TVbSuL9AdcI;SLnpLPVE4RI;S8DADvgv6Gy;RGozddXpuwI;P7K9TkpEjl5;ODvEuLyeZP5;NQwgklXIeG2;LwwVppGxNJk;LsOkVqvtIrA;JVnFrA3WVI5;IYnqoV2vlRq;IVT5avXg4CC;HW4qfFRzitH;GdvTuIX28yI;GJDppyWOYYM;BBZVk4BJ62Y;AyO5TjcPFNa&amp;dimension=pe:LAST_5_YEARS&amp;dimension=ou:LEVEL-3&amp;displayProperty=SHORTNAME&amp;paging=false</nullif>
@@ -274,22 +270,14 @@ This is a prerequisite to make this pipeline working</note>
         <type>String</type>
       </field>
       <field>
-        <currency/>
-        <decimal/>
-        <format/>
-        <group/>
         <length>-1</length>
         <name>orgunits</name>
-        <nullif>https://hiskenya.org/api/organisationUnits?filter=level:eq:3&amp;fields=id,name,parent[id,name,parent[id,name]&amp;paging=false</nullif>
+        <nullif>https://hiskenya.org/api/organisationUnits?filter=level:eq:3&amp;fields=id,name,code,geometry,parent[id,name,code,geometry,parent[id,name,code]]&amp;paging=false</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
       </field>
       <field>
-        <currency/>
-        <decimal/>
-        <format/>
-        <group/>
         <length>-1</length>
         <name>idsr</name>
         <nullif>https://hiskenya.org/api/dataElements?filter=name:like:IDSR&amp;paging=false</nullif>
@@ -393,8 +381,24 @@ This is a prerequisite to make this pipeline working</note>
         <target_field>OrgUnitLevel3</target_field>
       </field>
       <field>
+        <source_field>orgUnitsLevel3Code</source_field>
+        <target_field>OrgUnitLevel3Code</target_field>
+      </field>
+      <field>
+        <source_field>orgUnitsLevel3Geometry</source_field>
+        <target_field>OrgUnitLevel3Geometry</target_field>
+      </field>
+      <field>
         <source_field>orgUnitsLevel2DisplayName</source_field>
         <target_field>OrgUnitLevel2</target_field>
+      </field>
+      <field>
+        <source_field>orgUnitsLevel2Code</source_field>
+        <target_field>OrgUnitLevel2Code</target_field>
+      </field>
+      <field>
+        <source_field>orgUnitsLevel2Geometry</source_field>
+        <target_field>OrgUnitLevel2Geometry</target_field>
       </field>
       <field>
         <source_field>orgUnitsLevel1DisplayName</source_field>
@@ -787,6 +791,32 @@ This is a prerequisite to make this pipeline working</note>
         <repeat>N</repeat>
       </field>
       <field>
+        <name>orgUnitsLevel3Code</name>
+        <path>$.organisationUnits.*.code</path>
+        <type>None</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>orgUnitsLevel3Geometry</name>
+        <path>$.organisationUnits.*.geometry</path>
+        <type>None</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
         <name>orgUnitsLevel2Id</name>
         <path>$.organisationUnits.*.parent.id</path>
         <type>String</type>
@@ -803,6 +833,32 @@ This is a prerequisite to make this pipeline working</note>
         <name>orgUnitsLevel2DisplayName</name>
         <path>$.organisationUnits.*.parent.name</path>
         <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>orgUnitsLevel2Code</name>
+        <path>$.organisationUnits.*.parent.code</path>
+        <type>None</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>orgUnitsLevel2Geometry</name>
+        <path>$.organisationUnits.*.parent.geometry</path>
+        <type>None</type>
         <format/>
         <currency/>
         <decimal/>
@@ -902,7 +958,19 @@ This is a prerequisite to make this pipeline working</note>
         <name>orgUnitsLevel3DisplayName</name>
       </field>
       <field>
+        <name>orgUnitsLevel3Code</name>
+      </field>
+      <field>
+        <name>orgUnitsLevel3Geometry</name>
+      </field>
+      <field>
         <name>orgUnitsLevel2DisplayName</name>
+      </field>
+      <field>
+        <name>orgUnitsLevel2Code</name>
+      </field>
+      <field>
+        <name>orgUnitsLevel2Geometry</name>
       </field>
       <field>
         <name>orgUnitsLevel1DisplayName</name>
@@ -997,7 +1065,19 @@ This is a prerequisite to make this pipeline working</note>
         <name>orgUnitsLevel2DisplayName</name>
       </field>
       <field>
+        <name>orgUnitsLevel2Code</name>
+      </field>
+      <field>
+        <name>orgUnitsLevel2Geometry</name>
+      </field>
+      <field>
         <name>orgUnitsLevel3DisplayName</name>
+      </field>
+      <field>
+        <name>orgUnitsLevel3Code</name>
+      </field>
+      <field>
+        <name>orgUnitsLevel3Geometry</name>
       </field>
       <select_unspecified>N</select_unspecified>
     </fields>
