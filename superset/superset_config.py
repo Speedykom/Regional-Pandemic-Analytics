@@ -329,6 +329,8 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
         g.user = user
         return user
 
+# Enable MapBox maps
+MAPBOX_API_KEY = os.getenv('MAPBOX_API_KEY', 'pk.eyJ1IjoiemJpZGktY29uc3VsdGluZyIsImEiOiJBakJHTE5vIn0.nDvakLI1qEhqCfRjhPWDdw')
 
 
 GUEST_ROLE_NAME = "Alpha"
