@@ -1,10 +1,22 @@
 from keycloak import KeycloakAdmin, KeycloakOpenID
 from django.conf import settings
+from typing import Union
+from core.user_id import get_current_user
 
+def get_current_user_id(request=None) -> Union[str, None]:
+    """Retrieves the ID (username) of the user who made the request
 
-def get_current_user_id(request):
-    cur_user = request.userinfo
-    return cur_user['sub']
+    Args:
+        request (Request): A Request object to extract the user ID from. If omitted, will attempt to get the user ID from thread local storage.
+
+    Returns:
+        A user ID or None
+    """
+    if request is not None:
+        cur_user = request.userinfo
+        return cur_user['preferred_username'] or cur_user['sub']
+    else:
+        return get_current_user()
 
 
 def get_current_user_name(request):
@@ -22,7 +34,7 @@ def get_keycloak_admin():
         verify=False)
 
 
-def get_keycloak_openid(request = None):
+def get_keycloak_openid(request = None) -> KeycloakOpenID:
         """
         :param get_response:
         """
