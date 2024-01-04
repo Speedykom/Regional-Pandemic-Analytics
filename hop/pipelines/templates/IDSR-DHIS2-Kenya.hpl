@@ -33,8 +33,8 @@
       <fontname>.AppleSystemUIFont</fontname>
       <fontsize>16</fontsize>
       <height>118</height>
-      <xloc>48</xloc>
-      <yloc>16</yloc>
+      <xloc>32</xloc>
+      <yloc>208</yloc>
       <note>Please ensure that the URL, Login Username and
         password are entered correctly
 
@@ -58,8 +58,8 @@ https://docs.dhis2.org/archive/en/2.25/developer/html/webapi_date_perid_format.h
       <fontname>.AppleSystemUIFont</fontname>
       <fontsize>14</fontsize>
       <height>78</height>
-      <xloc>96</xloc>
-      <yloc>432</yloc>
+      <xloc>144</xloc>
+      <yloc>640</yloc>
       <note>Use this transform to read the json data
         returned from the DHIS2 API
 Please fill up in addition the Field tab with the
@@ -81,8 +81,8 @@ Please fill up in addition the Field tab with the
       <fontname>Verdana, "Lucida Sans", Arial, Helvetica, sans-serif</fontname>
       <fontsize>13</fontsize>
       <height>42</height>
-      <xloc>400</xloc>
-      <yloc>304</yloc>
+      <xloc>448</xloc>
+      <yloc>512</yloc>
       <note>The Formula tasks are made for customizing the date format
 You may need to update them depending on the used periode dimension</note>
       <width>450</width>
@@ -102,8 +102,8 @@ You may need to update them depending on the used periode dimension</note>
       <fontname>Verdana, "Lucida Sans", Arial, Helvetica, sans-serif</fontname>
       <fontsize>13</fontsize>
       <height>42</height>
-      <xloc>848</xloc>
-      <yloc>432</yloc>
+      <xloc>896</xloc>
+      <yloc>640</yloc>
       <note>The value mapper tasks are to map fields ids by their values.
 You can map your OrganisationUnits and DataElements here.</note>
       <width>378</width>
@@ -123,8 +123,8 @@ You can map your OrganisationUnits and DataElements here.</note>
       <fontname>.AppleSystemUIFont</fontname>
       <fontsize>13</fontsize>
       <height>74</height>
-      <xloc>1888</xloc>
-      <yloc>48</yloc>
+      <xloc>2368</xloc>
+      <yloc>208</yloc>
       <note>Please do not edit or remove the 
 Parquet File Output transform
 
@@ -240,11 +240,46 @@ This is a prerequisite to make this pipeline working</note>
     </hop>
     <hop>
       <from>Select values 2</from>
-      <to>Sort by date</to>
+      <to>Sort by orgUnitsLevel2Id</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Sort by date</from>
+      <from>Generate rows</from>
+      <to>REST client geoJson Data</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>REST client geoJson Data</from>
+      <to>Read Organisation Units Level 2 Geojson data</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Read Organisation Units Level 2 Geojson data</from>
+      <to>Select values 4</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Select values 4</from>
+      <to>Sort by orgUnits id</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Sort by orgUnits id</from>
+      <to>Merge join OrgUnit with Geojson data</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Sort by orgUnitsLevel2Id</from>
+      <to>Merge join OrgUnit with Geojson data</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Merge join OrgUnit with Geojson data</from>
+      <to>Select values 5</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Select values 5</from>
       <to>Parquet File Output </to>
       <enabled>Y</enabled>
     </hop>
@@ -264,7 +299,7 @@ This is a prerequisite to make this pipeline working</note>
       <field>
         <length>-1</length>
         <name>api</name>
-        <nullif>https://hiskenya.org/api/analytics.json?dimension=dx:ycHTiTrGfHi;wajkorhT4I5;wU5FlwAagjX;tn0o15uvfgP;sL7vw21TOKw;rnUg5fAPgxU;mQlnrUnoiDB;lJotmrRnSnD;jm11FQme3t0;gAajLA4JPwm;eH7m94f1Mrv;dvgrSof8WCi;ZQiG8Aidl8J;ZNP6Ta4SEoi;ZIhQIb9Gvap;YjkS8YBwtM3;WXmC1SmmY8j;Tz0tiCQ8o6X;TVbSuL9AdcI;SLnpLPVE4RI;S8DADvgv6Gy;RGozddXpuwI;P7K9TkpEjl5;ODvEuLyeZP5;NQwgklXIeG2;LwwVppGxNJk;LsOkVqvtIrA;JVnFrA3WVI5;IYnqoV2vlRq;IVT5avXg4CC;HW4qfFRzitH;GdvTuIX28yI;GJDppyWOYYM;BBZVk4BJ62Y;AyO5TjcPFNa&amp;dimension=pe:LAST_5_YEARS&amp;dimension=ou:LEVEL-3&amp;displayProperty=SHORTNAME&amp;paging=false</nullif>
+        <nullif>https://hiskenya.org/api/analytics.json?dimension=dx:ycHTiTrGfHi;wajkorhT4I5;wU5FlwAagjX;tn0o15uvfgP;sL7vw21TOKw;rnUg5fAPgxU;mQlnrUnoiDB;lJotmrRnSnD;jm11FQme3t0;gAajLA4JPwm;eH7m94f1Mrv;dvgrSof8WCi;ZQiG8Aidl8J;ZNP6Ta4SEoi;ZIhQIb9Gvap;YjkS8YBwtM3;WXmC1SmmY8j;Tz0tiCQ8o6X;TVbSuL9AdcI;SLnpLPVE4RI;S8DADvgv6Gy;RGozddXpuwI;P7K9TkpEjl5;ODvEuLyeZP5;NQwgklXIeG2;LwwVppGxNJk;LsOkVqvtIrA;JVnFrA3WVI5;IYnqoV2vlRq;IVT5avXg4CC;HW4qfFRzitH;GdvTuIX28yI;GJDppyWOYYM;BBZVk4BJ62Y;AyO5TjcPFNa&amp;dimension=pe:LAST_5_YEARS&amp;dimension=ou:LEVEL-2&amp;displayProperty=SHORTNAME&amp;paging=false</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
@@ -272,7 +307,7 @@ This is a prerequisite to make this pipeline working</note>
       <field>
         <length>-1</length>
         <name>orgunits</name>
-        <nullif>https://hiskenya.org/api/organisationUnits?filter=level:eq:3&amp;fields=id,name,code,geometry,parent[id,name,code,geometry,parent[id,name,code]]&amp;paging=false</nullif>
+        <nullif>https://hiskenya.org/api/organisationUnits?level=2&amp;fields=id,name,code,parent[id,name,code]&amp;paging=false</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
@@ -285,16 +320,50 @@ This is a prerequisite to make this pipeline working</note>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
       </field>
+      <field>
+        <length>-1</length>
+        <name>geojson</name>
+        <nullif>https://hiskenya.org/api/organisationUnits.geojson?level=2&amp;paging=false</nullif>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+        <type>String</type>
+      </field>
     </fields>
     <interval_in_ms>5000</interval_in_ms>
     <last_time_field>FiveSecondsAgo</last_time_field>
-    <limit>3</limit>
+    <limit>4</limit>
     <never_ending>N</never_ending>
     <row_time_field>now</row_time_field>
     <attributes/>
     <GUI>
-      <xloc>32</xloc>
-      <yloc>288</yloc>
+      <xloc>80</xloc>
+      <yloc>496</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Merge join OrgUnit with Geojson data</name>
+    <type>MergeJoin</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <join_type>RIGHT OUTER</join_type>
+    <keys_1>
+      <key>id</key>
+    </keys_1>
+    <keys_2>
+      <key>orgUnitsLevel2Id</key>
+    </keys_2>
+    <transform1>Sort by orgUnits id</transform1>
+    <transform2>Sort by orgUnitsLevel2Id</transform2>
+    <attributes/>
+    <GUI>
+      <xloc>2064</xloc>
+      <yloc>128</yloc>
     </GUI>
   </transform>
   <transform>
@@ -319,8 +388,8 @@ This is a prerequisite to make this pipeline working</note>
     <transform2>Sort by dataElement Id descending</transform2>
     <attributes/>
     <GUI>
-      <xloc>1392</xloc>
-      <yloc>512</yloc>
+      <xloc>1440</xloc>
+      <yloc>720</yloc>
     </GUI>
   </transform>
   <transform>
@@ -336,7 +405,7 @@ This is a prerequisite to make this pipeline working</note>
     </partitioning>
     <join_type>RIGHT OUTER</join_type>
     <keys_1>
-      <key>orgUnitsLevel3Id</key>
+      <key>orgUnitsLevel2Id</key>
     </keys_1>
     <keys_2>
       <key>City</key>
@@ -345,8 +414,8 @@ This is a prerequisite to make this pipeline working</note>
     <transform2>Sort by orgunits descending 2</transform2>
     <attributes/>
     <GUI>
-      <xloc>1600</xloc>
-      <yloc>144</yloc>
+      <xloc>1648</xloc>
+      <yloc>352</yloc>
     </GUI>
   </transform>
   <transform>
@@ -377,18 +446,6 @@ This is a prerequisite to make this pipeline working</note>
         <target_field>Cases</target_field>
       </field>
       <field>
-        <source_field>orgUnitsLevel3DisplayName</source_field>
-        <target_field>OrgUnitLevel3</target_field>
-      </field>
-      <field>
-        <source_field>orgUnitsLevel3Code</source_field>
-        <target_field>OrgUnitLevel3Code</target_field>
-      </field>
-      <field>
-        <source_field>orgUnitsLevel3Geometry</source_field>
-        <target_field>OrgUnitLevel3Geometry</target_field>
-      </field>
-      <field>
         <source_field>orgUnitsLevel2DisplayName</source_field>
         <target_field>OrgUnitLevel2</target_field>
       </field>
@@ -397,12 +454,16 @@ This is a prerequisite to make this pipeline working</note>
         <target_field>OrgUnitLevel2Code</target_field>
       </field>
       <field>
-        <source_field>orgUnitsLevel2Geometry</source_field>
+        <source_field>orgUnitsLevel1DisplayName</source_field>
+        <target_field>OrgUnitLevel1</target_field>
+      </field>
+      <field>
+        <source_field>GeojsonGeometry</source_field>
         <target_field>OrgUnitLevel2Geometry</target_field>
       </field>
       <field>
-        <source_field>orgUnitsLevel1DisplayName</source_field>
-        <target_field>OrgUnitLevel1</target_field>
+        <source_field>GeojsonCoordinates</source_field>
+        <target_field>OrgUnitLevel2Coordinates</target_field>
       </field>
     </fields>
     <filename_base>ftp://${minio_ftp}/parquets/${user_id}/${dag_id}</filename_base>
@@ -419,8 +480,8 @@ This is a prerequisite to make this pipeline working</note>
     <version>1.0</version>
     <attributes/>
     <GUI>
-      <xloc>2192</xloc>
-      <yloc>144</yloc>
+      <xloc>2480</xloc>
+      <yloc>128</yloc>
     </GUI>
   </transform>
   <transform>
@@ -464,8 +525,8 @@ This is a prerequisite to make this pipeline working</note>
     </result>
     <attributes/>
     <GUI>
-      <xloc>96</xloc>
-      <yloc>368</yloc>
+      <xloc>144</xloc>
+      <yloc>576</yloc>
     </GUI>
   </transform>
   <transform>
@@ -509,8 +570,8 @@ This is a prerequisite to make this pipeline working</note>
     </result>
     <attributes/>
     <GUI>
-      <xloc>64</xloc>
-      <yloc>640</yloc>
+      <xloc>112</xloc>
+      <yloc>848</yloc>
     </GUI>
   </transform>
   <transform>
@@ -554,8 +615,53 @@ This is a prerequisite to make this pipeline working</note>
     </result>
     <attributes/>
     <GUI>
-      <xloc>192</xloc>
-      <yloc>144</yloc>
+      <xloc>240</xloc>
+      <yloc>352</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>REST client geoJson Data</name>
+    <type>Rest</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <applicationType>TEXT PLAIN</applicationType>
+    <method>GET</method>
+    <url/>
+    <urlInField>Y</urlInField>
+    <dynamicMethod>N</dynamicMethod>
+    <methodFieldName/>
+    <urlField>geojson</urlField>
+    <bodyField/>
+    <httpLogin>IGAD</httpLogin>
+    <httpPassword>Encrypted 2be98afc86aa79ba38a3d8e228ec0fc9b</httpPassword>
+    <proxyHost/>
+    <proxyPort/>
+    <preemptive>N</preemptive>
+    <trustStoreFile/>
+    <trustStorePassword>Encrypted </trustStorePassword>
+    <ignoreSsl>N</ignoreSsl>
+    <headers>
+      </headers>
+    <parameters>
+      </parameters>
+    <matrixParameters>
+      </matrixParameters>
+    <result>
+      <name>result</name>
+      <code/>
+      <response_time/>
+      <response_header/>
+    </result>
+    <attributes/>
+    <GUI>
+      <xloc>256</xloc>
+      <yloc>128</yloc>
     </GUI>
   </transform>
   <transform>
@@ -629,8 +735,8 @@ This is a prerequisite to make this pipeline working</note>
     <sizeFieldName/>
     <attributes/>
     <GUI>
-      <xloc>272</xloc>
-      <yloc>640</yloc>
+      <xloc>320</xloc>
+      <yloc>848</yloc>
     </GUI>
   </transform>
   <transform>
@@ -730,8 +836,109 @@ This is a prerequisite to make this pipeline working</note>
     <sizeFieldName/>
     <attributes/>
     <GUI>
-      <xloc>256</xloc>
-      <yloc>368</yloc>
+      <xloc>304</xloc>
+      <yloc>576</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Read Organisation Units Level 2 Geojson data</name>
+    <type>JsonInput</type>
+    <description/>
+    <distribute>N</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <include>N</include>
+    <include_field/>
+    <rownum>N</rownum>
+    <addresultfile>N</addresultfile>
+    <readurl>N</readurl>
+    <removeSourceField>N</removeSourceField>
+    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>
+    <doNotFailIfNoFile>Y</doNotFailIfNoFile>
+    <ignoreMissingPath>Y</ignoreMissingPath>
+    <defaultPathLeafToNull>Y</defaultPathLeafToNull>
+    <rownum_field/>
+    <file>
+      <name/>
+      <filemask/>
+      <exclude_filemask/>
+      <file_required>N</file_required>
+      <include_subfolders>N</include_subfolders>
+    </file>
+    <fields>
+      <field>
+        <name>geometry</name>
+        <path>$.features.*.geometry</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>coordinates</name>
+        <path>$.features.*.geometry.coordinates</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>id</name>
+        <path>$.features.*.id</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+      <field>
+        <name>name</name>
+        <path>$.features.*.properties.name</path>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+      </field>
+    </fields>
+    <limit>0</limit>
+    <IsInFields>Y</IsInFields>
+    <IsAFile>N</IsAFile>
+    <valueField>result</valueField>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
+    <attributes/>
+    <GUI>
+      <xloc>592</xloc>
+      <yloc>128</yloc>
     </GUI>
   </transform>
   <transform>
@@ -765,7 +972,7 @@ This is a prerequisite to make this pipeline working</note>
     </file>
     <fields>
       <field>
-        <name>orgUnitsLevel3Id</name>
+        <name>orgUnitsLevel2Id</name>
         <path>$.organisationUnits.*.id</path>
         <type>String</type>
         <format/>
@@ -778,7 +985,7 @@ This is a prerequisite to make this pipeline working</note>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>orgUnitsLevel3DisplayName</name>
+        <name>orgUnitsLevel2DisplayName</name>
         <path>$.organisationUnits.*.name</path>
         <type>String</type>
         <format/>
@@ -791,9 +998,9 @@ This is a prerequisite to make this pipeline working</note>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>orgUnitsLevel3Code</name>
+        <name>orgUnitsLevel2Code</name>
         <path>$.organisationUnits.*.code</path>
-        <type>None</type>
+        <type>String</type>
         <format/>
         <currency/>
         <decimal/>
@@ -804,20 +1011,7 @@ This is a prerequisite to make this pipeline working</note>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>orgUnitsLevel3Geometry</name>
-        <path>$.organisationUnits.*.geometry</path>
-        <type>None</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>orgUnitsLevel2Id</name>
+        <name>orgUnitsLevel1Id</name>
         <path>$.organisationUnits.*.parent.id</path>
         <type>String</type>
         <format/>
@@ -830,60 +1024,8 @@ This is a prerequisite to make this pipeline working</note>
         <repeat>N</repeat>
       </field>
       <field>
-        <name>orgUnitsLevel2DisplayName</name>
-        <path>$.organisationUnits.*.parent.name</path>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>orgUnitsLevel2Code</name>
-        <path>$.organisationUnits.*.parent.code</path>
-        <type>None</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>orgUnitsLevel2Geometry</name>
-        <path>$.organisationUnits.*.parent.geometry</path>
-        <type>None</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>orgUnitsLevel1Id</name>
-        <path>$.organisationUnits.*.parent.parent.id</path>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
         <name>orgUnitsLevel1DisplayName</name>
-        <path>$.organisationUnits.*.parent.parent.name</path>
+        <path>$.organisationUnits.*.parent.name</path>
         <type>String</type>
         <format/>
         <currency/>
@@ -909,8 +1051,8 @@ This is a prerequisite to make this pipeline working</note>
     <sizeFieldName/>
     <attributes/>
     <GUI>
-      <xloc>464</xloc>
-      <yloc>144</yloc>
+      <xloc>512</xloc>
+      <yloc>352</yloc>
     </GUI>
   </transform>
   <transform>
@@ -935,8 +1077,8 @@ This is a prerequisite to make this pipeline working</note>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>496</xloc>
-      <yloc>640</yloc>
+      <xloc>544</xloc>
+      <yloc>848</yloc>
     </GUI>
   </transform>
   <transform>
@@ -952,16 +1094,7 @@ This is a prerequisite to make this pipeline working</note>
     </partitioning>
     <fields>
       <field>
-        <name>orgUnitsLevel3Id</name>
-      </field>
-      <field>
-        <name>orgUnitsLevel3DisplayName</name>
-      </field>
-      <field>
-        <name>orgUnitsLevel3Code</name>
-      </field>
-      <field>
-        <name>orgUnitsLevel3Geometry</name>
+        <name>orgUnitsLevel2Id</name>
       </field>
       <field>
         <name>orgUnitsLevel2DisplayName</name>
@@ -970,17 +1103,14 @@ This is a prerequisite to make this pipeline working</note>
         <name>orgUnitsLevel2Code</name>
       </field>
       <field>
-        <name>orgUnitsLevel2Geometry</name>
-      </field>
-      <field>
         <name>orgUnitsLevel1DisplayName</name>
       </field>
       <select_unspecified>N</select_unspecified>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>704</xloc>
-      <yloc>144</yloc>
+      <xloc>752</xloc>
+      <yloc>352</yloc>
     </GUI>
   </transform>
   <transform>
@@ -1032,8 +1162,8 @@ This is a prerequisite to make this pipeline working</note>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>976</xloc>
-      <yloc>368</yloc>
+      <xloc>1024</xloc>
+      <yloc>576</yloc>
     </GUI>
   </transform>
   <transform>
@@ -1068,23 +1198,14 @@ This is a prerequisite to make this pipeline working</note>
         <name>orgUnitsLevel2Code</name>
       </field>
       <field>
-        <name>orgUnitsLevel2Geometry</name>
-      </field>
-      <field>
-        <name>orgUnitsLevel3DisplayName</name>
-      </field>
-      <field>
-        <name>orgUnitsLevel3Code</name>
-      </field>
-      <field>
-        <name>orgUnitsLevel3Geometry</name>
+        <name>orgUnitsLevel2Id</name>
       </field>
       <select_unspecified>N</select_unspecified>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>1824</xloc>
-      <yloc>144</yloc>
+      <xloc>1872</xloc>
+      <yloc>352</yloc>
     </GUI>
   </transform>
   <transform>
@@ -1115,8 +1236,95 @@ This is a prerequisite to make this pipeline working</note>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>1600</xloc>
-      <yloc>512</yloc>
+      <xloc>1648</xloc>
+      <yloc>720</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Select values 4</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <field>
+        <name>name</name>
+        <rename>CountyName</rename>
+      </field>
+      <field>
+        <name>coordinates</name>
+        <rename>GeojsonCoordinates</rename>
+      </field>
+      <field>
+        <name>geometry</name>
+        <rename>GeojsonGeometry</rename>
+      </field>
+      <field>
+        <name>id</name>
+      </field>
+      <select_unspecified>N</select_unspecified>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>928</xloc>
+      <yloc>128</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Select values 5</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <fields>
+      <field>
+        <name>date</name>
+        <rename/>
+      </field>
+      <field>
+        <name>Name</name>
+        <rename/>
+      </field>
+      <field>
+        <name>Cases</name>
+        <rename/>
+      </field>
+      <field>
+        <name>orgUnitsLevel2DisplayName</name>
+        <rename/>
+      </field>
+      <field>
+        <name>orgUnitsLevel2Code</name>
+        <rename/>
+      </field>
+      <field>
+        <name>orgUnitsLevel1DisplayName</name>
+        <rename/>
+      </field>
+      <field>
+        <name>GeojsonGeometry</name>
+        <rename/>
+      </field>
+      <field>
+        <name>GeojsonCoordinates</name>
+        <rename/>
+      </field>
+      <select_unspecified>N</select_unspecified>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>2272</xloc>
+      <yloc>128</yloc>
     </GUI>
   </transform>
   <transform>
@@ -1148,8 +1356,8 @@ This is a prerequisite to make this pipeline working</note>
     </formulas>
     <attributes/>
     <GUI>
-      <xloc>512</xloc>
-      <yloc>368</yloc>
+      <xloc>560</xloc>
+      <yloc>576</yloc>
     </GUI>
   </transform>
   <transform>
@@ -1182,42 +1390,8 @@ This is a prerequisite to make this pipeline working</note>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>1232</xloc>
-      <yloc>640</yloc>
-    </GUI>
-  </transform>
-  <transform>
-    <name>Sort by date</name>
-    <type>SortRows</type>
-    <description/>
-    <distribute>Y</distribute>
-    <custom_distribution/>
-    <copies>1</copies>
-    <partitioning>
-      <method>none</method>
-      <schema_name/>
-    </partitioning>
-    <directory>${java.io.tmpdir}</directory>
-    <prefix>out</prefix>
-    <sort_size>1000000</sort_size>
-    <free_memory/>
-    <compress>N</compress>
-    <compress_variable/>
-    <unique_rows>N</unique_rows>
-    <fields>
-      <field>
-        <name>date</name>
-        <ascending>Y</ascending>
-        <case_sensitive>N</case_sensitive>
-        <collator_enabled>N</collator_enabled>
-        <collator_strength>0</collator_strength>
-        <presorted>N</presorted>
-      </field>
-    </fields>
-    <attributes/>
-    <GUI>
-      <xloc>2000</xloc>
-      <yloc>144</yloc>
+      <xloc>1280</xloc>
+      <yloc>848</yloc>
     </GUI>
   </transform>
   <transform>
@@ -1250,8 +1424,76 @@ This is a prerequisite to make this pipeline working</note>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>1168</xloc>
-      <yloc>368</yloc>
+      <xloc>1216</xloc>
+      <yloc>576</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Sort by orgUnits id</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <directory>${java.io.tmpdir}</directory>
+    <prefix>out</prefix>
+    <sort_size>1000000</sort_size>
+    <free_memory/>
+    <compress>N</compress>
+    <compress_variable/>
+    <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>id</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>1504</xloc>
+      <yloc>128</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Sort by orgUnitsLevel2Id</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <directory>${java.io.tmpdir}</directory>
+    <prefix>out</prefix>
+    <sort_size>1000000</sort_size>
+    <free_memory/>
+    <compress>N</compress>
+    <compress_variable/>
+    <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>orgUnitsLevel2Id</name>
+        <ascending>Y</ascending>
+        <case_sensitive>N</case_sensitive>
+        <collator_enabled>N</collator_enabled>
+        <collator_strength>0</collator_strength>
+        <presorted>N</presorted>
+      </field>
+    </fields>
+    <attributes/>
+    <GUI>
+      <xloc>2064</xloc>
+      <yloc>352</yloc>
     </GUI>
   </transform>
   <transform>
@@ -1274,7 +1516,7 @@ This is a prerequisite to make this pipeline working</note>
     <unique_rows>N</unique_rows>
     <fields>
       <field>
-        <name>orgUnitsLevel3Id</name>
+        <name>orgUnitsLevel2Id</name>
         <ascending>N</ascending>
         <case_sensitive>N</case_sensitive>
         <collator_enabled>N</collator_enabled>
@@ -1284,8 +1526,8 @@ This is a prerequisite to make this pipeline working</note>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>928</xloc>
-      <yloc>144</yloc>
+      <xloc>976</xloc>
+      <yloc>352</yloc>
     </GUI>
   </transform>
   <transform>
@@ -1318,8 +1560,8 @@ This is a prerequisite to make this pipeline working</note>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>1600</xloc>
-      <yloc>368</yloc>
+      <xloc>1648</xloc>
+      <yloc>576</yloc>
     </GUI>
   </transform>
   <transform>
@@ -1344,8 +1586,8 @@ This is a prerequisite to make this pipeline working</note>
     </formulas>
     <attributes/>
     <GUI>
-      <xloc>768</xloc>
-      <yloc>368</yloc>
+      <xloc>816</xloc>
+      <yloc>576</yloc>
     </GUI>
   </transform>
   <transform_error_handling>
