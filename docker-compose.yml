@@ -104,7 +104,7 @@ services:
   # Minio
   # ========
   storage:
-    image: quay.io/minio/minio:RELEASE.2023-04-20T17-56-55Z
+    image: quay.io/minio/minio:RELEASE.2023-09-16T01-01-47Z
     container_name: storage
     command: minio server --console-address ":9090" --ftp "address=:8080" data
     environment:
@@ -287,7 +287,7 @@ services:
 
   coordinator:
     <<: *druid
-    image: apache/druid:25.0.0
+    image: apache/druid:28.0.1
     container_name: coordinator
     volumes:
       - ./storage:/opt/shared
@@ -300,7 +300,7 @@ services:
 
   broker:
     <<: *druid
-    image: apache/druid:25.0.0
+    image: apache/druid:28.0.1
     container_name: broker
     volumes:
       - broker_var:/opt/druid/var
@@ -313,7 +313,7 @@ services:
 
   historical:
     <<: *druid
-    image: apache/druid:25.0.0
+    image: apache/druid:28.0.1
     container_name: historical
     volumes:
       - ./storage:/opt/shared
@@ -327,7 +327,7 @@ services:
 
   middlemanager:
     <<: *druid
-    image: apache/druid:25.0.0
+    image: apache/druid:28.0.1
     container_name: middlemanager
     volumes:
       - ./storage:/opt/shared
@@ -341,7 +341,7 @@ services:
 
   router:
     <<: *druid
-    image: apache/druid:25.0.0
+    image: apache/druid:28.0.1
     container_name: router
     volumes:
       - ./storage:/opt/shared
