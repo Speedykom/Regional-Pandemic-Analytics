@@ -116,9 +116,9 @@ export default function Home() {
   // Show only favorite Dashboards
   if (data && favoriteStatus) {
     // Extract the IDs of favorite dashboards
-    const favoriteDashboardIds = favoriteStatus.result
-      .filter((favorite: FavoriteDashboardResult) => favorite.value)
-      .map((favorite: FavoriteDashboardResult) => Number(favorite.id));
+    const favoriteDashboardIds = favoriteStatus?.result
+      .filter((favorite: FavoriteDashboardResult) => favorite?.value)
+      .map((favorite: FavoriteDashboardResult) => Number(favorite?.id));
 
     // Filter data.result to include only favorite dashboards
     data = {
@@ -140,8 +140,10 @@ export default function Home() {
   };
 
   useEffect(() => {
-    if (data?.result.length > 0) {
-      handleTabClick(data.result[0].id);
+    if (data?.result?.length > 0) {
+      handleTabClick(
+        selectedDashboard ? selectedDashboard : data.result[0]?.id
+      );
     }
   }, [data]);
 
@@ -170,14 +172,14 @@ export default function Home() {
               key={dashboard?.id}
               dashboard={dashboard}
               onClick={handleTabClick}
-              isSelected={dashboard.id === selectedDashboard}
+              isSelected={dashboard?.id === selectedDashboard}
             ></DashboardTab>
           ))}
         </TabList>
         <TabPanels>
           {data?.result.map((dashboard: DashboardListResult) => (
             <EmbeddedDashboard
-              key={dashboard.id}
+              key={dashboard?.id}
               selectedDashboard={selectedDashboard}
             />
           ))}
