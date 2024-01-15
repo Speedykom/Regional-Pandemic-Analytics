@@ -7,6 +7,7 @@ import {
   TableHead,
   TableHeaderCell,
   TableRow,
+  Icon,
 } from '@tremor/react';
 import { useTranslation } from 'react-i18next';
 import MediaQuery from 'react-responsive';
@@ -14,9 +15,11 @@ import { useState } from 'react';
 import { usePermission } from '@/common/hooks/use-permission';
 import { useModal } from '@/common/hooks/use-modal';
 import { useRouter } from 'next/router';
-import { useGetAllPipelinesQuery } from '../pipeline';
+import { useGetAllPipelinesQuery, useDownloadPipelineQuery } from '../pipeline';
 import { AddPipeline } from './add';
 import { TemplateModal } from './template-modal';
+import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { toast } from 'react-toastify';
 
 export const MyPipelines = () => {
   const router = useRouter();
@@ -45,6 +48,11 @@ export const MyPipelines = () => {
 
   const { data, refetch } = useGetAllPipelinesQuery(searchInput);
 
+  const [selectedPipeline, setSelectedPipeline] = useState<string>('Total');
+  const { data: downloadData } = useDownloadPipelineQuery(selectedPipeline, {
+    refetchOnMountOrArgChange: true,
+  });
+
   const showConfirmModal = () =>
     showModal({
       title: 'Hop Template',
@@ -57,6 +65,26 @@ export const MyPipelines = () => {
       ),
     });
 
+  const downloadPipeline = async (name: string) => {
+    try {
+      setSelectedPipeline(name);
+      const blob = new Blob([downloadData], {
+        type: 'text/xml',
+      });
+      const link = document.createElement('a');
+      var url = URL.createObjectURL(blob);
+      link.href = url;
+      link.download = `${name}.hpl`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      // Release the URL object to free resources
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      // Handle any errors that may occur during the download
+      toast.error('Failed to download pipeline', { position: 'top-right' });
+    }
+  };
   return (
     <div className="">
       <nav className="mb-5 flex justify-between items-center">
@@ -117,6 +145,12 @@ export const MyPipelines = () => {
                       >
                         {t('view')}
                       </Button>
+                      <Icon
+                        onClick={() => downloadPipeline(item?.name)}
+                        size="lg"
+                        icon={ArrowDownTrayIcon}
+                        tooltip="Download"
+                      />
                     </div>
                   </TableCell>
                 </TableRow>
