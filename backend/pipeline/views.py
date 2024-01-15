@@ -175,3 +175,29 @@ class PipelineDetailView(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+
+class PipelineDownloadView(APIView):
+    keycloak_scopes = {
+        "GET": "pipeline:read",
+    }
+    
+    def get(self, request, name=None):        
+        """Download a specific pipeline."""
+        user_id = get_current_user_id(request)
+        try:
+            # Check if the pipeline exists
+            client_response = client.get_object("pipelines", f"pipelines-created/{user_id}/{name}.hpl")
+
+            # Set response headers for file download
+            response = Response(content_type='text/xml')
+            response["Content-Disposition"] = f'attachment; filename="{name}.hpl'
+            response.data = client_response.data
+            return response
+        except Exception as e:
+            return Response(
+                {"status": "Fail", "message": f"Failed to download pipeline {name}: {str(e)}"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        finally:
+            client_response.close()
+            client_response.release_conn()
