@@ -27,9 +27,8 @@ export const DashboardList = () => {
   var { data } = useGetDashboardsQuery(searchInput);
   // data = DummyDashboards;
 
-  const dashboardIds = data?.result.map((dashboard: any) =>
-    Number(dashboard?.id)
-  ) || [0];
+  const dashboardIds =
+    data?.result.map((dashboard: any) => Number(dashboard?.id)) || [];
 
   var { data: favoriteStatus, refetch } =
     useGetFavoriteDashboardsQuery(dashboardIds);

@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import {
+  Callout,
+  Card,
   Icon,
   Tab,
   TabGroup,
   TabList,
   TabPanel,
   TabPanels,
+  Text,
 } from '@tremor/react';
-import { StarIcon } from '@heroicons/react/24/solid';
+import { StarIcon, ExclamationCircleIcon } from '@heroicons/react/24/solid';
 
 // import * as DummyDashboards from '../../modules/superset/views/DummyDashboards.json';
 import { embedDashboard } from '@superset-ui/embedded-sdk';
@@ -106,10 +109,9 @@ const { publicRuntimeConfig } = getConfig();
 export default function Home() {
   const { hasPermission } = usePermission();
 
-  var { data, isError, isLoading } = useGetDashboardsQuery('');
-  const dashboardIds = data?.result.map((dashboard: any) =>
-    Number(dashboard?.id)
-  ) || [0];
+  var { data } = useGetDashboardsQuery('');
+  const dashboardIds =
+    data?.result.map((dashboard: any) => Number(dashboard?.id)) || [];
 
   var { data: favoriteStatus } = useGetFavoriteDashboardsQuery(dashboardIds);
 
@@ -123,7 +125,7 @@ export default function Home() {
     // Filter data.result to include only favorite dashboards
     data = {
       ...data,
-      result: data.result.filter((dashboard: DashboardListResult) =>
+      result: data?.result.filter((dashboard: DashboardListResult) =>
         favoriteDashboardIds.includes(Number(dashboard.id))
       ),
     };
@@ -151,13 +153,6 @@ export default function Home() {
     return <Unauthorized />;
   }
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (isError) {
-    return <div>Error loading favorite dashboards</div>;
-  }
   return (
     <Layout>
       <nav className="mb-5">
@@ -165,26 +160,40 @@ export default function Home() {
           <h2 className="text-3xl">Favorite Dashboards</h2>
         </div>
       </nav>
-      <TabGroup className="m-0">
-        <TabList className="m-0" color="emerald" variant="solid">
-          {data?.result.map((dashboard: any) => (
-            <DashboardTab
-              key={dashboard?.id}
-              dashboard={dashboard}
-              onClick={handleTabClick}
-              isSelected={dashboard?.id === selectedDashboard}
-            ></DashboardTab>
-          ))}
-        </TabList>
-        <TabPanels>
-          {data?.result.map((dashboard: DashboardListResult) => (
-            <EmbeddedDashboard
-              key={dashboard?.id}
-              selectedDashboard={selectedDashboard}
-            />
-          ))}
-        </TabPanels>
-      </TabGroup>
+      {data?.result.length > 0 ? (
+        <TabGroup className="m-0">
+          <TabList className="m-0" color="emerald" variant="solid">
+            {data?.result.map((dashboard: any) => (
+              <DashboardTab
+                key={dashboard?.id}
+                dashboard={dashboard}
+                onClick={handleTabClick}
+                isSelected={dashboard?.id === selectedDashboard}
+              ></DashboardTab>
+            ))}
+          </TabList>
+          <TabPanels>
+            {data?.result.map((dashboard: DashboardListResult) => (
+              <EmbeddedDashboard
+                key={dashboard?.id}
+                selectedDashboard={selectedDashboard}
+              />
+            ))}
+          </TabPanels>
+        </TabGroup>
+      ) : (
+        <>
+          <Card className="w-full">
+            <Text>Favorite Dashboards</Text>
+            <Callout
+              className="h-12 mt-4"
+              title="No favorite dashboards currently exist. Kindly create a dashboard and add it to your favorites."
+              icon={ExclamationCircleIcon}
+              color="rose"
+            ></Callout>
+          </Card>
+        </>
+      )}
     </Layout>
   );
 }
