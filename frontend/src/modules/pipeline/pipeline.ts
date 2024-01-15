@@ -15,6 +15,11 @@ export const pipelineApi = createApi({
     getPipeline: builder.query<PipelineData, string>({
       query: (name) => `/pipeline/${name}`,
     }),
+
+    downloadPipeline: builder.query<any, string>({
+      query: (name) => `/pipeline/download/${name}`,
+    }),
+
     templates: builder.query<TemplateList, string>({
       query: (query) => `/hop/${query}`,
     }),
@@ -41,6 +46,7 @@ export const pipelineApi = createApi({
 export const {
   useGetAllPipelinesQuery,
   useGetPipelineQuery,
+  useDownloadPipelineQuery,
   useTemplatesQuery,
   useCreatePipelineMutation,
   useUpdatePipelineMutation,
