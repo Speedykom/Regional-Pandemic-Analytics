@@ -71,8 +71,8 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
   };
 
   return (
-    <div className="border-t">
-      <p className="bg-yellow-200 px-3 py-2 rounded-md mt-3 text-gray-500 w-full">
+    <div className="border-t h-90 w-full">
+      <p className="bg-yellow-200 px-3 py-2 rounded-md mt-3 text-gray-500">
         Note: select a template and press continue
       </p>
       <input
@@ -82,7 +82,7 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 my-3 h-80 overflow-auto">
         {(templates?.data || []).map((template, index) => (
           <div key={index} className="">
             <Tooltip position="top" fontSize="16px">
