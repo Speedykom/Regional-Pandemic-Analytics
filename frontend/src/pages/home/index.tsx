@@ -29,6 +29,7 @@ import {
   DashboardListResult,
   FavoriteDashboardResult,
 } from '@/modules/superset/interface';
+import { skipToken } from '@reduxjs/toolkit/dist/query';
 
 type DashboardTabProps = {
   dashboard: DashboardListResult | null;
@@ -110,10 +111,12 @@ export default function Home() {
   const { hasPermission } = usePermission();
 
   var { data } = useGetDashboardsQuery('');
-  const dashboardIds =
-    data?.result.map((dashboard: any) => Number(dashboard?.id)) || [];
-
-  var { data: favoriteStatus } = useGetFavoriteDashboardsQuery(dashboardIds);
+  const dashboardIds = data?.result
+    .map((d: any) => Number(d?.id))
+    .filter((id: any) => !Number.isNaN(id));
+  var { data: favoriteStatus } = useGetFavoriteDashboardsQuery(
+    dashboardIds ?? skipToken
+  );
 
   // Show only favorite Dashboards
   if (data && favoriteStatus) {
@@ -149,6 +152,47 @@ export default function Home() {
     }
   }, [data]);
 
+  const FavoriteDashboards = () => {
+    return (
+      <TabGroup className="m-0">
+        <TabList className="m-0" color="emerald" variant="solid">
+          {data?.result.map((dashboard: any) => (
+            <DashboardTab
+              key={dashboard?.id}
+              dashboard={dashboard}
+              onClick={handleTabClick}
+              isSelected={dashboard?.id === selectedDashboard}
+            ></DashboardTab>
+          ))}
+        </TabList>
+        <TabPanels>
+          {data?.result.map((dashboard: DashboardListResult) => (
+            <EmbeddedDashboard
+              key={dashboard?.id}
+              selectedDashboard={selectedDashboard}
+            />
+          ))}
+        </TabPanels>
+      </TabGroup>
+    );
+  };
+
+  const NoFavoriteDashboards = () => {
+    return (
+      <>
+        <Card className="w-full">
+          <Text>Favorite Dashboards</Text>
+          <Callout
+            className="h-12 mt-4"
+            title="No favorite dashboards currently exist. Kindly create a dashboard and add it to your favorites."
+            icon={ExclamationCircleIcon}
+            color="rose"
+          ></Callout>
+        </Card>
+      </>
+    );
+  };
+
   if (!hasPermission('dashboard:read')) {
     return <Unauthorized />;
   }
@@ -161,38 +205,9 @@ export default function Home() {
         </div>
       </nav>
       {data?.result.length > 0 ? (
-        <TabGroup className="m-0">
-          <TabList className="m-0" color="emerald" variant="solid">
-            {data?.result.map((dashboard: any) => (
-              <DashboardTab
-                key={dashboard?.id}
-                dashboard={dashboard}
-                onClick={handleTabClick}
-                isSelected={dashboard?.id === selectedDashboard}
-              ></DashboardTab>
-            ))}
-          </TabList>
-          <TabPanels>
-            {data?.result.map((dashboard: DashboardListResult) => (
-              <EmbeddedDashboard
-                key={dashboard?.id}
-                selectedDashboard={selectedDashboard}
-              />
-            ))}
-          </TabPanels>
-        </TabGroup>
+        <FavoriteDashboards />
       ) : (
-        <>
-          <Card className="w-full">
-            <Text>Favorite Dashboards</Text>
-            <Callout
-              className="h-12 mt-4"
-              title="No favorite dashboards currently exist. Kindly create a dashboard and add it to your favorites."
-              icon={ExclamationCircleIcon}
-              color="rose"
-            ></Callout>
-          </Card>
-        </>
+        <NoFavoriteDashboards />
       )}
     </Layout>
   );
