@@ -13,6 +13,8 @@ import {
 } from '../superset';
 import { useState } from 'react';
 import { FavoriteDashboardResult } from '../interface';
+import { skipToken } from '@reduxjs/toolkit/query/react';
+
 // import * as DummyDashboards from './DummyDashboards.json';
 
 export const DashboardList = () => {
@@ -27,11 +29,13 @@ export const DashboardList = () => {
   var { data } = useGetDashboardsQuery(searchInput);
   // data = DummyDashboards;
 
-  const dashboardIds =
-    data?.result.map((dashboard: any) => Number(dashboard?.id)) || [];
+  const dashboardIds = data?.result.map((dashboard: any) =>
+    Number(dashboard?.id)
+  );
 
-  var { data: favoriteStatus, refetch } =
-    useGetFavoriteDashboardsQuery(dashboardIds);
+  var { data: favoriteStatus, refetch } = useGetFavoriteDashboardsQuery(
+    dashboardIds ?? skipToken
+  );
 
   const toggleFavorite = async (dashboardId: number) => {
     const isFavorite = getIsFavorite(dashboardId);
