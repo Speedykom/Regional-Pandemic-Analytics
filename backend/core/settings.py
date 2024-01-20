@@ -8,10 +8,10 @@ env = environ.Env()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 HOP_FILES_DIR = os.path.abspath(
-    os.path.join(BASE_DIR, os.getenv("HOPE_TEMPLATE_PATH", ""))
+    os.path.join(BASE_DIR, os.getenv("HOP_TEMPLATE_PATH", ""))
 )
 COPY_HOP_FILES_DIR = os.path.abspath(
-    os.path.join(BASE_DIR, os.getenv("HOPE_PIPELINE_PATH", ""))
+    os.path.join(BASE_DIR, os.getenv("HOP_PIPELINE_PATH", ""))
 )
 
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
