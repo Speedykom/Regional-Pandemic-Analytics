@@ -147,6 +147,9 @@ class GetFavoriteStatus(APIView):
     }
 
     def get(self, request, query=None):
+        if query == '[]' or query == None:
+            return Response({"result": "No favorite dashboard were provided"}, status=status.HTTP_400_BAD_REQUEST)
+
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/favorite_status/?q={query}"
         headers = {
             "Content-Type": "application/json",
@@ -155,10 +158,7 @@ class GetFavoriteStatus(APIView):
             ),
         }
 
-        if(query == [0]):
-            return
         response = requests.get(url, headers=headers)
-
         return Response(response.json(), status=response.status_code)  # result.uuid
 
 class AddFavorite(APIView):
