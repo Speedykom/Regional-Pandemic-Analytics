@@ -199,11 +199,6 @@ This is a prerequisite to make this pipeline working</note>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Select only displayName and id</from>
-      <to>Sort by dataElement Id descending</to>
-      <enabled>Y</enabled>
-    </hop>
-    <hop>
       <from>create a date format</from>
       <to>Select values</to>
       <enabled>Y</enabled>
@@ -243,6 +238,16 @@ This is a prerequisite to make this pipeline working</note>
       <to>Select only orgunit and id</to>
       <enabled>Y</enabled>
     </hop>
+    <hop>
+      <from>Select only displayName and id</from>
+      <to>Return only Morbidité</to>
+      <enabled>Y</enabled>
+    </hop>
+    <hop>
+      <from>Return only Morbidité</from>
+      <to>Sort by dataElement Id descending</to>
+      <enabled>Y</enabled>
+    </hop>
   </order>
   <transform>
     <name>Generate rows</name>
@@ -257,14 +262,22 @@ This is a prerequisite to make this pipeline working</note>
     </partitioning>
     <fields>
       <field>
+        <currency/>
+        <decimal/>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>api</name>
-        <nullif>https://snis-dhis2.gouv.dj/dhis/api/analytics.json?dimension=dx:uNPwHRXzuYE;ex3sghNU4i2;uoZhzBpYk9P;kprL8EhMxko;PO9tmHgqBrQ;FEh1O5vNtLR;R1scpNsZyut;mE0TuzUxn4N;DyhciYoSzKm;pksFvmb8vzz;feWx5OgO3Oy;FAw5SisLI2j;BJx6NkXNi1q;kOi3EwSsnFf;jZhZC7xkDEX;f3mb25Jo8JY;PlOlDrzjHrQ;W8Tw7YEovp6;Uv26sKZ7qSB;ivuT76o8iZf;ztgmVuU0CYt;KQHjrzei8gJ;AogOeZv250B;P8r9HWCM3Ni;D4PUgkTctTO;zQiAxFEHQtb;BsXRid9W01e;hal3fSCqAu9;QmAvGKoPzIo;l9OjYKD2hy5;ffOoHunoLSG;COrLLDK5Xbu;R7mOK1qJDx0;yxABm3pnYEM;iuE1WFkNRSB;LuU2HtTRbbe;HtjxilJlprc;hKRU8TPaG4J;RhlKhKSjruc;XaHFwL7mE0P;h4NG6IkQ7I0;rBu7GPDyqW3;M8PDtnxruzA;AVgqKbYOaee;HdMxagiCWKX;X5HRzv4wfX4;psq6XvS0xKN;b96XnB5lkFm;MPj6ZPQsvLZ;r4t8g5jzkcw;ihia3sxq9BP;F5rIMT3tYaB;GDyoSROOj9x;mjUoFFIrnei;ns747fB7VoL;BoR7IFV5fID;wIuN6tPyqdn;qvGgHvwIWnQ;GUfUQg1MNt3;bppCi5da9Hy;mCM9FbcVYHc;u4EktpxTtlS;LhUfZ63tLc3;X125ot8S8Jf;dlyQ67qJBAW;g9QSedKf9Mf;AIngtCpj0g4;sOGQ08oETPo;ZSE2JefelvP;CbXrhU6FQcw;qF427HS1UEn;bNv3e1w4d3e;Y13tA0ntjjP;Iiqv9zrSHP6;a0Sn8CEv243;F0nwboCQmhB;tA9TKYjiCer;DZDk6creKZo;kyKw5UfEh4J;iCcrHs2cHR&amp;dimension=pe:LAST_5_YEARS&amp;dimension=ou:LEVEL-2&amp;displayProperty=SHORTNAME</nullif>
+        <nullif>https://snis-dhis2.gouv.dj/dhis/api/analytics.json?dimension=dx:uNPwHRXzuYE;ex3sghNU4i2;uoZhzBpYk9P;kprL8EhMxko;PO9tmHgqBrQ;FEh1O5vNtLR;R1scpNsZyut;mE0TuzUxn4N;DyhciYoSzKm;pksFvmb8vzz;feWx5OgO3Oy;FAw5SisLI2j;BJx6NkXNi1q;kOi3EwSsnFf;jZhZC7xkDEX;f3mb25Jo8JY;PlOlDrzjHrQ;W8Tw7YEovp6;Uv26sKZ7qSB;ivuT76o8iZf;ztgmVuU0CYt;KQHjrzei8gJ;AogOeZv250B;P8r9HWCM3Ni;D4PUgkTctTO;zQiAxFEHQtb;BsXRid9W01e;hal3fSCqAu9;QmAvGKoPzIo;l9OjYKD2hy5;ffOoHunoLSG;COrLLDK5Xbu;R7mOK1qJDx0;yxABm3pnYEM;iuE1WFkNRSB;LuU2HtTRbbe;HtjxilJlprc;hKRU8TPaG4J;RhlKhKSjruc;XaHFwL7mE0P;h4NG6IkQ7I0;rBu7GPDyqW3;M8PDtnxruzA;AVgqKbYOaee;HdMxagiCWKX;X5HRzv4wfX4;psq6XvS0xKN;b96XnB5lkFm;MPj6ZPQsvLZ;r4t8g5jzkcw;ihia3sxq9BP;F5rIMT3tYaB;GDyoSROOj9x;mjUoFFIrnei;ns747fB7VoL;BoR7IFV5fID;wIuN6tPyqdn;qvGgHvwIWnQ;GUfUQg1MNt3;bppCi5da9Hy;mCM9FbcVYHc;u4EktpxTtlS;LhUfZ63tLc3;X125ot8S8Jf;dlyQ67qJBAW;g9QSedKf9Mf;AIngtCpj0g4;sOGQ08oETPo;ZSE2JefelvP;CbXrhU6FQcw;qF427HS1UEn;bNv3e1w4d3e;Y13tA0ntjjP;Iiqv9zrSHP6;a0Sn8CEv243;F0nwboCQmhB;tA9TKYjiCer;DZDk6creKZo;kyKw5UfEh4J;iCcrHs2cHR&amp;dimension=pe:LAST_12_MONTHS&amp;dimension=ou:LEVEL-2&amp;displayProperty=SHORTNAME</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
       </field>
       <field>
+        <currency/>
+        <decimal/>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>orgunits</name>
         <nullif>https://snis-dhis2.gouv.dj/dhis/api/organisationUnits?level=2&amp;fields=id,name,geometry,parent[id,name]&amp;paging=false</nullif>
@@ -273,6 +286,10 @@ This is a prerequisite to make this pipeline working</note>
         <type>String</type>
       </field>
       <field>
+        <currency/>
+        <decimal/>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>diseases</name>
         <nullif>https://snis-dhis2.gouv.dj/dhis/api/dataElements?filter=name:like:Paludisme&amp;filter=name:like:Rougeole&amp;filter=name:like:M%C3%A9ningite&amp;filter=name:like:Dengue&amp;rootJunction=OR&amp;paging=false</nullif>
@@ -825,6 +842,41 @@ This is a prerequisite to make this pipeline working</note>
     <GUI>
       <xloc>480</xloc>
       <yloc>144</yloc>
+    </GUI>
+  </transform>
+  <transform>
+    <name>Return only Morbidité</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <custom_distribution/>
+    <copies>1</copies>
+    <partitioning>
+      <method>none</method>
+      <schema_name/>
+    </partitioning>
+    <compare>
+      <condition>
+        <conditions>
+</conditions>
+        <function>CONTAINS</function>
+        <leftvalue>displayName</leftvalue>
+        <negated>N</negated>
+        <operator>-</operator>
+        <value>
+          <isnull>N</isnull>
+          <length>-1</length>
+          <name>constant</name>
+          <precision>-1</precision>
+          <text>Morbidité</text>
+          <type>String</type>
+        </value>
+      </condition>
+    </compare>
+    <attributes/>
+    <GUI>
+      <xloc>848</xloc>
+      <yloc>640</yloc>
     </GUI>
   </transform>
   <transform>
