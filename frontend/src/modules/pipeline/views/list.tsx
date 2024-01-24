@@ -28,6 +28,9 @@ export const MyPipelines = () => {
   const [template, setTemplate] = useState<any>();
   const [drawer, setDrawer] = useState<boolean>(false);
   const { t } = useTranslation();
+  const [currentPage, setCurrentPage] = useState(1);
+  const defaultPageSize = 5;
+
   const close = () => {
     setDrawer(false);
     setTemplate(null);
@@ -64,6 +67,105 @@ export const MyPipelines = () => {
         </div>
       ),
     });
+
+  const renderPagination = () => {
+    // eslint-disable-next-line no-console
+    console.log(data?.data);
+    if (!defaultPageSize || !data?.data || data?.data?.length == 0) return null;
+
+    const totalPages = Math.ceil(data.data.length / defaultPageSize);
+    const startItem = (currentPage - 1) * defaultPageSize + 1;
+    const endItem = Math.min(currentPage * defaultPageSize, data.data.length);
+
+    return (
+      <div className="flex justify-end items-center mt-4">
+        <div className="mr-4">
+          Showing {startItem} – {endItem} of {data?.data?.length}
+        </div>
+        <div className="flex">
+          <Button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 focus:outline-none mr-2"
+            size="xs"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+          >
+            &larr; Prev
+          </Button>
+          <Button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 focus:outline-none"
+            size="xs"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(currentPage + 1)}
+          >
+            Next &rarr;
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  const renderTableData = () => {
+    if (!defaultPageSize) {
+      return data?.data.map((item, index) => {
+        return (
+          <TableRow key={index}>
+            <TableCell className="font-sans">{item?.name}</TableCell>
+            <MediaQuery minWidth={1090}>
+              <TableCell className="whitespace-normal">
+                {item?.description}
+              </TableCell>
+            </MediaQuery>
+            <TableCell>
+              <div className="flex space-x-2 justify-end">
+                <Button
+                  onClick={() =>
+                    router.push(`/pipelines/${encodeURIComponent(item?.name)}`)
+                  }
+                  className="hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white"
+                >
+                  {t('view')}
+                </Button>
+                <Icon
+                  onClick={() => downloadPipeline(item?.name)}
+                  size="lg"
+                  icon={ArrowDownTrayIcon}
+                  tooltip="Download"
+                />
+              </div>
+            </TableCell>
+          </TableRow>
+        );
+      });
+    }
+
+    const startIndex = (currentPage - 1) * defaultPageSize;
+    const endIndex = startIndex + defaultPageSize;
+
+    return data?.data.slice(startIndex, endIndex).map((item, index) => {
+      return (
+        <TableRow key={index}>
+          <TableCell className="font-sans">{item?.name}</TableCell>
+          <MediaQuery minWidth={1090}>
+            <TableCell className="whitespace-normal">
+              {item?.description}
+            </TableCell>
+          </MediaQuery>
+          <TableCell>
+            <div className="flex space-x-2 justify-end">
+              <Button
+                onClick={() =>
+                  router.push(`/pipelines/${encodeURIComponent(item?.name)}`)
+                }
+                className="hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white"
+              >
+                {t('view')}
+              </Button>
+            </div>
+          </TableCell>
+        </TableRow>
+      );
+    });
+  };
 
   const downloadPipeline = async (name: string) => {
     try {
@@ -124,39 +226,9 @@ export const MyPipelines = () => {
                 <TableHeaderCell />
               </TableRow>
             </TableHead>
-            <TableBody>
-              {data?.data.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell className="font-sans">{item?.name}</TableCell>
-                  <MediaQuery minWidth={1090}>
-                    <TableCell className="whitespace-normal">
-                      {item?.description}
-                    </TableCell>
-                  </MediaQuery>
-                  <TableCell>
-                    <div className="flex space-x-2 justify-end">
-                      <Button
-                        onClick={() =>
-                          router.push(
-                            `/pipelines/${encodeURIComponent(item?.name)}`
-                          )
-                        }
-                        className="hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white"
-                      >
-                        {t('view')}
-                      </Button>
-                      <Icon
-                        onClick={() => downloadPipeline(item?.name)}
-                        size="lg"
-                        icon={ArrowDownTrayIcon}
-                        tooltip="Download"
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+            <TableBody>{renderTableData()}</TableBody>
           </Table>
+          {renderPagination()}
         </Card>
       </div>
       <AddPipeline
