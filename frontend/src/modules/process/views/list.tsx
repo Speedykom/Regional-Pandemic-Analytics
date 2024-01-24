@@ -27,7 +27,12 @@ export default function ProcessChainList() {
   const defaultPageSize = 5;
 
   const renderPagination = (processChainList: DagDetailsResponse) => {
-    if (!defaultPageSize || !processChainList) return null;
+    if (
+      !defaultPageSize ||
+      !processChainList ||
+      processChainList?.dags?.length == 0
+    )
+      return null;
 
     const totalPages = Math.ceil(
       processChainList?.dags?.length / defaultPageSize
@@ -39,25 +44,27 @@ export default function ProcessChainList() {
     );
 
     return (
-      <div className="flex justify-between items-center">
-        <div>
+      <div className="flex justify-end items-center mt-4">
+        <div className="mr-4">
           Showing {startItem} – {endItem} of {processChainList.dags?.length}
         </div>
         <div className="flex">
-          <button
-            className="bg-prim hover:bg-green-900  border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer"
+          <Button
+            className="bg-prim hover:bg-green-900  border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
+            size="xs"
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
           >
             &larr; Prev
-          </button>
-          <button
+          </Button>
+          <Button
             className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4  focus:outline-none cursor-pointer"
+            size="xs"
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}
           >
             Next &rarr;
-          </button>
+          </Button>
         </div>
       </div>
     );
