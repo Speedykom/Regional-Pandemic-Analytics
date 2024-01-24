@@ -69,32 +69,36 @@ export const MyPipelines = () => {
     });
 
   const renderPagination = () => {
-    if (!defaultPageSize || !data) return null;
+    // eslint-disable-next-line no-console
+    console.log(data?.data);
+    if (!defaultPageSize || !data?.data || data?.data?.length == 0) return null;
 
     const totalPages = Math.ceil(data.data.length / defaultPageSize);
     const startItem = (currentPage - 1) * defaultPageSize + 1;
     const endItem = Math.min(currentPage * defaultPageSize, data.data.length);
 
     return (
-      <div className="flex justify-between items-center">
-        <div>
+      <div className="flex justify-end items-center mt-4">
+        <div className="mr-4">
           Showing {startItem} – {endItem} of {data?.data?.length}
         </div>
         <div className="flex">
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l focus:outline-none"
+          <Button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 focus:outline-none mr-2"
+            size="xs"
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
           >
             &larr; Prev
-          </button>
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r focus:outline-none"
+          </Button>
+          <Button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 focus:outline-none"
+            size="xs"
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}
           >
             Next &rarr;
-          </button>
+          </Button>
         </div>
       </div>
     );
