@@ -3,7 +3,6 @@ import { Button, TextInput } from '@tremor/react';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { useCreatePipelineMutation } from '../pipeline';
-
 interface AddPipelineProps {
   state: boolean;
   onClose: () => void;
@@ -21,19 +20,14 @@ export const AddPipeline = ({
     register,
     handleSubmit,
     reset,
+    setError,
+    clearErrors,
     formState: { errors },
-  } = useForm();
+  } = useForm({ mode: 'onChange' });
   const [addPipeline, { isLoading }] = useCreatePipelineMutation();
   const isWhitespace = /\s/;
 
   const onFinish = (value: any) => {
-    if (isWhitespace.test(value?.name)) {
-      toast.error('Pipeline name cannot contain whitespaces', {
-        position: 'top-right',
-      });
-
-      return;
-    }
     addPipeline({ ...value, template: template.name }).then((res: any) => {
       if (res.error) {
         const { data } = res.error;
@@ -56,11 +50,23 @@ export const AddPipeline = ({
     onClose();
   };
 
+  const handleValueChange = (value: string) => {
+    if (isWhitespace.test(value)) {
+      setError('name', {
+        type: 'pattern',
+        message: 'Pipeline name cannot contain whitespaces',
+      });
+    } else {
+      clearErrors('name');
+    }
+  };
+
   const footer = (
     <div className="flex justify-start space-x-2 px-3 mb-3">
       <Button
         type="submit"
         loading={isLoading}
+        disabled={!!errors.name || !!errors.description}
         className="bg-prim text-white border-0 hover:bg-prim-hover"
         onClick={handleSubmit((values: any) => onFinish(values))}
       >
@@ -95,10 +101,19 @@ export const AddPipeline = ({
             </label>
             <TextInput
               {...register('name', {
-                required: true,
+                required: {
+                  value: true,
+                  message: 'Please enter a pipeline name',
+                },
+                pattern: {
+                  value: /^\S*$/,
+                  message: 'Pipeline name cannot contain whitespaces',
+                },
+                onChange: (event: any) =>
+                  handleValueChange(event.target?.value),
               })}
               error={!!errors.name}
-              errorMessage={errors.name ? 'Please input pipeline name' : ''}
+              errorMessage={errors?.name?.message?.toString()}
               type="text"
               className="w-full h-12"
               placeholder="Enter Name"
