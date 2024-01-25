@@ -35,7 +35,12 @@ export default function ProcessCard({
 
   return (
     <div className="mb-2">
-      <Accordion defaultOpen={true}>
+      <Accordion
+        defaultOpen={true}
+        onClick={() => {
+          setOpen(!open);
+        }}
+      >
         <Disclosure.Button
           disabled={true}
           as="div"
