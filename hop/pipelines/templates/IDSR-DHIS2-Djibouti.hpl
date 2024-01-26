@@ -891,7 +891,7 @@ This is a prerequisite to make this pipeline working</note>
       <meta>
         <name>displayName</name>
         <rename>displayName</rename>
-        <type>None</type>
+        <type>String</type>
         <length>-2</length>
         <precision>-2</precision>
         <conversion_mask/>
