@@ -272,7 +272,7 @@ This is a prerequisite to make this pipeline working</note>
       <field>
         <length>-1</length>
         <name>diseases</name>
-        <nullif>https://snis-dhis2.gouv.dj/dhis/api/dataElements?filter=name:like:Paludisme&amp;filter=name:like:Rougeole&amp;filter=name:like:M%C3%A9ningite&amp;filter=name:like:Dengue&amp;filter=name:like:Diarr&amp;filter=name:like:grippal&amp;filter=name:like:Gale&amp;rootJunction=OR&amp;paging=false</nullif>
+        <nullif>https://snis-dhis2.gouv.dj/dhis/api/dataElements.json?filter=name:like:Paludisme&amp;filter=name:like:Rougeole&amp;filter=name:like:M%C3%A9ningite&amp;filter=name:like:Dengue&amp;filter=name:like:Diarr&amp;filter=name:like:grippal&amp;filter=name:like:Gale&amp;rootJunction=OR&amp;paging=false</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
@@ -280,7 +280,7 @@ This is a prerequisite to make this pipeline working</note>
       <field>
         <length>-1</length>
         <name>orgunits</name>
-        <nullif>https://snis-dhis2.gouv.dj/dhis/api/organisationUnits?level=2&amp;fields=id,name,geometry,parent[id,name]&amp;paging=false</nullif>
+        <nullif>https://snis-dhis2.gouv.dj/dhis/api/organisationUnits.json?level=2&amp;fields=id,name,geometry,parent[id,name]&amp;paging=false</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
@@ -881,11 +881,30 @@ This is a prerequisite to make this pipeline working</note>
     <fields>
       <field>
         <name>id</name>
+        <rename/>
       </field>
       <field>
         <name>displayName</name>
+        <rename/>
       </field>
       <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>displayName</name>
+        <rename>displayName</rename>
+        <type>None</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <date_format_locale/>
+        <date_format_timezone/>
+        <lenient_string_to_number>false</lenient_string_to_number>
+        <encoding>UTF-8</encoding>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>
     </fields>
     <attributes/>
     <GUI>
@@ -992,27 +1011,21 @@ This is a prerequisite to make this pipeline working</note>
     <fields>
       <field>
         <name>date</name>
-        <rename/>
       </field>
       <field>
         <name>displayName</name>
-        <rename/>
       </field>
       <field>
         <name>Cases</name>
-        <rename/>
       </field>
       <field>
         <name>orgUnitsLevel2DisplayName</name>
-        <rename/>
       </field>
       <field>
         <name>orgUnitsLevel2Geometry</name>
-        <rename/>
       </field>
       <field>
         <name>orgUnitsLevel1DisplayName</name>
-        <rename/>
       </field>
       <select_unspecified>N</select_unspecified>
       <meta>
