@@ -20,6 +20,7 @@ import { AddPipeline } from './add';
 import { TemplateModal } from './template-modal';
 import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
+import { skipToken } from '@reduxjs/toolkit/query/react';
 
 export const MyPipelines = () => {
   const router = useRouter();
@@ -51,10 +52,13 @@ export const MyPipelines = () => {
 
   const { data, refetch } = useGetAllPipelinesQuery(searchInput);
 
-  const [selectedPipeline, setSelectedPipeline] = useState<string>('Total');
-  const { data: downloadData } = useDownloadPipelineQuery(selectedPipeline, {
-    refetchOnMountOrArgChange: true,
-  });
+  const [selectedPipeline, setSelectedPipeline] = useState<string>('');
+  const { data: downloadData } = useDownloadPipelineQuery(
+    selectedPipeline && selectedPipeline !== '' ? selectedPipeline : skipToken,
+    {
+      refetchOnMountOrArgChange: true,
+    }
+  );
 
   const showConfirmModal = () =>
     showModal({
@@ -116,7 +120,7 @@ export const MyPipelines = () => {
               </TableCell>
             </MediaQuery>
             <TableCell>
-              <div className="flex space-x-2 justify-end">
+              <div>
                 <Button
                   onClick={() =>
                     router.push(`/pipelines/${encodeURIComponent(item?.name)}`)
