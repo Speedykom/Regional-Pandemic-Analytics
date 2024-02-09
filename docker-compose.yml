@@ -219,8 +219,8 @@ services:
       - KEYCLOAK_REDIRECT_URI=${BACKEND_PUBLIC_URL}
       - APP_REALM=${BACKEND_APP_REALM}
       - APP_CLIENT_ID=${BACKEND_APP_CLIENT_ID}
-      - HOPE_PIPELINE_PATH=${BACKEND_HOPE_PIPELINE_PATH}
-      - HOPE_TEMPLATE_PATH=${BACKEND_HOPE_TEMPLATE_PATH}
+      - HOP_PIPELINE_PATH=${BACKEND_HOP_PIPELINE_PATH}
+      - HOP_TEMPLATE_PATH=${BACKEND_HOP_TEMPLATE_PATH}
       - APP_USER_BASE_URL=${BACKEND_APP_USER_BASE_URL}
       - BASE_URL=${BACKEND_BASE_URL}
       - APP_SECRET_KEY=${BACKEND_APP_SECRET_KEY}
@@ -388,7 +388,7 @@ services:
       - SUPERSET_JWT_USER_MAPPING=${SUPERSET_JWT_USER_MAPPING}
     volumes:
       - ./superset/superset_config.py:/app/pythonpath/superset_config.py
-      - ./superset/import/dashboard_export_20231007.zip:/app/dashboard_export_20231007.zip
+      - ./superset/import/dashboard_export_20240128.zip:/app/dashboard_export_20240128.zip
     depends_on:
       - superset_db
       - superset_cache
@@ -400,7 +400,7 @@ services:
         superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
         superset db upgrade
         superset superset init
-        superset import-dashboards -p /app/dashboard_export_20231007.zip
+        superset import-dashboards -p /app/dashboard_export_20240128.zip
         cd /usr/bin && ./run-server.sh
 
   # =====
