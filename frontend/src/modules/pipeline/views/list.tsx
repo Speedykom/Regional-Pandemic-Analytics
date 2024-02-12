@@ -164,6 +164,12 @@ export const MyPipelines = () => {
               >
                 {t('view')}
               </Button>
+              <Icon
+                onClick={() => downloadPipeline(item?.name)}
+                size="lg"
+                icon={ArrowDownTrayIcon}
+                tooltip="Download"
+              />
             </div>
           </TableCell>
         </TableRow>
