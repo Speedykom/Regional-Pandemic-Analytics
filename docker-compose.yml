@@ -101,6 +101,7 @@ x-superset-common: &superset
     - SUPERSET_JWT_USER_MAPPING=${SUPERSET_JWT_USER_MAPPING}
   volumes:
     - ./superset/superset_config.py:/app/pythonpath/superset_config.py
+    - ./superset/import/dashboard_export.zip:/app/dashboard_export.zip
   depends_on:
     - superset_db
     - superset_cache
