@@ -46,7 +46,7 @@ export default function ProcessCard({
           as="div"
           className="w-full flex items-center justify-between text-tremor-content-emphasis pr-9 rounded-lg"
         >
-          <div className="w-full flex justify-between items-center">
+          <div className="flex justify-between items-center">
             <div className="flex space-x-10 ml-3">
               <div>
                 <div className="mb-2 text-xs font-bold">
