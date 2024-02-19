@@ -24,18 +24,21 @@ export const MenuData = [
       {
         title: 'home',
         href: '/home',
+        id: 'home',
         icon: BiHome,
         scope: '',
       },
       {
         title: 'dashboards',
         href: '/dashboards',
+        id: 'dashboards',
         icon: BiTable,
         scope: 'dashboard:read',
       },
       {
         title: 'charts',
         href: '/charts',
+        id: 'charts',
         icon: BiChart,
         scope: 'chart:read',
       },
@@ -47,6 +50,7 @@ export const MenuData = [
       {
         title: 'processChains',
         href: 'process-chains',
+        id: 'process-chains',
         icon: BiGitPullRequest,
         scope: 'process:read',
       },
@@ -54,6 +58,7 @@ export const MenuData = [
       {
         title: 'pipelines',
         href: '/pipelines',
+        id: 'pipelines',
         icon: BiGitMerge,
         scope: 'pipeline:read',
       },
@@ -65,6 +70,7 @@ export const MenuData = [
       {
         title: 'accounts',
         href: '/users',
+        id: 'accounts',
         icon: BiUser,
         scope: 'user:read',
       },
@@ -96,7 +102,7 @@ export const SideNavLinks = (prop: MenuProps) => {
                 key={item.title}
                 href={item.href}
                 activeClassName="bg-prim text-white hover:bg-prim-hover"
-                className="hover:bg-gray-400/40 px-4 py-3 flex w-full cursor-pointer"
+                className={`hover:bg-gray-400/40 px-4 py-3 flex w-full cursor-pointer ${item?.id}`}
               >
                 <item.icon className="text-lg" />
 

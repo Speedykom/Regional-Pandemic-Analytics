@@ -11,6 +11,8 @@ import { AuthProvider } from '@/common/hooks/use-auth';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../i18n';
 
+const Tour = dynamic(() => import('../common/components/Tour'), { ssr: false });
+
 function CsrApp({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
@@ -32,6 +34,7 @@ function CsrApp({ Component, pageProps }: AppProps) {
           </ConfigProvider>
         </AuthProvider>
       </ModalProvider>
+      <Tour />
     </Provider>
   );
 }
