@@ -54,7 +54,7 @@ export const MyPipelines = () => {
 
   const [selectedPipeline, setSelectedPipeline] = useState<string>('');
   const { data: downloadData } = useDownloadPipelineQuery(
-    selectedPipeline && selectedPipeline !== '' ? selectedPipeline : skipToken,
+    selectedPipeline || skipToken,
     {
       refetchOnMountOrArgChange: true,
     }
@@ -109,43 +109,13 @@ export const MyPipelines = () => {
   };
 
   const renderTableData = () => {
-    if (!defaultPageSize) {
-      return data?.data.map((item, index) => {
-        return (
-          <TableRow key={index}>
-            <TableCell className="font-sans">{item?.name}</TableCell>
-            <MediaQuery minWidth={1090}>
-              <TableCell className="whitespace-normal">
-                {item?.description}
-              </TableCell>
-            </MediaQuery>
-            <TableCell>
-              <div>
-                <Button
-                  onClick={() =>
-                    router.push(`/pipelines/${encodeURIComponent(item?.name)}`)
-                  }
-                  className="hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white"
-                >
-                  {t('view')}
-                </Button>
-                <Icon
-                  onClick={() => downloadPipeline(item?.name)}
-                  size="lg"
-                  icon={ArrowDownTrayIcon}
-                  tooltip="Download"
-                />
-              </div>
-            </TableCell>
-          </TableRow>
-        );
-      });
-    }
-
     const startIndex = (currentPage - 1) * defaultPageSize;
     const endIndex = startIndex + defaultPageSize;
+    const visiblePipelines = defaultPageSize
+      ? data?.data.slice(startIndex, endIndex)
+      : data?.data;
 
-    return data?.data.slice(startIndex, endIndex).map((item, index) => {
+    return visiblePipelines?.map((item, index) => {
       return (
         <TableRow key={index}>
           <TableCell className="font-sans">{item?.name}</TableCell>
