@@ -52,7 +52,13 @@ export default function Stepper({
   return (
     <div>
       <TabGroup>
-        <TabList className="pl-40 pr-40 flex justify-around" color="green">
+        <TabList
+          className="pl-40 pr-40 flex justify-around"
+          color="green"
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent the event from reaching the Card component
+          }}
+        >
           {steps.map((step) => {
             return (
               <Tab key={step.title} className="px-5">
