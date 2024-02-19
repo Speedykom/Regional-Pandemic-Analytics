@@ -280,6 +280,7 @@ services:
       - DB_PORT=${BACKEND_DB_PORT}
       - DATABASE_URL=${BACKEND_DATABASE_URL}
       - SUPERSET_BASE_URL=${BACKEND_SUPERSET_BASE_URL}
+      - SUPERSET_PUBLIC_URL=${BACKEND_SUPERSET_PUBLIC_URL}
       - SUPERSET_LOGIN=${BACKEND_SUPERSET_LOGIN}
       - SUPERSET_USER=${BACKEND_SUPERSET_USER}
       - SUPERSET_PASS=${BACKEND_SUPERSET_PASS}
@@ -406,7 +407,7 @@ services:
         superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
         superset db upgrade
         superset superset init
-        superset import-dashboards -p /app/dashboard_export_20240128.zip
+        superset import-dashboards -p /app/dashboard_export.zip
         cd /usr/bin && ./run-server.sh
 
   superset_worker:
