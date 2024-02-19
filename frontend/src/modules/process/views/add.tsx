@@ -138,6 +138,7 @@ export const AddProcess = ({
                 return (
                   <DatePicker
                     {...rest}
+                    minDate={new Date()}
                     onValueChange={(v) => {
                       // the backend is using python 3.9 and it does not support iso string with milliseconds
                       setValue('date', v);
