@@ -34,32 +34,37 @@ export default function ProcessCard({
   const dateProcess = new Date(process.start_date);
 
   return (
-    <div>
-      <Accordion defaultOpen={true}>
+    <div className="mb-2">
+      <Accordion
+        defaultOpen={true}
+        onClick={() => {
+          setOpen(!open);
+        }}
+      >
         <Disclosure.Button
           disabled={true}
           as="div"
-          className="w-full flex items-center justify-between text-tremor-content-emphasis pr-9 m-3"
+          className="w-full flex items-center justify-between text-tremor-content-emphasis pr-9 rounded-lg"
         >
-          <div className="w-fulL flex justify-between items-center">
-            <span className="flex space-x-10 ml-3">
-              <span>
+          <div className="flex justify-between items-center">
+            <div className="flex space-x-10 ml-3">
+              <div>
                 <div className="mb-2 text-xs font-bold">
                   {t('addProcess.name')}
                 </div>
                 <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
                   {process.name}
                 </Badge>
-              </span>
-              <span>
+              </div>
+              <div>
                 <div className="mb-2 text-xs font-bold">
                   {t('addProcess.scheduleIntervalLabel')}
                 </div>
                 <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
                   {process.schedule_interval}
                 </Badge>
-              </span>
-              <span>
+              </div>
+              <div>
                 <div className="mb-2 text-xs font-bold">
                   {t('addProcess.status')}
                 </div>
@@ -72,9 +77,9 @@ export default function ProcessCard({
                     <span>{t('addProcess.active')}</span>
                   </Badge>
                 )}
-              </span>
-            </span>
-            <span className="flex space-x-3 p-3 mr-7">
+              </div>
+            </div>
+            <div className="flex space-x-3 p-3 mt-4">
               {!process.status && (
                 <Button
                   variant="secondary"
@@ -113,8 +118,9 @@ export default function ProcessCard({
                   {t('addProcess.disable')}{' '}
                 </Button>
               )}
-            </span>
-
+            </div>
+          </div>
+          <div>
             <ChevronRightIcon
               className={
                 open ? 'ui-open:rotate-90 transform w-4' : 'transform w-4'
