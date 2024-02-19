@@ -13,7 +13,7 @@ class AirflowInstance:
     username = os.getenv("AIRFLOW_USER")
     password = os.getenv("AIRFLOW_PASSWORD")
 
-SupersetUrl = os.getenv("SUPERSET_BASE_URL")
+SupersetUrl = os.getenv("SUPERSET_PUBLIC_URL")
 
 class DagDTO:
     factory_id = "FACTORY"
@@ -313,7 +313,7 @@ class ProcessView(ViewSet):
             True,
             [
                 dataset_id,
-                f"${SupersetUrl}{dataset_url}"
+                f"{SupersetUrl}{dataset_url}"
             ]
         ]
 
