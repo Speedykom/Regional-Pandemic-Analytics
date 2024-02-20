@@ -50,7 +50,11 @@ export default function Stepper({
   ];
 
   return (
-    <div>
+    <div
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent the event from reaching the Card component
+      }}
+    >
       <TabGroup>
         <TabList className="pl-40 pr-40 flex justify-around" color="green">
           {steps.map((step) => {
