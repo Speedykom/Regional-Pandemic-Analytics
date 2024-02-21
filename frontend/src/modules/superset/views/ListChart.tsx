@@ -8,6 +8,7 @@ import {
   TableRow,
   Text,
 } from '@tremor/react';
+import Link from 'next/link';
 import MediaQuery from 'react-responsive';
 import { useGetChartsQuery } from '../superset';
 import { useTranslation } from 'react-i18next';
@@ -185,7 +186,15 @@ export const ProcessChainChartList = ({ dagId }: ProcessChainChartProps) => {
               {processChainCharts?.result.map((item: any, index: any) => (
                 <TableRow key={index}>
                   <TableCell>
-                    <Text className="font-sans">{item.slice_name}</Text>
+                    <Link
+                      style={{ textDecoration: 'underline' }}
+                      href={
+                        process.env.NEXT_PUBLIC_SUPERSET_URL + item.slice_url
+                      }
+                      target="_blank"
+                    >
+                      {item.slice_name}
+                    </Link>
                   </TableCell>
                   <MediaQuery minWidth={768}>
                     <TableCell className="">
