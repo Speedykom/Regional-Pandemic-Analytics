@@ -1,13 +1,22 @@
+import logging
+import re
 import requests
 import os
 from rest_framework.response import Response
+from django.http import StreamingHttpResponse
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from . import auths
+from keycloak import KeycloakPostError
 
+class SupersetAPI(APIView):
+    def authorize(self, headers):
+        token = auths.get_auth_token()
+        headers['Authorization'] = f"Bearer {token['access_token']}"
+        return headers
 
-class ListDashboardsAPI(APIView):
+class ListDashboardsAPI(SupersetAPI):
     """
     API view to superset dashboards
     """
@@ -18,21 +27,16 @@ class ListDashboardsAPI(APIView):
 
     def get(self, request, query=None):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/"
-        headers = {
+        headers = self.authorize({
             "Content-Type": "application/json",
-            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
-                "Bearer ", ""
-            ),
-        }
+        })
         if query:
             params = {
-                "q": '{"filters": [{"col": "published", "opr": "eq", "value": "true"},{"col": "dashboard_title", "opr": "ct", "value": "'+query+'"}]}'
+                "q": '{"filters": [{"col": "dashboard_title", "opr": "ct", "value": "'+query+'"}]}'
             }
             superset_response = requests.get(url=url, headers=headers, params=params)
         else:
-            params = {
-                "q": '{"filters": [{"col": "published", "opr": "eq", "value": "true"}]}'
-            }
+            params = {}
             superset_response = requests.get(url=url, headers=headers, params=params)
 
         if superset_response.status_code != 200:
@@ -44,7 +48,7 @@ class ListDashboardsAPI(APIView):
         return Response(superset_response.json(), status=status.HTTP_200_OK)
 
 
-class ListChartsAPI(APIView):
+class ListChartsAPI(SupersetAPI):
     """
     API view to superset charts
     """
@@ -55,12 +59,9 @@ class ListChartsAPI(APIView):
 
     def get(self, request, query=None):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/chart/"
-        headers = {
+        headers = self.authorize({
             "Content-Type": "application/json",
-            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
-                "Bearer ", ""
-            ),
-        }
+        })
 
         if query:
             params = {
@@ -79,7 +80,7 @@ class ListChartsAPI(APIView):
         return Response(response.json(), status=status.HTTP_200_OK)
 
 
-class EnableEmbed(APIView):
+class EnableEmbed(SupersetAPI):
     """
     API view to enable superset dashboard embed
     """
@@ -93,12 +94,9 @@ class EnableEmbed(APIView):
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{uid}/embedded"
 
-        headers = {
+        headers = self.authorize({
             "Content-Type": "application/json",
-            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
-                "Bearer ", ""
-            ),
-        }
+        })
 
         response = requests.post(
             url,
@@ -114,7 +112,7 @@ class EnableEmbed(APIView):
         return Response(response.json(), status=status.HTTP_200_OK)  # result.uuid
 
 
-class GetEmbeddable(APIView):
+class GetEmbeddable(SupersetAPI):
     """
     API view to get embedable superset dashboard
     """
@@ -126,18 +124,37 @@ class GetEmbeddable(APIView):
     def get(self, request, *args, **kwargs):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['id']}/embedded"
 
-        headers = {
-            "Content-Type": "application/json",
-            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
-                "Bearer ", ""
-            ),
-        }
+        headers = self.authorize({})
 
         response = requests.get(url, headers=headers)
 
         return Response(response.json(), status=response.status_code)  # result.uuid
 
-class GetFavoriteStatus(APIView):
+class GetThumbnail(SupersetAPI):
+    keycloak_scopes = {
+        "GET": "dashboard:read",
+    }
+
+    def get(self, request, *args, **kwargs):
+        superset_base_url = os.getenv('SUPERSET_BASE_URL')
+        dashboardMetaUrl = f"{superset_base_url}/dashboard/{kwargs['id']}"
+        headers = self.authorize({})
+        metaDataResponse = requests.get(dashboardMetaUrl, headers=headers)
+        if metaDataResponse.ok:
+            thumbnail_url = metaDataResponse.json()['result']['thumbnail_url']
+        if thumbnail_url == None:
+            logging.error("Failed to identify thumbnail URL (status code %d)", metaDataResponse.status_code)
+            return Response({ "errorMessage": "Dashboard not found or no thumbnail available" }, status=metaDataResponse.status_code)
+
+        superset_root_url = re.search(r"^(.*?)(?:/api/v\d+)?$", superset_base_url).group(1)
+        thumbnail_response = requests.get(f"{superset_root_url}{thumbnail_url}", headers=headers, stream=True)
+        if not thumbnail_response.ok:
+            logging.error("Failed to read thumbnail (status code %d)", thumbnail_response.status_code)
+            return Response({ "errorMessage": "Failed to read thumbnail from Superset" }, status=thumbnail_response.status_code)
+
+        return StreamingHttpResponse(thumbnail_response.iter_content(chunk_size=None), status=200, content_type=thumbnail_response.headers.get('Content-Type'))
+
+class GetFavoriteStatus(SupersetAPI):
     """
     API view to get dashboard favorite status for the current user
     """
@@ -151,17 +168,12 @@ class GetFavoriteStatus(APIView):
             return Response({"result": "No favorite dashboard were provided"}, status=status.HTTP_400_BAD_REQUEST)
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/favorite_status/?q={query}"
-        headers = {
-            "Content-Type": "application/json",
-            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
-                "Bearer ", ""
-            ),
-        }
+        headers = self.authorize({})
 
         response = requests.get(url, headers=headers)
         return Response(response.json(), status=response.status_code)  # result.uuid
 
-class AddFavorite(APIView):
+class AddFavorite(SupersetAPI):
     """
     API view to add a superset dashboard to favorites
     """
@@ -174,12 +186,9 @@ class AddFavorite(APIView):
         id = request.data.get("id", None)
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{id}/favorites/"
-        headers = {
+        headers = self.authorize({
             "Content-Type": "application/json",
-            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
-                "Bearer ", ""
-            ),
-        }
+        })
 
         response = requests.post(
             url,
@@ -193,8 +202,8 @@ class AddFavorite(APIView):
             )
 
         return Response(response.json(), status=status.HTTP_200_OK)
-    
-class RemoveFavorite(APIView):
+
+class RemoveFavorite(SupersetAPI):
     """
     API view to remove a superset dashboard from favorites
     """
@@ -207,12 +216,9 @@ class RemoveFavorite(APIView):
         id = request.data.get("id", None)
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{id}/favorites/"
-        headers = {
+        headers = self.authorize({
             "Content-Type": "application/json",
-            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
-                "Bearer ", ""
-            ),
-        }
+        })
 
         response = requests.delete(
             url,
@@ -226,7 +232,7 @@ class RemoveFavorite(APIView):
 
         return Response(response.json(), status=status.HTTP_200_OK)
 
-class GuestTokenApi(APIView):
+class GuestTokenApi(SupersetAPI):
     """
     API view to get superset guest token
     """
@@ -237,12 +243,9 @@ class GuestTokenApi(APIView):
 
     def post(self, request):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/security/guest_token/"
-        headers = {
+        headers = self.authorize({
             "Content-Type": "application/json",
-            "X-KeycloakToken": request.META["HTTP_AUTHORIZATION"].replace(
-                "Bearer ", ""
-            ),
-        }
+        })
 
         payload = {
             "user": {
@@ -264,7 +267,7 @@ class GuestTokenApi(APIView):
         return Response(response.json(), status=status.HTTP_200_OK)
 
 
-class CsrfTokenApi(APIView):
+class CsrfTokenApi(SupersetAPI):
     """
     API view to get superset csrf token
     """
@@ -276,16 +279,16 @@ class CsrfTokenApi(APIView):
     def get(self, request):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/security/csrf_token/"
 
-        auth_response = auths.get_auth_token()
-
-        if auth_response["status"] != 200:
+        try:
+            auth_token = auths.get_auth_token()
+        except KeycloakPostError as err:
             return {
-                "status": auth_response["status"],
-                "message": auth_response["message"],
+                "status": err.response_code,
+                "message": err.error_message
             }
 
         headers = {
-            "Authorization": f"Bearer {auth_response['token']['access_token']}",
+            "Authorization": f"Bearer {auth_token['access_token']}",
         }
 
         response = requests.get(url=url, headers=headers)
