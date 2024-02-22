@@ -38,6 +38,14 @@ export const dashboardApi = createApi({
       }),
     }),
 
+    getDashboardThumbnail: builder.query<any, string>({
+      query: (id) => ({
+        url: `/superset/dashboard/${id}/thumbnail`,
+        responseHandler: async (response) =>
+          URL.createObjectURL(await response.blob()),
+      }),
+    }),
+
     generateGuestToken: builder.mutation<{ token: string }, string>({
       query: (id) => ({
         url: `/superset/guest/token`,
@@ -62,6 +70,7 @@ export const {
   useGetDashboardsQuery,
   useGetFavoriteDashboardsQuery,
   useEnableDashboardMutation,
+  useGetDashboardThumbnailQuery,
   useGenerateGuestTokenMutation,
   useAddDashboardToFavoritesMutation,
   useRemoveDashboardFromFavoritesMutation,

@@ -85,6 +85,29 @@ x-airflow-common: &airflow
     - /var/run/docker.sock:/var/run/docker.sock
     - ./hop:/hop
 
+x-superset-common: &superset
+  build: ./superset/.
+  environment:
+    - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
+    - SUPERSET_DATABASE_URI=${SUPERSET_DATABASE_URI}
+    - SUPERSET_KEYCLOAK_APP_REALM=${SUPERSET_KEYCLOAK_APP_REALM}
+    - SUPERSET_KEYCLOAK_CLIENT_ID=${SUPERSET_KEYCLOAK_CLIENT_ID}
+    - SUPERSET_KEYCLOAK_CLIENT_SECRET=${SUPERSET_KEYCLOAK_CLIENT_SECRET}
+    - SUPERSET_KEYCLOAK_EXTERNAL_URL=${SUPERSET_KEYCLOAK_EXTERNAL_URL}
+    - SUPERSET_KEYCLOAK_INTERNAL_URL=${SUPERSET_KEYCLOAK_INTERNAL_URL}
+    - SUPERSET_KEYCLOAK_ADMIN_USERNAME=${SUPERSET_KEYCLOAK_ADMIN_USERNAME}
+    - SUPERSET_KEYCLOAK_ADMIN_PASSWORD=${SUPERSET_KEYCLOAK_ADMIN_PASSWORD}
+    - SUPERSET_FEATURE_EMBEDDED_SUPERSET=True
+    - SUPERSET_JWT_USER_MAPPING=${SUPERSET_JWT_USER_MAPPING}
+  volumes:
+    - ./superset/superset_config.py:/app/pythonpath/superset_config.py
+    - ./superset/import/dashboard_export_20240128.zip:/app/dashboard_export_20240128.zip
+  depends_on:
+    - superset_db
+    - superset_cache
+  restart: always
+
+
 volumes:
   superset_data: {}
   metadata_data: {}
@@ -163,6 +186,7 @@ services:
         - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
         - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
         - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
+        - NEXT_PUBLIC_SUPERSET_GUEST_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_GUEST_URL}
         - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
         - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
         - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
@@ -171,6 +195,7 @@ services:
       - NEXT_PRIVATE_BASE_URL=${FRONTEND_NEXT_PRIVATE_BASE_URL}
       - NEXT_PUBLIC_BASE_URL=${FRONTEND_NEXT_PUBLIC_BASE_URL}
       - NEXT_PUBLIC_SUPERSET_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_URL}
+      - NEXT_PUBLIC_SUPERSET_GUEST_URL=${FRONTEND_NEXT_PUBLIC_SUPERSET_GUEST_URL}
       - NEXT_PUBLIC_KEYCLOAK_URL=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_URL}
       - NEXT_PUBLIC_KEYCLOAK_REALM=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_REALM}
       - NEXT_PUBLIC_KEYCLOAK_CLIENT_ID=${FRONTEND_NEXT_PUBLIC_KEYCLOAK_CLIENT_ID}
@@ -373,27 +398,8 @@ services:
       - POSTGRES_DB=${SUPERSET_POSTGRES_DB}
 
   superset:
+    <<: *superset
     container_name: superset
-    build: ./superset/.
-    environment:
-      - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
-      - SUPERSET_DATABASE_URI=${SUPERSET_DATABASE_URI}
-      - SUPERSET_KEYCLOAK_APP_REALM=${SUPERSET_KEYCLOAK_APP_REALM}
-      - SUPERSET_KEYCLOAK_CLIENT_ID=${SUPERSET_KEYCLOAK_CLIENT_ID}
-      - SUPERSET_KEYCLOAK_CLIENT_SECRET=${SUPERSET_KEYCLOAK_CLIENT_SECRET}
-      - SUPERSET_KEYCLOAK_EXTERNAL_URL=${SUPERSET_KEYCLOAK_EXTERNAL_URL}
-      - SUPERSET_KEYCLOAK_INTERNAL_URL=${SUPERSET_KEYCLOAK_INTERNAL_URL}
-      - SUPERSET_KEYCLOAK_ADMIN_USERNAME=${SUPERSET_KEYCLOAK_ADMIN_USERNAME}
-      - SUPERSET_KEYCLOAK_ADMIN_PASSWORD=${SUPERSET_KEYCLOAK_ADMIN_PASSWORD}
-      - SUPERSET_FEATURE_EMBEDDED_SUPERSET=True
-      - SUPERSET_JWT_USER_MAPPING=${SUPERSET_JWT_USER_MAPPING}
-    volumes:
-      - ./superset/superset_config.py:/app/pythonpath/superset_config.py
-      - ./superset/import/dashboard_export.zip:/app/dashboard_export.zip
-    depends_on:
-      - superset_db
-      - superset_cache
-    restart: always
     entrypoint: /bin/bash
     command:
       - -c
@@ -403,6 +409,14 @@ services:
         superset superset init
         superset import-dashboards -p /app/dashboard_export.zip
         cd /usr/bin && ./run-server.sh
+
+  superset_worker:
+    <<: *superset
+    container_name: superset-worker
+    shm_size: 2g
+    depends_on:
+      - superset
+    command: 'celery --app=superset.tasks.celery_app:app worker --pool=prefork --max-tasks-per-child=128 -O fair'
 
   # =====
   #  Hop
@@ -509,6 +523,9 @@ services:
       - start-dev
       - --import-realm
       - --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true
+      - -Dkeycloak.profile.feature.token_exchange=enabled
+      - -Dkeycloak.profile.feature.account_api=enabled
+      - -Dkeycloak.profile.feature.admin_fine_grained_authz=enabled
     environment:
       - KC_DB=${KEYCLOAK_DB}
       - KC_DB_URL_DATABASE=${KEYCLOAK_DB_URL_DATABASE}

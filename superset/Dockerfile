@@ -1,4 +1,8 @@
 FROM apache/superset:3.0.2
-RUN pip install Authlib
-RUN pip install python-keycloak
-RUN pip install psycopg2
+RUN pip --no-cache-dir install Authlib  python-keycloak 'apache-superset[druid]' 'apache-superset[excel]' 'apache-superset[postgres]' 'apache-superset[prophet]' 'apache-superset[thumbnails]'
+
+USER root
+RUN apt update \
+    && apt install -y chromium-driver chromium-l10n \
+    && apt clean
+USER superset

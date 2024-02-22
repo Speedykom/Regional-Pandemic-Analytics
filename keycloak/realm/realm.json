@@ -918,7 +918,10 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "secret": "${AIRFLOW_KEYCLOAK_CLIENT_SECRET}",
-      "redirectUris": ["http://${NGINX_AIRFLOW_DOMAIN_NAME}/*", "https://${NGINX_AIRFLOW_DOMAIN_NAME}/*"],
+      "redirectUris": [
+        "http://${NGINX_AIRFLOW_DOMAIN_NAME}/*",
+        "https://${NGINX_AIRFLOW_DOMAIN_NAME}/*"
+      ],
       "webOrigins": [],
       "notBefore": 0,
       "bearerOnly": false,
@@ -1149,6 +1152,7 @@
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,
+      "authorizationServicesEnabled": true,
       "publicClient": false,
       "frontchannelLogout": false,
       "protocol": "openid-connect",
@@ -1168,7 +1172,494 @@
         "phone",
         "offline_access",
         "microprofile-jwt"
-      ]
+      ],
+      "authorizationSettings": {
+        "allowRemoteResourceManagement": false,
+        "policyEnforcementMode": "ENFORCING",
+        "resources": [
+          {
+            "name": "Users",
+            "ownerManagedAccess": false,
+            "attributes": {},
+            "_id": "73fb2c68-3ef3-4cdf-ab35-8c12036df0aa",
+            "uris": [],
+            "scopes": [
+              {
+                "name": "user-impersonated"
+              },
+              {
+                "name": "view"
+              },
+              {
+                "name": "manage-group-membership"
+              },
+              {
+                "name": "impersonate"
+              },
+              {
+                "name": "map-roles"
+              },
+              {
+                "name": "manage"
+              }
+            ]
+          },
+          {
+            "name": "client.resource.124138ae-d2f7-4d57-803c-4d239ba05e12",
+            "type": "Client",
+            "ownerManagedAccess": false,
+            "attributes": {},
+            "_id": "5ec1148a-ac2b-4b72-aac0-56960cc79396",
+            "uris": [],
+            "scopes": [
+              {
+                "name": "view"
+              },
+              {
+                "name": "map-roles-client-scope"
+              },
+              {
+                "name": "map-roles"
+              },
+              {
+                "name": "configure"
+              },
+              {
+                "name": "manage"
+              },
+              {
+                "name": "map-roles-composite"
+              },
+              {
+                "name": "token-exchange"
+              }
+            ]
+          },
+          {
+            "name": "client.resource.577fbdfe-f66d-4c21-adae-9f215c245f45",
+            "type": "Client",
+            "ownerManagedAccess": false,
+            "attributes": {},
+            "_id": "32bf9a56-1a42-4ff8-a25d-7d803a424676",
+            "uris": [],
+            "scopes": [
+              {
+                "name": "view"
+              },
+              {
+                "name": "map-roles-client-scope"
+              },
+              {
+                "name": "map-roles"
+              },
+              {
+                "name": "configure"
+              },
+              {
+                "name": "manage"
+              },
+              {
+                "name": "map-roles-composite"
+              },
+              {
+                "name": "token-exchange"
+              }
+            ]
+          },
+          {
+            "name": "client.resource.3891279e-4580-4d63-9234-06b05c2e59dc",
+            "type": "Client",
+            "ownerManagedAccess": false,
+            "attributes": {},
+            "_id": "bc8c208a-2c1d-4af2-9d88-a8d57e2be4c2",
+            "uris": [],
+            "scopes": [
+              {
+                "name": "view"
+              },
+              {
+                "name": "map-roles-client-scope"
+              },
+              {
+                "name": "map-roles"
+              },
+              {
+                "name": "configure"
+              },
+              {
+                "name": "manage"
+              },
+              {
+                "name": "map-roles-composite"
+              },
+              {
+                "name": "token-exchange"
+              }
+            ]
+          }
+        ],
+        "policies": [
+          {
+            "id": "10ebe55b-d92e-47fa-ab37-c99f7e4c4e08",
+            "name": "client-impersonators",
+            "description": "",
+            "type": "client",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "clients": "[\"airflow\",\"repan-staging\"]"
+            }
+          },
+          {
+            "id": "b7f00c23-0f3a-41bb-a16b-23d06ba0ccd7",
+            "name": "manage.permission.users",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"Users\"]",
+              "scopes": "[\"manage\"]"
+            }
+          },
+          {
+            "id": "433e33c2-52c4-4302-95f5-fe4d1d293013",
+            "name": "view.permission.users",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"Users\"]",
+              "scopes": "[\"view\"]"
+            }
+          },
+          {
+            "id": "a5f4dbac-5a87-4ddf-9f65-fefc508820fe",
+            "name": "map-roles.permission.users",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"Users\"]",
+              "scopes": "[\"map-roles\"]"
+            }
+          },
+          {
+            "id": "81009e32-86da-4892-b570-a952e836b95e",
+            "name": "manage-group-membership.permission.users",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"Users\"]",
+              "scopes": "[\"manage-group-membership\"]"
+            }
+          },
+          {
+            "id": "32593aea-a823-4d3e-a6fb-402d0d9f69ca",
+            "name": "user-impersonated.permission.users",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"Users\"]",
+              "scopes": "[\"user-impersonated\"]"
+            }
+          },
+          {
+            "id": "48172e90-2054-45fd-918b-dc9c7f397c4f",
+            "name": "admin-impersonating.permission.users",
+            "description": "",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"Users\"]",
+              "scopes": "[\"impersonate\"]",
+              "applyPolicies": "[\"client-impersonators\"]"
+            }
+          },
+          {
+            "id": "69a03775-c6b4-4a2b-ad32-8edb39449d6c",
+            "name": "manage.permission.client.577fbdfe-f66d-4c21-adae-9f215c245f45",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.577fbdfe-f66d-4c21-adae-9f215c245f45\"]",
+              "scopes": "[\"manage\"]"
+            }
+          },
+          {
+            "id": "c7c5d667-a1b1-4f4d-8783-1ef5f5847bcd",
+            "name": "configure.permission.client.577fbdfe-f66d-4c21-adae-9f215c245f45",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.577fbdfe-f66d-4c21-adae-9f215c245f45\"]",
+              "scopes": "[\"configure\"]"
+            }
+          },
+          {
+            "id": "344bb028-4a90-4266-967a-566031d84052",
+            "name": "view.permission.client.577fbdfe-f66d-4c21-adae-9f215c245f45",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.577fbdfe-f66d-4c21-adae-9f215c245f45\"]",
+              "scopes": "[\"view\"]"
+            }
+          },
+          {
+            "id": "5681055e-9e03-42ec-b5c5-8d6c3b3d05a2",
+            "name": "map-roles.permission.client.577fbdfe-f66d-4c21-adae-9f215c245f45",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.577fbdfe-f66d-4c21-adae-9f215c245f45\"]",
+              "scopes": "[\"map-roles\"]"
+            }
+          },
+          {
+            "id": "f377a1ba-06ee-47ca-861f-9537d12c1dfa",
+            "name": "map-roles-client-scope.permission.client.577fbdfe-f66d-4c21-adae-9f215c245f45",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.577fbdfe-f66d-4c21-adae-9f215c245f45\"]",
+              "scopes": "[\"map-roles-client-scope\"]"
+            }
+          },
+          {
+            "id": "a9482da9-fc55-42dc-aa45-dede08f7a93a",
+            "name": "map-roles-composite.permission.client.577fbdfe-f66d-4c21-adae-9f215c245f45",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.577fbdfe-f66d-4c21-adae-9f215c245f45\"]",
+              "scopes": "[\"map-roles-composite\"]"
+            }
+          },
+          {
+            "id": "e2e629e6-d0c1-4cc5-9950-10f832a49fdc",
+            "name": "token-exchange.permission.client.577fbdfe-f66d-4c21-adae-9f215c245f45",
+            "description": "",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.577fbdfe-f66d-4c21-adae-9f215c245f45\"]",
+              "scopes": "[\"token-exchange\"]",
+              "applyPolicies": "[\"client-impersonators\"]"
+            }
+          },
+          {
+            "id": "0ea382f3-b734-4aca-9031-1359a67b0144",
+            "name": "manage.permission.client.124138ae-d2f7-4d57-803c-4d239ba05e12",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.124138ae-d2f7-4d57-803c-4d239ba05e12\"]",
+              "scopes": "[\"manage\"]"
+            }
+          },
+          {
+            "id": "81ad4028-ce3d-4d16-a8aa-680da011caa2",
+            "name": "configure.permission.client.124138ae-d2f7-4d57-803c-4d239ba05e12",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.124138ae-d2f7-4d57-803c-4d239ba05e12\"]",
+              "scopes": "[\"configure\"]"
+            }
+          },
+          {
+            "id": "a946016d-308d-43a5-b4be-002a74bd538c",
+            "name": "view.permission.client.124138ae-d2f7-4d57-803c-4d239ba05e12",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.124138ae-d2f7-4d57-803c-4d239ba05e12\"]",
+              "scopes": "[\"view\"]"
+            }
+          },
+          {
+            "id": "2bd567e1-4f3c-4c0a-ac03-17611d3019a9",
+            "name": "map-roles.permission.client.124138ae-d2f7-4d57-803c-4d239ba05e12",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.124138ae-d2f7-4d57-803c-4d239ba05e12\"]",
+              "scopes": "[\"map-roles\"]"
+            }
+          },
+          {
+            "id": "bc8e33d3-21c7-4879-b109-334de174c7d8",
+            "name": "map-roles-client-scope.permission.client.124138ae-d2f7-4d57-803c-4d239ba05e12",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.124138ae-d2f7-4d57-803c-4d239ba05e12\"]",
+              "scopes": "[\"map-roles-client-scope\"]"
+            }
+          },
+          {
+            "id": "95a55475-f56c-41d5-b67c-c851a4563e11",
+            "name": "map-roles-composite.permission.client.124138ae-d2f7-4d57-803c-4d239ba05e12",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.124138ae-d2f7-4d57-803c-4d239ba05e12\"]",
+              "scopes": "[\"map-roles-composite\"]"
+            }
+          },
+          {
+            "id": "a48d6a87-6224-42be-9799-1e1db52f7f8b",
+            "name": "token-exchange.permission.client.124138ae-d2f7-4d57-803c-4d239ba05e12",
+            "description": "",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.124138ae-d2f7-4d57-803c-4d239ba05e12\"]",
+              "scopes": "[\"token-exchange\"]",
+              "applyPolicies": "[\"client-impersonators\"]"
+            }
+          },
+          {
+            "id": "1c28238a-e220-4dda-b500-1e8e1a9e8b1f",
+            "name": "manage.permission.client.3891279e-4580-4d63-9234-06b05c2e59dc",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.3891279e-4580-4d63-9234-06b05c2e59dc\"]",
+              "scopes": "[\"manage\"]"
+            }
+          },
+          {
+            "id": "cd668d80-4e09-4809-a440-5e5e979303e4",
+            "name": "configure.permission.client.3891279e-4580-4d63-9234-06b05c2e59dc",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.3891279e-4580-4d63-9234-06b05c2e59dc\"]",
+              "scopes": "[\"configure\"]"
+            }
+          },
+          {
+            "id": "fa57b647-c5ae-4115-8001-3a3079996170",
+            "name": "view.permission.client.3891279e-4580-4d63-9234-06b05c2e59dc",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.3891279e-4580-4d63-9234-06b05c2e59dc\"]",
+              "scopes": "[\"view\"]"
+            }
+          },
+          {
+            "id": "4f52aefa-0e28-4613-bc9d-ee4edaded48d",
+            "name": "map-roles.permission.client.3891279e-4580-4d63-9234-06b05c2e59dc",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.3891279e-4580-4d63-9234-06b05c2e59dc\"]",
+              "scopes": "[\"map-roles\"]"
+            }
+          },
+          {
+            "id": "3073ddf6-7d2c-4201-95e3-413ce886484e",
+            "name": "map-roles-client-scope.permission.client.3891279e-4580-4d63-9234-06b05c2e59dc",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.3891279e-4580-4d63-9234-06b05c2e59dc\"]",
+              "scopes": "[\"map-roles-client-scope\"]"
+            }
+          },
+          {
+            "id": "230dc724-de12-4a5c-8cfa-9725251e4938",
+            "name": "map-roles-composite.permission.client.3891279e-4580-4d63-9234-06b05c2e59dc",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.3891279e-4580-4d63-9234-06b05c2e59dc\"]",
+              "scopes": "[\"map-roles-composite\"]"
+            }
+          },
+          {
+            "id": "42bb6925-3fdc-4e5e-b77a-ce1c8ee3dd41",
+            "name": "token-exchange.permission.client.3891279e-4580-4d63-9234-06b05c2e59dc",
+            "description": "",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "resources": "[\"client.resource.3891279e-4580-4d63-9234-06b05c2e59dc\"]",
+              "scopes": "[\"token-exchange\"]",
+              "applyPolicies": "[\"client-impersonators\"]"
+            }
+          }
+        ],
+        "scopes": [
+          {
+            "id": "9414b1c8-e620-4880-9c70-f290f7542846",
+            "name": "manage"
+          },
+          {
+            "id": "8f433520-cd9a-44cd-b0b5-18ac428b20b3",
+            "name": "view"
+          },
+          {
+            "id": "6ac81d51-7391-4b0d-b865-db380874be29",
+            "name": "map-roles"
+          },
+          {
+            "id": "0c9831b1-3295-43e1-98cd-cfed896f61f5",
+            "name": "impersonate"
+          },
+          {
+            "id": "781b8fc0-d10e-4cb0-b428-87368f83039b",
+            "name": "user-impersonated"
+          },
+          {
+            "id": "46dea399-7d06-4b1a-9ed6-ca8a81b71866",
+            "name": "manage-group-membership"
+          },
+          {
+            "id": "563d8d77-0a48-4d4a-892a-6c546ac921c7",
+            "name": "map-roles-client-scope"
+          },
+          {
+            "id": "54e52587-a0d8-42d4-880c-afb2686f8bd6",
+            "name": "map-roles-composite"
+          },
+          {
+            "id": "1abab5e4-e941-4d45-b7fb-60b917d7b0be",
+            "name": "configure"
+          },
+          {
+            "id": "2b8675c0-755b-43d0-8910-c6184daae95c",
+            "name": "token-exchange"
+          }
+        ],
+        "decisionStrategy": "UNANIMOUS"
+      }
     },
     {
       "id": "86184eff-065b-465b-9b87-54d1864c0da6",
@@ -1231,6 +1722,7 @@
       ]
     },
     {
+      "id": "124138ae-d2f7-4d57-803c-4d239ba05e12",
       "clientId": "${BACKEND_CLIENT_ID}",
       "name": "Repan Staging",
       "description": "",
