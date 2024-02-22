@@ -84,6 +84,9 @@ urlpatterns = [
         "superset/dashboard/embed/<str:id>", superset_view.GetEmbeddable.as_view()
     ),  # get embedded dashboard
     path(
+        "superset/dashboard/<str:id>/thumbnail", superset_view.GetThumbnail.as_view()
+    ),
+    path(
         "superset/dashboard/favorite-status/<str:query>", superset_view.GetFavoriteStatus.as_view()
     ),  # get dashboard favorite status for current user
     path(
