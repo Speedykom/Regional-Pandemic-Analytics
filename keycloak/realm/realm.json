@@ -1307,7 +1307,7 @@
             "logic": "POSITIVE",
             "decisionStrategy": "UNANIMOUS",
             "config": {
-              "clients": "[\"airflow\",\"repan-staging\"]"
+              "clients": "[\"airflow\",\"${BACKEND_CLIENT_ID}\"]"
             }
           },
           {
