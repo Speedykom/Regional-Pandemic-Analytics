@@ -17,7 +17,11 @@ class UserIdMiddleware:
         return self.get_response(request)
     def process_view(self, request, view_func, view_args, view_kwargs):
         if hasattr(request, 'userinfo'):
-            _thread_locals.user = request.userinfo['preferred_username'] or request.userinfo['sub']
+            _thread_locals.user_name = request.userinfo['preferred_username']
+            _thread_locals.user_id = request.userinfo['sub']
 
-def get_current_user() -> Union[str, None]:
-    return getattr(_thread_locals, 'user', None)
+def get_current_user_id() -> Union[str, None]:
+    return getattr(_thread_locals, 'user_id', None)
+
+def get_current_user_name() -> Union[str, None]:
+    return getattr(_thread_locals, 'user_name', None)
