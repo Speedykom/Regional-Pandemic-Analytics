@@ -101,7 +101,7 @@ x-superset-common: &superset
     - SUPERSET_JWT_USER_MAPPING=${SUPERSET_JWT_USER_MAPPING}
   volumes:
     - ./superset/superset_config.py:/app/pythonpath/superset_config.py
-    - ./superset/import/dashboard_export_20240128.zip:/app/dashboard_export_20240128.zip
+    - ./superset/import:/app/import
   depends_on:
     - superset_db
     - superset_cache
@@ -400,15 +400,6 @@ services:
   superset:
     <<: *superset
     container_name: superset
-    entrypoint: /bin/bash
-    command:
-      - -c
-      - |
-        superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
-        superset db upgrade
-        superset superset init
-        superset import-dashboards -p /app/dashboard_export.zip
-        cd /usr/bin && ./run-server.sh
 
   superset_worker:
     <<: *superset
