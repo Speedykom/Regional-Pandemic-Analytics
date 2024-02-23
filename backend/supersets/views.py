@@ -7,13 +7,15 @@ from django.http import StreamingHttpResponse
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.permissions import AllowAny
-from . import auths
 from keycloak import KeycloakPostError
+from core.keycloak_impersonation import get_auth_token
+log = logging.getLogger("SupersetAPI")
 
 class SupersetAPI(APIView):
     def authorize(self, headers):
-        token = auths.get_auth_token()
+        token = get_auth_token()
         headers['Authorization'] = f"Bearer {token['access_token']}"
+        log.debug("Added authorization header to Superset request")
         return headers
 
 class ListDashboardsAPI(SupersetAPI):
@@ -26,6 +28,7 @@ class ListDashboardsAPI(SupersetAPI):
     }
 
     def get(self, request, query=None):
+        log.debug("Listing Superset dashboards with query %s", query)
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/"
         headers = self.authorize({
             "Content-Type": "application/json",
@@ -40,12 +43,15 @@ class ListDashboardsAPI(SupersetAPI):
             superset_response = requests.get(url=url, headers=headers, params=params)
 
         if superset_response.status_code != 200:
+            log.error("Listing of Superset dashboards failed with code %d: %s", superset_response.status_code, superset_response.text)
             return Response(
-                {"errorMessage": superset_response.json()},
+                {"errorMessage": superset_response.text},
                 status=superset_response.status_code,
             )
 
-        return Response(superset_response.json(), status=status.HTTP_200_OK)
+        result = superset_response.json()
+        log.debug("Successfully listed %d dashboards from Superset", result["count"])
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class ListChartsAPI(SupersetAPI):
@@ -280,7 +286,7 @@ class CsrfTokenApi(SupersetAPI):
         url = f"{os.getenv('SUPERSET_BASE_URL')}/security/csrf_token/"
 
         try:
-            auth_token = auths.get_auth_token()
+            auth_token = get_auth_token()
         except KeycloakPostError as err:
             return {
                 "status": err.response_code,
