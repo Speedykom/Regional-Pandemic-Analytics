@@ -1,19 +1,9 @@
 import os
 import requests
 from utils.keycloak_auth import get_keycloak_openid
-from core.user_id import get_current_user
+from core.user_id import get_current_user_name
+from core.keycloak_impersonation import get_auth_token
 from keycloak import KeycloakPostError
-
-def get_auth_token ():
-    keycloak = get_keycloak_openid()
-    return keycloak.token(
-        grant_type=["urn:ietf:params:oauth:grant-type:token-exchange"],
-        client_id=os.getenv("APP_CLIENT_ID"),
-        client_secret=os.getenv("APP_SECRET_KEY"),
-        requested_subject=get_current_user(),
-        requested_token_type="urn:ietf:params:oauth:token-type:refresh_token"
-    )
-
 
 def get_csrf_token ():
     url = f"{os.getenv('SUPERSET_BASE_URL')}/security/csrf_token/"
