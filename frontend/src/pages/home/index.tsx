@@ -27,21 +27,18 @@ export default function Home() {
     dashboardIds ?? skipToken
   );
 
-  // Show only favorite Dashboards
-  if (data && favoriteStatus) {
-    // Extract the IDs of favorite dashboards
-    const favoriteDashboardIds = favoriteStatus?.result
-      .filter((favorite: FavoriteDashboardResult) => favorite?.value)
-      .map((favorite: FavoriteDashboardResult) => Number(favorite?.id));
-
-    // Filter data.result to include only favorite dashboards
-    data = {
-      ...data,
-      result: data?.result.filter((dashboard: DashboardListResult) =>
-        favoriteDashboardIds.includes(Number(dashboard.id))
-      ),
-    };
-  }
+  let favoriteDashboardIds = favoriteStatus?.result
+    .filter((favorite: FavoriteDashboardResult) => favorite?.value)
+    .map((favorite: FavoriteDashboardResult) => Number(favorite?.id));
+  let favoriteData =
+    data && favoriteStatus
+      ? {
+          ...data,
+          result: data?.result.filter((dashboard: DashboardListResult) =>
+            favoriteDashboardIds.includes(Number(dashboard.id))
+          ),
+        }
+      : data ?? {};
 
   if (!hasPermission('dashboard:read')) {
     return <Unauthorized />;
@@ -55,7 +52,7 @@ export default function Home() {
         </div>
       </nav>
       <EmbedDashboards
-        data={data?.result ?? ([] as DashboardListResult[])}
+        data={favoriteData.result ?? ([] as DashboardListResult[])}
         supersetBaseUrl={publicRuntimeConfig.NEXT_PUBLIC_SUPERSET_GUEST_URL}
       />
     </Layout>
