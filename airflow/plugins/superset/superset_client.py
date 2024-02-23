@@ -1,9 +1,12 @@
 from json import JSONEncoder
 from keycloak import KeycloakOpenID
+import logging
 import os
 import requests
 from typing import Dict, Tuple, Union
 import urllib.parse
+
+logger = logging.getLogger('SupersetClient')
 
 class SupersetClient:
     def __init__(self, base_url: str):
@@ -85,31 +88,36 @@ class SupersetClient:
         ] if dataset_result["count"] > 0 else None
 
     def create_dataset(self, name: str, db_name: Union[str, int]) -> Tuple[int, str]:
+        logger.debug("Creating new dataset %s in database %s", name, db_name)
         db_id = self.get_db_ids(db_name)
         if db_id is None:
+            logger.error("DB %s does not exist in Superset", db_name)
             raise RuntimeError("DB {} does not exist in Superset".format(db_name))
         create_dataset_url = urllib.parse.urljoin(self._base_url, "/api/v1/dataset/")
         create_dataset_body = { "database": db_id, "table_name": name }
         create_response = requests.post(url = create_dataset_url, headers = self.authorize({}, True), json = create_dataset_body)
         if create_response.status_code >= 400:
+            logger.error("Failed to create dataset %s in database %s with status %d and message: %s", name, db_name, create_response.status_code, create_response.text)
             raise RuntimeError("Failed to create Superset dataset {}".format(name))
-        create_result = create_response.json()
-        return [
-            create_result["result"]["id"],
-            create_result["result"]["explore_url"]
-        ]
+        logger.info("Dataset %s in database %s successfully created", name, db_name)
+        return self.find_dataset(name, db_name)
 
     def update_dataset(self, name: Union[str, int], db_name: Union[str, int]):
+        logger.debug("Updating dataset %s in database %s", name, db_name)
         db_id = self.get_db_ids(db_name)
         if db_id is None:
+            logger.error("DB %s does not exist in Superset", db_name)
             raise RuntimeError("DB {} does not exist in Superset".format(db_name))
         dataset_id = name if isinstance(name, int) else self.find_dataset(name, db_id)[0]
         if dataset_id is None:
+            logger.error("Dataset %s not found in Superset", name)
             raise RuntimeError("Dataset {} not found in Superset".format(name))
         update_dataset_url = urllib.parse.urljoin(self._base_url, "/api/v1/dataset/{}/refresh".format(dataset_id))
         update_dataset_response = requests.put(url = update_dataset_url, headers = self.authorize({}))
         if update_dataset_response.status_code >= 400:
+            logger.error("Failed to update dataset %s", name)
             raise RuntimeError("Failed to update dataset {}".format(name))
+        logger.info("Dataset %s in database %s updated", name, db_name)
 
     def create_or_update_dataset(self, name: str, db_name: Union[str, int]) -> Tuple[int, str]:
         found = self.find_dataset(name, db_name)
