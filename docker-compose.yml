@@ -1,40 +1,40 @@
 version: "3.4"
 
-x-druid-common: &druid
-  environment:
-    - DRUID_SINGLE_NODE_CONF=${DRUID_DRUID_SINGLE_NODE_CONF}
-    - druid_emitter_logging_logLevel=${DRUID_druid_emitter_logging_logLevel}
-    - druid_extensions_loadList=${DRUID_druid_extensions_loadList}
-    - druid_zk_service_host=${DRUID_druid_zk_service_host}
-    - druid_metadata_storage_host=${DRUID_druid_metadata_storage_host}
-    # - druid_metadata_storage_type=${DRUID_druid_metadata_storage_type}
-    # - druid_metadata_storage_connector_connectURI=${DRUID_druid_metadata_storage_connector_connectURI}
-    # - druid_metadata_storage_connector_user=${DRUID_druid_metadata_storage_connector_user}
-    # - druid_metadata_storage_connector_password=${DRUID_druid_metadata_storage_connector_password}
-    - druid_coordinator_balancer_strategy=${DRUID_druid_coordinator_balancer_strategy}
-    - druid_indexer_runner_javaOptsArray=${DRUID_druid_indexer_runner_javaOptsArray}
-    - druid_indexer_fork_property_druid_processing_buffer_sizeBytes=${DRUID_druid_indexer_fork_property_druid_processing_buffer_sizeBytes}
-    - druid_storage_type=${DRUID_druid_storage_type}
-    - druid_storage_storageDirectory=${DRUID_druid_storage_storageDirectory}
-    - druid_indexer_logs_type=${DRUID_druid_indexer_logs_type}
-    - druid_indexer_logs_directory=${DRUID_druid_indexer_logs_directory}
-    - druid_processing_numThreads=${DRUID_druid_processing_numThreads}
-    - druid_processing_numMergeBuffers=${DRUID_druid_processing_numMergeBuffers}
-    - DRUID_LOG4J=${DRUID_DRUID_LOG4J}
-    - druid_auth_authenticatorChain=${DRUID_druid_auth_authenticatorChain}
-    - druid_auth_authenticator_MyBasicMetadataAuthenticator_type=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_type}
-    - druid_auth_authenticator_MyBasicMetadataAuthenticator_initialAdminPassword=${DRUID_ADMIN_PASSWORD}
-    - druid_auth_authenticator_MyBasicMetadataAuthenticator_initialInternalClientPassword=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_initialInternalClientPassword}
-    - druid_auth_authenticator_MyBasicMetadataAuthenticator_credentialsValidator_type=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_credentialsValidator_type}
-    - druid_auth_authenticator_MyBasicMetadataAuthenticator_skipOnFailure=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_skipOnFailure}
-    - druid_auth_authenticator_MyBasicMetadataAuthenticator_authorizerName=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_authorizerName}
-    - druid_escalator_type=${DRUID_druid_escalator_type}
-    - druid_escalator_internalClientUsername=${DRUID_druid_escalator_internalClientUsername}
-    - druid_escalator_internalClientPassword=${DRUID_druid_escalator_internalClientPassword}
-    - druid_escalator_authorizerName=${DRUID_druid_escalator_authorizerName}
-    - druid_auth_authorizers=${DRUID_druid_auth_authorizers}
-    - druid_auth_authorizer_MyBasicMetadataAuthorizer_type=${DRUID_druid_auth_authorizer_MyBasicMetadataAuthorizer_type}
-    - AWS_REGION=us-east-1
+# x-druid-common: &druid
+#   environment:
+#     - DRUID_SINGLE_NODE_CONF=${DRUID_DRUID_SINGLE_NODE_CONF}
+#     - druid_emitter_logging_logLevel=${DRUID_druid_emitter_logging_logLevel}
+#     - druid_extensions_loadList=${DRUID_druid_extensions_loadList}
+#     - druid_zk_service_host=${DRUID_druid_zk_service_host}
+#     - druid_metadata_storage_host=${DRUID_druid_metadata_storage_host}
+#     # - druid_metadata_storage_type=${DRUID_druid_metadata_storage_type}
+#     # - druid_metadata_storage_connector_connectURI=${DRUID_druid_metadata_storage_connector_connectURI}
+#     # - druid_metadata_storage_connector_user=${DRUID_druid_metadata_storage_connector_user}
+#     # - druid_metadata_storage_connector_password=${DRUID_druid_metadata_storage_connector_password}
+#     - druid_coordinator_balancer_strategy=${DRUID_druid_coordinator_balancer_strategy}
+#     - druid_indexer_runner_javaOptsArray=${DRUID_druid_indexer_runner_javaOptsArray}
+#     - druid_indexer_fork_property_druid_processing_buffer_sizeBytes=${DRUID_druid_indexer_fork_property_druid_processing_buffer_sizeBytes}
+#     - druid_storage_type=${DRUID_druid_storage_type}
+#     - druid_storage_storageDirectory=${DRUID_druid_storage_storageDirectory}
+#     - druid_indexer_logs_type=${DRUID_druid_indexer_logs_type}
+#     - druid_indexer_logs_directory=${DRUID_druid_indexer_logs_directory}
+#     - druid_processing_numThreads=${DRUID_druid_processing_numThreads}
+#     - druid_processing_numMergeBuffers=${DRUID_druid_processing_numMergeBuffers}
+#     - DRUID_LOG4J=${DRUID_DRUID_LOG4J}
+#     - druid_auth_authenticatorChain=${DRUID_druid_auth_authenticatorChain}
+#     - druid_auth_authenticator_MyBasicMetadataAuthenticator_type=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_type}
+#     - druid_auth_authenticator_MyBasicMetadataAuthenticator_initialAdminPassword=${DRUID_ADMIN_PASSWORD}
+#     - druid_auth_authenticator_MyBasicMetadataAuthenticator_initialInternalClientPassword=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_initialInternalClientPassword}
+#     - druid_auth_authenticator_MyBasicMetadataAuthenticator_credentialsValidator_type=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_credentialsValidator_type}
+#     - druid_auth_authenticator_MyBasicMetadataAuthenticator_skipOnFailure=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_skipOnFailure}
+#     - druid_auth_authenticator_MyBasicMetadataAuthenticator_authorizerName=${DRUID_druid_auth_authenticator_MyBasicMetadataAuthenticator_authorizerName}
+#     - druid_escalator_type=${DRUID_druid_escalator_type}
+#     - druid_escalator_internalClientUsername=${DRUID_druid_escalator_internalClientUsername}
+#     - druid_escalator_internalClientPassword=${DRUID_druid_escalator_internalClientPassword}
+#     - druid_escalator_authorizerName=${DRUID_druid_escalator_authorizerName}
+#     - druid_auth_authorizers=${DRUID_druid_auth_authorizers}
+#     - druid_auth_authorizer_MyBasicMetadataAuthorizer_type=${DRUID_druid_auth_authorizer_MyBasicMetadataAuthorizer_type}
+#     - AWS_REGION=us-east-1
 
 x-airflow-common: &airflow
   build:
@@ -85,42 +85,42 @@ x-airflow-common: &airflow
     - /var/run/docker.sock:/var/run/docker.sock
     - ./hop:/hop
 
-x-superset-common: &superset
-  build: ./superset/.
-  environment:
-    - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
-    - SUPERSET_DATABASE_URI=${SUPERSET_DATABASE_URI}
-    - SUPERSET_KEYCLOAK_APP_REALM=${SUPERSET_KEYCLOAK_APP_REALM}
-    - SUPERSET_KEYCLOAK_CLIENT_ID=${SUPERSET_KEYCLOAK_CLIENT_ID}
-    - SUPERSET_KEYCLOAK_CLIENT_SECRET=${SUPERSET_KEYCLOAK_CLIENT_SECRET}
-    - SUPERSET_KEYCLOAK_EXTERNAL_URL=${SUPERSET_KEYCLOAK_EXTERNAL_URL}
-    - SUPERSET_KEYCLOAK_INTERNAL_URL=${SUPERSET_KEYCLOAK_INTERNAL_URL}
-    - SUPERSET_KEYCLOAK_ADMIN_USERNAME=${SUPERSET_KEYCLOAK_ADMIN_USERNAME}
-    - SUPERSET_KEYCLOAK_ADMIN_PASSWORD=${SUPERSET_KEYCLOAK_ADMIN_PASSWORD}
-    - SUPERSET_FEATURE_EMBEDDED_SUPERSET=True
-    - SUPERSET_JWT_USER_MAPPING=${SUPERSET_JWT_USER_MAPPING}
-  volumes:
-    - ./superset/superset_config.py:/app/pythonpath/superset_config.py
-    - ./superset/import/dashboard_export_20240128.zip:/app/dashboard_export_20240128.zip
-  depends_on:
-    - superset_db
-    - superset_cache
-  restart: always
+# x-superset-common: &superset
+#   build: ./superset/.
+#   environment:
+#     - SUPERSET_SECRET_KEY=${SUPERSET_SECRET_KEY}
+#     - SUPERSET_DATABASE_URI=${SUPERSET_DATABASE_URI}
+#     - SUPERSET_KEYCLOAK_APP_REALM=${SUPERSET_KEYCLOAK_APP_REALM}
+#     - SUPERSET_KEYCLOAK_CLIENT_ID=${SUPERSET_KEYCLOAK_CLIENT_ID}
+#     - SUPERSET_KEYCLOAK_CLIENT_SECRET=${SUPERSET_KEYCLOAK_CLIENT_SECRET}
+#     - SUPERSET_KEYCLOAK_EXTERNAL_URL=${SUPERSET_KEYCLOAK_EXTERNAL_URL}
+#     - SUPERSET_KEYCLOAK_INTERNAL_URL=${SUPERSET_KEYCLOAK_INTERNAL_URL}
+#     - SUPERSET_KEYCLOAK_ADMIN_USERNAME=${SUPERSET_KEYCLOAK_ADMIN_USERNAME}
+#     - SUPERSET_KEYCLOAK_ADMIN_PASSWORD=${SUPERSET_KEYCLOAK_ADMIN_PASSWORD}
+#     - SUPERSET_FEATURE_EMBEDDED_SUPERSET=True
+#     - SUPERSET_JWT_USER_MAPPING=${SUPERSET_JWT_USER_MAPPING}
+#   volumes:
+#     - ./superset/superset_config.py:/app/pythonpath/superset_config.py
+#     - ./superset/import/dashboard_export_20240128.zip:/app/dashboard_export_20240128.zip
+#   depends_on:
+#     - superset_db
+#     - superset_cache
+#   restart: always
 
 
 volumes:
-  superset_data: {}
-  metadata_data: {}
+  # superset_data: {}
+  # metadata_data: {}
   airflow_data: {}
   backend_data: {}
   keyclock_data: {}
   minio_data: {}
-  middle_var: {}
-  historical_var: {}
-  broker_var: {}
-  coordinator_var: {}
-  router_var: {}
-  mongo-data:
+  # middle_var: {}
+  # historical_var: {}
+  # broker_var: {}
+  # coordinator_var: {}
+  # router_var: {}
+  # mongo-data:
 
 services:
   # ========
@@ -294,163 +294,163 @@ services:
   # =======
   #  Druid
   # =======
-  db:
-    image: postgres:14
-    container_name: db
-    volumes:
-      - metadata_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=${DRUID_POSTGRES_PASSWORD}
-      - POSTGRES_USER=${DRUID_POSTGRES_USER}
-      - POSTGRES_DB=${DRUID_POSTGRES_DB}
+  # db:
+  #   image: postgres:14
+  #   container_name: db
+  #   volumes:
+  #     - metadata_data:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_PASSWORD=${DRUID_POSTGRES_PASSWORD}
+  #     - POSTGRES_USER=${DRUID_POSTGRES_USER}
+  #     - POSTGRES_DB=${DRUID_POSTGRES_DB}
 
-  # Need 3.5 or later for container nodes
-  zookeeper:
-    container_name: zookeeper
-    image: zookeeper:3.5
-    environment:
-      - ZOO_MY_ID=${ZOOKEEPER_ZOO_MY_ID}
+  # # Need 3.5 or later for container nodes
+  # zookeeper:
+  #   container_name: zookeeper
+  #   image: zookeeper:3.5
+  #   environment:
+  #     - ZOO_MY_ID=${ZOOKEEPER_ZOO_MY_ID}
 
-  coordinator:
-    <<: *druid
-    image: apache/druid:28.0.1
-    container_name: coordinator
-    volumes:
-      - ./storage:/opt/shared
-      - coordinator_var:/opt/druid/var
-    depends_on:
-      - zookeeper
-      - db
-    command:
-      - coordinator
+  # coordinator:
+  #   <<: *druid
+  #   image: apache/druid:28.0.1
+  #   container_name: coordinator
+  #   volumes:
+  #     - ./storage:/opt/shared
+  #     - coordinator_var:/opt/druid/var
+  #   depends_on:
+  #     - zookeeper
+  #     - db
+  #   command:
+  #     - coordinator
 
-  broker:
-    <<: *druid
-    image: apache/druid:28.0.1
-    container_name: broker
-    volumes:
-      - broker_var:/opt/druid/var
-    depends_on:
-      - zookeeper
-      - db
-      - coordinator
-    command:
-      - broker
+  # broker:
+  #   <<: *druid
+  #   image: apache/druid:28.0.1
+  #   container_name: broker
+  #   volumes:
+  #     - broker_var:/opt/druid/var
+  #   depends_on:
+  #     - zookeeper
+  #     - db
+  #     - coordinator
+  #   command:
+  #     - broker
 
-  historical:
-    <<: *druid
-    image: apache/druid:28.0.1
-    container_name: historical
-    volumes:
-      - ./storage:/opt/shared
-      - historical_var:/opt/druid/var
-    depends_on:
-      - zookeeper
-      - db
-      - coordinator
-    command:
-      - historical
+  # historical:
+  #   <<: *druid
+  #   image: apache/druid:28.0.1
+  #   container_name: historical
+  #   volumes:
+  #     - ./storage:/opt/shared
+  #     - historical_var:/opt/druid/var
+  #   depends_on:
+  #     - zookeeper
+  #     - db
+  #     - coordinator
+  #   command:
+  #     - historical
 
-  middlemanager:
-    <<: *druid
-    image: apache/druid:28.0.1
-    container_name: middlemanager
-    volumes:
-      - ./storage:/opt/shared
-      - middle_var:/opt/druid/var
-    depends_on:
-      - zookeeper
-      - db
-      - coordinator
-    command:
-      - middleManager
+  # middlemanager:
+  #   <<: *druid
+  #   image: apache/druid:28.0.1
+  #   container_name: middlemanager
+  #   volumes:
+  #     - ./storage:/opt/shared
+  #     - middle_var:/opt/druid/var
+  #   depends_on:
+  #     - zookeeper
+  #     - db
+  #     - coordinator
+  #   command:
+  #     - middleManager
 
-  router:
-    <<: *druid
-    image: apache/druid:28.0.1
-    container_name: router
-    volumes:
-      - ./storage:/opt/shared
-      - router_var:/opt/druid/var
-    depends_on:
-      - zookeeper
-      - db
-      - coordinator
-    command:
-      - router
+  # router:
+  #   <<: *druid
+  #   image: apache/druid:28.0.1
+  #   container_name: router
+  #   volumes:
+  #     - ./storage:/opt/shared
+  #     - router_var:/opt/druid/var
+  #   depends_on:
+  #     - zookeeper
+  #     - db
+  #     - coordinator
+  #   command:
+  #     - router
 
   # =======
   # Superset
   # =======
-  superset_cache:
-    container_name: superset_cache
-    image: redis:5
-    restart: always
+  # superset_cache:
+  #   container_name: superset_cache
+  #   image: redis:5
+  #   restart: always
 
-  superset_db:
-    container_name: superset_db
-    image: postgres:14
-    volumes:
-      - superset_data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_PASSWORD=${SUPERSET_POSTGRES_PASSWORD}
-      - POSTGRES_USER=${SUPERSET_POSTGRES_USER}
-      - POSTGRES_DB=${SUPERSET_POSTGRES_DB}
+  # superset_db:
+  #   container_name: superset_db
+  #   image: postgres:14
+  #   volumes:
+  #     - superset_data:/var/lib/postgresql/data
+  #   environment:
+  #     - POSTGRES_PASSWORD=${SUPERSET_POSTGRES_PASSWORD}
+  #     - POSTGRES_USER=${SUPERSET_POSTGRES_USER}
+  #     - POSTGRES_DB=${SUPERSET_POSTGRES_DB}
 
-  superset:
-    <<: *superset
-    container_name: superset
-    entrypoint: /bin/bash
-    command:
-      - -c
-      - |
-        superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
-        superset db upgrade
-        superset superset init
-        superset import-dashboards -p /app/dashboard_export.zip
-        cd /usr/bin && ./run-server.sh
+  # superset:
+  #   <<: *superset
+  #   container_name: superset
+  #   entrypoint: /bin/bash
+  #   command:
+  #     - -c
+  #     - |
+  #       superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
+  #       superset db upgrade
+  #       superset superset init
+  #       superset import-dashboards -p /app/dashboard_export.zip
+  #       cd /usr/bin && ./run-server.sh
 
-  superset_worker:
-    <<: *superset
-    container_name: superset-worker
-    shm_size: 2g
-    depends_on:
-      - superset
-    command: 'celery --app=superset.tasks.celery_app:app worker --pool=prefork --max-tasks-per-child=128 -O fair'
+  # superset_worker:
+  #   <<: *superset
+  #   container_name: superset-worker
+  #   shm_size: 2g
+  #   depends_on:
+  #     - superset
+  #   command: 'celery --app=superset.tasks.celery_app:app worker --pool=prefork --max-tasks-per-child=128 -O fair'
 
-  # =====
-  #  Hop
-  # =====
-  hop:
-    build: ./hop
-    container_name: hop
-    user: "0:1000"
-    volumes:
-      - ./hop/pipelines:/files
-      - ./storage:/home
-      - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
-      - ./hop/keycloak/index.jsp:/usr/local/tomcat/webapps/ROOT/index.jsp
-      - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
-    environment:
-      - HOP_KEYCLOAK_SELF_SIGNED_SSL=${HOP_KEYCLOAK_SELF_SIGNED_SSL}
-      - HOP_KEYCLOAK_CLIENT_ID=${HOP_KEYCLOAK_CLIENT_ID}
-      - HOP_KEYCLOAK_CLIENT_SECRET=${HOP_KEYCLOAK_CLIENT_SECRET}
-      - HOP_KEYCLOAK_REALM=${HOP_KEYCLOAK_REALM}
-      - HOP_KEYCLOAK_SERVER_URL=${HOP_KEYCLOAK_SERVER_URL}
-      - HOP_KEYCLOAK_SSL_REQUIRED=${HOP_KEYCLOAK_SSL_REQUIRED}
-      - HOP_KEYCLOAK_CONFIDENTIAL_PORT=${HOP_KEYCLOAK_CONFIDENTIAL_PORT}
-      - HOP_KEYCLOAK_DISABLE_SSL_VERIFICATION=${HOP_KEYCLOAK_DISABLE_SSL_VERIFICATION}
+  # # =====
+  # #  Hop
+  # # =====
+  # hop:
+  #   build: ./hop
+  #   container_name: hop
+  #   user: "0:1000"
+  #   volumes:
+  #     - ./hop/pipelines:/files
+  #     - ./storage:/home
+  #     - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
+  #     - ./hop/keycloak/index.jsp:/usr/local/tomcat/webapps/ROOT/index.jsp
+  #     - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
+  #   environment:
+  #     - HOP_KEYCLOAK_SELF_SIGNED_SSL=${HOP_KEYCLOAK_SELF_SIGNED_SSL}
+  #     - HOP_KEYCLOAK_CLIENT_ID=${HOP_KEYCLOAK_CLIENT_ID}
+  #     - HOP_KEYCLOAK_CLIENT_SECRET=${HOP_KEYCLOAK_CLIENT_SECRET}
+  #     - HOP_KEYCLOAK_REALM=${HOP_KEYCLOAK_REALM}
+  #     - HOP_KEYCLOAK_SERVER_URL=${HOP_KEYCLOAK_SERVER_URL}
+  #     - HOP_KEYCLOAK_SSL_REQUIRED=${HOP_KEYCLOAK_SSL_REQUIRED}
+  #     - HOP_KEYCLOAK_CONFIDENTIAL_PORT=${HOP_KEYCLOAK_CONFIDENTIAL_PORT}
+  #     - HOP_KEYCLOAK_DISABLE_SSL_VERIFICATION=${HOP_KEYCLOAK_DISABLE_SSL_VERIFICATION}
 
-  hop-server:
-    image: apache/hop:2.7.0
-    container_name: hop-server
-    environment:
-      HOP_SERVER_USER: ${HOP_SERVER_USER}
-      HOP_SERVER_PASS: ${HOP_SERVER_PASS}
-      HOP_SERVER_PORT: 8080
-      HOP_SERVER_HOSTNAME: 0.0.0.0
-    volumes:
-      - ./hop/pipelines:/files
+  # hop-server:
+  #   image: apache/hop:2.7.0
+  #   container_name: hop-server
+  #   environment:
+  #     HOP_SERVER_USER: ${HOP_SERVER_USER}
+  #     HOP_SERVER_PASS: ${HOP_SERVER_PASS}
+  #     HOP_SERVER_PORT: 8080
+  #     HOP_SERVER_HOSTNAME: 0.0.0.0
+  #   volumes:
+  #     - ./hop/pipelines:/files
     # =======
     # Airflow
     # =======
@@ -578,29 +578,29 @@ services:
       - NGINX_ENV=${NGINX_ENV}
       - NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d/
       - NGINX_FRONTEND_DOMAIN_NAME=${NGINX_FRONTEND_DOMAIN_NAME}
-      - NGINX_OPENHIM_DOMAIN_NAME=${NGINX_OPENHIM_DOMAIN_NAME}
-      - NGINX_CONSOLE_OPENHIM_DOMAIN_NAME=${NGINX_CONSOLE_OPENHIM_DOMAIN_NAME}
+      # - NGINX_OPENHIM_DOMAIN_NAME=${NGINX_OPENHIM_DOMAIN_NAME}
+      # - NGINX_CONSOLE_OPENHIM_DOMAIN_NAME=${NGINX_CONSOLE_OPENHIM_DOMAIN_NAME}
       - NGINX_BACKEND_DOMAIN_NAME=${NGINX_BACKEND_DOMAIN_NAME}
       - NGINX_KEYCLOAK_DOMAIN_NAME=${NGINX_KEYCLOAK_DOMAIN_NAME}
       - NGINX_MINIO_DOMAIN_NAME=${NGINX_MINIO_DOMAIN_NAME}
       - NGINX_CONSOLE_MINIO_DOMAIN_NAME=${NGINX_CONSOLE_MINIO_DOMAIN_NAME}
-      - NGINX_SUPERSET_DOMAIN_NAME=${NGINX_SUPERSET_DOMAIN_NAME}
-      - NGINX_SUPERSET_GUEST_DOMAIN_NAME=${NGINX_SUPERSET_GUEST_DOMAIN_NAME}
+      # - NGINX_SUPERSET_DOMAIN_NAME=${NGINX_SUPERSET_DOMAIN_NAME}
+      # - NGINX_SUPERSET_GUEST_DOMAIN_NAME=${NGINX_SUPERSET_GUEST_DOMAIN_NAME}
       - NGINX_AIRFLOW_DOMAIN_NAME=${NGINX_AIRFLOW_DOMAIN_NAME}
-      - NGINX_HOP_DOMAIN_NAME=${NGINX_HOP_DOMAIN_NAME}
-      - NGINX_DRUID_DOMAIN_NAME=${NGINX_DRUID_DOMAIN_NAME}
-      - NGINX_DRUID_COORDINATOR_DOMAIN_NAME=${NGINX_DRUID_COORDINATOR_DOMAIN_NAME}
+      # - NGINX_HOP_DOMAIN_NAME=${NGINX_HOP_DOMAIN_NAME}
+      # - NGINX_DRUID_DOMAIN_NAME=${NGINX_DRUID_DOMAIN_NAME}
+      # - NGINX_DRUID_COORDINATOR_DOMAIN_NAME=${NGINX_DRUID_COORDINATOR_DOMAIN_NAME}
       - NGINX_UPSTREAM_FRONTEND=${NGINX_UPSTREAM_FRONTEND}
       - NGINX_UPSTREAM_BACKEND=${NGINX_UPSTREAM_BACKEND}
       - NGINX_UPSTREAM_AIRFLOW=${NGINX_UPSTREAM_AIRFLOW}
       - NGINX_UPSTREAM_KEYCLOAK=${NGINX_UPSTREAM_KEYCLOAK}
       - NGINX_UPSTREAM_MINIO=${NGINX_UPSTREAM_MINIO}
-      - NGINX_UPSTREAM_SUPERSET=${NGINX_UPSTREAM_SUPERSET}
-      - NGINX_UPSTREAM_OPENHIM=${NGINX_UPSTREAM_OPENHIM}
-      - NGINX_UPSTREAM_CONSOLE_OPENHIM=${NGINX_UPSTREAM_CONSOLE_OPENHIM}
-      - NGINX_UPSTREAM_HOP=${NGINX_UPSTREAM_HOP}
-      - NGINX_UPSTREAM_DRUID=${NGINX_UPSTREAM_DRUID}
-      - NGINX_UPSTREAM_DRUID_COORDINATOR=${NGINX_UPSTREAM_DRUID_COORDINATOR}
+      # - NGINX_UPSTREAM_SUPERSET=${NGINX_UPSTREAM_SUPERSET}
+      # - NGINX_UPSTREAM_OPENHIM=${NGINX_UPSTREAM_OPENHIM}
+      # - NGINX_UPSTREAM_CONSOLE_OPENHIM=${NGINX_UPSTREAM_CONSOLE_OPENHIM}
+      # - NGINX_UPSTREAM_HOP=${NGINX_UPSTREAM_HOP}
+      # - NGINX_UPSTREAM_DRUID=${NGINX_UPSTREAM_DRUID}
+      # - NGINX_UPSTREAM_DRUID_COORDINATOR=${NGINX_UPSTREAM_DRUID_COORDINATOR}
       - AIRFLOW__WEBSERVER__SESSION_LIFETIME_MINUTES=${AIRFLOW__WEBSERVER__SESSION_LIFETIME_MINUTES}
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
@@ -611,66 +611,66 @@ services:
       - airflow-webserver
       - backend
       - storage
-      - openhim-console
-      - coordinator
-      - router
-      - hop
+      # - openhim-console
+      # - coordinator
+      # - router
+      # - hop
       - frontend
       - keycloak
-      - openhim-core
-      - superset
+      # - openhim-core
+      # - superset
 
   # =====
   #  OpenHIM
   # =====
 
-  mongo-db:
-    container_name: mongo-db
-    image: mongo:4.0
-    volumes:
-      - "mongo-data:/data/db"
-    restart: unless-stopped
+  # mongo-db:
+  #   container_name: mongo-db
+  #   image: mongo:4.0
+  #   volumes:
+  #     - "mongo-data:/data/db"
+  #   restart: unless-stopped
 
-  openhim-core:
-    container_name: openhim-core
-    image: jembi/openhim-core:latest
-    restart: unless-stopped
-    environment:
-      - mongo_url=mongodb://mongo-db/openhim-development
-      - mongo_atnaUrl=mongodb://mongo-db/openhim-development
-      - api_authenticationTypes=["token", "basic", "openid", "local"]
-      - authentication_enableCustomTokenAuthentication=true
-      - api_openid_url=${OPENHIM_KEYCLOAK_FRONTEND_URL}/realms/${OPENHIM_KEYCLOAK_REALM_NAME}
-      - api_openid_callbackUrl=${OPENHIM_KEYCLOAK_ROOT_URL}
-      - api_openid_clientId=${OPENHIM_KEYCLOAK_CLIENT_ID}
-      - api_openid_clientSecret=${OPENHIM_KEYCLOAK_SECRET}
-      - NODE_TLS_REJECT_UNAUTHORIZED=0
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-      - "keycloak.igad.local:host-gateway"
-    depends_on:
-      - mongo-db
-    healthcheck:
-      test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
-      interval: 30s
-      timeout: 30s
-      retries: 3
+  # openhim-core:
+  #   container_name: openhim-core
+  #   image: jembi/openhim-core:latest
+  #   restart: unless-stopped
+  #   environment:
+  #     - mongo_url=mongodb://mongo-db/openhim-development
+  #     - mongo_atnaUrl=mongodb://mongo-db/openhim-development
+  #     - api_authenticationTypes=["token", "basic", "openid", "local"]
+  #     - authentication_enableCustomTokenAuthentication=true
+  #     - api_openid_url=${OPENHIM_KEYCLOAK_FRONTEND_URL}/realms/${OPENHIM_KEYCLOAK_REALM_NAME}
+  #     - api_openid_callbackUrl=${OPENHIM_KEYCLOAK_ROOT_URL}
+  #     - api_openid_clientId=${OPENHIM_KEYCLOAK_CLIENT_ID}
+  #     - api_openid_clientSecret=${OPENHIM_KEYCLOAK_SECRET}
+  #     - NODE_TLS_REJECT_UNAUTHORIZED=0
+  #   extra_hosts:
+  #     - "host.docker.internal:host-gateway"
+  #     - "keycloak.igad.local:host-gateway"
+  #   depends_on:
+  #     - mongo-db
+  #   healthcheck:
+  #     test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
+  #     interval: 30s
+  #     timeout: 30s
+  #     retries: 3
 
-  openhim-console:
-    container_name: openhim-console
-    image: jembi/openhim-console:latest
-    environment:
-      - KC_OPENHIM_SSO_ENABLED=true
-      - KC_OPENHIM_CLIENT_ID=${OPENHIM_KEYCLOAK_CLIENT_ID}
-      - KC_REALM_NAME=${OPENHIM_KEYCLOAK_REALM_NAME}
-      - KC_FRONTEND_URL=${OPENHIM_KEYCLOAK_FRONTEND_URL}
-      - OPENHIM_CORE_MEDIATOR_HOSTNAME=${OPENHIM_CORE_MEDIATOR_HOSTNAME}
-      - OPENHIM_MEDIATOR_API_PORT=${OPENHIM_MEDIATOR_API_PORT}
-    depends_on:
-      - openhim-core
-    restart: unless-stopped
-    healthcheck:
-      test: "curl -sS http://openhim-console || exit 1"
-      interval: 30s
-      timeout: 30s
-      retries: 3
+  # openhim-console:
+  #   container_name: openhim-console
+  #   image: jembi/openhim-console:latest
+  #   environment:
+  #     - KC_OPENHIM_SSO_ENABLED=true
+  #     - KC_OPENHIM_CLIENT_ID=${OPENHIM_KEYCLOAK_CLIENT_ID}
+  #     - KC_REALM_NAME=${OPENHIM_KEYCLOAK_REALM_NAME}
+  #     - KC_FRONTEND_URL=${OPENHIM_KEYCLOAK_FRONTEND_URL}
+  #     - OPENHIM_CORE_MEDIATOR_HOSTNAME=${OPENHIM_CORE_MEDIATOR_HOSTNAME}
+  #     - OPENHIM_MEDIATOR_API_PORT=${OPENHIM_MEDIATOR_API_PORT}
+  #   depends_on:
+  #     - openhim-core
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: "curl -sS http://openhim-console || exit 1"
+  #     interval: 30s
+  #     timeout: 30s
+  #     retries: 3
