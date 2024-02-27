@@ -260,7 +260,7 @@
         <type>2</type>
       </field>
     </fields>
-    <jsonCredentialPath>${PROJECT_HOME}/keys.json</jsonCredentialPath>
+    <jsonCredentialPath>${pipeline_source}/keys.json</jsonCredentialPath>
     <sampleFields>100</sampleFields>
     <spreadsheetKey>1WGFNgsmNwhEtNB5OmBif3qrP3yIOoEOeNCqNKUMyzr4</spreadsheetKey>
     <timeout>5</timeout>
@@ -334,7 +334,7 @@
         <type>2</type>
       </field>
     </fields>
-    <jsonCredentialPath>${PROJECT_HOME}/keys.json</jsonCredentialPath>
+    <jsonCredentialPath>${pipeline_source}/keys.json</jsonCredentialPath>
     <sampleFields>100</sampleFields>
     <spreadsheetKey>1WGFNgsmNwhEtNB5OmBif3qrP3yIOoEOeNCqNKUMyzr4</spreadsheetKey>
     <timeout>5</timeout>
