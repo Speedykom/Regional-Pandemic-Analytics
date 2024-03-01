@@ -19,18 +19,18 @@ const { publicRuntimeConfig } = getConfig();
 export default function Home() {
   const { hasPermission } = usePermission();
 
-  var { data } = useGetDashboardsQuery('');
+  const { data } = useGetDashboardsQuery('');
   const dashboardIds = data?.result
     .map((d: any) => Number(d?.id))
     .filter((id: any) => !Number.isNaN(id));
-  var { data: favoriteStatus } = useGetFavoriteDashboardsQuery(
+  const { data: favoriteStatus } = useGetFavoriteDashboardsQuery(
     dashboardIds ?? skipToken
   );
 
-  let favoriteDashboardIds = favoriteStatus?.result
+  const favoriteDashboardIds = favoriteStatus?.result
     .filter((favorite: FavoriteDashboardResult) => favorite?.value)
     .map((favorite: FavoriteDashboardResult) => Number(favorite?.id));
-  let favoriteData =
+  const favoriteData =
     data && favoriteStatus
       ? {
           ...data,
