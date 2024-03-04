@@ -59,7 +59,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "core.middleware.KeycloakMiddleware",
-    "core.user_id.UserIdMiddleware"
+    "core.user_id.UserIdMiddleware",
+    "django.middleware.gzip.GZipMiddleware"
 ]
 
 ROOT_URLCONF = "core.urls"
