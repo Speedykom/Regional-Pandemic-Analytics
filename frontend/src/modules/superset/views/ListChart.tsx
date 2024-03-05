@@ -17,7 +17,7 @@ export const ChartList = () => {
   const { t } = useTranslation();
   const [searchInput, setSearchInput] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5); // Adjusted to 5 items per page
+  const [itemsPerPage] = useState(5); // Adjusted to 5 items per page
   const { data } = useGetChartsQuery(searchInput);
 
   const lastItemIndex = currentPage * itemsPerPage;
