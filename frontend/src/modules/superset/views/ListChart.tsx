@@ -41,7 +41,7 @@ export const ChartList = () => {
       </nav>
       <input
         type="text"
-        placeholder={t('searchForCharts')}
+        placeholder="Search for charts..."
         className="w-full border border-gray-300 rounded-md p-2 mb-3"
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
