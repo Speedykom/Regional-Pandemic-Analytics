@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     "accounts",
     "process",
     "pipeline",
-    "data",
     "hop",
     "rest_framework.authtoken",
     "rest_framework",
