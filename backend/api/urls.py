@@ -3,7 +3,6 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.urls import re_path, path, include
-from data.views import DataUploadAPIView
 from accounts import views
 
 from hop.views import ListHopAPIView, GetSingleHopAPIView, NewHopAPIView
@@ -99,11 +98,7 @@ urlpatterns = [
     path("pipeline", include("pipeline.urls")),
     # ---------------------- Process Chain  Endpoints ------------------------------------------
     path("process", include("process.urls")),
-    # ---------------------- Data upload Endpoints ------------------------------------------
-    # endpoint for uploading data
-    path("data/upload/", DataUploadAPIView.as_view()),
     # ---------------------- Hop Endpoints ------------------------------------------
-    # endpoint for uploading data
     path("hop/", ListHopAPIView.as_view()),
     path("hop/<str:query>", ListHopAPIView.as_view()),
     path("hop/new/", NewHopAPIView.as_view()),

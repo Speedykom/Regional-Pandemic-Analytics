@@ -5,7 +5,6 @@ import authReducer, { authApi, hopAuthApi } from '@/modules/auth/auth';
 import { pipelineApi } from '@/modules/pipeline/pipeline';
 import { userApi } from '@/modules/user/user';
 import { roleApi } from '@/modules/roles/role';
-import { dataApi } from '@/modules/data/data';
 import sidebarSlice from '../components/Dashboard/SidebarSlice';
 
 export const store = configureStore({
@@ -13,7 +12,6 @@ export const store = configureStore({
     [dashboardApi.reducerPath]: dashboardApi.reducer,
     [chartApi.reducerPath]: chartApi.reducer,
     [processApi.reducerPath]: processApi.reducer,
-    [dataApi.reducerPath]: dataApi.reducer,
     [pipelineApi.reducerPath]: pipelineApi.reducer,
     [authApi.reducerPath]: authApi.reducer,
     [hopAuthApi.reducerPath]: hopAuthApi.reducer,
@@ -27,7 +25,6 @@ export const store = configureStore({
       .concat(dashboardApi.middleware)
       .concat(chartApi.middleware)
       .concat(processApi.middleware)
-      .concat(dataApi.middleware)
       .concat(authApi.middleware)
       .concat(hopAuthApi.middleware)
       .concat(pipelineApi.middleware)

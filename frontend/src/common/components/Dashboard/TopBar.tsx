@@ -31,6 +31,8 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
   const [logout] = useLogoutMutation();
   const [logoutFromHop] = useLogoutFromHopMutation();
   const currentUser = useSelector(selectCurrentUser);
+  // eslint-disable-next-line no-console
+  console.log(currentUser);
   const username = currentUser?.given_name;
   const { t } = useTranslation();
   const handleLogout = async () => {

@@ -26,6 +26,8 @@ import { useDisableUserMutation, useGetUsersQuery } from '../user';
 
 export const UserList = () => {
   const { data, refetch } = useGetUsersQuery();
+  // eslint-disable-next-line no-console
+  console.log(data);
   const [disableUser, { isLoading }] = useDisableUserMutation();
   const router = useRouter();
   const { t } = useTranslation();
