@@ -18,6 +18,7 @@ const enTranslation = {
   name: 'Name',
   description: 'Description',
   createPipeline: 'Create Pipeline',
+  uploadPipeline: 'Upload Pipeline',
   view: 'View',
   processChain: 'Process Chain',
   viewAndManageProcessChains: 'View and manage all process chains',
