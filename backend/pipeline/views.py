@@ -61,44 +61,72 @@ class PipelineListView(APIView):
     def post(self, request):
         """Create a pipeline from a chosen template for a specific user"""
         user_id = get_current_user_id(request)
-
         name = request.data["name"]
-        template = request.data["template"]
         description = request.data["description"]
+        template = request.data.get("template")
+        uploadedFile = request.data.get("uploadedFile")
+        if (template and (uploadedFile == None)):
+            try:
+                # Checks if an object with the same name exits
+                client_response = client.get_object(
+                    "pipelines", f"pipelines-created/{user_id}/{name}"
+                )
+                client_response.close()
+                client_response.release_conn()
+                return Response(
+                    {
+                        "status": "Fail",
+                        "message": f"file already exists with the name {name}",
+                    },
+                    status=409,
+                )
+            except:
+                # Create new pipeline by:
+                #   1. copying the template,
+                #   2. renaming it to another index in the same bukcket
+                #   3. adding metadata: description + date of creation
+                client_result = client.copy_object(
+                    "pipelines",
+                    f"pipelines-created/{user_id}/{name}.hpl",
+                    CopySource("pipelines", f"templates/{template}"),
+                    metadata={
+                        "description": f"{description}",
+                        "created": f"{datetime.utcnow()}",
+                    },
+                    metadata_directive=REPLACE,
+                )
 
-        try:
-            # Checks if an object with the same name exits
-            client_response = client.get_object(
-                "pipelines", f"pipelines-created/{user_id}/{name}"
-            )
-            client_response.close()
-            client_response.release_conn()
-            return Response(
-                {
-                    "status": "Fail",
-                    "message": f"file already exists with the name {name}",
-                },
-                status=409,
-            )
-        except:
-            # Create new pipeline by:
-            #   1. copying the template,
-            #   2. renaming it to another index in the same bukcket
-            #   3. adding metadata: description + date of creation
-            client_result = client.copy_object(
-                "pipelines",
-                f"pipelines-created/{user_id}/{name}.hpl",
-                CopySource("pipelines", f"templates/{template}"),
-                metadata={
-                    "description": f"{description}",
-                    "created": f"{datetime.utcnow()}",
-                },
-                metadata_directive=REPLACE,
-            )
-
+                return Response({"status": "success"}, status=status.HTTP_200_OK)
+        else: 
+            if (uploadedFile and (template == None)) :
+                print(uploadedFile)
+                try:
+                    # Checks if an object with the same name exits
+                    client_response = client.get_object(
+                        "pipelines", f"pipelines-created/{user_id}/{name}"
+                    )
+                    client_response.close()
+                    client_response.release_conn()
+                    return Response(
+                        {
+                            "status": "Fail",
+                            "message": f"file already exists with the name {name}",
+                        },
+                        status=409,
+                    )
+                except:
+                    # upload new pipeline by:
+                    #   1. copying the template,
+                    #   2. renaming it to another index in the same bukcket
+                    #   3. adding metadata: description + date of creation
+                    # client_result = client.put_object(
+                    #     "pipelines",
+                    #     f"pipelines-created/{name}.hpl",
+                    #     uploadedFile,
+                    #     uploadedFile.getbuffer().nbytes
+                    # ) 
+                    pass               
             return Response({"status": "success"}, status=status.HTTP_200_OK)
-
-
 class PipelineDetailView(APIView):
     keycloak_scopes = {
         "PUT": "pipeline:update",
