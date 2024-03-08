@@ -52,7 +52,7 @@ class PipelineListView(APIView):
                 {
                     "name": object_name,
                     "description": object.metadata["X-Amz-Meta-Description"],
-                }    
+                }
             )
 
         return Response(
@@ -177,8 +177,8 @@ class PipelineDownloadView(APIView):
     keycloak_scopes = {
         "GET": "pipeline:read",
     }
-    
-    def get(self, request, name=None):        
+
+    def get(self, request, name=None):
         """Download a specific pipeline."""
         user_id = get_current_user_id(request)
         try:
@@ -205,7 +205,7 @@ class PipelineUploadView(APIView):
         "POST": "pipeline:add",
         "GET": "pipeline:read",
     }
-    
+
     def post(self, request, format=None):
         user_id = get_current_user_id(request)
         name = request.data.get("name")
@@ -227,7 +227,7 @@ class PipelineUploadView(APIView):
                     status=409,
                 )
             except:
-                # upload new pipeline 
+                # upload new pipeline
                 client_result = client.put_object(
                 bucket_name='pipelines',
                 object_name=f"pipelines-created/{user_id}/{name}.hpl",
@@ -237,7 +237,7 @@ class PipelineUploadView(APIView):
                     "description": f"{description}",
                     "created": f"{datetime.utcnow()}",
                 },
-                ) 
-                             
+                )
+
             return Response({"status": "success"}, status=status.HTTP_200_OK)
 
