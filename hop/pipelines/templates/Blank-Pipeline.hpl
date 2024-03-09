@@ -68,10 +68,10 @@ specefic characters</note>
     <filename_create_parent_folders>Y</filename_create_parent_folders>
     <filename_datetime_format>yyyyMMdd-HHmmss</filename_datetime_format>
     <filename_ext>parquet</filename_ext>
-    <filename_include_copy>Y</filename_include_copy>
+    <filename_include_copy>N</filename_include_copy>
     <filename_include_date>N</filename_include_date>
     <filename_include_datetime>N</filename_include_datetime>
-    <filename_include_split>Y</filename_include_split>
+    <filename_include_split>N</filename_include_split>
     <filename_include_time>N</filename_include_time>
     <filename_split_size>1000000</filename_split_size>
     <row_group_size>268435456</row_group_size>
