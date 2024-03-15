@@ -40,7 +40,7 @@ export default function CreateChartButton({
       disabled={!state.hasDatasetUrl}
       onClick={() => openSupersetWithNewChart(state.createChartUrl as string)}
     >
-      Create a chart
+      Add a chart
     </Button>
   );
 }
