@@ -1,5 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { dashboardApi, chartApi } from '@/modules/superset/superset';
+import {
+  dashboardApi,
+  chartApi,
+  thumbnailApi,
+} from '@/modules/superset/superset';
 import { processApi } from '@/modules/process/process';
 import authReducer, { authApi, hopAuthApi } from '@/modules/auth/auth';
 import { pipelineApi } from '@/modules/pipeline/pipeline';
@@ -11,6 +15,7 @@ import sidebarSlice from '../components/Dashboard/SidebarSlice';
 export const store = configureStore({
   reducer: {
     [dashboardApi.reducerPath]: dashboardApi.reducer,
+    [thumbnailApi.reducerPath]: thumbnailApi.reducer,
     [chartApi.reducerPath]: chartApi.reducer,
     [processApi.reducerPath]: processApi.reducer,
     [dataApi.reducerPath]: dataApi.reducer,
@@ -25,6 +30,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
       .concat(dashboardApi.middleware)
+      .concat(thumbnailApi.middleware)
       .concat(chartApi.middleware)
       .concat(processApi.middleware)
       .concat(dataApi.middleware)
