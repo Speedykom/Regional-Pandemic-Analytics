@@ -10,5 +10,4 @@ COPY repan-superset-startup.sh /usr/bin/repan-superset-startup.sh
 USER superset
 
 VOLUME ["/app/import"]
-ENTRYPOINT [ "/bin/bash" ]
 CMD ["/usr/bin/repan-superset-startup.sh"]

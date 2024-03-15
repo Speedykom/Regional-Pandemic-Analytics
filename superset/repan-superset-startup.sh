@@ -25,8 +25,10 @@ fi
 
 echo "Starting Superset server…"
 
+export SERVER_WORKER_AMOUNT=5
+
 if test "$1" = "--dev"; then
-    FLASK_ENV=development flask run -p 8088 --with-threads --reload --debugger --host=0.0.0.0
+   FLASK_ENV=development flask run -p 8088 --with-threads --reload --debugger --host=0.0.0.0
 else
     /usr/bin/run-server.sh
 fi
