@@ -109,27 +109,31 @@ You can map your OrganisationUnits and DataElements here.</note>
       <width>378</width>
     </notepad>
     <notepad>
-      <backgroundcolorblue>11</backgroundcolorblue>
-      <backgroundcolorgreen>33</backgroundcolorgreen>
-      <backgroundcolorred>204</backgroundcolorred>
-      <bordercolorblue>250</bordercolorblue>
-      <bordercolorgreen>231</bordercolorgreen>
-      <bordercolorred>200</bordercolorred>
+      <backgroundcolorblue>90</backgroundcolorblue>
+      <backgroundcolorgreen>98</backgroundcolorgreen>
+      <backgroundcolorred>188</backgroundcolorred>
+      <bordercolorblue>90</bordercolorblue>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorred>14</bordercolorred>
       <fontbold>N</fontbold>
-      <fontcolorblue>250</fontcolorblue>
-      <fontcolorgreen>231</fontcolorgreen>
-      <fontcolorred>200</fontcolorred>
+      <fontcolorblue>90</fontcolorblue>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorred>14</fontcolorred>
       <fontitalic>N</fontitalic>
       <fontname>.AppleSystemUIFont</fontname>
       <fontsize>13</fontsize>
-      <height>74</height>
-      <xloc>1936</xloc>
-      <yloc>224</yloc>
-      <note>Please do not edit or remove the 
-Parquet File Output transform
+      <height>138</height>
+      <xloc>1904</xloc>
+      <yloc>240</yloc>
+      <note>This is a mandatory transform! Please do not remove.
+Only add the fields you want to process.
 
-This is a prerequisite to make this pipeline working</note>
-      <width>316</width>
+See the example fields provided for you when 
+click on edit transform
+
+Target fields don't accept white spaces or 
+specefic characters</note>
+      <width>333</width>
     </notepad>
   </notepads>
   <order>

@@ -109,27 +109,31 @@ You can map your OrganisationUnits and DataElements here.</note>
       <width>378</width>
     </notepad>
     <notepad>
-      <backgroundcolorblue>11</backgroundcolorblue>
-      <backgroundcolorgreen>33</backgroundcolorgreen>
-      <backgroundcolorred>204</backgroundcolorred>
-      <bordercolorblue>250</bordercolorblue>
-      <bordercolorgreen>231</bordercolorgreen>
-      <bordercolorred>200</bordercolorred>
+      <backgroundcolorblue>90</backgroundcolorblue>
+      <backgroundcolorgreen>98</backgroundcolorgreen>
+      <backgroundcolorred>188</backgroundcolorred>
+      <bordercolorblue>90</bordercolorblue>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorred>14</bordercolorred>
       <fontbold>N</fontbold>
-      <fontcolorblue>250</fontcolorblue>
-      <fontcolorgreen>231</fontcolorgreen>
-      <fontcolorred>200</fontcolorred>
+      <fontcolorblue>90</fontcolorblue>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorred>14</fontcolorred>
       <fontitalic>N</fontitalic>
       <fontname>.AppleSystemUIFont</fontname>
       <fontsize>13</fontsize>
-      <height>74</height>
-      <xloc>1936</xloc>
+      <height>138</height>
+      <xloc>1888</xloc>
       <yloc>224</yloc>
-      <note>Please do not edit or remove the 
-Parquet File Output transform
+      <note>This is a mandatory transform! Please do not remove.
+Only add the fields you want to process.
 
-This is a prerequisite to make this pipeline working</note>
-      <width>316</width>
+See the example fields provided for you when 
+click on edit transform
+
+Target fields don't accept white spaces or 
+specefic characters</note>
+      <width>333</width>
     </notepad>
   </notepads>
   <order>
@@ -262,10 +266,6 @@ This is a prerequisite to make this pipeline working</note>
     </partitioning>
     <fields>
       <field>
-        <currency/>
-        <decimal/>
-        <format/>
-        <group/>
         <length>-1</length>
         <name>api</name>
         <nullif>https://snis-dhis2.gouv.dj/dhis/api/analytics.json?dimension=dx:uNPwHRXzuYE;ex3sghNU4i2;uoZhzBpYk9P;kprL8EhMxko;PO9tmHgqBrQ;FEh1O5vNtLR;R1scpNsZyut;mE0TuzUxn4N;DyhciYoSzKm;pksFvmb8vzz;feWx5OgO3Oy;FAw5SisLI2j;BJx6NkXNi1q;kOi3EwSsnFf;jZhZC7xkDEX;f3mb25Jo8JY;PlOlDrzjHrQ;W8Tw7YEovp6;Uv26sKZ7qSB;ivuT76o8iZf;ztgmVuU0CYt;KQHjrzei8gJ;AogOeZv250B;P8r9HWCM3Ni;D4PUgkTctTO;zQiAxFEHQtb;BsXRid9W01e;hal3fSCqAu9;QmAvGKoPzIo;l9OjYKD2hy5;ffOoHunoLSG;COrLLDK5Xbu;R7mOK1qJDx0;yxABm3pnYEM;iuE1WFkNRSB;LuU2HtTRbbe;HtjxilJlprc;hKRU8TPaG4J;RhlKhKSjruc;XaHFwL7mE0P;h4NG6IkQ7I0;rBu7GPDyqW3;M8PDtnxruzA;AVgqKbYOaee;HdMxagiCWKX;X5HRzv4wfX4;psq6XvS0xKN;b96XnB5lkFm;MPj6ZPQsvLZ;r4t8g5jzkcw;ihia3sxq9BP;F5rIMT3tYaB;GDyoSROOj9x;mjUoFFIrnei;ns747fB7VoL;BoR7IFV5fID;wIuN6tPyqdn;qvGgHvwIWnQ;GUfUQg1MNt3;bppCi5da9Hy;mCM9FbcVYHc;u4EktpxTtlS;LhUfZ63tLc3;X125ot8S8Jf;dlyQ67qJBAW;g9QSedKf9Mf;AIngtCpj0g4;sOGQ08oETPo;ZSE2JefelvP;CbXrhU6FQcw;qF427HS1UEn;bNv3e1w4d3e;Y13tA0ntjjP;Iiqv9zrSHP6;a0Sn8CEv243;F0nwboCQmhB;tA9TKYjiCer;DZDk6creKZo;kyKw5UfEh4J;iCcrHs2cHR&amp;dimension=pe:LAST_12_MONTHS&amp;dimension=ou:LEVEL-2&amp;displayProperty=SHORTNAME</nullif>
@@ -274,10 +274,6 @@ This is a prerequisite to make this pipeline working</note>
         <type>String</type>
       </field>
       <field>
-        <currency/>
-        <decimal/>
-        <format/>
-        <group/>
         <length>-1</length>
         <name>orgunits</name>
         <nullif>https://snis-dhis2.gouv.dj/dhis/api/organisationUnits?level=2&amp;fields=id,name,geometry,parent[id,name]&amp;paging=false</nullif>
@@ -286,10 +282,6 @@ This is a prerequisite to make this pipeline working</note>
         <type>String</type>
       </field>
       <field>
-        <currency/>
-        <decimal/>
-        <format/>
-        <group/>
         <length>-1</length>
         <name>diseases</name>
         <nullif>https://snis-dhis2.gouv.dj/dhis/api/dataElements?filter=name:like:Paludisme&amp;filter=name:like:Rougeole&amp;filter=name:like:M%C3%A9ningite&amp;filter=name:like:Dengue&amp;rootJunction=OR&amp;paging=false</nullif>
