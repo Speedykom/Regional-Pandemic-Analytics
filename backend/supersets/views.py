@@ -71,7 +71,7 @@ class ListChartsAPI(SupersetAPI):
 
         if query:
             params = {
-                "q": '{"filters": [{"col": "slice_name", "opr": "ct", "value": "'+query+'"}]}'
+                "q": '{"filters": [{"col": "slice_name", "opr": "ct", "value": "'+query+'"}], "columns": ["slice_url", "slice_name", "viz_type", "datasource_name_text", "created_by", "created_on_delta_humanized", "changed_by"], "page_size": 1000000}'
             }
             response = requests.get(url=url, headers=headers, params=params)
         else:
