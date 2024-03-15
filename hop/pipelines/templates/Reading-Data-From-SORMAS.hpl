@@ -16,100 +16,114 @@
     <created_date>2022/03/09 08:35:58.984</created_date>
     <modified_user>-</modified_user>
     <modified_date>2022/03/09 08:35:58.984</modified_date>
-    <key_for_session_key>H4sIAAAAAAAA/wMAAAAAAAAAAAA=</key_for_session_key>
-    <is_key_private>N</is_key_private>
   </info>
   <notepads>
     <notepad>
+      <backgroundcolorblue>210</backgroundcolorblue>
+      <backgroundcolorgreen>136</backgroundcolorgreen>
+      <backgroundcolorred>15</backgroundcolorred>
+      <bordercolorblue>250</bordercolorblue>
+      <bordercolorgreen>231</bordercolorgreen>
+      <bordercolorred>200</bordercolorred>
+      <fontbold>N</fontbold>
+      <fontcolorblue>250</fontcolorblue>
+      <fontcolorgreen>231</fontcolorgreen>
+      <fontcolorred>200</fontcolorred>
+      <fontitalic>N</fontitalic>
+      <fontname>.AppleSystemUIFont</fontname>
+      <fontsize>13</fontsize>
+      <height>90</height>
+      <xloc>48</xloc>
+      <yloc>320</yloc>
       <note>Please ensure that the URL, Login Username and 
 password are entered correctly
 
 Please fill up in addition the Field tab with the 
 fields you want to return from the SORMAS</note>
-      <xloc>48</xloc>
-      <yloc>320</yloc>
       <width>310</width>
-      <heigth>90</heigth>
-      <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>200</fontcolorred>
-      <fontcolorgreen>231</fontcolorgreen>
-      <fontcolorblue>250</fontcolorblue>
-      <backgroundcolorred>15</backgroundcolorred>
-      <backgroundcolorgreen>136</backgroundcolorgreen>
-      <backgroundcolorblue>210</backgroundcolorblue>
-      <bordercolorred>200</bordercolorred>
-      <bordercolorgreen>231</bordercolorgreen>
-      <bordercolorblue>250</bordercolorblue>
     </notepad>
     <notepad>
-      <note>Use these helper transformation if you have a 
-date format different than MMM/dd/yyyy</note>
+      <backgroundcolorblue>210</backgroundcolorblue>
+      <backgroundcolorgreen>136</backgroundcolorgreen>
+      <backgroundcolorred>15</backgroundcolorred>
+      <bordercolorblue>250</bordercolorblue>
+      <bordercolorgreen>231</bordercolorgreen>
+      <bordercolorred>200</bordercolorred>
+      <fontbold>N</fontbold>
+      <fontcolorblue>250</fontcolorblue>
+      <fontcolorgreen>231</fontcolorgreen>
+      <fontcolorred>200</fontcolorred>
+      <fontitalic>N</fontitalic>
+      <fontname>.AppleSystemUIFont</fontname>
+      <fontsize>13</fontsize>
+      <height>42</height>
       <xloc>240</xloc>
       <yloc>80</yloc>
+      <note>Use these helper transformation if you have a 
+date format different than MMM/dd/yyyy</note>
       <width>289</width>
-      <heigth>42</heigth>
-      <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>200</fontcolorred>
-      <fontcolorgreen>231</fontcolorgreen>
-      <fontcolorblue>250</fontcolorblue>
-      <backgroundcolorred>15</backgroundcolorred>
-      <backgroundcolorgreen>136</backgroundcolorgreen>
-      <backgroundcolorblue>210</backgroundcolorblue>
-      <bordercolorred>200</bordercolorred>
-      <bordercolorgreen>231</bordercolorgreen>
-      <bordercolorblue>250</bordercolorblue>
     </notepad>
     <notepad>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorred>201</backgroundcolorred>
+      <bordercolorblue>90</bordercolorblue>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorred>14</bordercolorred>
+      <fontbold>N</fontbold>
+      <fontcolorblue>90</fontcolorblue>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorred>14</fontcolorred>
+      <fontitalic>N</fontitalic>
+      <fontname>.AppleSystemUIFont</fontname>
+      <fontsize>13</fontsize>
+      <height>58</height>
+      <xloc>624</xloc>
+      <yloc>48</yloc>
       <note>Use the remove nulls transform if you want to clean up your data 
 and remove nulls from a specific column
 An example of removing nulls from the Date column is provided</note>
-      <xloc>624</xloc>
-      <yloc>48</yloc>
       <width>404</width>
-      <heigth>58</heigth>
-      <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>14</fontcolorred>
-      <fontcolorgreen>58</fontcolorgreen>
-      <fontcolorblue>90</fontcolorblue>
-      <backgroundcolorred>201</backgroundcolorred>
-      <backgroundcolorgreen>232</backgroundcolorgreen>
-      <backgroundcolorblue>251</backgroundcolorblue>
-      <bordercolorred>14</bordercolorred>
-      <bordercolorgreen>58</bordercolorgreen>
-      <bordercolorblue>90</bordercolorblue>
     </notepad>
     <notepad>
+      <backgroundcolorblue>251</backgroundcolorblue>
+      <backgroundcolorgreen>232</backgroundcolorgreen>
+      <backgroundcolorred>201</backgroundcolorred>
+      <bordercolorblue>90</bordercolorblue>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorred>14</bordercolorred>
+      <fontbold>N</fontbold>
+      <fontcolorblue>90</fontcolorblue>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorred>14</fontcolorred>
+      <fontitalic>N</fontitalic>
+      <fontname>.AppleSystemUIFont</fontname>
+      <fontsize>13</fontsize>
+      <height>58</height>
+      <xloc>576</xloc>
+      <yloc>304</yloc>
       <note>Use this transform to sort data ascending or descending. 
 This transform is mandatory when trying to merge join 
 different data from different sources</note>
-      <xloc>576</xloc>
-      <yloc>304</yloc>
       <width>359</width>
-      <heigth>58</heigth>
-      <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>14</fontcolorred>
-      <fontcolorgreen>58</fontcolorgreen>
-      <fontcolorblue>90</fontcolorblue>
-      <backgroundcolorred>201</backgroundcolorred>
-      <backgroundcolorgreen>232</backgroundcolorgreen>
-      <backgroundcolorblue>251</backgroundcolorblue>
-      <bordercolorred>14</bordercolorred>
-      <bordercolorgreen>58</bordercolorgreen>
-      <bordercolorblue>90</bordercolorblue>
     </notepad>
     <notepad>
+      <backgroundcolorblue>90</backgroundcolorblue>
+      <backgroundcolorgreen>98</backgroundcolorgreen>
+      <backgroundcolorred>188</backgroundcolorred>
+      <bordercolorblue>90</bordercolorblue>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorred>14</bordercolorred>
+      <fontbold>N</fontbold>
+      <fontcolorblue>90</fontcolorblue>
+      <fontcolorgreen>58</fontcolorgreen>
+      <fontcolorred>14</fontcolorred>
+      <fontitalic>N</fontitalic>
+      <fontname>.AppleSystemUIFont</fontname>
+      <fontsize>13</fontsize>
+      <height>138</height>
+      <xloc>1120</xloc>
+      <yloc>304</yloc>
       <note>This is a mandatory transform! Please do not remove.
 Only add the fields you want to process.
 
@@ -118,23 +132,7 @@ click on edit transform
 
 Target fields don't accept white spaces or 
 specefic characters</note>
-      <xloc>1120</xloc>
-      <yloc>304</yloc>
       <width>333</width>
-      <heigth>138</heigth>
-      <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>14</fontcolorred>
-      <fontcolorgreen>58</fontcolorgreen>
-      <fontcolorblue>90</fontcolorblue>
-      <backgroundcolorred>188</backgroundcolorred>
-      <backgroundcolorgreen>98</backgroundcolorgreen>
-      <backgroundcolorblue>90</backgroundcolorblue>
-      <bordercolorred>14</bordercolorred>
-      <bordercolorgreen>58</bordercolorgreen>
-      <bordercolorblue>90</bordercolorblue>
     </notepad>
   </notepads>
   <order>
@@ -244,14 +242,14 @@ specefic characters</note>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <send_true_to/>
-    <send_false_to/>
     <compare>
       <condition>
-        <negated>N</negated>
-        <leftvalue>Date</leftvalue>
+        <conditions>
+</conditions>
         <function>IS NOT NULL</function>
-        <rightvalue/>
+        <leftvalue>Date</leftvalue>
+        <negated>N</negated>
+        <operator>-</operator>
       </condition>
     </compare>
     <attributes/>
@@ -335,6 +333,7 @@ specefic characters</note>
     <filename_include_datetime>N</filename_include_datetime>
     <filename_include_split>N</filename_include_split>
     <filename_include_time>N</filename_include_time>
+    <filename_split_size>1000000</filename_split_size>
     <row_group_size>20000</row_group_size>
     <version>1.0</version>
     <attributes/>
