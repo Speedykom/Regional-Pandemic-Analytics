@@ -23,6 +23,10 @@ export default function Orchestration({
   const lastParsedTimeDate = new Date(lastParsedTime);
   const nextDagRunDate = new Date(nextDagRun);
 
+  const isValidDate = (date: Date) => {
+    return date.getTime() !== new Date(0).getTime();
+  };
+
   return (
     <div className="flex flex-col space-y-3 ">
       <div className="flex justify-center">
@@ -37,12 +41,14 @@ export default function Orchestration({
               {lastParsedTimeDate.toUTCString()}
             </TableCell>
           </TableRow>
-          <TableRow>
-            <TableHeaderCell>Next scheduled execution</TableHeaderCell>
-            <TableCell className="whitespace-normal">
-              {nextDagRunDate.toUTCString()}
-            </TableCell>
-          </TableRow>
+          {isValidDate(nextDagRunDate) && (
+            <TableRow>
+              <TableHeaderCell>Next scheduled execution</TableHeaderCell>
+              <TableCell className="whitespace-normal">
+                {nextDagRunDate.toUTCString()}
+              </TableCell>
+            </TableRow>
+          )}
         </Table>
       </div>
       <div className="">
