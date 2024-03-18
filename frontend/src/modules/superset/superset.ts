@@ -52,11 +52,15 @@ export const thumbnailApi = createApi({
   reducerPath: 'thumbnailApi',
   baseQuery: retry(baseQuery),
   endpoints: (builder) => ({
-    getDashboardThumbnail: builder.query<any, string>({
+    getDashboardThumbnail: builder.query<string, string>({
       query: (id) => ({
         url: `/superset/dashboard/${id}/thumbnail`,
         responseHandler: async (response: Response) =>
-          URL.createObjectURL(await response.blob()),
+          new Promise(async (resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(await response.blob());
+          }),
         validateStatus(res: Response) {
           return res.ok && res.status !== 202;
         },
