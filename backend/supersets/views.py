@@ -158,7 +158,7 @@ class GetThumbnail(SupersetAPI):
             logging.error("Failed to read thumbnail (status code %d)", thumbnail_response.status_code)
             return Response({ "errorMessage": "Failed to read thumbnail from Superset" }, status=thumbnail_response.status_code)
 
-        return StreamingHttpResponse(thumbnail_response.iter_content(chunk_size=None), status=200, content_type=thumbnail_response.headers.get('Content-Type'))
+        return StreamingHttpResponse(thumbnail_response.iter_content(chunk_size=None), status=thumbnail_response.status_code, content_type=thumbnail_response.headers.get('Content-Type'))
 
 class GetFavoriteStatus(SupersetAPI):
     """
