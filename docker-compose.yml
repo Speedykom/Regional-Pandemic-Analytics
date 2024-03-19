@@ -384,7 +384,7 @@ services:
   # =======
   superset_cache:
     container_name: superset_cache
-    image: redis:5
+    image: redis:7
     restart: always
 
   superset_db:
