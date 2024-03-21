@@ -10,6 +10,7 @@ import { FavoriteDashboardResult } from '../../interface';
 import { StarIcon as StarSolid } from '@heroicons/react/24/solid';
 import { StarIcon as StarOutline } from '@heroicons/react/24/outline';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
+import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 export function ListDashboardCard({
@@ -26,6 +27,15 @@ export function ListDashboardCard({
   const { data: thumbnailUrl } = useGetDashboardThumbnailQuery(
     data?.id ?? skipToken
   );
+
+  useEffect(() => {
+    if (thumbnailUrl) {
+      const urlToCleanUp = thumbnailUrl;
+      return () => {
+        URL.revokeObjectURL(urlToCleanUp);
+      };
+    }
+  }, [thumbnailUrl]);
 
   const getIsFavorite = (id: number) => {
     return favoriteStatus?.result.find(

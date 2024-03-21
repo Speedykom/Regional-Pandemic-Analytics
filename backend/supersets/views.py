@@ -71,7 +71,7 @@ class ListChartsAPI(SupersetAPI):
 
         if query:
             params = {
-                "q": '{"filters": [{"col": "slice_name", "opr": "ct", "value": "'+query+'"}], "columns": ["slice_url", "slice_name", "viz_type", "datasource_name_text", "created_by", "created_on_delta_humanized", "changed_by"], "page_size": 1000000}'
+                "q": '{"filters": [{"col": "slice_name", "opr": "ct", "value": "'+query+'"}]}'
             }
             response = requests.get(url=url, headers=headers, params=params)
         else:
@@ -158,7 +158,7 @@ class GetThumbnail(SupersetAPI):
             logging.error("Failed to read thumbnail (status code %d)", thumbnail_response.status_code)
             return Response({ "errorMessage": "Failed to read thumbnail from Superset" }, status=thumbnail_response.status_code)
 
-        return StreamingHttpResponse(thumbnail_response.iter_content(chunk_size=None), status=thumbnail_response.status_code, content_type=thumbnail_response.headers.get('Content-Type'))
+        return StreamingHttpResponse(thumbnail_response.iter_content(chunk_size=None), status=200, content_type=thumbnail_response.headers.get('Content-Type'))
 
 class GetFavoriteStatus(SupersetAPI):
     """

@@ -19,26 +19,29 @@ const { publicRuntimeConfig } = getConfig();
 export default function Home() {
   const { hasPermission } = usePermission();
 
-  const { data } = useGetDashboardsQuery('');
+  var { data } = useGetDashboardsQuery('');
   const dashboardIds = data?.result
     .map((d: any) => Number(d?.id))
     .filter((id: any) => !Number.isNaN(id));
-  const { data: favoriteStatus } = useGetFavoriteDashboardsQuery(
+  var { data: favoriteStatus } = useGetFavoriteDashboardsQuery(
     dashboardIds ?? skipToken
   );
 
-  const favoriteDashboardIds = favoriteStatus?.result
-    .filter((favorite: FavoriteDashboardResult) => favorite?.value)
-    .map((favorite: FavoriteDashboardResult) => Number(favorite?.id));
-  const favoriteData =
-    data && favoriteStatus
-      ? {
-          ...data,
-          result: data?.result.filter((dashboard: DashboardListResult) =>
-            favoriteDashboardIds.includes(Number(dashboard.id))
-          ),
-        }
-      : data ?? {};
+  // Show only favorite Dashboards
+  if (data && favoriteStatus) {
+    // Extract the IDs of favorite dashboards
+    const favoriteDashboardIds = favoriteStatus?.result
+      .filter((favorite: FavoriteDashboardResult) => favorite?.value)
+      .map((favorite: FavoriteDashboardResult) => Number(favorite?.id));
+
+    // Filter data.result to include only favorite dashboards
+    data = {
+      ...data,
+      result: data?.result.filter((dashboard: DashboardListResult) =>
+        favoriteDashboardIds.includes(Number(dashboard.id))
+      ),
+    };
+  }
 
   if (!hasPermission('dashboard:read')) {
     return <Unauthorized />;
@@ -52,7 +55,7 @@ export default function Home() {
         </div>
       </nav>
       <EmbedDashboards
-        data={favoriteData.result ?? ([] as DashboardListResult[])}
+        data={data?.result ?? ([] as DashboardListResult[])}
         supersetBaseUrl={publicRuntimeConfig.NEXT_PUBLIC_SUPERSET_GUEST_URL}
       />
     </Layout>

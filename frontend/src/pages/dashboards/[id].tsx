@@ -26,7 +26,7 @@ export default function SupersetDashboard() {
       const { uuid } = response.data.result;
       await embedDashboard({
         id: uuid, // given by the Superset embedding UI
-        supersetDomain: publicRuntimeConfig.NEXT_PUBLIC_SUPERSET_GUEST_URL,
+        supersetDomain: `${publicRuntimeConfig.NEXT_PUBLIC_SUPERSET_URL}`,
         mountPoint: ref.current, // html element in which iframe render
         fetchGuestToken: async () => {
           const res = await generateGuestToken(uuid);

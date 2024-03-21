@@ -12,6 +12,9 @@ import {
 interface DisableResponse {
   message: string;
 }
+interface AvatarResponse {
+  avatar_url: string;
+}
 
 export const userApi = createApi({
   reducerPath: 'userApi',
@@ -31,6 +34,13 @@ export const userApi = createApi({
         };
       },
     }),
+    modifyUser: builder.mutation<UserResponse, SerialUser>({
+      query: (body) => ({
+        url: 'account/user',
+        method: 'PUT',
+        body,
+      }),
+    }),
     addUser: builder.mutation<UserResponse, SerialUser>({
       query: (body) => ({
         url: 'account/user',
@@ -45,7 +55,17 @@ export const userApi = createApi({
         body,
       }),
     }),
-  }),
+     uploadAvatar: builder.mutation<void,{ id: string; file: File }>({
+      query: ({ id, file }) => ({
+        url: `account/user/${id}/avatar-upload1`,
+        method: 'POST',
+        body: file, // Passing the file object as the request body
+      }),
+    }),
+    getUserAvatar: builder.query<AvatarResponse,{ id: string}>({
+      query: (id) => `account/${id}/avatar/get`,
+    }),
+})
 });
 
 export const {
@@ -53,5 +73,8 @@ export const {
   useGetUserQuery,
   useDisableUserMutation,
   useAddUserMutation,
+  useModifyUserMutation,
   useResetPasswordMutation,
+  useUploadAvatarMutation,
+  useGetUserAvatarQuery,
 } = userApi;

@@ -11,7 +11,6 @@ from flask_appbuilder.views import expose
 from werkzeug.wrappers import Response as WerkzeugResponse
 from flask import flash, redirect, request, session, g
 from flask_appbuilder._compat import as_unicode
-from flask_caching.backends.rediscache import RedisCache
 from flask_login import login_user, logout_user, current_user
 from flask_appbuilder.utils.base import get_safe_redirect
 from flask_appbuilder.security.views import AuthOAuthView
@@ -397,8 +396,6 @@ class CeleryConfig:
     task_acks_late = True
 
 CELERY_CONFIG = CeleryConfig
-
-RESULTS_BACKEND = RedisCache(host=REDIS_HOST, port=REDIS_PORT, key_prefix='superset_results')
 
 SCREENSHOT_LOCATE_WAIT = 100
 SCREENSHOT_LOAD_WAIT = 600

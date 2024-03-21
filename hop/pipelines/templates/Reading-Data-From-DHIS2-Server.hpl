@@ -32,7 +32,7 @@
       <fontitalic>N</fontitalic>
       <fontname>.AppleSystemUIFont</fontname>
       <fontsize>16</fontsize>
-      <height>118</height>
+      <height>100</height>
       <xloc>0</xloc>
       <yloc>0</yloc>
       <note>Please ensure that the URL, Login Username and
@@ -41,7 +41,7 @@
 You can costumize the period dimension in the API
 https://docs.dhis2.org/archive/en/2.25/developer/html/webapi_date_perid_format.html
 </note>
-      <width>634</width>
+      <width>611</width>
     </notepad>
     <notepad>
       <backgroundcolorblue>251</backgroundcolorblue>
@@ -57,7 +57,7 @@ https://docs.dhis2.org/archive/en/2.25/developer/html/webapi_date_perid_format.h
       <fontitalic>N</fontitalic>
       <fontname>.AppleSystemUIFont</fontname>
       <fontsize>14</fontsize>
-      <height>78</height>
+      <height>62</height>
       <xloc>0</xloc>
       <yloc>240</yloc>
       <note>Use this transform to read the json data
@@ -80,12 +80,12 @@ Please fill up in addition the Field tab with the
       <fontitalic>N</fontitalic>
       <fontname>Verdana, "Lucida Sans", Arial, Helvetica, sans-serif</fontname>
       <fontsize>13</fontsize>
-      <height>42</height>
+      <height>32</height>
       <xloc>176</xloc>
       <yloc>144</yloc>
       <note>The Formula tasks are made for customizing the date format
 You may need to update them depending on the used periode dimension</note>
-      <width>450</width>
+      <width>300</width>
     </notepad>
     <notepad>
       <backgroundcolorblue>251</backgroundcolorblue>
@@ -101,39 +101,12 @@ You may need to update them depending on the used periode dimension</note>
       <fontitalic>N</fontitalic>
       <fontname>Verdana, "Lucida Sans", Arial, Helvetica, sans-serif</fontname>
       <fontsize>13</fontsize>
-      <height>42</height>
+      <height>32</height>
       <xloc>512</xloc>
       <yloc>240</yloc>
       <note>The value mapper tasks are to map fields ids by their values.
 You can map your OrganisationUnits and DataElements here.</note>
-      <width>378</width>
-    </notepad>
-    <notepad>
-      <backgroundcolorblue>90</backgroundcolorblue>
-      <backgroundcolorgreen>98</backgroundcolorgreen>
-      <backgroundcolorred>188</backgroundcolorred>
-      <bordercolorblue>90</bordercolorblue>
-      <bordercolorgreen>58</bordercolorgreen>
-      <bordercolorred>14</bordercolorred>
-      <fontbold>N</fontbold>
-      <fontcolorblue>90</fontcolorblue>
-      <fontcolorgreen>58</fontcolorgreen>
-      <fontcolorred>14</fontcolorred>
-      <fontitalic>N</fontitalic>
-      <fontname>.AppleSystemUIFont</fontname>
-      <fontsize>13</fontsize>
-      <height>138</height>
-      <xloc>1072</xloc>
-      <yloc>128</yloc>
-      <note>This is a mandatory transform! Please do not remove.
-Only add the fields you want to process.
-
-See the example fields provided for you when 
-click on edit transform
-
-Target fields don't accept white spaces or 
-specefic characters</note>
-      <width>333</width>
+      <width>256</width>
     </notepad>
   </notepads>
   <order>
@@ -352,7 +325,7 @@ specefic characters</note>
     <version>1.0</version>
     <attributes/>
     <GUI>
-      <xloc>1232</xloc>
+      <xloc>784</xloc>
       <yloc>80</yloc>
     </GUI>
   </transform>

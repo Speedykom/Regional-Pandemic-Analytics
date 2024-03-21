@@ -1,5 +1,5 @@
 // Need to use the React-specific entry point to import createApi
-import { createApi, retry } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQuery } from '@/common/redux/api';
 import { ChartList, DashboardStatus } from './interface';
 
@@ -38,32 +38,19 @@ export const dashboardApi = createApi({
       }),
     }),
 
+    getDashboardThumbnail: builder.query<any, string>({
+      query: (id) => ({
+        url: `/superset/dashboard/${id}/thumbnail`,
+        responseHandler: async (response) =>
+          URL.createObjectURL(await response.blob()),
+      }),
+    }),
+
     generateGuestToken: builder.mutation<{ token: string }, string>({
       query: (id) => ({
         url: `/superset/guest/token`,
         method: 'POST',
         body: { id },
-      }),
-    }),
-  }),
-});
-
-export const thumbnailApi = createApi({
-  reducerPath: 'thumbnailApi',
-  baseQuery: retry(baseQuery),
-  endpoints: (builder) => ({
-    getDashboardThumbnail: builder.query<string, string>({
-      query: (id) => ({
-        url: `/superset/dashboard/${id}/thumbnail`,
-        responseHandler: async (response: Response) =>
-          new Promise(async (resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.readAsDataURL(await response.blob());
-          }),
-        validateStatus(res: Response) {
-          return res.ok && res.status !== 202;
-        },
       }),
     }),
   }),
@@ -83,11 +70,10 @@ export const {
   useGetDashboardsQuery,
   useGetFavoriteDashboardsQuery,
   useEnableDashboardMutation,
+  useGetDashboardThumbnailQuery,
   useGenerateGuestTokenMutation,
   useAddDashboardToFavoritesMutation,
   useRemoveDashboardFromFavoritesMutation,
 } = dashboardApi;
 
 export const { useGetChartsQuery } = chartApi;
-
-export const { useGetDashboardThumbnailQuery } = thumbnailApi;
