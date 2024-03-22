@@ -20,12 +20,6 @@ export default function Orchestration({
   const isValidDate = (date: Date) => {
     return date.getTime() !== new Date(0).getTime();
   };
-  console.log({
-    dagId,
-    description,
-    lastParsedTime,
-    nextDagRun,
-  });
 
   return (
     <div className="flex flex-col space-y-4 p-4 max-w-4xl mx-auto bg-white rounded-lg shadow">
