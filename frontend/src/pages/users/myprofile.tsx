@@ -127,7 +127,7 @@ export const ProfileSettings = () => {
     if (typeof window !== undefined) {
       const attributes = data?.attributes;
       if (attributes) {
-        const { gender, country, phone, avatar } = attributes;
+        const { gender, country, phone } = attributes;
         gender && setGender(gender[0]);
         country && setCountry(country[0]);
         phone && setPhone(phone[0]);
