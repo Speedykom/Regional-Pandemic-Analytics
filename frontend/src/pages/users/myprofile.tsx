@@ -1,7 +1,7 @@
 import Layout from '@/common/components/Dashboard/Layout';
 import { countries } from '@/common/utils/countries';
 import { useTranslation } from 'react-i18next';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useState, ChangeEvent } from 'react';
 import {
   Badge,
   Button,
@@ -13,7 +13,12 @@ import {
   Text,
   TextInput,
 } from '@tremor/react';
-import { useGetUserQuery } from '@/modules/user/user';
+import { useGetUserAvatarQuery, useGetUserQuery } from '@/modules/user/user';
+import { useAddUserMutation } from '@/modules/user/user';
+import { useModifyUserMutation } from '@/modules/user/user'
+import { useUploadAvatarMutation } from '@/modules/user/user';
+
+
 import {
   CheckIcon,
   PencilSquareIcon,
@@ -22,6 +27,7 @@ import {
   WifiIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
+
 import { useForm } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { selectCurrentUser } from '@/modules/auth/auth';
@@ -29,6 +35,10 @@ import { useSelector } from 'react-redux';
 
 export const ProfileSettings = () => {
   const [changePassword, setChangePassword] = useState(false);
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
   const currentUser = useSelector(selectCurrentUser);
   const { t } = useTranslation();
 
@@ -39,10 +49,18 @@ export const ProfileSettings = () => {
   const [gender, setGender] = useState<string>();
   const [firstName] = useState(currentUser?.given_name);
   const [lastName] = useState(currentUser?.family_name);
+  const [email] = useState<string>();
+  const [username] = useState<string>();
+  const [enabled] = useState<string>();
+  const [emailVerified] = useState<string>();
+  const [role] = useState<string>();
   const [phone, setPhone] = useState<string>();
-  const [avatar] = useState(currentUser?.avatar);
-
+  const [avatar, setAvatar] = useState<string>();
   const [newPass, setNewPass] = useState<string>('');
+
+  const [addUserMutation] = useAddUserMutation();
+  const [modifyUserMutation] = useModifyUserMutation();
+  const [uploadAvatarMutation] = useUploadAvatarMutation();
 
   const onChange = (e?: string) => {
     setNewPass(String(e));
@@ -55,18 +73,81 @@ export const ProfileSettings = () => {
   const triggerPasswordChange = () => {
     setChangePassword(!changePassword);
   };
+  const { data: avatarData } = useGetUserAvatarQuery(myId);
+
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files ? event.target.files[0] : null;
+
+    if (file) {
+      const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif']; // List of allowed image extensions
+      const extension = file.name.split('.').pop()?.toLowerCase(); // Extract file extension
+
+      if (extension && allowedExtensions.includes(extension)) {
+        setSelectedFile(file);
+        setImageUrl(file ? URL.createObjectURL(file) : null);
+      } else {
+        setSelectedFile(null);
+        setImageUrl(null);
+        console.log('Please select a valid image file.');
+      }
+    } else {
+      setSelectedFile(null);
+      setImageUrl(null);
+      console.log('No file selected.');
+    }
+  };
+
+
+  const handleUpload = async () => {
+    if (selectedFile) {
+      try {
+        const response = await uploadAvatarMutation({ id: myId, file: selectedFile });
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+    } else {
+      console.log("No file selected");
+    }
+  };
+
+
+
+  /*const saveUserProfile = async () => {
+    try {
+      const updatedProfile: SerialUser = {
+        firstName: firstName || '',
+        lastName: lastName || '',
+        phone: phone || '',
+        country: country || '',
+        gender: gender || '',
+        avatar: avatar || '',
+        id: currentUser?.id,
+        email: currentUser?.email || '',
+        username: currentUser?.username || '',
+        enabled: currentUser?.enabled || false,
+        emailVerified: currentUser?.emailVerified || false,
+        role: currentUser?.role || { id: '', name: '' },
+      };
+      await modifyUserMutation(updatedProfile);
+      console.log('User profile updated successfully');
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+    }
+  };*/
+
 
   useEffect(() => {
     if (typeof window !== undefined) {
       const attributes = data?.attributes;
       if (attributes) {
-        const { gender, country, phone } = attributes;
+        const { gender, country, phone ,avatar } = attributes;
         gender && setGender(gender[0]);
         country && setCountry(country[0]);
         phone && setPhone(phone[0]);
+        avatar && setAvatar(avatar[0]);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -77,13 +158,10 @@ export const ProfileSettings = () => {
           {/* Profile Card */}
           <Card className="mb-6 bg-white p-5">
             <div className="flex ">
-              <img
-                className="h-32 w-32 rounded-md"
-                src={avatar || '/avater.png'}
-                alt=""
-              />
-              <input type="file" style={{ display: 'none' }} />
+              <img className="h-32 w-32 rounded-md" src={avatarData?.avatar_url ||imageUrl || '/avater.png'} alt="avatar" />
             </div>
+            <input onChange={handleFileChange} type="file" id='profile' name='profile' />
+            <Button onClick={handleUpload}>Upload Image</Button> {/* Trigger file input dialog */}
             <div className="">
               <h1 className="text-gray-900 font-bold text-xl leading-8 my-1">
                 {data?.firstName} {data?.lastName}

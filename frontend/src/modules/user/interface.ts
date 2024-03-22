@@ -43,6 +43,7 @@ export interface SerialUser {
   phone: string;
   country: string;
   gender: string;
+  avatar: string;
   role: {
     id: string;
     name: string;

@@ -1,5 +1,5 @@
 import os
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -7,6 +7,10 @@ from rest_framework.parsers import MultiPartParser
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from utils.filename import gen_filename
+from minio.commonconfig import CopySource, REPLACE
+from minio.error import ResponseError
+from utils.minio import client
+
 
 from django.utils.datastructures import MultiValueDictKeyError
 
@@ -16,6 +20,7 @@ from .models import *
 from utils.generators import get_random_secret
 from utils.keycloak_auth import get_keycloak_admin
 from django.conf import settings
+from django.http import HttpResponseBadRequest, HttpResponseServerError, HttpResponseNotFound
 
 
 def homepage():
@@ -227,9 +232,34 @@ class UserAvatarView(APIView):
     }
     parser_classes = (MultiPartParser,)
 
+    #def get(self, request, **kwargs):
+    #    filename = request.query_params['filename']
+    #    return Response(url.read(), content_type='binary/octet-stream')"""
+
     def get(self, request, **kwargs):
-        filename = request.query_params['filename']
-        return Response(url.read(), content_type='binary/octet-stream')
+        try:
+            user_id = kwargs.get('id')
+            if not user_id:
+                return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
+
+            bucket_name = 'avatars'
+            prefix = f'user_{user_id}/'
+            objects = client.list_objects(bucket_name, prefix=prefix)
+
+            if not objects:
+                return HttpResponseNotFound("Avatar file not found for the specified user.")
+            first_object = objects[0]
+            object_name = first_object.object_name
+
+            #file_data = client.get_object(bucket_name, object_name)
+            #return HttpResponse(file_data.read(), content_type=first_object.content_type)
+
+            avatar_url = f'{os.getenv("BACKEND_AVATAR_BASE_URL")}/{object_name}'
+            return JsonResponse({"avatar_url": avatar_url})
+
+        except ResponseError as err:
+            return HttpResponseServerError(f"Error retrieving file from Minio: {err}")
+
 
     def post(self, request, **kwargs):
         """Receives a request to upload a file and sends it to filesystem for now. Later the file will be uploaded to minio server."""
@@ -240,10 +270,19 @@ class UserAvatarView(APIView):
             file_obj.name = name_generator['newName']
 
             try:
+                bucket_name = 'avatars'
+                object_name = f'user_{kwargs["id"]}/{file_obj.name}'
+                client.fput_object(
+                    bucket_name,
+                    object_name,
+                    file_obj,
+                    length=file_obj.size,
+                )
+
                 keycloak_admin = get_keycloak_admin()
                 user_data = {
                     'attributes': {
-                        'avatar': f'{os.getenv("AVATAR_BASE_URL")}{file_obj.name}'
+                        'avatar': f'{os.getenv("BACKEND_AVATAR_BASE_URL")}/{object_name}'
                     }
                 }
                 keycloak_admin.update_user(kwargs['id'], user_data)
