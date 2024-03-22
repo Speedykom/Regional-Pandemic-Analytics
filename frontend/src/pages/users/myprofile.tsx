@@ -15,9 +15,8 @@ import {
 } from '@tremor/react';
 import { useGetUserAvatarQuery, useGetUserQuery } from '@/modules/user/user';
 import { useAddUserMutation } from '@/modules/user/user';
-import { useModifyUserMutation } from '@/modules/user/user'
+import { useModifyUserMutation } from '@/modules/user/user';
 import { useUploadAvatarMutation } from '@/modules/user/user';
-
 
 import {
   CheckIcon,
@@ -75,7 +74,6 @@ export const ProfileSettings = () => {
   };
   const { data: avatarData } = useGetUserAvatarQuery(myId);
 
-
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
 
@@ -98,20 +96,20 @@ export const ProfileSettings = () => {
     }
   };
 
-
   const handleUpload = async () => {
     if (selectedFile) {
       try {
-        const response = await uploadAvatarMutation({ id: myId, file: selectedFile });
+        const response = await uploadAvatarMutation({
+          id: myId,
+          file: selectedFile,
+        });
       } catch (error) {
-        console.error("Error uploading file:", error);
+        console.error('Error uploading file:', error);
       }
     } else {
-      console.log("No file selected");
+      console.log('No file selected');
     }
   };
-
-
 
   /*const saveUserProfile = async () => {
     try {
@@ -136,12 +134,11 @@ export const ProfileSettings = () => {
     }
   };*/
 
-
   useEffect(() => {
     if (typeof window !== undefined) {
       const attributes = data?.attributes;
       if (attributes) {
-        const { gender, country, phone ,avatar } = attributes;
+        const { gender, country, phone, avatar } = attributes;
         gender && setGender(gender[0]);
         country && setCountry(country[0]);
         phone && setPhone(phone[0]);
@@ -158,10 +155,20 @@ export const ProfileSettings = () => {
           {/* Profile Card */}
           <Card className="mb-6 bg-white p-5">
             <div className="flex ">
-              <img className="h-32 w-32 rounded-md" src={avatarData?.avatar_url ||imageUrl || '/avater.png'} alt="avatar" />
+              <img
+                className="h-32 w-32 rounded-md"
+                src={avatarData?.avatar_url || imageUrl || '/avater.png'}
+                alt="avatar"
+              />
             </div>
-            <input onChange={handleFileChange} type="file" id='profile' name='profile' />
-            <Button onClick={handleUpload}>Upload Image</Button> {/* Trigger file input dialog */}
+            <input
+              onChange={handleFileChange}
+              type="file"
+              id="profile"
+              name="profile"
+            />
+            <Button onClick={handleUpload}>Upload Image</Button>{' '}
+            {/* Trigger file input dialog */}
             <div className="">
               <h1 className="text-gray-900 font-bold text-xl leading-8 my-1">
                 {data?.firstName} {data?.lastName}

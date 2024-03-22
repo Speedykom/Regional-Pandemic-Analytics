@@ -7,8 +7,6 @@ from rest_framework.parsers import MultiPartParser
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from utils.filename import gen_filename
-from minio.commonconfig import CopySource, REPLACE
-from minio.error import ResponseError
 from utils.minio import client
 
 
@@ -257,7 +255,7 @@ class UserAvatarView(APIView):
             avatar_url = f'{os.getenv("BACKEND_AVATAR_BASE_URL")}/{object_name}'
             return JsonResponse({"avatar_url": avatar_url})
 
-        except ResponseError as err:
+        except Exception as err:
             return HttpResponseServerError(f"Error retrieving file from Minio: {err}")
 
 
