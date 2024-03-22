@@ -26,10 +26,13 @@ export const ChartList = () => {
   const currentItems = data?.result.slice(firstItemIndex, lastItemIndex);
   const totalPages = Math.ceil((data?.result.length || 0) / itemsPerPage);
 
-  const changePage = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
+  const nextPage = () => {
+    setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
   };
 
+  const prevPage = () => {
+    setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
+  };
   return (
     <div>
       <nav className="mb-5">
@@ -116,19 +119,28 @@ export const ChartList = () => {
         </Table>
       </Card>
       <div className="flex justify-center gap-4 my-4">
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
-          <button
-            key={number}
-            onClick={() => changePage(number)}
-            className={`px-4 py-2 border-black-500 rounded ${
-              currentPage === number
-                ? 'bg-prim text-white'
-                : 'bg-white text-black-500 border-black-500'
-            } hover:bg-white-600 hover:text-black`}
-          >
-            {number}
-          </button>
-        ))}
+        <button
+          onClick={prevPage}
+          className={`px-4 py-2 ${
+            currentPage === 1
+              ? 'opacity-50 cursor-not-allowed'
+              : 'border-black-500 hover:bg-white-600 hover:text-black'
+          } rounded bg-white text-black-500 border`}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <button
+          onClick={nextPage}
+          className={`px-4 py-2 ${
+            currentPage === totalPages
+              ? 'opacity-50 cursor-not-allowed'
+              : 'border-black-500 hover:bg-white-600 hover:text-black'
+          } rounded bg-white text-black-500 border`}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
