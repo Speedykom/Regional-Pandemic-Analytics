@@ -1,6 +1,7 @@
 import Layout from '@/common/components/Dashboard/Layout';
 import { countries } from '@/common/utils/countries';
 import { useTranslation } from 'react-i18next';
+import Image from 'next/image';
 import { Fragment, useEffect, useState, ChangeEvent } from 'react';
 import {
   Badge,
@@ -14,8 +15,6 @@ import {
   TextInput,
 } from '@tremor/react';
 import { useGetUserAvatarQuery, useGetUserQuery } from '@/modules/user/user';
-import { useAddUserMutation } from '@/modules/user/user';
-import { useModifyUserMutation } from '@/modules/user/user';
 import { useUploadAvatarMutation } from '@/modules/user/user';
 
 import {
@@ -48,17 +47,15 @@ export const ProfileSettings = () => {
   const [gender, setGender] = useState<string>();
   const [firstName] = useState(currentUser?.given_name);
   const [lastName] = useState(currentUser?.family_name);
-  const [email] = useState<string>();
+  /*const [email] = useState<string>();
   const [username] = useState<string>();
   const [enabled] = useState<string>();
   const [emailVerified] = useState<string>();
-  const [role] = useState<string>();
+  const [role] = useState<string>();*/
   const [phone, setPhone] = useState<string>();
   const [avatar, setAvatar] = useState<string>();
   const [newPass, setNewPass] = useState<string>('');
 
-  const [addUserMutation] = useAddUserMutation();
-  const [modifyUserMutation] = useModifyUserMutation();
   const [uploadAvatarMutation] = useUploadAvatarMutation();
 
   const onChange = (e?: string) => {
@@ -155,7 +152,7 @@ export const ProfileSettings = () => {
           {/* Profile Card */}
           <Card className="mb-6 bg-white p-5">
             <div className="flex ">
-              <img
+              <Image
                 className="h-32 w-32 rounded-md"
                 src={avatarData?.avatar_url || imageUrl || '/avater.png'}
                 alt="avatar"
