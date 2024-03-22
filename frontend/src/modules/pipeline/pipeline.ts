@@ -31,6 +31,19 @@ export const pipelineApi = createApi({
       }),
       invalidatesTags: ['pipelines'],
     }),
+    uploadPipeline: builder.mutation<any, FormData>({
+      query: (formData) => ({
+        url: '/pipeline/upload/',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Content-Disposition':
+            'attachment; filename="uploadedPipeline.hpl"',
+        },
+        body: formData,
+      }),
+      invalidatesTags: ['pipelines'],
+    }),
     updatePipeline: builder.mutation<
       { status: string; message?: string },
       string
@@ -49,5 +62,6 @@ export const {
   useDownloadPipelineQuery,
   useTemplatesQuery,
   useCreatePipelineMutation,
+  useUploadPipelineMutation,
   useUpdatePipelineMutation,
 } = pipelineApi;

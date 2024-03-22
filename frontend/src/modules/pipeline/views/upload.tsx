@@ -1,12 +1,9 @@
 import Drawer from '@/common/components/common/Drawer';
 import { Button, TextInput } from '@tremor/react';
 import { useDropzone } from 'react-dropzone';
-import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
-import { DocumentTextIcon } from '@heroicons/react/24/outline';
-import { useCreatePipelineMutation } from '../pipeline';
+import { useUploadPipelineMutation } from '../pipeline';
 interface UploadPipelineProps {
   state: boolean;
   onClose: () => void;
@@ -17,7 +14,6 @@ interface UploadPipelineProps {
 export const UploadPipeline = ({
   state,
   onClose,
-  template,
   refetch,
 }: UploadPipelineProps) => {
   const {
@@ -28,61 +24,29 @@ export const UploadPipeline = ({
     clearErrors,
     formState: { errors },
   } = useForm({ mode: 'onChange' });
-  const [addPipeline, { isLoading }] = useCreatePipelineMutation();
-  const [fileName, setFileName] = useState<string>('');
+  const [uploadPipeline, { isLoading }] = useUploadPipelineMutation();
   const isWhitespace = /\s/;
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
 
-  const onFinish = (value: any) => {
-    console.log("Value: ", value);
-    console.log("File: ", acceptedFiles[0]);
-
+  const onFinish = () => {
+    // Create a FormData object
     const formData = new FormData();
-    formData.append('name', value.name);
-    formData.append('description', value.description);
-    acceptedFiles.forEach((file, index) => {
-      formData.append("uploadedFile", file, file.name);
-    });
-    console.log("formData: ", formData);
-    axios
-      .post('/api/pipeline', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-      .then((response) => {
-        if (response.status == 201) {
-          toast.success('File uploaded successfully!', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: 'light',
-          });
-        }
-      })
-      .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error(error);
+    formData.append('uploadedFile', acceptedFiles[0], acceptedFiles[0].name);
+
+    uploadPipeline(formData).then((res: any) => {
+      if (res.error) {
+        const { data } = res.error;
+        const { message } = data;
+        toast.error(message, { position: 'top-right' });
+        return;
+      }
+
+      toast.success('Process created successfully', {
+        position: 'top-right',
       });
-    // addPipeline(formData).then((res: any) => {
-    //   if (res.error) {
-    //     const { data } = res.error;
-    //     const { message } = data;
-
-    //     toast.error(message, { position: 'top-right' });
-    //     return;
-    //   }
-
-    //   toast.success('Process created successfully', {
-    //     position: 'top-right',
-    //   });
-    //   cancel();
-    //   refetch();
-    // });
+      cancel();
+      refetch();
+    });
   };
 
   const cancel = () => {
@@ -108,7 +72,7 @@ export const UploadPipeline = ({
         loading={isLoading}
         disabled={!!errors.name || !!errors.description}
         className="bg-prim text-white border-0 hover:bg-prim-hover"
-        onClick={handleSubmit((values: any) => onFinish(values))}
+        onClick={handleSubmit(() => onFinish())}
       >
         Upload
       </Button>
