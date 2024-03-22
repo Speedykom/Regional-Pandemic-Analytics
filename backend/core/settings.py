@@ -24,6 +24,9 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 CORS_ORIGIN_ALLOW_ALL = os.getenv("CORS_ORIGIN_ALLOW_ALL", "False")
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = ['Authorization','Content-Type', 'Content-Disposition']
+#needs to be checked (this is not secure)
+CORS_ALLOWED_ORIGIN = '*'
 CORS_ORIGIN_WHITELIST = os.getenv(
     "CORS_ORIGIN_WHITELIST", "http://localhost:3000,http://localhost:8000"
 ).split(",")
