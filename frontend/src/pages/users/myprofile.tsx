@@ -84,12 +84,10 @@ export const ProfileSettings = () => {
       } else {
         setSelectedFile(null);
         setImageUrl(null);
-        console.log('Please select a valid image file.');
       }
     } else {
       setSelectedFile(null);
       setImageUrl(null);
-      console.log('No file selected.');
     }
   };
 
@@ -142,7 +140,7 @@ export const ProfileSettings = () => {
         avatar && setAvatar(avatar[0]);
       }
     }
-  }, []);
+  }, [data?.attributes]);
 
   return (
     <div className="my-5 w-full lg:w-8/12 px-4 mx-auto">
