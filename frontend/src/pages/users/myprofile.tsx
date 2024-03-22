@@ -51,9 +51,9 @@ export const ProfileSettings = () => {
   const [username] = useState<string>();
   const [enabled] = useState<string>();
   const [emailVerified] = useState<string>();
-  const [role] = useState<string>();*/
+  const [role] = useState<string>();
+    const [avatar, setAvatar] = useState<string>();*/
   const [phone, setPhone] = useState<string>();
-  const [avatar, setAvatar] = useState<string>();
   const [newPass, setNewPass] = useState<string>('');
 
   const [uploadAvatarMutation] = useUploadAvatarMutation();
@@ -93,16 +93,10 @@ export const ProfileSettings = () => {
 
   const handleUpload = async () => {
     if (selectedFile) {
-      try {
-        const response = await uploadAvatarMutation({
-          id: myId,
-          file: selectedFile,
-        });
-      } catch (error) {
-        console.error('Error uploading file:', error);
-      }
-    } else {
-      console.log('No file selected');
+      await uploadAvatarMutation({
+        id: myId,
+        file: selectedFile,
+      });
     }
   };
 
@@ -137,7 +131,7 @@ export const ProfileSettings = () => {
         gender && setGender(gender[0]);
         country && setCountry(country[0]);
         phone && setPhone(phone[0]);
-        avatar && setAvatar(avatar[0]);
+        //avatar && setAvatar(avatar[0]);
       }
     }
   }, [data?.attributes]);
