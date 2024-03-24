@@ -208,19 +208,21 @@ class PipelineUploadView(APIView):
     
     def post(self, request, format=None):
         user_id = get_current_user_id(request)
+        name = request.data.get("name")
+        description = request.data.get("description")
         uploaded_file = request.FILES.get("uploadedFile")
         if (uploaded_file) :
             try:
                 # Checks if an object with the same name exits
                 client_response = client.get_object(
-                    "pipelines", f"pipelines-created/{user_id}/{uploaded_file.name}"
+                    "pipelines", f"pipelines-created/{user_id}/{name}.hpl"
                 )
                 client_response.close()
                 client_response.release_conn()
                 return Response(
                     {
                         "status": "Fail",
-                        "message": f"file already exists with the name {uploaded_file.name}",
+                        "message": f"file already exists with the name {name}.hpl",
                     },
                     status=409,
                 )
@@ -228,9 +230,13 @@ class PipelineUploadView(APIView):
                 # upload new pipeline 
                 client_result = client.put_object(
                 bucket_name='pipelines',
-                object_name=f"pipelines-created/{user_id}/{uploaded_file.name}",
+                object_name=f"pipelines-created/{user_id}/{name}.hpl",
                 data=uploaded_file,
-                length=uploaded_file.size
+                length=uploaded_file.size,
+                metadata={
+                    "description": f"{description}",
+                    "created": f"{datetime.utcnow()}",
+                },
                 ) 
                              
             return Response({"status": "success"}, status=status.HTTP_200_OK)

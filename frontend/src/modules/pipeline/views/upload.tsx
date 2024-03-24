@@ -28,12 +28,13 @@ export const UploadPipeline = ({
   const isWhitespace = /\s/;
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
 
-  const onFinish = () => {
+  const onFinish = (value: any) => {
+    const file = acceptedFiles[0];
     // Create a FormData object
     const formData = new FormData();
-    const file = acceptedFiles[0];
+    formData.append('name', value.name);
+    formData.append('description', value.description);
     formData.append('uploadedFile', file, file.name);
-
     uploadPipeline(formData).then((res: any) => {
       if (res.error) {
         const { data } = res.error;
@@ -73,7 +74,7 @@ export const UploadPipeline = ({
         loading={isLoading}
         disabled={!!errors.name || !!errors.description}
         className="bg-prim text-white border-0 hover:bg-prim-hover"
-        onClick={handleSubmit(() => onFinish())}
+        onClick={handleSubmit((values: any) => onFinish(values))}
       >
         Upload
       </Button>
