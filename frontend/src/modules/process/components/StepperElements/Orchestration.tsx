@@ -1,10 +1,4 @@
-import {
-  Table,
-  TableCell,
-  TableHeaderCell,
-  TableRow,
-  Divider,
-} from '@tremor/react';
+import { Divider } from '@tremor/react';
 import History from './History';
 
 interface OrchestrationProps {
@@ -28,30 +22,44 @@ export default function Orchestration({
   };
 
   return (
-    <div className="flex flex-col space-y-3 ">
-      <div className="flex justify-center">
-        <Table className="flex justify-center overflow-visible w-1/2">
-          <TableRow>
-            <TableHeaderCell>description</TableHeaderCell>
-            <TableCell className="whitespace-normal">{description}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableHeaderCell>Last update</TableHeaderCell>
-            <TableCell className="whitespace-normal">
-              {lastParsedTimeDate.toUTCString()}
-            </TableCell>
-          </TableRow>
-          {isValidDate(nextDagRunDate) && (
-            <TableRow>
-              <TableHeaderCell>Next scheduled execution</TableHeaderCell>
-              <TableCell className="whitespace-normal">
-                {nextDagRunDate.toUTCString()}
-              </TableCell>
-            </TableRow>
-          )}
-        </Table>
+    <div className="flex flex-col space-y-4 p-4 max-w-4xl mx-auto bg-white rounded-lg shadow">
+      <div className="text-l font-bold text-gray-800 text-center">
+        Process Chain Summary
       </div>
-      <div className="">
+      <div className="overflow-auto" style={{ maxHeight: '100px' }}>
+        <table className="w-full border-collapse">
+          <tbody>
+            <tr>
+              <td className="p-3 font-bold bg-prim text-white w-1/4 border border-gray-200">
+                Description
+              </td>
+              <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
+                {description}
+              </td>
+            </tr>
+            <tr>
+              <td className="p-3 font-bold bg-prim text-white w-1/4 border border-gray-200">
+                Last update
+              </td>
+              <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
+                {lastParsedTimeDate.toUTCString()}
+              </td>
+            </tr>
+            {isValidDate(nextDagRunDate) && (
+              <tr>
+                <td className="p-3 font-bold bg-prim text-white w-1/4 border border-gray-200">
+                  Next scheduled execution
+                </td>
+                <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
+                  {nextDagRunDate.toUTCString()}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div>
         <Divider />
       </div>
       <div>
