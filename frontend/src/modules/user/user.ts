@@ -63,7 +63,7 @@ export const userApi = createApi({
       }),
     }),
     getUserAvatar: builder.query<AvatarResponse, { id: string }>({
-      query: (id) => `account/${id}/avatar/get`,
+      query: (id) => `account/${id}/avatar`,
     }),
   }),
 });
