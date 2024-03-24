@@ -35,10 +35,6 @@ export const pipelineApi = createApi({
       query: (formData) => ({
         url: '/pipeline/upload/',
         method: 'POST',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Content-Disposition': 'attachment; filename="uploadedPipeline.hpl"',
-        },
         body: formData,
       }),
       invalidatesTags: ['pipelines'],
