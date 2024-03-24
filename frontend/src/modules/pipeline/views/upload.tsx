@@ -31,7 +31,8 @@ export const UploadPipeline = ({
   const onFinish = () => {
     // Create a FormData object
     const formData = new FormData();
-    formData.append('uploadedFile', acceptedFiles[0], acceptedFiles[0].name);
+    const file = acceptedFiles[0];
+    formData.append('uploadedFile', file, file.name);
 
     uploadPipeline(formData).then((res: any) => {
       if (res.error) {
