@@ -8,7 +8,7 @@ from utils.minio import client
 from minio.commonconfig import CopySource, REPLACE
 from datetime import datetime
 from utils.keycloak_auth import get_current_user_id
-from rest_framework.parsers import FileUploadParser
+from rest_framework.parsers import MultiPartParser
 
 
 class EditAccessProcess:
@@ -200,15 +200,15 @@ class PipelineDownloadView(APIView):
             client_response.release_conn()
 
 class PipelineUploadView(APIView):
-    parser_classes = (FileUploadParser,)
+    parser_classes = (MultiPartParser,)
     keycloak_scopes = {
         "POST": "pipeline:add",
         "GET": "pipeline:read",
     }
     
-    def post(self, request):
+    def post(self, request, format=None):
         user_id = get_current_user_id(request)
-        uploaded_file = request.data.get("file")
+        uploaded_file = request.FILES.get("uploadedFile")
         if (uploaded_file) :
             try:
                 # Checks if an object with the same name exits
