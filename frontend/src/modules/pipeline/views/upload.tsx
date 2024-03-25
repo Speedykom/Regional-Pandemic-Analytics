@@ -72,7 +72,9 @@ export const UploadPipeline = ({
       <Button
         type="submit"
         loading={isLoading}
-        disabled={!!errors.name || !!errors.description}
+        disabled={
+          !!errors.name || !!errors.description || acceptedFiles.length === 0
+        }
         className="bg-prim text-white border-0 hover:bg-prim-hover"
         onClick={handleSubmit((values: any) => onFinish(values))}
       >
@@ -159,7 +161,7 @@ export const UploadPipeline = ({
                       >
                         <input {...getInputProps()} />
                         <p>
-                          Drag 'n' drop .hlp pipeline file here, or click to
+                          Drag 'n' drop .hpl pipeline file here, or click to
                           select a file
                         </p>
                       </div>
