@@ -17,6 +17,7 @@ import { useModal } from '@/common/hooks/use-modal';
 import { useRouter } from 'next/router';
 import { useGetAllPipelinesQuery, useDownloadPipelineQuery } from '../pipeline';
 import { AddPipeline } from './add';
+import { UploadPipeline } from './upload';
 import { TemplateModal } from './template-modal';
 import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
@@ -28,6 +29,7 @@ export const MyPipelines = () => {
   const { hasPermission } = usePermission();
   const [template, setTemplate] = useState<any>();
   const [drawer, setDrawer] = useState<boolean>(false);
+  const [uploadDrawer, setUploadDrawer] = useState<boolean>(false);
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const defaultPageSize = 5;
@@ -46,6 +48,9 @@ export const MyPipelines = () => {
     setTemplate(res);
   };
 
+  const uploadClose = () => {
+    setUploadDrawer(false);
+  };
   const { showModal, hideModal } = useModal();
 
   const [searchInput, setSearchInput] = useState<string>('');
@@ -72,9 +77,10 @@ export const MyPipelines = () => {
       ),
     });
 
+  const showUploadModal = () => {
+    setUploadDrawer(true);
+  };
   const renderPagination = () => {
-    // eslint-disable-next-line no-console
-    console.log(data?.data);
     if (!defaultPageSize || !data?.data || data?.data?.length == 0) return null;
 
     const totalPages = Math.ceil(data.data.length / defaultPageSize);
@@ -174,13 +180,21 @@ export const MyPipelines = () => {
           <h2 className="text-3xl">{t('myPipelines')}</h2>
           <p className="my-2 text-gray-600"> {t('createYourPipeline')}</p>
         </div>
-        <div>
+        <div className="flex">
           {hasPermission('pipeline:add') && (
             <Button
-              className="bg-prim hover:bg-prim-hover border-0"
+              className="bg-prim hover:bg-prim-hover border-0 mr-2"
               onClick={showConfirmModal}
             >
               {t('createPipeline')}
+            </Button>
+          )}
+          {hasPermission('pipeline:add') && (
+            <Button
+              className="bg-prim hover:bg-prim-hover border-0"
+              onClick={showUploadModal}
+            >
+              {t('uploadPipeline')}
             </Button>
           )}
         </div>
@@ -215,6 +229,12 @@ export const MyPipelines = () => {
         state={drawer}
         template={template}
         onClose={close}
+        refetch={refetch}
+      />
+      <UploadPipeline
+        state={uploadDrawer}
+        template={template}
+        onClose={uploadClose}
         refetch={refetch}
       />
     </div>

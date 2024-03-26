@@ -27,7 +27,8 @@ export const baseQueryWithAuthHeader = fetchBaseQuery({
       );
     }
 
-    headers.set('Content-Type', 'application/json');
+    //TODO check if the content needs to set here
+    //headers.set('Content-Type', 'application/json');
     return headers;
   },
 });

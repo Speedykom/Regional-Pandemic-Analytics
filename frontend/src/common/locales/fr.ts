@@ -20,6 +20,7 @@ const frTranslation = {
   name: 'Nom',
   description: 'Description',
   createPipeline: 'Créer un pipeline',
+  uploadPipeline: 'Charger un pipeline',
   view: 'Voir',
 
   processChain: 'Chaîne de processus',
