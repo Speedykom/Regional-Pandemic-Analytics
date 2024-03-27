@@ -55,11 +55,11 @@ export const userApi = createApi({
         body,
       }),
     }),
-    uploadAvatar: builder.mutation<void, { id: string; file: File }>({
-      query: ({ id, file }) => ({
-        url: `account/user/${id}/avatar-upload1`,
+    uploadAvatar: builder.mutation<any, FormData>({
+      query: (FormData) => ({
+        url: `account/user/avatar-upload1`,
         method: 'POST',
-        body: file, // Passing the file object as the request body
+        body: FormData,
       }),
     }),
     getUserAvatar: builder.query<AvatarResponse, { id: string }>({

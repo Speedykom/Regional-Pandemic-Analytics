@@ -14,6 +14,7 @@ import {
   Text,
   TextInput,
 } from '@tremor/react';
+import { toast } from 'react-toastify';
 import { useGetUserAvatarQuery, useGetUserQuery } from '@/modules/user/user';
 import { useUploadAvatarMutation } from '@/modules/user/user';
 
@@ -52,7 +53,7 @@ export const ProfileSettings = () => {
   const [enabled] = useState<string>();
   const [emailVerified] = useState<string>();
   const [role] = useState<string>();
-    const [avatar, setAvatar] = useState<string>();*/
+  const [avatar, setAvatar] = useState<string>();*/
   const [phone, setPhone] = useState<string>();
   const [newPass, setNewPass] = useState<string>('');
 
@@ -71,9 +72,9 @@ export const ProfileSettings = () => {
   };
   const { data: avatarData } = useGetUserAvatarQuery(myId);
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
-
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const file = event.target.files?.[0];
     if (file) {
       const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif']; // List of allowed image extensions
       const extension = file.name.split('.').pop()?.toLowerCase(); // Extract file extension
@@ -92,11 +93,26 @@ export const ProfileSettings = () => {
   };
 
   const handleUpload = async () => {
-    if (selectedFile) {
-      await uploadAvatarMutation({
-        id: myId,
-        file: selectedFile,
+    if (!selectedFile) {
+      toast.error('Please select an image to upload');
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('uploadedFile', selectedFile, selectedFile.name);
+      uploadAvatarMutation(formData).then((res: any) => {
+        if (res.error) {
+          const { data } = res.error;
+          const { message } = data;
+          toast.error(message, { position: 'top-right' });
+          return;
+        }
+        toast.success('Profile image uploaded successfully', {
+          position: 'top-right',
+        });
       });
+    } catch (error) {
+      toast.error('An error occurred while uploading the profile image');
     }
   };
 

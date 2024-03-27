@@ -8,6 +8,8 @@ from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from utils.filename import gen_filename
 from utils.minio import client
+from utils.keycloak_auth import get_current_user_id
+from rest_framework.parsers import MultiPartParser
 
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -230,10 +232,6 @@ class UserAvatarView(APIView):
     }
     parser_classes = (MultiPartParser,)
 
-    #def get(self, request, **kwargs):
-    #    filename = request.query_params['filename']
-    #    return Response(url.read(), content_type='binary/octet-stream')"""
-
     def get(self, request, **kwargs):
         try:
             user_id = kwargs.get('id')
@@ -261,20 +259,15 @@ class UserAvatarView(APIView):
 
     def post(self, request, **kwargs):
         """Receives a request to upload a file and sends it to filesystem for now. Later the file will be uploaded to minio server."""
-        try:
-            file_obj = request.data['file']
-
-            name_generator = gen_filename(file_obj.name)
-            file_obj.name = name_generator['newName']
-
+        user_id = get_current_user_id(request)
+        uploaded_file = request.FILES.get("uploadedFile")
+        if (uploaded_file) :
             try:
-                bucket_name = 'avatars'
-                object_name = f'user_{kwargs["id"]}/{file_obj.name}'
                 client.fput_object(
-                    bucket_name,
-                    object_name,
-                    file_obj,
-                    length=file_obj.size,
+                    bucket_name='avatars',
+                    object_name=f'avatars/{user_id}/{uploaded_file.name}',
+                    data=uploaded_file,
+                    length=uploaded_file.size,
                 )
 
                 keycloak_admin = get_keycloak_admin()
@@ -283,9 +276,9 @@ class UserAvatarView(APIView):
                         'avatar': f'{os.getenv("BACKEND_AVATAR_BASE_URL")}/{object_name}'
                     }
                 }
-                keycloak_admin.update_user(kwargs['id'], user_data)
+                keycloak_admin.update_user(user_id, user_data)
                 return Response({'message': 'Avatar uploaded successfully'}, status=status.HTTP_200_OK)
             except Exception as err:
                 return Response({'errorMessage': 'Unable to update the user avatar'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        except MultiValueDictKeyError:
+        elif MultiValueDictKeyError:
             return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
