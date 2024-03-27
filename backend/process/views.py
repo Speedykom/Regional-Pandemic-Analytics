@@ -13,6 +13,11 @@ class AirflowInstance:
     username = os.getenv("AIRFLOW_USER")
     password = os.getenv("AIRFLOW_PASSWORD")
 
+class DruidInstance:
+    username = "admin"
+    password = "Eden8Crunch=time"
+
+
 SupersetUrl = os.getenv("SUPERSET_PUBLIC_URL")
 
 class DagDTO:
@@ -325,6 +330,20 @@ class ProcessView(ViewSet):
             "status": "success",
             "dataset": None if dataset == None else { "id": dataset[0], "url": dataset[1] }
         }, status=status.HTTP_200_OK)
+    
+
+    def get_datasource_info(self, request, datasource_id=None):
+        if datasource_id is None:
+            return Response({"error": "Datasource ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        druid_url = f"http://druid.igad.local/druid/coordinator/v1/metadata/datasources/{datasource_id}"
+        response = requests.get(druid_url, auth=(DruidInstance.username, DruidInstance.password))
+
+        if response.status_code == 200:
+            return Response(response.json(), status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Failed to retrieve data from Druid"}, status=response.status_code)
+
 
 class ProcessRunView(ViewSet):
     """
