@@ -7,6 +7,10 @@ urlpatterns = [
     path("", ProcessView.as_view({"get": "list", "post": "create"})),
 
     path(
+        "datasource/<str:datasource_id>/",
+        ProcessView.as_view({"get": "get_datasource_info"}),
+    ),
+    path(
         "/<str:dag_id>",
         ProcessView.as_view(
             {"get": "retrieve", "post": "update", "put": "partial_update"}
