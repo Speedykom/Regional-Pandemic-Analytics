@@ -232,10 +232,6 @@ class UserAvatarView(APIView):
     }
     parser_classes = (MultiPartParser,)
 
-    #def get(self, request, **kwargs):
-    #    filename = request.query_params['filename']
-    #    return Response(url.read(), content_type='binary/octet-stream')"""
-
     def get(self, request, **kwargs):
         try:
             user_id = kwargs.get('id')
