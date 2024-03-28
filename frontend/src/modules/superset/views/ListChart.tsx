@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   Table,
   TableBody,
@@ -18,13 +19,16 @@ export const ChartList = () => {
   const { t } = useTranslation();
   const [searchInput, setSearchInput] = useState<string>('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5); // Adjusted to 5 items per page
+  const [itemsPerPage] = useState(3); // Adjusted to 5 items per page
   const { data } = useGetChartsQuery(searchInput);
 
   const lastItemIndex = currentPage * itemsPerPage;
   const firstItemIndex = lastItemIndex - itemsPerPage;
   const currentItems = data?.result.slice(firstItemIndex, lastItemIndex);
   const totalPages = Math.ceil((data?.result.length || 0) / itemsPerPage);
+
+  const startItem = firstItemIndex + 1;
+  const endItem = Math.min(lastItemIndex, data?.result.length || 0);
 
   const nextPage = () => {
     setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
@@ -33,6 +37,7 @@ export const ChartList = () => {
   const prevPage = () => {
     setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
   };
+
   return (
     <div>
       <nav className="mb-5">
@@ -118,29 +123,28 @@ export const ChartList = () => {
           </TableBody>
         </Table>
       </Card>
-      <div className="flex justify-center gap-4 my-4">
-        <button
-          onClick={prevPage}
-          className={`px-4 py-2 ${
-            currentPage === 1
-              ? 'opacity-50 cursor-not-allowed'
-              : 'border-black-500 hover:bg-white-600 hover:text-black'
-          } rounded bg-white text-black-500 border`}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </button>
-        <button
-          onClick={nextPage}
-          className={`px-4 py-2 ${
-            currentPage === totalPages
-              ? 'opacity-50 cursor-not-allowed'
-              : 'border-black-500 hover:bg-white-600 hover:text-black'
-          } rounded bg-white text-black-500 border`}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </button>
+      <div className="flex justify-end items-center mt-4">
+        <div className="mr-4">
+          Showing {startItem} – {endItem} of {data?.count}
+        </div>
+        <div className="flex">
+          <Button
+            onClick={prevPage}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 focus:outline-none mr-2"
+            size="xs"
+            disabled={currentPage === 1}
+          >
+            &larr; Prev
+          </Button>
+          <Button
+            onClick={nextPage}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 focus:outline-none mr-2"
+            size="xs"
+            disabled={currentPage === totalPages}
+          >
+            Next &rarr;
+          </Button>
+        </div>
       </div>
     </div>
   );
