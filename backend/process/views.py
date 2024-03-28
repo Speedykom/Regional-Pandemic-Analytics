@@ -20,6 +20,50 @@ class DruidInstance:
 
 SupersetUrl = os.getenv("SUPERSET_PUBLIC_URL")
 
+class DruidSegment:
+    def __init__(self, dataSource, interval, version, loadSpec, dimensions, metrics, shardSpec, binaryVersion, size, identifier):
+        self.data_source = dataSource
+        self.interval = interval
+        self.version = version
+        self.load_spec = loadSpec
+        self.dimensions = dimensions.split(',') if isinstance(dimensions, str) else dimensions
+        self.metrics = metrics.split(',') if isinstance(metrics, str) else metrics
+        
+        self.shard_spec = shardSpec
+        self.binary_version = binaryVersion
+        self.size = size
+        self.identifier = identifier
+
+    def to_dict(self):
+        return self.__dict__
+
+
+class DruidDataSource:
+    def __init__(self, name, properties, segments):
+        self.name = name
+        self.properties = properties
+        self.segments = [DruidSegment(
+            dataSource=segment.get('dataSource'),  
+            interval=segment.get('interval'),
+            version=segment.get('version'),
+            loadSpec=segment.get('loadSpec'),  
+            dimensions=segment.get('dimensions'),
+            metrics=segment.get('metrics'),
+            shardSpec=segment.get('shardSpec'),
+            binaryVersion=segment.get('binaryVersion'),
+            size=segment.get('size'),
+            identifier=segment.get('identifier')
+        ).to_dict() for segment in segments]
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "properties": self.properties,
+            "segments": self.segments
+        }
+
+
+
 class DagDTO:
     factory_id = "FACTORY"
 
@@ -330,21 +374,46 @@ class ProcessView(ViewSet):
             "status": "success",
             "dataset": None if dataset == None else { "id": dataset[0], "url": dataset[1] }
         }, status=status.HTTP_200_OK)
-    
 
     def get_datasource_info(self, request, datasource_id=None):
         if datasource_id is None:
             return Response({"error": "Datasource ID is required"}, status=status.HTTP_400_BAD_REQUEST)
-        #coordinator @
-        druid_url = f"http://172.19.0.15:8081/druid/coordinator/v1/metadata/datasources/{datasource_id}"
+        
+        druid_url = f"http://172.19.0.14:8081/druid/coordinator/v1/metadata/datasources/{datasource_id}"
         response = requests.get(druid_url, auth=(DruidInstance.username, DruidInstance.password), verify=False)
 
         if response.status_code == 200:
-            return Response(response.json(), status=status.HTTP_200_OK)
+            data = response.json()
+
+            segments_data = data.get("segments", [])
+            if segments_data:
+                first_segment_data = segments_data[0]
+
+                first_segment = DruidSegment(
+                    dataSource=first_segment_data["dataSource"],
+                    interval=first_segment_data["interval"],
+                    version=first_segment_data["version"],
+                    loadSpec=first_segment_data["loadSpec"],
+                    dimensions=first_segment_data["dimensions"],
+                    metrics=first_segment_data["metrics"],
+                    shardSpec=first_segment_data["shardSpec"],
+                    binaryVersion=first_segment_data["binaryVersion"],
+                    size=first_segment_data["size"],
+                    identifier=first_segment_data["identifier"]
+                )
+
+                druid_data_source = DruidDataSource(
+                    name=datasource_id,
+                    properties=data.get("properties", {}),
+                    segments=[first_segment.to_dict()]  # Only the first segment is included
+                )
+                
+                return Response(druid_data_source.to_dict(), status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "No segments found for the given datasource ID"}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({"error": "Failed to retrieve data from Druid"}, status=response.status_code)
-
-
+        
 class ProcessRunView(ViewSet):
     """
     This view handles Dag-Runs logic
