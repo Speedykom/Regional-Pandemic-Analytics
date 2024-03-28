@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   Table,
   TableBody,
@@ -26,8 +27,15 @@ export const ChartList = () => {
   const currentItems = data?.result.slice(firstItemIndex, lastItemIndex);
   const totalPages = Math.ceil((data?.result.length || 0) / itemsPerPage);
 
-  const changePage = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
+  const startItem = firstItemIndex + 1;
+  const endItem = Math.min(lastItemIndex, data?.result.length || 0);
+
+  const nextPage = () => {
+    setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
+  };
+
+  const prevPage = () => {
+    setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
   };
 
   return (
@@ -115,20 +123,28 @@ export const ChartList = () => {
           </TableBody>
         </Table>
       </Card>
-      <div className="flex justify-center gap-4 my-4">
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
-          <button
-            key={number}
-            onClick={() => changePage(number)}
-            className={`px-4 py-2 border-black-500 rounded ${
-              currentPage === number
-                ? 'bg-prim text-white'
-                : 'bg-white text-black-500 border-black-500'
-            } hover:bg-white-600 hover:text-black`}
+      <div className="flex justify-end items-center mt-4">
+        <div className="mr-4">
+          Showing {startItem} – {endItem} of {data?.count}
+        </div>
+        <div className="flex">
+          <Button
+            onClick={prevPage}
+            className="bg-prim hover:bg-green-900  border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
+            size="xs"
+            disabled={currentPage === 1}
           >
-            {number}
-          </button>
-        ))}
+            &larr; Prev
+          </Button>
+          <Button
+            onClick={nextPage}
+            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4  focus:outline-none cursor-pointer"
+            size="xs"
+            disabled={currentPage === totalPages}
+          >
+            Next &rarr;
+          </Button>
+        </div>
       </div>
     </div>
   );
