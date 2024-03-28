@@ -88,7 +88,7 @@ export const MyPipelines = () => {
         </div>
         <div className="flex">
           <Button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 focus:outline-none mr-2"
+            className="bg-prim hover:bg-green-900  border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
             size="xs"
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
@@ -96,7 +96,7 @@ export const MyPipelines = () => {
             &larr; Prev
           </Button>
           <Button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 focus:outline-none"
+            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4  focus:outline-none cursor-pointer"
             size="xs"
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}

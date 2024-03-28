@@ -130,7 +130,7 @@ export const ChartList = () => {
         <div className="flex">
           <Button
             onClick={prevPage}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 focus:outline-none mr-2"
+            className="bg-prim hover:bg-green-900  border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
             size="xs"
             disabled={currentPage === 1}
           >
@@ -138,7 +138,7 @@ export const ChartList = () => {
           </Button>
           <Button
             onClick={nextPage}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 focus:outline-none mr-2"
+            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4  focus:outline-none cursor-pointer"
             size="xs"
             disabled={currentPage === totalPages}
           >
