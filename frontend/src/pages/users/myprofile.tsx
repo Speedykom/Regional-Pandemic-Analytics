@@ -13,6 +13,7 @@ import {
   Text,
   TextInput,
 } from '@tremor/react';
+import { toast } from 'react-toastify';
 import { useGetUserQuery } from '@/modules/user/user';
 import {
   CheckIcon,
@@ -26,6 +27,7 @@ import { useForm } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { selectCurrentUser } from '@/modules/auth/auth';
 import { useSelector } from 'react-redux';
+import { useModifyUserMutation } from '@/modules/user/user';
 
 export const ProfileSettings = () => {
   const [changePassword, setChangePassword] = useState(false);
@@ -35,14 +37,17 @@ export const ProfileSettings = () => {
   const myId: any = currentUser?.id;
   const { data } = useGetUserQuery(myId);
 
-  const [country, setCountry] = useState<string>();
-  const [gender, setGender] = useState<string>();
+  const [country, setCountry] = useState(currentUser?.country);
+  const [gender, setGender] = useState(currentUser?.gender);
   const [firstName] = useState(currentUser?.given_name);
   const [lastName] = useState(currentUser?.family_name);
-  const [phone, setPhone] = useState<string>();
+  const [phone, setPhone] = useState(currentUser?.phone);
   const [avatar] = useState(currentUser?.avatar);
+  const [email] = useState(currentUser?.email);
+  const [enabled] = useState(data?.enabled);
 
   const [newPass, setNewPass] = useState<string>('');
+  const [modifyUserMutation] = useModifyUserMutation();
 
   const onChange = (e?: string) => {
     setNewPass(String(e));
@@ -68,6 +73,35 @@ export const ProfileSettings = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const saveChanges = async () => {
+    try {
+      const formData = new FormData();
+
+      if (firstName) formData.append('firstName', firstName);
+      if (lastName) formData.append('lastName', lastName);
+      if (email) formData.append('email', email);
+      if (enabled) formData.append('enabled', String(enabled));
+      if (phone) formData.append('attributes[phone]', phone);
+      if (gender) formData.append('attributes[gender]', gender);
+      if (country) formData.append('attributes[country]', country);
+
+      modifyUserMutation({ id: myId, formData }).then((res: any) => {
+        if (res.error) {
+          const { data } = res.error;
+          const { message } = data;
+          toast.error(message, { position: 'top-right' });
+          return;
+        }
+
+        toast.success('Profile uploaded successfully', {
+          position: 'top-right',
+        });
+      });
+    } catch (error) {
+      toast.error('An error occurred while uploading the profile');
+    }
+  };
 
   return (
     <div className="my-5 w-full lg:w-8/12 px-4 mx-auto">
@@ -231,26 +265,25 @@ export const ProfileSettings = () => {
                     ))}
                   </SearchSelect>
                 </div>
-                <div className="md:col-span-2 w-full">
-                  <label htmlFor="gender">{t('gender2')}</label>
-                  <div className="flex">
-                    <Button
-                      onClick={() => setGender('Male')}
-                      className={`rounded-l ${
-                        gender == 'Male' ? 'bg-indigo-400 text-white' : ''
-                      } text-sm`}
-                    >
-                      {t('male')}
-                    </Button>
-                    <Button
-                      onClick={() => setGender('Female')}
-                      className={`rounded-r ${
-                        gender == 'Female' && 'bg-indigo-400 text-white'
-                      } text-sm ml-2`} //
-                    >
-                      {t('female')}
-                    </Button>
-                  </div>
+                <div className="md:col-span-3">
+                  <label htmlFor="gender">{t('gender')}</label>
+                  <SearchSelect
+                    onValueChange={(e) => {
+                      setGender(e);
+                    }}
+                    className="bg-white"
+                    value={gender}
+                  >
+                    {['Male', 'Female'].map((item, index) => (
+                      <SearchSelectItem
+                        className="bg-white cursor-pointer"
+                        key={index}
+                        value={item}
+                      >
+                        {item}
+                      </SearchSelectItem>
+                    ))}
+                  </SearchSelect>
                 </div>
               </div>
             </div>
@@ -259,6 +292,7 @@ export const ProfileSettings = () => {
               <div>
                 <div className="flex space-x-2 items-end justify-end">
                   <Button
+                    onClick={saveChanges}
                     type="submit"
                     className="flex items-center hover:bg-prim-hover text-white"
                     icon={PlusCircleIcon}
