@@ -2,7 +2,7 @@ import Layout from '@/common/components/Dashboard/Layout';
 import { countries } from '@/common/utils/countries';
 import { useTranslation } from 'react-i18next';
 import Image from 'next/image';
-import { Fragment, useEffect, useState, ChangeEvent } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import {
   Badge,
   Button,
@@ -35,7 +35,6 @@ import { useSelector } from 'react-redux';
 export const ProfileSettings = () => {
   const [changePassword, setChangePassword] = useState(false);
 
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const currentUser = useSelector(selectCurrentUser);
@@ -71,9 +70,9 @@ export const ProfileSettings = () => {
     setChangePassword(!changePassword);
   };
   const { data: avatarData } = useGetUserAvatarQuery(myId);
-
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const file = event.target.files?.[0];
     if (file) {
       const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif']; // List of allowed image extensions
