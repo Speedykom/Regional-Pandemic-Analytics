@@ -38,7 +38,10 @@ export const userApi = createApi({
         body,
       }),
     }),
-    modifyUser: builder.mutation<UserResponse, { id: string, formData: FormData }>({
+    modifyUser: builder.mutation<
+      UserResponse,
+      { id: string; formData: FormData }
+    >({
       query: ({ id, formData }) => ({
         url: `account/user/${id}/update`,
         method: 'PUT',
