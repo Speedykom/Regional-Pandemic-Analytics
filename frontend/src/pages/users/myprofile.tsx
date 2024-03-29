@@ -71,7 +71,6 @@ export const ProfileSettings = () => {
   };
   const { data: avatarData } = useGetUserAvatarQuery(myId);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
