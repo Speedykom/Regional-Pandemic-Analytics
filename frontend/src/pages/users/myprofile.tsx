@@ -162,6 +162,8 @@ export const ProfileSettings = () => {
                 className="h-32 w-32 rounded-md"
                 src={avatarData?.avatar_url || imageUrl || '/avater.png'}
                 alt="avatar"
+                width={128}
+                height={128}
               />
             </div>
             <input
