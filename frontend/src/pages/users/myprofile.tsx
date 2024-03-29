@@ -1,7 +1,8 @@
 import Layout from '@/common/components/Dashboard/Layout';
 import { countries } from '@/common/utils/countries';
 import { useTranslation } from 'react-i18next';
-import { Fragment, useEffect, useState } from 'react';
+import Image from 'next/image';
+import { Fragment, useEffect, useState, ChangeEvent } from 'react';
 import {
   Badge,
   Button,
@@ -13,7 +14,10 @@ import {
   Text,
   TextInput,
 } from '@tremor/react';
-import { useGetUserQuery } from '@/modules/user/user';
+import { toast } from 'react-toastify';
+import { useGetUserAvatarQuery, useGetUserQuery } from '@/modules/user/user';
+import { useUploadAvatarMutation } from '@/modules/user/user';
+
 import {
   CheckIcon,
   PencilSquareIcon,
@@ -22,6 +26,7 @@ import {
   WifiIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
+
 import { useForm } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { selectCurrentUser } from '@/modules/auth/auth';
@@ -29,6 +34,10 @@ import { useSelector } from 'react-redux';
 
 export const ProfileSettings = () => {
   const [changePassword, setChangePassword] = useState(false);
+
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
   const currentUser = useSelector(selectCurrentUser);
   const { t } = useTranslation();
 
@@ -39,10 +48,16 @@ export const ProfileSettings = () => {
   const [gender, setGender] = useState<string>();
   const [firstName] = useState(currentUser?.given_name);
   const [lastName] = useState(currentUser?.family_name);
+  /*const [email] = useState<string>();
+  const [username] = useState<string>();
+  const [enabled] = useState<string>();
+  const [emailVerified] = useState<string>();
+  const [role] = useState<string>();
+  const [avatar, setAvatar] = useState<string>();*/
   const [phone, setPhone] = useState<string>();
-  const [avatar] = useState(currentUser?.avatar);
-
   const [newPass, setNewPass] = useState<string>('');
+
+  const [uploadAvatarMutation] = useUploadAvatarMutation();
 
   const onChange = (e?: string) => {
     setNewPass(String(e));
@@ -55,6 +70,74 @@ export const ProfileSettings = () => {
   const triggerPasswordChange = () => {
     setChangePassword(!changePassword);
   };
+  const { data: avatarData } = useGetUserAvatarQuery(myId);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const file = event.target.files?.[0];
+    if (file) {
+      const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif']; // List of allowed image extensions
+      const extension = file.name.split('.').pop()?.toLowerCase(); // Extract file extension
+
+      if (extension && allowedExtensions.includes(extension)) {
+        setSelectedFile(file);
+        setImageUrl(file ? URL.createObjectURL(file) : null);
+      } else {
+        setSelectedFile(null);
+        setImageUrl(null);
+      }
+    } else {
+      setSelectedFile(null);
+      setImageUrl(null);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      toast.error('Please select an image to upload');
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append('uploadedFile', selectedFile, selectedFile.name);
+      uploadAvatarMutation(formData).then((res: any) => {
+        if (res.error) {
+          const { data } = res.error;
+          const { message } = data;
+          toast.error(message, { position: 'top-right' });
+          return;
+        }
+        toast.success('Profile image uploaded successfully', {
+          position: 'top-right',
+        });
+      });
+    } catch (error) {
+      toast.error('An error occurred while uploading the profile image');
+    }
+  };
+
+  /*const saveUserProfile = async () => {
+    try {
+      const updatedProfile: SerialUser = {
+        firstName: firstName || '',
+        lastName: lastName || '',
+        phone: phone || '',
+        country: country || '',
+        gender: gender || '',
+        avatar: avatar || '',
+        id: currentUser?.id,
+        email: currentUser?.email || '',
+        username: currentUser?.username || '',
+        enabled: currentUser?.enabled || false,
+        emailVerified: currentUser?.emailVerified || false,
+        role: currentUser?.role || { id: '', name: '' },
+      };
+      await modifyUserMutation(updatedProfile);
+      console.log('User profile updated successfully');
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+    }
+  };*/
 
   useEffect(() => {
     if (typeof window !== undefined) {
@@ -64,10 +147,10 @@ export const ProfileSettings = () => {
         gender && setGender(gender[0]);
         country && setCountry(country[0]);
         phone && setPhone(phone[0]);
+        //avatar && setAvatar(avatar[0]);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [data?.attributes]);
 
   return (
     <div className="my-5 w-full lg:w-8/12 px-4 mx-auto">
@@ -77,13 +160,20 @@ export const ProfileSettings = () => {
           {/* Profile Card */}
           <Card className="mb-6 bg-white p-5">
             <div className="flex ">
-              <img
+              <Image
                 className="h-32 w-32 rounded-md"
-                src={avatar || '/avater.png'}
-                alt=""
+                src={avatarData?.avatar_url || imageUrl || '/avater.png'}
+                alt="avatar"
               />
-              <input type="file" style={{ display: 'none' }} />
             </div>
+            <input
+              onChange={handleFileChange}
+              type="file"
+              id="profile"
+              name="profile"
+            />
+            <Button onClick={handleUpload}>Upload Image</Button>{' '}
+            {/* Trigger file input dialog */}
             <div className="">
               <h1 className="text-gray-900 font-bold text-xl leading-8 my-1">
                 {data?.firstName} {data?.lastName}
