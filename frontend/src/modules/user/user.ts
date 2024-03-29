@@ -38,6 +38,16 @@ export const userApi = createApi({
         body,
       }),
     }),
+    modifyUser: builder.mutation<UserResponse, { id: string, formData: FormData }>({
+      query: ({ id, formData }) => ({
+        url: `account/user/${id}/update`,
+        method: 'PUT',
+        body: formData,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }),
+    }),
     resetPassword: builder.mutation<{ message: string }, ResetRequest>({
       query: (body) => ({
         url: '/auth/request-verify',
@@ -54,4 +64,5 @@ export const {
   useDisableUserMutation,
   useAddUserMutation,
   useResetPasswordMutation,
+  useModifyUserMutation,
 } = userApi;
