@@ -275,13 +275,13 @@ class UserAvatarView(APIView):
                 },
                 )
 
-                keycloak_admin = get_keycloak_admin()
-                user_data = {
-                    'attributes': {
-                        'avatar': f'{os.getenv("BACKEND_AVATAR_BASE_URL")}{user_id}/{uploaded_file.name}'
-                    }
-                }
-                keycloak_admin.update_user(user_id, user_data)
+                #keycloak_admin = get_keycloak_admin()
+                #user_data = {
+                #    'attributes': {
+                #        'avatar': f'{os.getenv("BACKEND_AVATAR_BASE_URL")}{user_id}/{uploaded_file.name}'
+                #    }
+                #}
+                #keycloak_admin.update_user(user_id, user_data)
                 return Response({'message': 'Avatar uploaded successfully'}, status=status.HTTP_200_OK)
             except Exception as err:
                 return Response({'errorMessage': 'Unable to update the user avatar'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
