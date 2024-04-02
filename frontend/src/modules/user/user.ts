@@ -12,9 +12,6 @@ import {
 interface DisableResponse {
   message: string;
 }
-interface AvatarResponse {
-  avatar_url: string;
-}
 
 export const userApi = createApi({
   reducerPath: 'userApi',
@@ -62,7 +59,7 @@ export const userApi = createApi({
         body: FormData,
       }),
     }),
-    getUserAvatar: builder.query<AvatarResponse, { id: string }>({
+    getUserAvatar: builder.query<any, { id: string }>({
       query: (id) => `account/${id}/avatar`,
     }),
   }),
