@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from datetime import datetime
 from utils.filename import gen_filename
 from utils.minio import client
 from utils.keycloak_auth import get_current_user_id
@@ -264,17 +265,20 @@ class UserAvatarView(APIView):
         uploaded_file = request.FILES.get("uploadedFile")
         if (uploaded_file) :
             try:
-                client.fput_object(
+                client.put_object(
                     bucket_name='avatars',
                     object_name=f'avatars/{user_id}/{uploaded_file.name}',
                     data=uploaded_file,
                     length=uploaded_file.size,
+                    metadata={
+                    "uploaded": f"{datetime.utcnow()}",
+                },
                 )
 
                 keycloak_admin = get_keycloak_admin()
                 user_data = {
                     'attributes': {
-                        'avatar': f'{os.getenv("BACKEND_AVATAR_BASE_URL")}/{object_name}'
+                        'avatar': f'{os.getenv("BACKEND_AVATAR_BASE_URL")}{user_id}/{uploaded_file.name}'
                     }
                 }
                 keycloak_admin.update_user(user_id, user_data)
