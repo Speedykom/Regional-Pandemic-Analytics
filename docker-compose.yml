@@ -84,6 +84,9 @@ x-airflow-common: &airflow
     - ./airflow/airflow.cfg:/opt/airflow/airflow.cfg
     - /var/run/docker.sock:/var/run/docker.sock
     - ./hop:/hop
+  depends_on:
+    - airflow-pg
+    - airflow_cache
 
 x-superset-common: &superset
   build: ./superset/.
@@ -107,7 +110,6 @@ x-superset-common: &superset
     - superset_cache
   restart: always
 
-
 volumes:
   superset_data: {}
   metadata_data: {}
@@ -121,6 +123,7 @@ volumes:
   coordinator_var: {}
   router_var: {}
   mongo-data:
+
 
 services:
   # ========
@@ -143,7 +146,13 @@ services:
       - MINIO_IDENTITY_OPENID_SCOPES=${MINIO_IDENTITY_OPENID_SCOPES}
       - MINIO_IDENTITY_OPENID_REDIRECT_URI=${MINIO_IDENTITY_OPENID_REDIRECT_URI}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:9000/minio/health/live"
+        ]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -156,7 +165,7 @@ services:
   minio-mc:
     image: minio/mc
     container_name: minio-mc
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: [ "/bin/sh", "-c" ]
     command:
       - |
         chmod +x /tmp/setup.sh
@@ -217,7 +226,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"
         ]
       interval: 10s
       timeout: 3s
@@ -445,6 +454,19 @@ services:
     # =======
     # Airflow
     # =======
+  airflow_cache:
+    container_name: airflow_cache
+    image: redis:7
+    restart: always
+
+  airflow_worker:
+    <<: *airflow
+    container_name: airflow-worker
+    shm_size: 2g
+    depends_on:
+      - superset
+    command: 'airflow celery worker'
+
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg
@@ -455,14 +477,12 @@ services:
     volumes:
       - airflow_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: [ "CMD", "pg_isready", "-U", "airflow" ]
       interval: 5s
       retries: 5
 
   airflow-triggerer:
     <<: *airflow
-    depends_on:
-      - airflow-pg
     container_name: airflow-triggerer
     command: triggerer
     restart: on-failure
@@ -470,7 +490,6 @@ services:
   airflow-scheduler:
     <<: *airflow
     depends_on:
-      - airflow-pg
       - airflow-triggerer
     container_name: airflow-scheduler
     command: scheduler
@@ -485,7 +504,13 @@ services:
     restart: always
     command: webserver
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "--fail",
+          "http://localhost:8080/health"
+        ]
       interval: 30s
       timeout: 30s
       retries: 5
@@ -551,7 +576,13 @@ services:
       - keycloak-pg
     healthcheck:
       test:
-        ["CMD", "curl", "--head", "-fsS", "http://localhost:8080/health/ready"]
+        [
+          "CMD",
+          "curl",
+          "--head",
+          "-fsS",
+          "http://localhost:8080/health/ready"
+        ]
       interval: 60s
       timeout: 10s
       retries: 10
