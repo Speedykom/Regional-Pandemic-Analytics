@@ -39,8 +39,8 @@ export const ProfileSettings = () => {
 
   const [country, setCountry] = useState(currentUser?.country);
   const [gender, setGender] = useState(currentUser?.gender);
-  const [firstName] = useState(currentUser?.given_name);
-  const [lastName] = useState(currentUser?.family_name);
+  const [firstName, setFirstName] = useState(currentUser?.given_name || '');
+  const [lastName, setLastName] = useState(currentUser?.family_name || '');
   const [phone, setPhone] = useState(currentUser?.phone);
   const [avatar] = useState(currentUser?.avatar);
   const [email] = useState(currentUser?.email);
@@ -88,9 +88,14 @@ export const ProfileSettings = () => {
 
       modifyUserMutation({ id: myId, formData }).then((res: any) => {
         if (res.error) {
-          const { data } = res.error;
-          const { message } = data;
-          toast.error(message, { position: 'top-right' });
+          // Check if data exists in res.error
+          if (res.error.data) {
+            const { message } = res.error.data;
+            toast.error(message, { position: 'top-right' });
+          } else {
+            // Handle the case where data is not available
+            toast.error('An unknown error occurred', { position: 'top-right' });
+          }
           return;
         }
 
@@ -224,6 +229,8 @@ export const ProfileSettings = () => {
                   <label htmlFor="firstName">{t('givenNames')}</label>
                   <TextInput
                     value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="Enter your first name"
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                   />
                 </div>
@@ -231,6 +238,8 @@ export const ProfileSettings = () => {
                   <label htmlFor="lastName">{t('lastName2')}</label>
                   <TextInput
                     value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Enter your last name"
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                   />
                 </div>
