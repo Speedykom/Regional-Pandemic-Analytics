@@ -254,9 +254,7 @@ class UserAvatarView(APIView):
 
             if avatar_file is None:
                 return HttpResponseNotFound("Avatar file not found for the specified user.")
-            #This gave me none : 
-            #base_url = os.getenv("BACKEND_BASE_URL")
-            base_url = "https://cache2.igad-health.eu/avatars"
+            base_url = os.getenv("BACKEND_AVATAR_BASE_URL")
             # Construct the path with an additional 'avatars/' as it's required by the object's structure
             avatar_path = f'{getattr(avatar_file, "object_name")}'
             # Combine the base URL with the avatar path
