@@ -15,7 +15,7 @@ const nextConfig = {
     NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
   },
   images: {
-    domains: ['cache2.igad-health.eu'],
+    domains: process.env.NGINX_MINIO_DOMAIN_NAME,
   },
 };
 
