@@ -12,6 +12,7 @@ from utils.filename import gen_filename
 from utils.minio import client
 from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
+from django.core.cache import cache
 
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -241,30 +242,22 @@ class UserAvatarView(APIView):
                 return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
 
             bucket_name = 'avatars'
-            prefix = f'avatars/{user_id}/'  # Objects are stored under 'avatars/user_id/'
-
-            # Fetching objects with the given prefix
+            prefix = f'user_{user_id}/'
             objects = client.list_objects(bucket_name, prefix=prefix)
 
             if not objects:
                 return HttpResponseNotFound("Avatar file not found for the specified user.")
-            
-            # Find the first object that has the 'object_name' attribute
-            avatar_file = next((obj for obj in objects if hasattr(obj, 'object_name')), None)
+            first_object = objects[0]
+            object_name = first_object.object_name
 
-            if avatar_file is None:
-                return HttpResponseNotFound("Avatar file not found for the specified user.")
-            base_url = os.getenv("BACKEND_AVATAR_BASE_URL")
-            # Construct the path with an additional 'avatars/' as it's required by the object's structure
-            avatar_path = f'{getattr(avatar_file, "object_name")}'
-            # Combine the base URL with the avatar path
-            avatar_url = f'{base_url}/{avatar_path}'
+            file_data = client.get_object(bucket_name, object_name)
+            return HttpResponse(file_data.read(), content_type=first_object.content_type)
 
-            return JsonResponse({"avatar_url": avatar_url})
+            #avatar_url = f'{os.getenv("BACKEND_AVATAR_BASE_URL")}/{object_name}'
 
         except Exception as err:
-            return HttpResponseServerError(f"Error retrieving avatar: {str(err)}")
-            
+         return HttpResponseServerError(f"Error retrieving avatar: {str(err)}")
+
     def post(self, request, **kwargs):
         """Receives a request to upload a file and sends it to filesystem for now. Later the file will be uploaded to minio server."""
         user_id = get_current_user_id(request)
