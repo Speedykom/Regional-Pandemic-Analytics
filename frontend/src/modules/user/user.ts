@@ -60,7 +60,7 @@ export const userApi = createApi({
       }),
     }),
     getUserAvatar: builder.query<any, { id: string }>({
-      query: (id) => `account/${id}/avatar`,
+      query: (id) => `account/user/${id}/avatar`,
     }),
   }),
 });
