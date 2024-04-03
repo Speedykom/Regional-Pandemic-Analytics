@@ -55,7 +55,7 @@ const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
                 Dimensions
               </td>
               <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
-                {datasourceData.first_segment.dimensions.join(', ')}
+                {datasourceData.last_segment.dimensions.join(', ')}
               </td>
             </tr>
             {/* Size (Size * Number of Segments) */}
@@ -64,9 +64,7 @@ const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
                 Total Size
               </td>
               <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
-                {datasourceData.first_segment.size *
-                  datasourceData.segments_count}{' '}
-                Kb
+                {datasourceData.total_size} Kb
               </td>
             </tr>
           </tbody>
