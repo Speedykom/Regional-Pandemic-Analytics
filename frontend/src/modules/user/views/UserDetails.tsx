@@ -24,9 +24,11 @@ export const UserDetails = () => {
               </h6>
               <img
                 src={
-                  data?.attributes?.avatar
-                    ? data?.attributes?.avatar[0]
-                    : '/avater.png'
+                  data?.attributes?.avatar &&
+                  data.attributes.avatar[0] !== 'None' &&
+                  data.attributes.avatar[0]
+                    ? data.attributes.avatar[0]
+                    : '/avatar.png'
                 }
                 className="h-24 w-24 rounded-md"
               />

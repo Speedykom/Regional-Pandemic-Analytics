@@ -14,6 +14,9 @@ const nextConfig = {
     NEXT_PUBLIC_KEYCLOAK_REALM: process.env.NEXT_PUBLIC_KEYCLOAK_REALM,
     NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
   },
+  images: {
+    domains: process.env.NGINX_MINIO_DOMAIN_NAME,
+  },
 };
 
 module.exports = nextConfig;
