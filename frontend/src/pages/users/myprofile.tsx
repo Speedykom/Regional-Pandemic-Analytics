@@ -160,7 +160,11 @@ export const ProfileSettings = () => {
             <div className="flex ">
               <Image
                 className="h-32 w-32 rounded-md"
-                src={avatarData?.avatar_url || imageUrl || '/avater.png'}
+                src={
+                  avatarData
+                    ? `data:${avatarData.content_type};base64,${avatarData.data}`
+                    : imageUrl || '/avatar.png'
+                }
                 alt="avatar"
                 width={128}
                 height={128}
