@@ -241,24 +241,32 @@ class UserAvatarView(APIView):
                 return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
 
             bucket_name = 'avatars'
-            prefix = f'user_{user_id}/'
+            prefix = f'avatars/{user_id}/'  # Objects are stored under 'avatars/user_id/'
+
+            # Fetching objects with the given prefix
             objects = client.list_objects(bucket_name, prefix=prefix)
 
             if not objects:
                 return HttpResponseNotFound("Avatar file not found for the specified user.")
-            first_object = objects[0]
-            object_name = first_object.object_name
+            
+            # Find the first object that has the 'object_name' attribute
+            avatar_file = next((obj for obj in objects if hasattr(obj, 'object_name')), None)
 
-            #file_data = client.get_object(bucket_name, object_name)
-            #return HttpResponse(file_data.read(), content_type=first_object.content_type)
+            if avatar_file is None:
+                return HttpResponseNotFound("Avatar file not found for the specified user.")
+            #This gave me none : 
+            #base_url = os.getenv("BACKEND_BASE_URL")
+            base_url = "https://cache2.igad-health.eu/avatars"
+            # Construct the path with an additional 'avatars/' as it's required by the object's structure
+            avatar_path = f'{getattr(avatar_file, "object_name")}'
+            # Combine the base URL with the avatar path
+            avatar_url = f'{base_url}/{avatar_path}'
 
-            avatar_url = f'{os.getenv("BACKEND_AVATAR_BASE_URL")}/{object_name}'
             return JsonResponse({"avatar_url": avatar_url})
 
         except Exception as err:
-            return HttpResponseServerError(f"Error retrieving file from Minio: {err}")
-
-
+            return HttpResponseServerError(f"Error retrieving avatar: {str(err)}")
+            
     def post(self, request, **kwargs):
         """Receives a request to upload a file and sends it to filesystem for now. Later the file will be uploaded to minio server."""
         user_id = get_current_user_id(request)
