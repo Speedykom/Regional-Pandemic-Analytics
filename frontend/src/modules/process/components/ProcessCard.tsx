@@ -143,6 +143,7 @@ export default function ProcessCard({
                 nextDagRun={process.next_dagrun}
                 lastParsedTime={process.last_parsed_time}
                 createChartUrl={process.dataset_url}
+                data_source_name={process.dag_id}
               />
             </div>
           </AccordionBody>
