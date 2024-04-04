@@ -277,7 +277,7 @@ class UserAvatarView(APIView):
                 keycloak_admin = get_keycloak_admin()
                 user_data = {
                     'attributes': {
-                        'avatar': f"{os.getenv('BACKEND_BASE_URL')}/api/account/user/{user_id}/avatar"
+                        'avatar': f"{os.getenv('AVATAR_BASE_URL')}/{user_id}/{uploaded_file.name}"
                     }
                 }
                 keycloak_admin.update_user(user_id, user_data)
