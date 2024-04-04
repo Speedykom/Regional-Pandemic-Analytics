@@ -8,6 +8,9 @@ urlpatterns = [
 
     path("<str:query>/", ProcessView.as_view({"get": "list"})),
 
+    path("/task/<str:taskId>", 
+         ProcessView.as_view({"get": "list_by_task"})),
+
     path("", ProcessView.as_view({"get": "list", "post": "create"})),
 
     path(
