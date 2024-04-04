@@ -15,7 +15,7 @@ const nextConfig = {
     NEXT_PUBLIC_KEYCLOAK_CLIENT_ID: process.env.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
   },
   images: {
-    domains: process.env.NGINX_MINIO_DOMAIN_NAME,
+    domains: [process.env.NEXT_MINIO_DOMAIN_NAME],
   },
 };
 
