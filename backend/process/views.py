@@ -130,6 +130,9 @@ class ProcessView(ViewSet):
         - list:
             Method: GET
             *** This method returns the list of dags ***
+        - list_by_task:
+            Method: GET
+            *** This method returns the list of dags using a specific task ***
         - create:
             Method: POST
             *** This method creates a dag from user input ***
@@ -196,6 +199,67 @@ class ProcessView(ViewSet):
                                 dataset_info[1] if dataset_info != None else None
                             ).__dict__
                         )
+                return Response({"dags": processes}, status=status.HTTP_200_OK)
+            else:
+                return Response(
+                    {"status": "failed", "message": "Internal Server Error"},
+                    status=airflow_response.status_code,
+                )
+        except:
+            return Response(
+                {"status": "failed", "message": "Internal Server Error"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    # Get All DAGs for a given task    
+    def list_by_task(self, request, taskId=None):
+        try:
+            # Define processes array to store Airflow response
+            processes = []
+
+            # Get the list of process chains defined in Airflow over REST API
+            airflow_response = requests.get(
+                f"{AirflowInstance.url}/dags",
+                auth=(AirflowInstance.username, AirflowInstance.password),
+            )
+
+            if airflow_response.ok:
+                airflow_json = airflow_response.json()["dags"]
+                for dag in airflow_json:
+                    route = f"{AirflowInstance.url}/dags/{dag['dag_id']}/tasks"
+                    airflow_response = requests.get(
+                        route,
+                        auth=(AirflowInstance.username, AirflowInstance.password),
+                    )
+                    if airflow_response.ok:
+                        airflow_json = airflow_response.json()["tasks"]
+                        print("DAG Detail for task: ", )
+                        print(airflow_json)
+                        for task in airflow_json:
+                            if (task["operator_name"] == "HopPipelineOperator") and (task["task_id"] == f"{taskId}.hpl"):
+                                airflow_start_date_response = requests.get(
+                                f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
+                                auth=(AirflowInstance.username, AirflowInstance.password),
+                                )
+                                dataset_info_success, dataset_info = self._get_dataset_info_internal(dag['dag_id'])
+                                processes.append(
+                                    Dag(
+                                        dag["dag_id"],
+                                        dag["dag_id"],
+                                        dag["dag_id"],
+                                        airflow_start_date_response.json()["start_date"],
+                                        dag["schedule_interval"]["value"],
+                                        dag["is_paused"],
+                                        dag["description"],
+                                        dag["last_parsed_time"],
+                                        dag["next_dagrun"],
+                                        dataset_info_success,
+                                        dataset_info[0] if dataset_info != None else None,
+                                        dataset_info[1] if dataset_info != None else None
+                                    ).__dict__
+                                )
+                    else:
+                        return Response({"status": "failed"}, status=airflow_response.status_code)
                 return Response({"dags": processes}, status=status.HTTP_200_OK)
             else:
                 return Response(
@@ -499,3 +563,4 @@ class ProcessRunView(ViewSet):
             return Response({"tasks": tasks}, status=status.HTTP_200_OK)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
+     

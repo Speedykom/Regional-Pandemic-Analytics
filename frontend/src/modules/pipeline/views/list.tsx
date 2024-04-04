@@ -17,9 +17,10 @@ import { useModal } from '@/common/hooks/use-modal';
 import { useRouter } from 'next/router';
 import { useGetAllPipelinesQuery, useDownloadPipelineQuery } from '../pipeline';
 import { AddPipeline } from './add';
+import { DeletePipeline } from './delete';
 import { UploadPipeline } from './upload';
 import { TemplateModal } from './template-modal';
-import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import { ArrowDownTrayIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 
@@ -72,6 +73,18 @@ export const MyPipelines = () => {
         <div data-testid="delete-chart-modal">
           <div className="mb-6">
             <TemplateModal onSelect={onSelect} hideModal={hideModal} />
+          </div>
+        </div>
+      ),
+    });
+
+  const showPipelineDeleteConfirmModal = (name: string) =>
+    showModal({
+      title: `Delete Pipeline: ${name}`,
+      Component: () => (
+        <div data-testid="delete-chart-modal">
+          <div className="mb-6">
+            <DeletePipeline hideModal={hideModal} taskId={name} />
           </div>
         </div>
       ),
@@ -145,6 +158,12 @@ export const MyPipelines = () => {
                 size="lg"
                 icon={ArrowDownTrayIcon}
                 tooltip="Download"
+              />
+              <Icon
+                onClick={() => showPipelineDeleteConfirmModal(item?.name)}
+                size="lg"
+                icon={TrashIcon}
+                tooltip="Delete"
               />
             </div>
           </TableCell>
