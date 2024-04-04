@@ -1,7 +1,6 @@
 import Layout from '@/common/components/Dashboard/Layout';
 import { countries } from '@/common/utils/countries';
 import { useTranslation } from 'react-i18next';
-import Image from 'next/image';
 import { Fragment, useEffect, useState } from 'react';
 import {
   Badge,
@@ -15,7 +14,7 @@ import {
   TextInput,
 } from '@tremor/react';
 import { toast } from 'react-toastify';
-import { useGetUserAvatarQuery, useGetUserQuery } from '@/modules/user/user';
+import { useGetUserQuery } from '@/modules/user/user';
 import { useUploadAvatarMutation } from '@/modules/user/user';
 
 import {
@@ -34,10 +33,13 @@ import { useSelector } from 'react-redux';
 
 export const ProfileSettings = () => {
   const [changePassword, setChangePassword] = useState(false);
-
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-
   const currentUser = useSelector(selectCurrentUser);
+
+  const defaultImagePath = '/avatar.png';
+  const [imageUrl, setImageUrl] = useState<string>(
+    currentUser?.avatar || defaultImagePath
+  );
+
   const { t } = useTranslation();
 
   const myId: any = currentUser?.id;
@@ -69,24 +71,26 @@ export const ProfileSettings = () => {
   const triggerPasswordChange = () => {
     setChangePassword(!changePassword);
   };
-  const { data: avatarData } = useGetUserAvatarQuery(myId);
+  //const { data: avatarData } = useGetUserAvatarQuery(myId);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif']; // List of allowed image extensions
-      const extension = file.name.split('.').pop()?.toLowerCase(); // Extract file extension
+      const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+      const extension = file.name.split('.').pop()?.toLowerCase();
 
       if (extension && allowedExtensions.includes(extension)) {
         setSelectedFile(file);
-        setImageUrl(file ? URL.createObjectURL(file) : null);
+        setImageUrl(URL.createObjectURL(file));
       } else {
         setSelectedFile(null);
-        setImageUrl(null);
+        toast.error('File format is not supported');
+        setImageUrl(defaultImagePath);
       }
     } else {
       setSelectedFile(null);
-      setImageUrl(null);
+      setImageUrl(currentUser?.avatar || defaultImagePath);
     }
   };
 
@@ -97,17 +101,11 @@ export const ProfileSettings = () => {
     }
     try {
       const formData = new FormData();
-      formData.append('uploadedFile', selectedFile, selectedFile.name);
-      uploadAvatarMutation(formData).then((res: any) => {
-        if (res.error) {
-          const { data } = res.error;
-          const { message } = data;
-          toast.error(message, { position: 'top-right' });
-          return;
-        }
-        toast.success('Profile image uploaded successfully', {
-          position: 'top-right',
-        });
+      formData.append('uploadedFile', selectedFile);
+      await uploadAvatarMutation(formData).unwrap();
+
+      toast.success('Profile image uploaded successfully', {
+        position: 'top-right',
       });
     } catch (error) {
       toast.error('An error occurred while uploading the profile image');
@@ -138,14 +136,13 @@ export const ProfileSettings = () => {
   };*/
 
   useEffect(() => {
-    if (typeof window !== undefined) {
+    if (typeof window !== 'undefined') {
       const attributes = data?.attributes;
       if (attributes) {
         const { gender, country, phone } = attributes;
-        gender && setGender(gender[0]);
-        country && setCountry(country[0]);
-        phone && setPhone(phone[0]);
-        //avatar && setAvatar(avatar[0]);
+        if (gender) setGender(gender[0]);
+        if (country) setCountry(country[0]);
+        if (phone) setPhone(phone[0]);
       }
     }
   }, [data?.attributes]);
@@ -158,13 +155,9 @@ export const ProfileSettings = () => {
           {/* Profile Card */}
           <Card className="mb-6 bg-white p-5">
             <div className="flex ">
-              <Image
+              <img
                 className="h-32 w-32 rounded-md"
-                src={
-                  avatarData
-                    ? `data:${avatarData.content_type};base64,${avatarData.data}`
-                    : imageUrl || '/avatar.png'
-                }
+                src={imageUrl}
                 alt="avatar"
                 width={128}
                 height={128}

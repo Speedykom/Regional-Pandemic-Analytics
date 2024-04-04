@@ -245,44 +245,40 @@ class UserAvatarView(APIView):
             prefix = f'{user_id}/'
             objects = client.list_objects(bucket_name, prefix=prefix)
 
-            if not objects:
+            # Using next() to fetch the first object from the generator
+            first_object = next(objects, None)
+            if not first_object:
                 return HttpResponseNotFound("Avatar file not found for the specified user.")
-            first_object = objects[0]
-            object_name = first_object.object_name
 
+            object_name = first_object.object_name
             file_data = client.get_object(bucket_name, object_name)
             return HttpResponse(file_data.read(), content_type=first_object.content_type)
-
-            #avatar_url = f'{os.getenv("BACKEND_AVATAR_BASE_URL")}/{object_name}'
-
         except Exception as err:
-         return HttpResponseServerError(f"Error retrieving avatar: {str(err)}")
+            return HttpResponseServerError(f"Error retrieving avatar: {str(err)}")
 
     def post(self, request, **kwargs):
-        """Receives a request to upload a file and sends it to filesystem for now. Later the file will be uploaded to minio server."""
         user_id = get_current_user_id(request)
         uploaded_file = request.FILES.get("uploadedFile")
-        if (uploaded_file) :
+        if uploaded_file:
             try:
                 client.put_object(
                     bucket_name='avatars',
                     object_name=f'{user_id}/{uploaded_file.name}',
                     data=uploaded_file,
                     length=uploaded_file.size,
-                    metadata={
-                    "uploaded": f"{datetime.utcnow()}",
-                },
+                    metadata={"uploaded": f"{datetime.utcnow()}"},
                 )
 
+                new_avatar_url = f"{os.getenv('AVATAR_BASE_URL')}/{user_id}/{uploaded_file.name}"
+
+                # Update the user's avatar URL in Keycloak
                 keycloak_admin = get_keycloak_admin()
-                user_data = {
-                    'attributes': {
-                        'avatar': f"{os.getenv('BACKEND_BASE_URL')}/api/account/user/{user_id}/avatar"
-                    }
-                }
+                user_data = {'attributes': {'avatar': new_avatar_url}}
                 keycloak_admin.update_user(user_id, user_data)
-                return Response({'message': 'Avatar uploaded successfully'}, status=status.HTTP_200_OK)
+
+                # Return the new avatar URL in the response
+                return Response({'message': 'Avatar uploaded successfully', 'newAvatarUrl': new_avatar_url}, status=status.HTTP_200_OK)
             except Exception as err:
                 return Response({'errorMessage': 'Unable to update the user avatar'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        elif MultiValueDictKeyError:
+        else:
             return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
