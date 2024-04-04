@@ -242,7 +242,7 @@ class UserAvatarView(APIView):
                 return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
 
             bucket_name = 'avatars'
-            prefix = f'user_{user_id}/'
+            prefix = f'{user_id}/'
             objects = client.list_objects(bucket_name, prefix=prefix)
 
             if not objects:
@@ -266,7 +266,7 @@ class UserAvatarView(APIView):
             try:
                 client.put_object(
                     bucket_name='avatars',
-                    object_name=f'avatars/{user_id}/{uploaded_file.name}',
+                    object_name=f'{user_id}/{uploaded_file.name}',
                     data=uploaded_file,
                     length=uploaded_file.size,
                     metadata={
@@ -274,13 +274,13 @@ class UserAvatarView(APIView):
                 },
                 )
 
-                #keycloak_admin = get_keycloak_admin()
-                #user_data = {
-                #    'attributes': {
-                #        'avatar': f'{os.getenv("BACKEND_AVATAR_BASE_URL")}{user_id}/{uploaded_file.name}'
-                #    }
-                #}
-                #keycloak_admin.update_user(user_id, user_data)
+                keycloak_admin = get_keycloak_admin()
+                user_data = {
+                    'attributes': {
+                        'avatar': f"{os.getenv('BACKEND_BASE_URL')}/api/account/user/{user_id}/avatar"
+                    }
+                }
+                keycloak_admin.update_user(user_id, user_data)
                 return Response({'message': 'Avatar uploaded successfully'}, status=status.HTTP_200_OK)
             except Exception as err:
                 return Response({'errorMessage': 'Unable to update the user avatar'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
