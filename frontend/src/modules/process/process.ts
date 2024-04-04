@@ -24,6 +24,10 @@ export const processApi = createApi({
       query: (query) => `/process?query=${query}`,
       providesTags: ['process'],
     }),
+    getProcessByTaskId: builder.query<DagDetailsResponse, string>({
+      query: (taskId) => `/process/task/${taskId}`,
+      providesTags: ['process'],
+    }),
     getDatasetInfo: builder.query<DagDatasetResponse, string>({
       query: (dag_id) => `/process/${dag_id}/dataset`,
     }),
@@ -77,7 +81,9 @@ export const processApi = createApi({
 });
 
 export const {
+  useGetDatasourceInfoQuery,
   useGetProcessQuery,
+  useGetProcessByTaskIdQuery,
   useCreateProcessMutation,
   useGetDatasetInfoQuery,
   useGetProcessPipelineByIdQuery,
@@ -86,5 +92,4 @@ export const {
   useGetProcessHistoryByIdQuery,
   useGetProcessHistoryTasksbyIdQuery,
   useRunProcessByIdMutation,
-  useGetDatasourceInfoQuery,
 } = processApi;
