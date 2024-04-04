@@ -258,27 +258,40 @@ class UserAvatarView(APIView):
 
     def post(self, request, **kwargs):
         user_id = get_current_user_id(request)
+        if not user_id:
+            return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
+
         uploaded_file = request.FILES.get("uploadedFile")
-        if uploaded_file:
-            try:
-                client.put_object(
-                    bucket_name='avatars',
-                    object_name=f'{user_id}/{uploaded_file.name}',
-                    data=uploaded_file,
-                    length=uploaded_file.size,
-                    metadata={"uploaded": f"{datetime.utcnow()}"},
-                )
+        if not uploaded_file:
+            return Response({'status': 'error', "message": "Please provide a file to upload"}, status=status.HTTP_400_BAD_REQUEST)
 
-                new_avatar_url = f"{os.getenv('AVATAR_BASE_URL')}/{user_id}/{uploaded_file.name}"
+        try:
+            bucket_name = 'avatars'
+            prefix = f'{user_id}/'
 
-                # Update the user's avatar URL in Keycloak
-                keycloak_admin = get_keycloak_admin()
-                user_data = {'attributes': {'avatar': new_avatar_url}}
-                keycloak_admin.update_user(user_id, user_data)
+            # Delete existing avatar
+            objects = client.list_objects(bucket_name, prefix=prefix, recursive=True)
+            for obj in objects:
+                client.remove_object(bucket_name, obj.object_name)
 
-                # Return the new avatar URL in the response
-                return Response({'message': 'Avatar uploaded successfully', 'newAvatarUrl': new_avatar_url}, status=status.HTTP_200_OK)
-            except Exception as err:
-                return Response({'errorMessage': 'Unable to update the user avatar'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        else:
-            return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
+            # Upload new avatar
+            object_name = f'{prefix}{uploaded_file.name}'
+            client.put_object(
+                bucket_name=bucket_name,
+                object_name=object_name,
+                data=uploaded_file,
+                length=uploaded_file.size,
+                metadata={"uploaded": f"{datetime.utcnow()}"},
+            )
+
+            new_avatar_url = f"{os.getenv('AVATAR_BASE_URL')}/{user_id}/{uploaded_file.name}"
+
+            # Update the user's avatar URL in Keycloak
+            keycloak_admin = get_keycloak_admin()
+            user_data = {'attributes': {'avatar': new_avatar_url}}
+            keycloak_admin.update_user(user_id, user_data)
+
+            # Return new avatar URL in the response
+            return Response({'message': 'Avatar uploaded successfully', 'newAvatarUrl': new_avatar_url}, status=status.HTTP_200_OK)
+        except Exception as err:
+            return Response({'errorMessage': f'Unable to update the user avatar: {str(err)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
