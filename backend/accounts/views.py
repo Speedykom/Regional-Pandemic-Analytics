@@ -12,6 +12,7 @@ from utils.filename import gen_filename
 from utils.minio import client
 from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
+from django.core.cache import cache
 
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -236,35 +237,27 @@ class UserAvatarView(APIView):
 
     def get(self, request, **kwargs):
         try:
-            user_id = kwargs.get('id')
+            user_id = get_current_user_id(request)
             if not user_id:
                 return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
 
             bucket_name = 'avatars'
-            prefix = f'avatars/{user_id}/'  # Objects are stored under 'avatars/user_id/'
-
-            # Fetching objects with the given prefix
+            prefix = f'{user_id}/'
             objects = client.list_objects(bucket_name, prefix=prefix)
 
             if not objects:
                 return HttpResponseNotFound("Avatar file not found for the specified user.")
-            
-            # Find the first object that has the 'object_name' attribute
-            avatar_file = next((obj for obj in objects if hasattr(obj, 'object_name')), None)
+            first_object = objects[0]
+            object_name = first_object.object_name
 
-            if avatar_file is None:
-                return HttpResponseNotFound("Avatar file not found for the specified user.")
-            base_url = os.getenv("BACKEND_AVATAR_BASE_URL")
-            # Construct the path with an additional 'avatars/' as it's required by the object's structure
-            avatar_path = f'{getattr(avatar_file, "object_name")}'
-            # Combine the base URL with the avatar path
-            avatar_url = f'{base_url}/{avatar_path}'
+            file_data = client.get_object(bucket_name, object_name)
+            return HttpResponse(file_data.read(), content_type=first_object.content_type)
 
-            return JsonResponse({"avatar_url": avatar_url})
+            #avatar_url = f'{os.getenv("BACKEND_AVATAR_BASE_URL")}/{object_name}'
 
         except Exception as err:
-            return HttpResponseServerError(f"Error retrieving avatar: {str(err)}")
-            
+         return HttpResponseServerError(f"Error retrieving avatar: {str(err)}")
+
     def post(self, request, **kwargs):
         """Receives a request to upload a file and sends it to filesystem for now. Later the file will be uploaded to minio server."""
         user_id = get_current_user_id(request)
@@ -273,7 +266,7 @@ class UserAvatarView(APIView):
             try:
                 client.put_object(
                     bucket_name='avatars',
-                    object_name=f'avatars/{user_id}/{uploaded_file.name}',
+                    object_name=f'{user_id}/{uploaded_file.name}',
                     data=uploaded_file,
                     length=uploaded_file.size,
                     metadata={
@@ -281,13 +274,13 @@ class UserAvatarView(APIView):
                 },
                 )
 
-                #keycloak_admin = get_keycloak_admin()
-                #user_data = {
-                #    'attributes': {
-                #        'avatar': f'{os.getenv("BACKEND_AVATAR_BASE_URL")}{user_id}/{uploaded_file.name}'
-                #    }
-                #}
-                #keycloak_admin.update_user(user_id, user_data)
+                keycloak_admin = get_keycloak_admin()
+                user_data = {
+                    'attributes': {
+                        'avatar': f"{os.getenv('BACKEND_BASE_URL')}/api/account/user/{user_id}/avatar"
+                    }
+                }
+                keycloak_admin.update_user(user_id, user_data)
                 return Response({'message': 'Avatar uploaded successfully'}, status=status.HTTP_200_OK)
             except Exception as err:
                 return Response({'errorMessage': 'Unable to update the user avatar'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
