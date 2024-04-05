@@ -1,4 +1,7 @@
-import { useGetProcessByTaskIdQuery } from '@/modules/process/process';
+import {
+  useGetProcessByTaskIdQuery,
+  useToggleProcessStatusMutation,
+} from '@/modules/process/process';
 import { toast } from 'react-toastify';
 import {
   Button,
@@ -25,6 +28,7 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
 
   const { data, isLoading, isSuccess } = useGetProcessByTaskIdQuery(taskId);
   const [deleteTask] = useDeletePipelineMutation();
+  const [disableProcess] = useToggleProcessStatusMutation();
 
   const renderProcessChainData = (processChainList: DagDetails[]) => {
     if (!!processChainList) {
@@ -50,7 +54,33 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
     }
   };
 
-  const handleOk = () => {
+  const handleOk = (processChainList: DagDetails[]) => {
+    // diasble all related process chains
+    if (!!processChainList) {
+      const disablePromises: any[] = [];
+      for (const process of processChainList) {
+        disablePromises.push(
+          disableProcess(process.dag_id).then((res: any) => {
+            if (res.error) {
+              toast.error(`Unable to disable process: ${process.name}`, {
+                position: 'top-right',
+              });
+              return true;
+            }
+            return false;
+          })
+        );
+      }
+      Promise.all(disablePromises).then((results) => {
+        const isErrorOccurred = results.some((result) => result);
+        if (isErrorOccurred) {
+          // If an error occurred, hide the modal
+          hideModal();
+          return;
+        }
+      });
+    }
+    //delete pipeline
     deleteTask(taskId).then((res: any) => {
       if (res.error) {
         toast.error('Unable to delete pipeline', { position: 'top-right' });
@@ -109,7 +139,7 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
           Cancel
         </Button>
         <Button
-          onClick={handleOk}
+          onClick={() => data && data.dags && handleOk(data?.dags)}
           className="bg-prim hover:bg-prim-hover text-white border-0 text-sm"
         >
           Continue

@@ -242,10 +242,10 @@ class PipelineUploadView(APIView):
             return Response({"status": "success"}, status=status.HTTP_200_OK)
 class PipelineDeleteView(APIView):
     keycloak_scopes = {
-        "PUT": "pipeline:update",
+        "DELETE": "pipeline:update",
     }
 
-    def put(self, request, name=None):
+    def delete(self, request, name=None):
         user_id = get_current_user_id(request)
         try:
             # delete pipeline file from in Minio

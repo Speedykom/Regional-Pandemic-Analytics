@@ -52,7 +52,7 @@ export const pipelineApi = createApi({
     >({
       query: (name) => ({
         url: `/pipeline/delete/${name}`,
-        method: 'PUT',
+        method: 'DELETE',
       }),
       invalidatesTags: ['pipelines'],
     }),
