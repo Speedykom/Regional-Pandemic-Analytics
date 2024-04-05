@@ -25,4 +25,7 @@ create_bucket "minio-remote" "parquets"
 create_bucket "minio-remote" "repan-bucket"
 create_bucket "minio-remote" "avatars"
 
+# enable anonymous access to the avatars bucket only
+mc anonymous set download minio-remote/avatars
+
 mc mirror  /tmp/templates/ minio-remote/pipelines/templates
