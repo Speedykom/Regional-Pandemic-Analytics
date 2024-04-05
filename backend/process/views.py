@@ -233,8 +233,6 @@ class ProcessView(ViewSet):
                     )
                     if airflow_response.ok:
                         airflow_json = airflow_response.json()["tasks"]
-                        print("DAG Detail for task: ", )
-                        print(airflow_json)
                         for task in airflow_json:
                             if (task["operator_name"] == "HopPipelineOperator") and (task["task_id"] == f"{taskId}.hpl"):
                                 airflow_start_date_response = requests.get(

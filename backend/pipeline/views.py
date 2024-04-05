@@ -240,4 +240,23 @@ class PipelineUploadView(APIView):
                 ) 
                              
             return Response({"status": "success"}, status=status.HTTP_200_OK)
+class PipelineDeleteView(APIView):
+    keycloak_scopes = {
+        "PUT": "pipeline:update",
+    }
 
+    def put(self, request, name=None):
+        user_id = get_current_user_id(request)
+        try:
+            # delete pipeline file from in Minio
+            client.remove_object("pipelines", f"pipelines-created/{user_id}/{name}.hpl")
+
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
+        except:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Unable to delete the pipeline {}".format(name),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
