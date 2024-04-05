@@ -1,4 +1,5 @@
 import { useGetProcessByTaskIdQuery } from '@/modules/process/process';
+import { toast } from 'react-toastify';
 import {
   Button,
   Card,
@@ -12,6 +13,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Loader } from '@/common/components/Loader';
 import { DagDetails } from '@/modules/process/interface';
+import { useDeletePipelineMutation } from '../pipeline';
 
 type DeletePipelineProps = {
   hideModal: () => void;
@@ -22,6 +24,7 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
   const { t } = useTranslation();
 
   const { data, isLoading, isSuccess } = useGetProcessByTaskIdQuery(taskId);
+  const [deleteTask] = useDeletePipelineMutation();
 
   const renderProcessChainData = (processChainList: DagDetails[]) => {
     if (!!processChainList) {
@@ -48,7 +51,15 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
   };
 
   const handleOk = () => {
-    hideModal();
+    deleteTask(taskId).then((res: any) => {
+      if (res.error) {
+        toast.error('Unable to delete pipeline', { position: 'top-right' });
+      }
+      toast.success('Pipeline deleted successfully', {
+        position: 'top-right',
+      });
+      hideModal();
+    });
   };
 
   const handleCancel = () => {
