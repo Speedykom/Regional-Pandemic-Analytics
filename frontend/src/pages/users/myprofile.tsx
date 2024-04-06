@@ -35,7 +35,7 @@ export const ProfileSettings = () => {
   const [changePassword, setChangePassword] = useState(false);
   const currentUser = useSelector(selectCurrentUser);
 
-  const defaultImagePath = '/avatar.png';
+  const defaultImagePath = '/avater.png';
   const [imageUrl, setImageUrl] = useState<string>(
     currentUser?.avatar || defaultImagePath
   );
@@ -43,7 +43,9 @@ export const ProfileSettings = () => {
   const { t } = useTranslation();
 
   const myId: any = currentUser?.id;
-  const { data } = useGetUserQuery(myId);
+  const { data, refetch } = useGetUserQuery(myId, {
+    refetchOnMountOrArgChange: true,
+  });
 
   const [country, setCountry] = useState<string>();
   const [gender, setGender] = useState<string>();
@@ -103,10 +105,10 @@ export const ProfileSettings = () => {
       const formData = new FormData();
       formData.append('uploadedFile', selectedFile);
       await uploadAvatarMutation(formData).unwrap();
-
       toast.success('Profile image uploaded successfully', {
         position: 'top-right',
       });
+      refetch();
     } catch (error) {
       toast.error('An error occurred while uploading the profile image');
     }

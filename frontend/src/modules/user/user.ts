@@ -16,12 +16,14 @@ interface DisableResponse {
 export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery,
+  tagTypes: ['user'],
   endpoints: (builder) => ({
     getUsers: builder.query<Users, void>({
       query: () => 'account/users',
     }),
     getUser: builder.query<User, string>({
       query: (id) => `account/user/${id}`,
+      providesTags: ['user'],
     }),
     disableUser: builder.mutation<DisableResponse, string>({
       query: (id) => {
@@ -58,9 +60,11 @@ export const userApi = createApi({
         method: 'POST',
         body: FormData,
       }),
+      invalidatesTags: ['user'],
     }),
     getUserAvatar: builder.query<any, { id: string }>({
       query: (id) => `account/user/${id}/avatar`,
+      providesTags: ['user'],
     }),
   }),
 });
