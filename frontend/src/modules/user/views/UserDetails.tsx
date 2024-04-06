@@ -29,7 +29,7 @@ export const UserDetails = () => {
                 src={
                   currentUser && currentUser?.avatar
                     ? currentUser?.avatar
-                    : '/avatar.png'
+                    : '/avater.png'
                 }
                 alt="avatar"
                 className="h-24 w-24 rounded-md"
