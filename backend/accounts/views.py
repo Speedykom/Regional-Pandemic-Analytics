@@ -290,7 +290,8 @@ class UserAvatarView(APIView):
             keycloak_admin = get_keycloak_admin()
             user_data = {'attributes': {'avatar': new_avatar_url}}
             keycloak_admin.update_user(user_id, user_data)
-
+            cache_key = f'user_avatar_{user_id}'
+            cache.delete(cache_key)
             # Return new avatar URL in the response
             return Response({'message': 'Avatar uploaded successfully', 'newAvatarUrl': new_avatar_url}, status=status.HTTP_200_OK)
         except Exception as err:
