@@ -464,7 +464,9 @@ services:
     container_name: airflow-worker
     shm_size: 2g
     depends_on:
-      - superset
+      - airflow-webserver
+      - airflow-scheduler
+      - airflow-triggerer
     command: 'airflow celery worker'
 
   airflow-pg:
