@@ -1,3 +1,4 @@
+from aifc import Error
 import os
 import json
 import re
@@ -248,8 +249,16 @@ class PipelineDeleteView(APIView):
     def delete(self, request, name=None):
         user_id = get_current_user_id(request)
         try:
-            # delete pipeline file from in Minio
-            client.remove_object("pipelines", f"pipelines-created/{user_id}/{name}.hpl")
+            # back up pipeline file
+            client.copy_object(
+            "pipelines",
+            f"pipelines-deleted/{user_id}/{name}.hpl",
+            CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
+
+            # delete pipeline file from Minio
+            client.remove_object(
+                "pipelines", 
+                f"pipelines-created/{user_id}/{name}.hpl")
 
             return Response({"status": "success"}, status=status.HTTP_200_OK)
         except:

@@ -74,7 +74,6 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
       Promise.all(disablePromises).then((results) => {
         const isErrorOccurred = results.some((result) => result);
         if (isErrorOccurred) {
-          // If an error occurred, hide the modal
           hideModal();
           return;
         }
@@ -84,10 +83,11 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
     deleteTask(taskId).then((res: any) => {
       if (res.error) {
         toast.error('Unable to delete pipeline', { position: 'top-right' });
+      } else {
+        toast.success('Pipeline deleted successfully', {
+          position: 'top-right',
+        });
       }
-      toast.success('Pipeline deleted successfully', {
-        position: 'top-right',
-      });
       hideModal();
     });
   };
