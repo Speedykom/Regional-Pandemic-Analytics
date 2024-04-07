@@ -55,6 +55,13 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
   };
 
   const handleOk = (processChainList: DagDetails[]) => {
+    const isConfirmed = window.confirm(
+      'Are you sure you want to delete this pipeline?'
+    );
+    if (!isConfirmed) {
+      // If user cancels, do nothing
+      return;
+    }
     // diasble all related process chains
     if (!!processChainList) {
       const disablePromises: any[] = [];
