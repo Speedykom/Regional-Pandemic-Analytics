@@ -76,24 +76,22 @@ export const ProfileSettings = () => {
 
   const saveChanges = async () => {
     try {
-      const formData = new FormData();
+      const userData = {
+        firstName: firstName,
+        lastName: lastName,
+        attributes: {
+          phone: phone || '',
+          gender: gender || '',
+          country: country || '',
+        },
+      };
 
-      if (firstName) formData.append('firstName', firstName);
-      if (lastName) formData.append('lastName', lastName);
-      if (email) formData.append('email', email);
-      if (enabled) formData.append('enabled', String(enabled));
-      if (phone) formData.append('attributes[phone]', phone);
-      if (gender) formData.append('attributes[gender]', gender);
-      if (country) formData.append('attributes[country]', country);
-
-      modifyUserMutation({ id: myId, formData }).then((res: any) => {
+      modifyUserMutation({ id: myId, userData }).then((res: any) => {
         if (res.error) {
-          // Check if data exists in res.error
           if (res.error.data) {
             const { message } = res.error.data;
             toast.error(message, { position: 'top-right' });
           } else {
-            // Handle the case where data is not available
             toast.error('An unknown error occurred', { position: 'top-right' });
           }
           return;
