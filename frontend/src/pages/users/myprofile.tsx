@@ -43,8 +43,6 @@ export const ProfileSettings = () => {
   const [lastName, setLastName] = useState(currentUser?.family_name || '');
   const [phone, setPhone] = useState(currentUser?.phone);
   const [avatar] = useState(currentUser?.avatar);
-  const [email] = useState(currentUser?.email);
-  const [enabled] = useState(data?.enabled);
 
   const [newPass, setNewPass] = useState<string>('');
   const [modifyUserMutation] = useModifyUserMutation();
@@ -76,15 +74,41 @@ export const ProfileSettings = () => {
 
   const saveChanges = async () => {
     try {
-      const userData = {
-        firstName: firstName,
-        lastName: lastName,
-        attributes: {
-          phone: phone || '',
-          gender: gender || '',
-          country: country || '',
-        },
-      };
+      const userData: any = {};
+
+      if (firstName.trim() !== '') {
+        userData.firstName = firstName;
+      }
+
+      if (lastName.trim() !== '') {
+        userData.lastName = lastName;
+      }
+
+      if (phone && phone.trim() !== '') {
+        userData.attributes = {
+          ...userData.attributes,
+          phone: phone,
+        };
+      }
+
+      if (gender && gender.trim() !== '') {
+        userData.attributes = {
+          ...userData.attributes,
+          gender: gender,
+        };
+      }
+
+      if (country && country.trim() !== '') {
+        userData.attributes = {
+          ...userData.attributes,
+          country: country,
+        };
+      }
+
+      // Check if avatar is not empty or undefined
+      if (avatar !== '' && avatar !== undefined) {
+        userData.avatar = avatar;
+      }
 
       modifyUserMutation({ id: myId, userData }).then((res: any) => {
         if (res.error) {
@@ -97,12 +121,12 @@ export const ProfileSettings = () => {
           return;
         }
 
-        toast.success('Profile uploaded successfully', {
+        toast.success('Profile updated successfully', {
           position: 'top-right',
         });
       });
     } catch (error) {
-      toast.error('An error occurred while uploading the profile');
+      toast.error('An error occurred while updating the profile');
     }
   };
 
