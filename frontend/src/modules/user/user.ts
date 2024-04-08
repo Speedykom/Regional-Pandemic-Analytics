@@ -38,16 +38,13 @@ export const userApi = createApi({
         body,
       }),
     }),
-    modifyUser: builder.mutation<
-      UserResponse,
-      { id: string; formData: FormData }
-    >({
-      query: ({ id, formData }) => ({
+    modifyUser: builder.mutation<UserResponse, { id: string; userData: any }>({
+      query: ({ id, userData }) => ({
         url: `account/user/${id}/update`,
         method: 'PUT',
-        body: formData,
+        body: JSON.stringify(userData),
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type': 'application/json',
         },
       }),
     }),
