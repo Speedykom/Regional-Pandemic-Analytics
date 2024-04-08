@@ -74,59 +74,53 @@ export const ProfileSettings = () => {
 
   const saveChanges = async () => {
     try {
-      const userData: any = {};
+      // Start with the current user data
+      const userData: any = {
+        firstName: currentUser?.given_name || '',
+        lastName: currentUser?.family_name || '',
+        attributes: {
+          phone: currentUser?.phone || '',
+          gender: currentUser?.gender || '',
+          country: currentUser?.country || '',
+          avatar: currentUser?.avatar || '', // Include the avatar as it is
+        },
+      };
 
+      // Update only if there's a change
       if (firstName.trim() !== '') {
         userData.firstName = firstName;
       }
-
       if (lastName.trim() !== '') {
         userData.lastName = lastName;
       }
-
       if (phone && phone.trim() !== '') {
-        userData.attributes = {
-          ...userData.attributes,
-          phone: phone,
-        };
+        userData.attributes.phone = phone;
+      }
+      if (gender) {
+        userData.attributes.gender = gender;
+      }
+      if (country) {
+        userData.attributes.country = country;
       }
 
-      if (gender && gender.trim() !== '') {
-        userData.attributes = {
-          ...userData.attributes,
-          gender: gender,
-        };
+      // No need to include attributes if they're unchanged
+      if (
+        JSON.stringify(userData.attributes) ===
+        JSON.stringify({
+          phone: currentUser?.phone || '',
+          gender: currentUser?.gender || '',
+          country: currentUser?.country || '',
+        })
+      ) {
+        delete userData.attributes;
       }
 
-      if (country && country.trim() !== '') {
-        userData.attributes = {
-          ...userData.attributes,
-          country: country,
-        };
-      }
-
-      // Check if avatar is not empty or undefined
-      if (avatar !== '' && avatar !== undefined) {
-        userData.avatar = avatar;
-      }
-
-      modifyUserMutation({ id: myId, userData }).then((res: any) => {
-        if (res.error) {
-          if (res.error.data) {
-            const { message } = res.error.data;
-            toast.error(message, { position: 'top-right' });
-          } else {
-            toast.error('An unknown error occurred', { position: 'top-right' });
-          }
-          return;
-        }
-
-        toast.success('Profile updated successfully', {
-          position: 'top-right',
-        });
-      });
+      await modifyUserMutation({ id: myId, userData });
+      toast.success('Profile updated successfully', { position: 'top-right' });
     } catch (error) {
-      toast.error('An error occurred while updating the profile');
+      toast.error('An error occurred while updating the profile', {
+        position: 'top-right',
+      });
     }
   };
 
@@ -269,21 +263,18 @@ export const ProfileSettings = () => {
                   <label htmlFor="phone">{t('phoneNumber')}</label>
                   <NumberInput
                     enableStepper={false}
-                    onInput={(e: any) => setPhone(e.target.value)}
                     value={phone}
-                    defaultValue={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                    placeholder={phone || 'phone'}
+                    placeholder="Enter phone number"
                   />
                 </div>
                 <div className="md:col-span-3">
                   <label htmlFor="country">{t('country2')}</label>
                   <SearchSelect
-                    onValueChange={(e) => {
-                      setCountry(e);
-                    }}
+                    onValueChange={(e) => setCountry(e)}
                     className="bg-white"
-                    value={country}
+                    value={country} // This should be the string you get from currentUser?.country
                   >
                     {countries.map((item, index) => (
                       <SearchSelectItem
