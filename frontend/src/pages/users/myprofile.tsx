@@ -14,7 +14,10 @@ import {
   TextInput,
 } from '@tremor/react';
 import { toast } from 'react-toastify';
-import { useGetUserQuery } from '@/modules/user/user';
+import {
+  useGetUserQuery,
+  useChangePasswordMutation,
+} from '@/modules/user/user';
 import { useForm, Controller } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { selectCurrentUser } from '@/modules/auth/auth';
@@ -30,8 +33,12 @@ import {
 } from '@heroicons/react/24/outline';
 export const ProfileSettings = () => {
   const [changePassword, setChangePassword] = useState(false);
+  const [newPass, setNewPass] = useState<string>('');
+  const [confirmPass, setConfirmPass] = useState<string>('');
   const currentUser = useSelector(selectCurrentUser);
   const { t } = useTranslation();
+  const [changePasswordMutation] = useChangePasswordMutation();
+
   const [avatar] = useState(currentUser?.avatar);
 
   const myId: any = currentUser?.id;
@@ -52,20 +59,33 @@ export const ProfileSettings = () => {
     },
   });
 
-  const [newPass, setNewPass] = useState<string>('');
   const [modifyUserMutation] = useModifyUserMutation();
-  const {
-    formState: { errors },
-  } = useForm();
-
-  const onChange = (e?: string) => {
-    setNewPass(String(e));
-  };
 
   const triggerPasswordChange = () => {
     setChangePassword(!changePassword);
   };
-
+  const onChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!currentUser?.id) {
+      toast.error(t('userUndefined'));
+      return;
+    }
+    if (newPass !== confirmPass) {
+      toast.error(t('passwordsDoNotMatch'), { position: 'top-right' });
+      return;
+    }
+    try {
+      await changePasswordMutation({
+        id: currentUser.id,
+        newPassword: newPass,
+        confirmPassword: confirmPass,
+      }).unwrap();
+      toast.success(t('passwordChangeSuccess'), { position: 'top-right' });
+      setChangePassword(false);
+    } catch (error) {
+      toast.error(t('passwordChangeError'), { position: 'top-right' });
+    }
+  };
   useEffect(() => {
     reset({
       firstName: currentUser?.given_name || '',
@@ -395,60 +415,54 @@ export const ProfileSettings = () => {
                     </Dialog.Title>
                     <div className="mt-5 flex-auto px-4 py-10 pt-0">
                       <form
-                      // onSubmit={handleSubmit((data: any) => onSubmit(data))}
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          onChangePassword(e);
+                        }}
                       >
                         <div className="relative w-full mb-3">
                           <label
                             className="block text-blueGray-600 text-xs font-bold mb-2"
-                            htmlFor="descriptiond"
+                            htmlFor="newPassword"
                           >
                             {t('new')}
                           </label>
                           <TextInput
+                            id="newPassword"
                             type="password"
                             value={newPass}
-                            onChange={(e) => {
-                              onChange(e.currentTarget.value);
-                            }}
+                            onChange={(e) => setNewPass(e.currentTarget.value)}
                             placeholder="new password"
                             className="mt-1 bg-gray-50"
                           />
-                          {errors.description && (
-                            <span className="text-sm text-red-600">
-                              {t('provideRoleDescrip')}{' '}
-                            </span>
-                          )}
                         </div>
                         <div className="relative w-full mb-3">
                           <label
                             className="block text-blueGray-600 text-xs font-bold mb-2"
-                            htmlFor="descriptiond"
+                            htmlFor="confirmPassword"
                           >
                             {t('confirmPass')}
                           </label>
                           <TextInput
+                            id="confirmPassword"
                             type="password"
+                            value={confirmPass}
+                            onChange={(e) =>
+                              setConfirmPass(e.currentTarget.value)
+                            }
                             placeholder="confirm password"
                             className="mt-1 bg-gray-50"
                           />
-                          {errors.description && (
-                            <span className="text-sm text-red-600">
-                              {t('provideRoleDescrip')}{' '}
-                            </span>
-                          )}
                         </div>
                         <div className="mt-16 flex justify-end space-x-2">
                           <Button
                             type="button"
                             className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                            onClick={() => {
-                              setChangePassword(false);
-                            }}
+                            onClick={() => setChangePassword(false)}
                           >
                             Cancel
                           </Button>
                           <Button
-                            // loading={loading}
                             type="submit"
                             className="inline-flex justify-center rounded-md border border-transparent bg-prim px-4 py-2 text-sm font-medium text-white hover:bg-prim-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                           >
