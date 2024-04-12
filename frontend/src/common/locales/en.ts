@@ -89,7 +89,9 @@ const enTranslation = {
   inactive: 'Inactive',
 
   provideRoleDescrip: 'provide role description',
-
+  noChangesMade: 'No changes made to the profile.',
+  profileUpdateSuccess: 'Profile updated successfully',
+  profileUpdateError: 'An error occurred while updating the profile',
   yourProfile: 'Your Profile',
   logOut: 'Log Out',
   somethingWentWrong: 'Something went wrong!',
