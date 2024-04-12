@@ -43,7 +43,7 @@ export const UploadPipeline = ({
         return;
       }
 
-      toast.success('Process created successfully', {
+      toast.success('Pipeline uploaded successfully', {
         position: 'top-right',
       });
       cancel();
