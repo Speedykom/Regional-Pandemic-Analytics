@@ -3,35 +3,39 @@ import { countries } from '@/common/utils/countries';
 import { useTranslation } from 'react-i18next';
 import { Fragment, useEffect, useState } from 'react';
 import {
+  Badge,
   Button,
   Card,
   Divider,
   NumberInput,
   SearchSelect,
   SearchSelectItem,
+  Text,
   TextInput,
 } from '@tremor/react';
 import { toast } from 'react-toastify';
 import { useGetUserQuery } from '@/modules/user/user';
-import { PencilSquareIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
 import { useForm, Controller } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { selectCurrentUser } from '@/modules/auth/auth';
 import { useSelector } from 'react-redux';
 import { useModifyUserMutation } from '@/modules/user/user';
-
+import {
+  CheckIcon,
+  PencilSquareIcon,
+  PlusCircleIcon,
+  SignalSlashIcon,
+  WifiIcon,
+  XMarkIcon,
+} from '@heroicons/react/24/outline';
 export const ProfileSettings = () => {
   const [changePassword, setChangePassword] = useState(false);
   const currentUser = useSelector(selectCurrentUser);
   const { t } = useTranslation();
+  const [avatar] = useState(currentUser?.avatar);
 
   const myId: any = currentUser?.id;
   const { data } = useGetUserQuery(myId);
-  const [country, setCountry] = useState(currentUser?.country);
-  const [gender, setGender] = useState(currentUser?.gender);
-  const [firstName, setFirstName] = useState(currentUser?.given_name || '');
-  const [lastName, setLastName] = useState(currentUser?.family_name || '');
-  const [phone, setPhone] = useState(currentUser?.phone);
   const {
     control,
     handleSubmit,
@@ -74,7 +78,7 @@ export const ProfileSettings = () => {
 
   const saveChanges = async () => {
     if (!isDirty) {
-      toast.info('No changes made to the profile.', { position: 'top-right' });
+      toast.info(t('noChangesMade'), { position: 'top-right' });
       return;
     }
 
@@ -104,11 +108,9 @@ export const ProfileSettings = () => {
 
     try {
       await modifyUserMutation({ id: myId, userData: formData });
-      toast.success('Profile updated successfully', { position: 'top-right' });
+      toast.success(t('profileUpdateSuccess'), { position: 'top-right' });
     } catch (error) {
-      toast.error('An error occurred while updating the profile', {
-        position: 'top-right',
-      });
+      toast.error(t('profileUpdateError'), { position: 'top-right' });
     }
   };
 
@@ -118,50 +120,164 @@ export const ProfileSettings = () => {
         {/* Left Side */}
         <div className="w-full md:w-2/3">
           {/* Profile Card */}
+          <Card className="mb-6 bg-white p-5">
+            <div className="flex ">
+              <img
+                className="h-32 w-32 rounded-md"
+                src={avatar || '/avater.png'}
+                alt=""
+              />
+              <input type="file" style={{ display: 'none' }} />
+            </div>
+            <div className="">
+              <h1 className="text-gray-900 font-bold text-xl leading-8 my-1">
+                {data?.firstName} {data?.lastName}
+              </h1>
+            </div>
+            <div>
+              <span className="text-gray-500 leading-8 my-1">
+                Email Address
+              </span>
+              <p id="emailId" className="">
+                {data?.email}
+              </p>
+            </div>
+            <div className="mt-5">
+              <span className="text-gray-500 leading-8 my-1">Phone Number</span>
+              <p id="emailId" className="">
+                {data?.attributes?.phone}
+              </p>
+            </div>
+            <div className="mt-5">
+              <span className="text-gray-500 leading-8 my-1">
+                {t('username')}
+              </span>
+              <p id="emailId" className="">
+                {data?.username}
+              </p>
+            </div>
+            <div className="mt-5">
+              <span className="text-gray-500 leading-8 my-1">
+                {t('gender')}
+              </span>
+              <p id="emailId" className="">
+                {data?.attributes?.gender}
+              </p>
+            </div>
+            <div className="mt-5 mb-8">
+              <span className="text-gray-500 leading-8 my-1">
+                {t('country')}
+              </span>
+              <p id="emailId" className="">
+                {data?.attributes?.country}
+              </p>
+            </div>
+            <div className="">
+              <span className="text-gray-500 leading-8 my-1">
+                {t('accessRoles')}
+              </span>
+              <div>
+                <div className="flex">
+                  {data?.roles.map((role, index) => (
+                    <Text
+                      className="bg-gray-200 px-2 text-black rounded-md"
+                      key={index}
+                    >
+                      {role?.name}
+                    </Text>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="mt-5">
+              <span className="text-gray-500 leading-8 my-1">
+                {t('emailStatus')}
+              </span>
+              <p>
+                {data?.emailVerified ? (
+                  <Badge color="indigo" icon={CheckIcon}>
+                    Enable
+                  </Badge>
+                ) : (
+                  <Badge color="red" icon={XMarkIcon}>
+                    Disabled
+                  </Badge>
+                )}
+              </p>
+            </div>
+            <div className="mt-5">
+              <span className="text-gray-500 leading-8 my-1">
+                {t('myStatus')}
+              </span>
+              <p>
+                {data?.enabled ? (
+                  <Badge color="green" icon={WifiIcon}>
+                    {t('active')}
+                  </Badge>
+                ) : (
+                  <Badge color="red" icon={SignalSlashIcon}>
+                    {t('inactive')}{' '}
+                  </Badge>
+                )}
+              </p>
+            </div>
+          </Card>
+        </div>
+        {/* Right Side */}
+        <div className="w-full md:w-2/3">
+          {/* Profile Card */}
           <Card className="bg-white mb-8">
             <form onSubmit={handleSubmit(saveChanges)}>
+              <label htmlFor="firstName">{t('firstName')}</label>
               <Controller
                 name="firstName"
                 control={control}
                 render={({ field }) => (
                   <TextInput
                     {...field}
-                    placeholder="Enter your first name"
+                    id="firstName"
+                    placeholder={t('givenNames')}
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                   />
                 )}
               />
 
+              <label htmlFor="lastName">{t('lastName2')}</label>
               <Controller
                 name="lastName"
                 control={control}
                 render={({ field }) => (
                   <TextInput
                     {...field}
-                    placeholder="Enter your last name"
+                    id="lastName"
+                    placeholder={t('lastName')}
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                   />
                 )}
               />
 
+              <label htmlFor="phone">{t('phone')}</label>
               <Controller
                 name="phone"
                 control={control}
                 render={({ field }) => (
                   <NumberInput
                     {...field}
+                    id="phone"
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                    placeholder="Enter phone number"
+                    placeholder={t('phoneNumber')}
                   />
                 )}
               />
 
+              <label htmlFor="country">{t('country2')}</label>
               <Controller
                 name="country"
                 control={control}
                 render={({ field }) => (
                   <SearchSelect
                     {...field}
+                    id="country"
                     onValueChange={field.onChange}
                     className="bg-white"
                   >
@@ -178,16 +294,18 @@ export const ProfileSettings = () => {
                 )}
               />
 
+              <label htmlFor="gender">{t('gender2')}</label>
               <Controller
                 name="gender"
                 control={control}
                 render={({ field }) => (
                   <SearchSelect
                     {...field}
+                    id="gender"
                     onValueChange={field.onChange}
                     className="bg-white"
                   >
-                    {['Male', 'Female'].map((gender, index) => (
+                    {[t('male'), t('female')].map((gender, index) => (
                       <SearchSelectItem
                         className="bg-white cursor-pointer"
                         key={index}
@@ -209,99 +327,6 @@ export const ProfileSettings = () => {
                 {t('saveChanges')}
               </Button>
             </form>
-          </Card>
-        </div>
-        {/* Right Side */}
-        <div className="w-full md:w-full md:mx-2">
-          <Card className="bg-white mb-8">
-            <div className="border-b-2 mb-6 flex items-center justify-between">
-              <p className="flex items-center">{t('editProfile')}</p>
-            </div>
-            <div className="lg:col-span-2">
-              <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
-                <div className="md:col-span-5">
-                  <label htmlFor="firstName">{t('givenNames')}</label>
-                  <TextInput
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="Enter your first name"
-                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                  />
-                </div>
-                <div className="md:col-span-5">
-                  <label htmlFor="lastName">{t('lastName2')}</label>
-                  <TextInput
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    placeholder="Enter your last name"
-                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                  />
-                </div>
-                <div className="md:col-span-5">
-                  <label htmlFor="phone">{t('phoneNumber')}</label>
-                  <NumberInput
-                    enableStepper={false}
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                    placeholder="Enter phone number"
-                  />
-                </div>
-                <div className="md:col-span-3">
-                  <label htmlFor="country">{t('country2')}</label>
-                  <SearchSelect
-                    onValueChange={(e) => setCountry(e)}
-                    className="bg-white"
-                    value={country} // This should be the string you get from currentUser?.country
-                  >
-                    {countries.map((item, index) => (
-                      <SearchSelectItem
-                        className="bg-white cursor-pointer"
-                        key={index}
-                        value={item.name}
-                      >
-                        {item.name}
-                      </SearchSelectItem>
-                    ))}
-                  </SearchSelect>
-                </div>
-                <div className="md:col-span-3">
-                  <label htmlFor="gender">{t('gender')}</label>
-                  <SearchSelect
-                    onValueChange={(e) => {
-                      setGender(e);
-                    }}
-                    className="bg-white"
-                    value={gender}
-                  >
-                    {['Male', 'Female'].map((item, index) => (
-                      <SearchSelectItem
-                        className="bg-white cursor-pointer"
-                        key={index}
-                        value={item}
-                      >
-                        {item}
-                      </SearchSelectItem>
-                    ))}
-                  </SearchSelect>
-                </div>
-              </div>
-            </div>
-            <div className="mt-8">
-              <Divider className="border border-gray-200" />
-              <div>
-                <div className="flex space-x-2 items-end justify-end">
-                  <Button
-                    onClick={saveChanges}
-                    type="submit"
-                    className="flex items-center hover:bg-prim-hover text-white"
-                    icon={PlusCircleIcon}
-                  >
-                    {t('saveChanges')}
-                  </Button>
-                </div>
-              </div>
-            </div>
           </Card>
           <Card className="bg-white">
             <div className="mt-1 border-b-2 mb-6 flex items-center justify-between">
