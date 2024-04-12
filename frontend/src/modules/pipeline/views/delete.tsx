@@ -41,11 +41,11 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
             </TableCell>
             {process.status ? (
               <TableCell className="font-sans">
-                {t('addProcess.inactive')}
+                {t('deletePipeline.inactive')}
               </TableCell>
             ) : (
               <TableCell className="font-sans">
-                {t('addProcess.active')}
+                {t('deletePipeline.active')}
               </TableCell>
             )}
           </TableRow>
@@ -56,7 +56,7 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
 
   const handleOk = (processChainList: DagDetails[]) => {
     const isConfirmed = window.confirm(
-      'Are you sure you want to delete this pipeline?'
+      t('deletePipeline.confirmDeletionMessage')
     );
     if (!isConfirmed) {
       // If user cancels, do nothing
@@ -69,9 +69,12 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
         disablePromises.push(
           disableProcess(process.dag_id).then((res: any) => {
             if (res.error) {
-              toast.error(`Unable to disable process: ${process.name}`, {
-                position: 'top-right',
-              });
+              toast.error(
+                `${t('deletePipeline.disableProcessErrorMessage')} ${process.name}`,
+                {
+                  position: 'top-right',
+                }
+              );
               return true;
             }
             return false;
@@ -89,9 +92,11 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
     //delete pipeline
     deleteTask(taskId).then((res: any) => {
       if (res.error) {
-        toast.error('Unable to delete pipeline', { position: 'top-right' });
+        toast.error(`${t('deletePipeline.deletionErrorMessage')}`, {
+          position: 'top-right',
+        });
       } else {
-        toast.success('Pipeline deleted successfully', {
+        toast.success(`${t('deletePipeline.successMessage')}`, {
           position: 'top-right',
         });
       }
@@ -106,8 +111,7 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
   return (
     <div className="border-t h-90 w-full">
       <p className="bg-yellow-200 px-3 py-2 rounded-md mt-3 text-gray-500">
-        Note: After deleting the pipeline, the following process chains will be
-        disabled:
+        {t('deletePipeline.warningMessage')}
       </p>
       <div className="mt-5">
         {isLoading && (
@@ -124,11 +128,15 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableHeaderCell>{t('addProcess.name')}</TableHeaderCell>
                   <TableHeaderCell>
-                    {t('addProcess.scheduleIntervalLabel')}
+                    {t('deletePipeline.processName')}
                   </TableHeaderCell>
-                  <TableHeaderCell>{t('addProcess.status')}</TableHeaderCell>
+                  <TableHeaderCell>
+                    {t('deletePipeline.processScheduleIntervalLabel')}
+                  </TableHeaderCell>
+                  <TableHeaderCell>
+                    {t('deletePipeline.processStatus')}
+                  </TableHeaderCell>
                   <TableHeaderCell />
                 </TableRow>
               </TableHead>
@@ -143,13 +151,13 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
           className=" bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
           onClick={handleCancel}
         >
-          Cancel
+          {t('deletePipeline.cancelButton')}
         </Button>
         <Button
           onClick={() => data && data.dags && handleOk(data?.dags)}
           className="bg-prim hover:bg-prim-hover text-white border-0 text-sm"
         >
-          Continue
+          {t('deletePipeline.deleteButton')}
         </Button>
       </div>
     </div>

@@ -80,7 +80,7 @@ export const MyPipelines = () => {
 
   const showPipelineDeleteConfirmModal = (name: string) =>
     showModal({
-      title: `Delete Pipeline: ${name}`,
+      title: `${t('deletePipeline.title')} ${name}`,
       Component: () => (
         <div data-testid="delete-chart-modal">
           <div className="mb-6">
@@ -163,7 +163,7 @@ export const MyPipelines = () => {
                 onClick={() => showPipelineDeleteConfirmModal(item?.name)}
                 size="lg"
                 icon={TrashIcon}
-                tooltip="Delete"
+                tooltip={t('delete')}
               />
             </div>
           </TableCell>

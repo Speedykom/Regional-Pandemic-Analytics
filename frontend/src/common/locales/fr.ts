@@ -22,6 +22,7 @@ const frTranslation = {
   createPipeline: 'Créer un pipeline',
   uploadPipeline: 'Charger un pipeline',
   view: 'Voir',
+  delete: 'Supprimer',
 
   processChain: 'Chaîne de processus',
   viewAndManageProcessChains:
@@ -136,6 +137,21 @@ const frTranslation = {
   passwordChangeSuccess: 'Votre mot de passe a été changé avec succès.',
   passwordChangeError:
     'Une erreur est survenue lors du changement de votre mot de passe.',
+  deletePipeline: {
+    title: 'Supprimer le pipeline: ',
+    confirmDeletionMessage: 'Êtes-vous sûr de vouloir supprimer ce pipeline ?',
+    disableProcessErrorMessage: 'Impossible de désactiver la chaîne du processus: ',  
+    warningMessage: 'Attention! Après la suppression du pipeline, les chaînes de processus suivantes seront désactivées :',
+    deletionErrorMessage: 'Impossible de supprimer le pipeline',
+    successMessage: 'Le pipeline a été supprimé avec succès.',
+    deleteButton: 'Supprimer',
+    cancelButton: 'Annuler',
+    active: 'actif',
+    inactive: 'inactif',
+    processName: 'Nom',
+    processScheduleIntervalLabel: 'Intervalle de planification',
+    processStatus: 'Status',
+  },
 };
 
 export default frTranslation;

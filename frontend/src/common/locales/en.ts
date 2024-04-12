@@ -20,6 +20,7 @@ const enTranslation = {
   createPipeline: 'Create Pipeline',
   uploadPipeline: 'Upload Pipeline',
   view: 'View',
+  delete: 'Delete',
   processChain: 'Process Chain',
   viewAndManageProcessChains: 'View and manage all process chains',
   addProcessChain: 'Add Process Chain',
@@ -127,6 +128,22 @@ const enTranslation = {
   },
   passwordChangeSuccess: 'Your password has been successfully changed.',
   passwordChangeError: 'There was an error changing your password.',
+  deletePipeline: {
+    title: 'Delete Pipeline: ',
+    confirmDeletionMessage: 'Are you sure you want to delete this pipeline?',
+    disableProcessErrorMessage: 'Unable to disable Process Chain: ',  
+    warningMessage: 'Warning! After deleting the pipeline, the following process chains will be disabled:',
+    deletionErrorMessage: 'Unable to delete pipeline',
+    successMessage: 'Pipeline deleted successfully',
+    deleteButton: 'Delete',
+    cancelButton: 'Cancel',
+    active: 'active',
+    inactive: 'inactive',
+    processName: 'Name',
+    processScheduleIntervalLabel: 'Schedule Interval',
+    processStatus: 'Status',
+  },
+
 };
 
 export default enTranslation;
