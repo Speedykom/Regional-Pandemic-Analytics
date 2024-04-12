@@ -3,27 +3,18 @@ import { countries } from '@/common/utils/countries';
 import { useTranslation } from 'react-i18next';
 import { Fragment, useEffect, useState } from 'react';
 import {
-  Badge,
   Button,
   Card,
   Divider,
   NumberInput,
   SearchSelect,
   SearchSelectItem,
-  Text,
   TextInput,
 } from '@tremor/react';
 import { toast } from 'react-toastify';
 import { useGetUserQuery } from '@/modules/user/user';
-import {
-  CheckIcon,
-  PencilSquareIcon,
-  PlusCircleIcon,
-  SignalSlashIcon,
-  WifiIcon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline';
-import { useForm } from 'react-hook-form';
+import { PencilSquareIcon, PlusCircleIcon } from '@heroicons/react/24/outline';
+import { useForm, Controller } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
 import { selectCurrentUser } from '@/modules/auth/auth';
 import { useSelector } from 'react-redux';
@@ -36,86 +27,83 @@ export const ProfileSettings = () => {
 
   const myId: any = currentUser?.id;
   const { data } = useGetUserQuery(myId);
-
   const [country, setCountry] = useState(currentUser?.country);
   const [gender, setGender] = useState(currentUser?.gender);
   const [firstName, setFirstName] = useState(currentUser?.given_name || '');
   const [lastName, setLastName] = useState(currentUser?.family_name || '');
   const [phone, setPhone] = useState(currentUser?.phone);
-  const [avatar] = useState(currentUser?.avatar);
+  const {
+    control,
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { dirtyFields, isDirty },
+  } = useForm({
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      phone: '',
+      country: '',
+      gender: '',
+    },
+  });
 
   const [newPass, setNewPass] = useState<string>('');
   const [modifyUserMutation] = useModifyUserMutation();
+  const {
+    formState: { errors },
+  } = useForm();
 
   const onChange = (e?: string) => {
     setNewPass(String(e));
   };
-
-  const {
-    formState: { errors },
-  } = useForm();
 
   const triggerPasswordChange = () => {
     setChangePassword(!changePassword);
   };
 
   useEffect(() => {
-    if (typeof window !== undefined) {
-      const attributes = data?.attributes;
-      if (attributes) {
-        const { gender, country, phone } = attributes;
-        gender && setGender(gender[0]);
-        country && setCountry(country[0]);
-        phone && setPhone(phone[0]);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    reset({
+      firstName: currentUser?.given_name || '',
+      lastName: currentUser?.family_name || '',
+      phone: currentUser?.phone || '',
+      country: currentUser?.country || '',
+      gender: currentUser?.gender || '',
+    });
+  }, [reset, currentUser]);
 
   const saveChanges = async () => {
+    if (!isDirty) {
+      toast.info('No changes made to the profile.', { position: 'top-right' });
+      return;
+    }
+
+    // Get updated values from the form
+    const updatedValues = getValues();
+
+    const formData = {
+      firstName: dirtyFields.firstName
+        ? updatedValues.firstName
+        : currentUser?.given_name || '',
+      lastName: dirtyFields.lastName
+        ? updatedValues.lastName
+        : currentUser?.family_name || '',
+      attributes: {
+        phone: dirtyFields.phone
+          ? updatedValues.phone
+          : currentUser?.phone || '',
+        gender: dirtyFields.gender
+          ? updatedValues.gender
+          : currentUser?.gender || '',
+        country: dirtyFields.country
+          ? updatedValues.country
+          : currentUser?.country || '',
+        avatar: currentUser?.avatar || '',
+      },
+    };
+
     try {
-      // Start with the current user data
-      const userData: any = {
-        firstName: currentUser?.given_name || '',
-        lastName: currentUser?.family_name || '',
-        attributes: {
-          phone: currentUser?.phone || '',
-          gender: currentUser?.gender || '',
-          country: currentUser?.country || '',
-          avatar: currentUser?.avatar || '', // Include the avatar as it is
-        },
-      };
-
-      // Update only if there's a change
-      if (firstName.trim() !== '') {
-        userData.firstName = firstName;
-      }
-      if (lastName.trim() !== '') {
-        userData.lastName = lastName;
-      }
-      if (phone && phone.trim() !== '') {
-        userData.attributes.phone = phone;
-      }
-      if (gender) {
-        userData.attributes.gender = gender;
-      }
-      if (country) {
-        userData.attributes.country = country;
-      }
-
-      // No need to include attributes if they're unchanged
-      if (
-        JSON.stringify(userData.attributes) ===
-        JSON.stringify({
-          phone: currentUser?.phone || '',
-          gender: currentUser?.gender || '',
-          country: currentUser?.country || '',
-        })
-      ) {
-        delete userData.attributes;
-      }
-
-      await modifyUserMutation({ id: myId, userData });
+      await modifyUserMutation({ id: myId, userData: formData });
       toast.success('Profile updated successfully', { position: 'top-right' });
     } catch (error) {
       toast.error('An error occurred while updating the profile', {
@@ -130,107 +118,97 @@ export const ProfileSettings = () => {
         {/* Left Side */}
         <div className="w-full md:w-2/3">
           {/* Profile Card */}
-          <Card className="mb-6 bg-white p-5">
-            <div className="flex ">
-              <img
-                className="h-32 w-32 rounded-md"
-                src={avatar || '/avater.png'}
-                alt=""
+          <Card className="bg-white mb-8">
+            <form onSubmit={handleSubmit(saveChanges)}>
+              <Controller
+                name="firstName"
+                control={control}
+                render={({ field }) => (
+                  <TextInput
+                    {...field}
+                    placeholder="Enter your first name"
+                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                  />
+                )}
               />
-              <input type="file" style={{ display: 'none' }} />
-            </div>
-            <div className="">
-              <h1 className="text-gray-900 font-bold text-xl leading-8 my-1">
-                {data?.firstName} {data?.lastName}
-              </h1>
-            </div>
-            <div>
-              <span className="text-gray-500 leading-8 my-1">
-                Email Address
-              </span>
-              <p id="emailId" className="">
-                {data?.email}
-              </p>
-            </div>
-            <div className="mt-5">
-              <span className="text-gray-500 leading-8 my-1">Phone Number</span>
-              <p id="emailId" className="">
-                {data?.attributes?.phone}
-              </p>
-            </div>
-            <div className="mt-5">
-              <span className="text-gray-500 leading-8 my-1">
-                {t('username')}
-              </span>
-              <p id="emailId" className="">
-                {data?.username}
-              </p>
-            </div>
-            <div className="mt-5">
-              <span className="text-gray-500 leading-8 my-1">
-                {t('gender')}
-              </span>
-              <p id="emailId" className="">
-                {data?.attributes?.gender}
-              </p>
-            </div>
-            <div className="mt-5 mb-8">
-              <span className="text-gray-500 leading-8 my-1">
-                {t('country')}
-              </span>
-              <p id="emailId" className="">
-                {data?.attributes?.country}
-              </p>
-            </div>
-            <div className="">
-              <span className="text-gray-500 leading-8 my-1">
-                {t('accessRoles')}
-              </span>
-              <div>
-                <div className="flex">
-                  {data?.roles.map((role, index) => (
-                    <Text
-                      className="bg-gray-200 px-2 text-black rounded-md"
-                      key={index}
-                    >
-                      {role?.name}
-                    </Text>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="mt-5">
-              <span className="text-gray-500 leading-8 my-1">
-                {t('emailStatus')}
-              </span>
-              <p>
-                {data?.emailVerified ? (
-                  <Badge color="indigo" icon={CheckIcon}>
-                    Enable
-                  </Badge>
-                ) : (
-                  <Badge color="red" icon={XMarkIcon}>
-                    Disabled
-                  </Badge>
+
+              <Controller
+                name="lastName"
+                control={control}
+                render={({ field }) => (
+                  <TextInput
+                    {...field}
+                    placeholder="Enter your last name"
+                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                  />
                 )}
-              </p>
-            </div>
-            <div className="mt-5">
-              <span className="text-gray-500 leading-8 my-1">
-                {t('myStatus')}
-              </span>
-              <p>
-                {data?.enabled ? (
-                  <Badge color="green" icon={WifiIcon}>
-                    {t('active')}
-                  </Badge>
-                ) : (
-                  <Badge color="red" icon={SignalSlashIcon}>
-                    {t('inactive')}{' '}
-                  </Badge>
+              />
+
+              <Controller
+                name="phone"
+                control={control}
+                render={({ field }) => (
+                  <NumberInput
+                    {...field}
+                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                    placeholder="Enter phone number"
+                  />
                 )}
-              </p>
-            </div>
+              />
+
+              <Controller
+                name="country"
+                control={control}
+                render={({ field }) => (
+                  <SearchSelect
+                    {...field}
+                    onValueChange={field.onChange}
+                    className="bg-white"
+                  >
+                    {countries.map((item, index) => (
+                      <SearchSelectItem
+                        className="bg-white cursor-pointer"
+                        key={index}
+                        value={item.name}
+                      >
+                        {item.name}
+                      </SearchSelectItem>
+                    ))}
+                  </SearchSelect>
+                )}
+              />
+
+              <Controller
+                name="gender"
+                control={control}
+                render={({ field }) => (
+                  <SearchSelect
+                    {...field}
+                    onValueChange={field.onChange}
+                    className="bg-white"
+                  >
+                    {['Male', 'Female'].map((gender, index) => (
+                      <SearchSelectItem
+                        className="bg-white cursor-pointer"
+                        key={index}
+                        value={gender}
+                      >
+                        {gender}
+                      </SearchSelectItem>
+                    ))}
+                  </SearchSelect>
+                )}
+              />
+
+              <Divider className="border border-gray-200" />
+              <Button
+                type="submit"
+                className="flex items-center hover:bg-prim-hover text-white"
+                icon={PlusCircleIcon}
+              >
+                {t('saveChanges')}
+              </Button>
+            </form>
           </Card>
         </div>
         {/* Right Side */}
