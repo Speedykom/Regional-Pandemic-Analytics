@@ -243,7 +243,7 @@ class PipelineUploadView(APIView):
             return Response({"status": "success"}, status=status.HTTP_200_OK)
 class PipelineDeleteView(APIView):
     keycloak_scopes = {
-        "DELETE": "pipeline:update",
+        "DELETE": "pipeline:delete",
     }
 
     def delete(self, request, name=None):
