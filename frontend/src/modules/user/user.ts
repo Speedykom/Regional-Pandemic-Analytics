@@ -12,6 +12,15 @@ import {
 interface DisableResponse {
   message: string;
 }
+interface ChangePasswordRequest {
+  id: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+interface ChangePasswordResponse {
+  message: string;
+}
 
 export const userApi = createApi({
   reducerPath: 'userApi',
@@ -55,6 +64,20 @@ export const userApi = createApi({
         body,
       }),
     }),
+    changePassword: builder.mutation<
+      ChangePasswordResponse,
+      ChangePasswordRequest
+    >({
+      query: ({ id, newPassword, confirmPassword }) => ({
+        url: `auth/password`,
+        method: 'PUT',
+        body: {
+          id,
+          newPassword,
+          confirmPassword,
+        },
+      }),
+    }),
   }),
 });
 
@@ -65,4 +88,5 @@ export const {
   useAddUserMutation,
   useResetPasswordMutation,
   useModifyUserMutation,
+  useChangePasswordMutation,
 } = userApi;
