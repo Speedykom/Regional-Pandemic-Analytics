@@ -70,7 +70,9 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
           disableProcess(process.dag_id).then((res: any) => {
             if (res.error) {
               toast.error(
-                `${t('deletePipeline.disableProcessErrorMessage')} ${process.name}`,
+                `${t('deletePipeline.disableProcessErrorMessage')} ${
+                  process.name
+                }`,
                 {
                   position: 'top-right',
                 }
