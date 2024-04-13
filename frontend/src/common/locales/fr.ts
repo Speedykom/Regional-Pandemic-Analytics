@@ -140,8 +140,10 @@ const frTranslation = {
   deletePipeline: {
     title: 'Supprimer le pipeline: ',
     confirmDeletionMessage: 'Êtes-vous sûr de vouloir supprimer ce pipeline ?',
-    disableProcessErrorMessage: 'Impossible de désactiver la chaîne du processus: ',  
-    warningMessage: 'Attention! Après la suppression du pipeline, les chaînes de processus suivantes seront désactivées :',
+    disableProcessErrorMessage:
+      'Impossible de désactiver la chaîne du processus: ',
+    warningMessage:
+      'Attention! Après la suppression du pipeline, les chaînes de processus suivantes seront désactivées :',
     deletionErrorMessage: 'Impossible de supprimer le pipeline',
     successMessage: 'Le pipeline a été supprimé avec succès.',
     deleteButton: 'Supprimer',
