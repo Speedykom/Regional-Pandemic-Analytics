@@ -131,8 +131,9 @@ const enTranslation = {
   deletePipeline: {
     title: 'Delete Pipeline: ',
     confirmDeletionMessage: 'Are you sure you want to delete this pipeline?',
-    disableProcessErrorMessage: 'Unable to disable Process Chain: ',  
-    warningMessage: 'Warning! After deleting the pipeline, the following process chains will be disabled:',
+    disableProcessErrorMessage: 'Unable to disable Process Chain: ',
+    warningMessage:
+      'Warning! After deleting the pipeline, the following process chains will be disabled:',
     deletionErrorMessage: 'Unable to delete pipeline',
     successMessage: 'Pipeline deleted successfully',
     deleteButton: 'Delete',
@@ -143,7 +144,6 @@ const enTranslation = {
     processScheduleIntervalLabel: 'Schedule Interval',
     processStatus: 'Status',
   },
-
 };
 
 export default enTranslation;
