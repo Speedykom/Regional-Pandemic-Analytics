@@ -7,7 +7,6 @@ import {
   Button,
   Card,
   Divider,
-  NumberInput,
   SearchSelect,
   SearchSelectItem,
   Text,
@@ -87,14 +86,22 @@ export const ProfileSettings = () => {
     }
   };
   useEffect(() => {
-    reset({
-      firstName: currentUser?.given_name || '',
-      lastName: currentUser?.family_name || '',
-      phone: currentUser?.phone || '',
-      country: currentUser?.country || '',
-      gender: currentUser?.gender || '',
-    });
-  }, [reset, currentUser]);
+    if (data) {
+      reset({
+        firstName: data.firstName || '',
+        lastName: data.lastName || '',
+        phone: Array.isArray(data.attributes?.phone)
+          ? data.attributes.phone[0] || ''
+          : data.attributes?.phone || '',
+        country: Array.isArray(data.attributes?.country)
+          ? data.attributes.country[0] || ''
+          : data.attributes?.country || '',
+        gender: Array.isArray(data.attributes?.gender)
+          ? data.attributes.gender[0] || ''
+          : data.attributes?.gender || '',
+      });
+    }
+  }, [data, reset]);
 
   const saveChanges = async () => {
     if (!isDirty) {
@@ -108,20 +115,20 @@ export const ProfileSettings = () => {
     const formData = {
       firstName: dirtyFields.firstName
         ? updatedValues.firstName
-        : currentUser?.given_name || '',
+        : data?.firstName || '',
       lastName: dirtyFields.lastName
         ? updatedValues.lastName
-        : currentUser?.family_name || '',
+        : data?.lastName || '',
       attributes: {
         phone: dirtyFields.phone
           ? updatedValues.phone
-          : currentUser?.phone || '',
+          : data?.attributes?.phone || '',
         gender: dirtyFields.gender
           ? updatedValues.gender
-          : currentUser?.gender || '',
+          : data?.attributes?.gender || '',
         country: dirtyFields.country
           ? updatedValues.country
-          : currentUser?.country || '',
+          : data?.attributes?.country || '',
         avatar: currentUser?.avatar || '',
       },
     };
@@ -281,11 +288,13 @@ export const ProfileSettings = () => {
                 name="phone"
                 control={control}
                 render={({ field }) => (
-                  <NumberInput
+                  <input
                     {...field}
+                    type="tel"
                     id="phone"
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                    placeholder={t('phoneNumber')}
+                    placeholder="Phone Number*"
+                    pattern="^\+?\d{0,13}"
                   />
                 )}
               />
