@@ -1,4 +1,5 @@
 import Layout from '@/common/components/Dashboard/Layout';
+import CryptoJS from 'crypto-js';
 import { countries } from '@/common/utils/countries';
 import { useTranslation } from 'react-i18next';
 import { Fragment, useEffect, useState } from 'react';
@@ -74,17 +75,29 @@ export const ProfileSettings = () => {
       return;
     }
     try {
+      const key = CryptoJS.enc.Hex.parse(
+        '858341360ad20db825dfa81fac5ac066e93dd3b5d1e8da4e94969ad2e1683098'
+      );
+      const iv = CryptoJS.enc.Hex.parse('000102030405060708090a0b0c0d0e0f'); // Example static IV
+
+      const encryptedNewPassword = CryptoJS.AES.encrypt(newPass, key, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      }).toString();
       await changePasswordMutation({
         id: currentUser.id,
-        newPassword: newPass,
-        confirmPassword: confirmPass,
+        newPassword: encryptedNewPassword,
+        confirmPassword: encryptedNewPassword,
       }).unwrap();
       toast.success(t('passwordChangeSuccess'), { position: 'top-right' });
       setChangePassword(false);
     } catch (error) {
+      console.error('Encryption or network error:', error);
       toast.error(t('passwordChangeError'), { position: 'top-right' });
     }
   };
+
   useEffect(() => {
     if (data) {
       reset({
