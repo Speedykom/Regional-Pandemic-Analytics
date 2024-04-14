@@ -9,7 +9,7 @@ from minio.commonconfig import CopySource, REPLACE
 from datetime import datetime
 from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
-
+from .validator import check_pipeline_validity
 
 class EditAccessProcess:
     def __init__(self, file):
@@ -46,12 +46,14 @@ class PipelineListView(APIView):
                         {
                             "name": object_name,
                             "description": object.metadata["X-Amz-Meta-Description"],
+                            "check_status": object.metadata["X-Amz-Meta-Check_status"],
                         })
             else:
                 pipelines.append(
                 {
                     "name": object_name,
                     "description": object.metadata["X-Amz-Meta-Description"],
+                    "check_status": object.metadata["X-Amz-Meta-Check_status"],
                 }    
             )
 
@@ -91,11 +93,13 @@ class PipelineListView(APIView):
                 metadata={
                     "description": f"{description}",
                     "created": f"{datetime.utcnow()}",
+                    "check_status": "success", #check status should be always success when creating a new pipeline, as our provided templates are correct
                 },
                 metadata_directive=REPLACE,
             )
 
             return Response({"status": "success"}, status=status.HTTP_200_OK)
+
 class PipelineDetailView(APIView):
     keycloak_scopes = {
         "PUT": "pipeline:update",
@@ -128,6 +132,7 @@ class PipelineDetailView(APIView):
                 {
                     "name": name,
                     "description": object.metadata["X-Amz-Meta-Description"],
+                    "check_status": object.metadata["X-Amz-Meta-Check_status"],
                 },
                 status=status.HTTP_200_OK,
             )
@@ -144,6 +149,11 @@ class PipelineDetailView(APIView):
 
     def put(self, request, name=None):
         user_id = get_current_user_id(request)
+        # Check if the pipeline is valid
+
+        # Usage:
+        valid_pipeline = check_pipeline_validity(name)
+        print("IsValid: ", valid_pipeline)
         try:
             object = client.stat_object(
                 "pipelines", f"pipelines-created/{user_id}/{name}.hpl"
@@ -157,6 +167,7 @@ class PipelineDetailView(APIView):
                     "description": object.metadata["X-Amz-Meta-Description"],
                     "updated": f"{datetime.utcnow()}",
                     "created": object.metadata["X-Amz-Meta-Created"],
+                    "check_status": "success" if valid_pipeline else "failed",
                 },
             )
 
