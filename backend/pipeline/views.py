@@ -252,7 +252,7 @@ class PipelineDeleteView(APIView):
             # back up pipeline file
             client.copy_object(
             "pipelines",
-            f"pipelines-deleted/{user_id}/{name}.hpl",
+            f"pipelines-deleted/{user_id}/{name}_{datetime.utcnow()}.hpl",
             CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
 
             # delete pipeline file from Minio
