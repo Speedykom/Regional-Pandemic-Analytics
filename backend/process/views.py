@@ -130,9 +130,6 @@ class ProcessView(ViewSet):
         - list:
             Method: GET
             *** This method returns the list of dags ***
-        - list_by_task:
-            Method: GET
-            *** This method returns the list of dags using a specific task ***
         - create:
             Method: POST
             *** This method creates a dag from user input ***
@@ -150,119 +147,54 @@ class ProcessView(ViewSet):
 
     def list(self, request):
         try:
-            # Get username
-            user_name = get_current_user_name(request)
+            # Get request params
             query = request.GET.get("query")
+            taskId = request.GET.get("taskId")
+
             # Get username
             user_name = get_current_user_name(request)
 
             # Define processes array to store Airflow response
             processes = []
-
-            # Get the list of process chains defined in Airflow over REST API
+            
             if query:
+                # Filter by query
                 # Get the list of process chains defined in Airflow over REST API
-                airflow_response = requests.get(
+                airflow_dags_response = requests.get(
                     f"{AirflowInstance.url}/dags",
                     auth=(AirflowInstance.username, AirflowInstance.password),
                     params={"dag_id_pattern": query},
                 )
             else:
-                airflow_response = requests.get(
+                airflow_dags_response = requests.get(
                     f"{AirflowInstance.url}/dags",
                     auth=(AirflowInstance.username, AirflowInstance.password),
                 )
 
-            if airflow_response.ok:
-                airflow_json = airflow_response.json()["dags"]
-                # Only returns the dags which owners flag is the same as the username
+            if airflow_dags_response.ok:
+                airflow_json = airflow_dags_response.json()["dags"]
                 for dag in airflow_json:
+                    # Only returns the dags which owners flag is the same as the username
                     if user_name in dag["owners"]:
-                        airflow_start_date_response = requests.get(
-                            f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
-                            auth=(AirflowInstance.username, AirflowInstance.password),
-                        )
-                        dataset_info_success, dataset_info = self._get_dataset_info_internal(dag['dag_id'])
-                        processes.append(
-                            Dag(
-                                dag["dag_id"],
-                                dag["dag_id"],
-                                dag["dag_id"],
-                                airflow_start_date_response.json()["start_date"],
-                                dag["schedule_interval"]["value"],
-                                dag["is_paused"],
-                                dag["description"],
-                                dag["last_parsed_time"],
-                                dag["next_dagrun"],
-                                dataset_info_success,
-                                dataset_info[0] if dataset_info != None else None,
-                                dataset_info[1] if dataset_info != None else None
-                            ).__dict__
-                        )
+                        if taskId:
+                            # Filter by Task
+                            airflow_dag_tasks_response, dag_has_task = self._dag_has_task(dag, taskId)
+                            if airflow_dag_tasks_response.ok:
+                                if not dag_has_task:
+                                    # Only return dags having the specified task
+                                    continue
+                            else:
+                                return Response(
+                                    {"status": "failed", "message": "Internal Server Error"},
+                                    status=airflow_dag_tasks_response.status_code,
+                                )
+                        augmentedDag = self._augment_dag(dag)
+                        processes.append(augmentedDag)
                 return Response({"dags": processes}, status=status.HTTP_200_OK)
             else:
                 return Response(
                     {"status": "failed", "message": "Internal Server Error"},
-                    status=airflow_response.status_code,
-                )
-        except:
-            return Response(
-                {"status": "failed", "message": "Internal Server Error"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
-
-    # Get All DAGs for a given task    
-    def list_by_task(self, request, taskId=None):
-        try:
-            # Define processes array to store Airflow response
-            processes = []
-
-            # Get the list of process chains defined in Airflow over REST API
-            airflow_response = requests.get(
-                f"{AirflowInstance.url}/dags",
-                auth=(AirflowInstance.username, AirflowInstance.password),
-            )
-
-            if airflow_response.ok:
-                airflow_json = airflow_response.json()["dags"]
-                for dag in airflow_json:
-                    route = f"{AirflowInstance.url}/dags/{dag['dag_id']}/tasks"
-                    airflow_response = requests.get(
-                        route,
-                        auth=(AirflowInstance.username, AirflowInstance.password),
-                    )
-                    if airflow_response.ok:
-                        airflow_json = airflow_response.json()["tasks"]
-                        for task in airflow_json:
-                            if (task["operator_name"] == "HopPipelineOperator") and (task["task_id"] == f"{taskId}.hpl"):
-                                airflow_start_date_response = requests.get(
-                                f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
-                                auth=(AirflowInstance.username, AirflowInstance.password),
-                                )
-                                dataset_info_success, dataset_info = self._get_dataset_info_internal(dag['dag_id'])
-                                processes.append(
-                                    Dag(
-                                        dag["dag_id"],
-                                        dag["dag_id"],
-                                        dag["dag_id"],
-                                        airflow_start_date_response.json()["start_date"],
-                                        dag["schedule_interval"]["value"],
-                                        dag["is_paused"],
-                                        dag["description"],
-                                        dag["last_parsed_time"],
-                                        dag["next_dagrun"],
-                                        dataset_info_success,
-                                        dataset_info[0] if dataset_info != None else None,
-                                        dataset_info[1] if dataset_info != None else None
-                                    ).__dict__
-                                )
-                    else:
-                        return Response({"status": "failed"}, status=airflow_response.status_code)
-                return Response({"dags": processes}, status=status.HTTP_200_OK)
-            else:
-                return Response(
-                    {"status": "failed", "message": "Internal Server Error"},
-                    status=airflow_response.status_code,
+                    status=airflow_dags_response.status_code,
                 )
         except:
             return Response(
@@ -385,6 +317,43 @@ class ProcessView(ViewSet):
             return Response({"status": "success"})
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
+        
+    def _augment_dag(self, dag):
+        airflow_start_date_response = requests.get(
+                            f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
+                            auth=(AirflowInstance.username, AirflowInstance.password),
+                        )
+        dataset_info_success, dataset_info = self._get_dataset_info_internal(dag['dag_id'])
+        augmentedDag= Dag(
+                                dag["dag_id"],
+                                dag["dag_id"],
+                                dag["dag_id"],
+                                airflow_start_date_response.json()["start_date"],
+                                dag["schedule_interval"]["value"],
+                                dag["is_paused"],
+                                dag["description"],
+                                dag["last_parsed_time"],
+                                dag["next_dagrun"],
+                                dataset_info_success,
+                                dataset_info[0] if dataset_info != None else None,
+                                dataset_info[1] if dataset_info != None else None
+                            ).__dict__
+            
+        return augmentedDag
+    
+    def _dag_has_task(self, dag, taskId):
+        result = False
+        route = f"{AirflowInstance.url}/dags/{dag['dag_id']}/tasks"
+        airflow_dag_tasks_response = requests.get(
+                        route,
+                        auth=(AirflowInstance.username, AirflowInstance.password),
+                    )
+        if airflow_dag_tasks_response.ok:
+            airflow_json = airflow_dag_tasks_response.json()["tasks"]
+            for task in airflow_json:
+                if (task["operator_name"] == "HopPipelineOperator") and (task["task_id"] == f"{taskId}.hpl"):
+                    result=True
+        return airflow_dag_tasks_response,result
 
     def _get_dataset_info_internal(self, dag_id) -> Tuple[bool, Union[Tuple[int, str], None]]:
         route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns"
