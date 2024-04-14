@@ -24,9 +24,8 @@ export const processApi = createApi({
       query: (query) => `/process?query=${query}`,
       providesTags: ['process'],
     }),
-    // TODO: change URL to `/process?taskId=${taskId}`
     getProcessByTaskId: builder.query<DagDetailsResponse, string>({
-      query: (taskId) => `/process/task/${taskId}`,
+      query: (taskId) => `/process?taskId=${taskId}`,
       providesTags: ['process'],
     }),
     getDatasetInfo: builder.query<DagDatasetResponse, string>({
