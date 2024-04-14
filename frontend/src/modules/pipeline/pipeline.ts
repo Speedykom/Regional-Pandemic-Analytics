@@ -47,6 +47,7 @@ export const pipelineApi = createApi({
         url: `/pipeline/${name}`,
         method: 'PUT',
       }),
+      invalidatesTags: ['pipelines'],
     }),
   }),
 });
