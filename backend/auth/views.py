@@ -12,7 +12,16 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import AllowAny
 from mailer.sender import SendMail
 from utils.keycloak_auth import get_keycloak_admin, get_keycloak_openid, get_current_user_id
+from rest_framework.views import APIView
+from rest_framework import status
+from binascii import unhexlify
+from django.http import JsonResponse
 from django.conf import settings
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.backends import default_backend
+from base64 import b64decode
+from binascii import unhexlify
 from utils.env_configs import (
     BASE_URL, APP_SECRET_KEY, APP_REALM, REST_REDIRECT_URI)
 
@@ -190,20 +199,40 @@ class PasswordAPI(APIView):
         }
     ))
     def put(self, request, *args, **kwargs):
-        newPassword = request.data.get("newPassword", None)
-        confirmPassword = request.data.get("confirmPassword", None)
-
-        if not newPassword or newPassword != confirmPassword:
-            return Response({'errorMessage': 'Invalid password'}, status=status.HTTP_400_BAD_REQUEST)
+        key_hex = '858341360ad20db825dfa81fac5ac066e93dd3b5d1e8da4e94969ad2e1683098'
+        key = unhexlify(key_hex)
+        iv_hex = '000102030405060708090a0b0c0d0e0f'  # Static IV as used in the frontend
+        iv = unhexlify(iv_hex)
 
         try:
+            encrypted_new_password = request.data.get("newPassword", None)
+            encrypted_confirm_password = request.data.get("confirmPassword", None)
+
+            # Function to decrypt and unpad passwords
+            def decrypt_password(encrypted_password):
+                cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=default_backend())
+                decryptor = cipher.decryptor()
+                unpadder = padding.PKCS7(algorithms.AES.block_size).unpadder()
+
+                decrypted_password = decryptor.update(b64decode(encrypted_password)) + decryptor.finalize()
+                unpadded_password = unpadder.update(decrypted_password) + unpadder.finalize()
+                return unpadded_password.decode('utf-8')
+
+            # Decrypt both passwords
+            new_password = decrypt_password(encrypted_new_password)
+            confirm_password = decrypt_password(encrypted_confirm_password)
+
+            if new_password != confirm_password:
+                return JsonResponse({'errorMessage': 'Passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
+
             user_id = request.data.get("id", None)
             keycloak_admin = get_keycloak_admin()
-            keycloak_admin.set_user_password(user_id=user_id, password=newPassword, temporary=False)
-            return Response({'message': 'Password updated successfully'}, status=status.HTTP_200_OK)
-        except Exception as err:
-            return Response({'errorMessage': 'Unable to update user password'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            keycloak_admin.set_user_password(user_id=user_id, password=new_password, temporary=False)
 
+            return JsonResponse({'message': 'Password updated successfully'}, status=status.HTTP_200_OK)
+        except Exception as err:
+            return JsonResponse({'errorMessage': 'Unable to decrypt or update user password', 'details': str(err)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 
 class ResetPasswordAPI(APIView):
     """
