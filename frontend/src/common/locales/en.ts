@@ -19,6 +19,8 @@ const enTranslation = {
   description: 'Description',
   createPipeline: 'Create Pipeline',
   uploadPipeline: 'Upload Pipeline',
+  pipelineCheckSuccessful: 'Pipeline check successful',
+  pipelineCheckFailed: 'Pipeline check failed',
   view: 'View',
   processChain: 'Process Chain',
   viewAndManageProcessChains: 'View and manage all process chains',
