@@ -21,6 +21,8 @@ const frTranslation = {
   description: 'Description',
   createPipeline: 'Créer un pipeline',
   uploadPipeline: 'Charger un pipeline',
+  pipelineCheckSuccessful: 'Vérification du pipeline réussie',
+  pipelineCheckFailed: 'Échec de la vérification du pipeline',
   view: 'Voir',
 
   processChain: 'Chaîne de processus',
