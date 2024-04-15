@@ -153,7 +153,6 @@ class PipelineDetailView(APIView):
 
         # Usage:
         valid_pipeline = check_pipeline_validity(name)
-        print("IsValid: ", valid_pipeline)
         try:
             object = client.stat_object(
                 "pipelines", f"pipelines-created/{user_id}/{name}.hpl"
