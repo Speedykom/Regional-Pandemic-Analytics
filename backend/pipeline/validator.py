@@ -8,11 +8,24 @@ def check_pipeline_validity(name):
     # Parse the XML data
     root = ET.fromstring(xml_data)
     # Check if the pipeline has a <transform> tag with <type> equal to "ParquetOutput"
-    valid_pipeline = False
-    for transform in root.iter("transform"):
-        type_element = transform.find("type")
-        if type_element is not None and type_element.text == "ParquetFileOutput":
-            valid_pipeline = True
-            break
+    return is_parquet_output_transform_available_and_valid(root)
 
+def is_parquet_output_transform_available_and_valid(xml_document_root):
+    valid_pipeline = False
+    for transform in xml_document_root.iter("transform"):
+        element = transform.find(rules[0][0])
+
+        # Check the other rules only a ParquetFileOutput transform is found
+        if element is not None and element.text == rules[0][1]:
+            for rule in rules:
+                element = transform.find(rule[0])
+                if element is None or element.text != rule[1]:
+                    valid_pipeline = False
+                    break
+            else:
+                valid_pipeline = True
     return valid_pipeline
+
+rules = [("type", "ParquetFileOutput"), ("filename_base", "ftp://${minio_ftp}/parquets/${user_id}/${dag_id}"), 
+         ("filename_ext", "parquet"), ("filename_include_copy", "N"), ("filename_include_date", "N"), 
+         ("filename_include_datetime", "N"), ("filename_include_split", "N"), ("filename_include_time", "N")]
