@@ -199,9 +199,9 @@ class PasswordAPI(APIView):
         }
     ))
     def put(self, request, *args, **kwargs):
-        key_hex = '858341360ad20db825dfa81fac5ac066e93dd3b5d1e8da4e94969ad2e1683098'
+        key_hex = os.getenv("PASSWORD_HEX_KEY")
         key = unhexlify(key_hex)
-        iv_hex = '000102030405060708090a0b0c0d0e0f'  # Static IV as used in the frontend
+        iv_hex = os.getenv("PASSWORD_IVHEX")
         iv = unhexlify(iv_hex)
 
         try:
