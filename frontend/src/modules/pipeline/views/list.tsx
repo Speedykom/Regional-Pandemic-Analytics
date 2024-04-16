@@ -133,7 +133,7 @@ export const MyPipelines = () => {
             size="lg"
             icon={CheckCircleIcon}
             color="green"
-            tooltip={t('pipelineCheckSuccessful')}
+            tooltip={t(item.check_text)}
           />
         );
       } else if (item.check_status === 'failed') {
@@ -142,7 +142,7 @@ export const MyPipelines = () => {
             size="lg"
             icon={XCircleIcon}
             color="red"
-            tooltip={t('pipelineCheckFailed')}
+            tooltip={t(item.check_text)}
           />
         );
       }

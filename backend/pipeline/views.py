@@ -47,6 +47,7 @@ class PipelineListView(APIView):
                             "name": object_name,
                             "description": object.metadata["X-Amz-Meta-Description"],
                             "check_status": object.metadata["X-Amz-Meta-Check_status"],
+                            "check_text": object.metadata["X-Amz-Meta-Check_text"],
                         })
             else:
                 pipelines.append(
@@ -54,6 +55,7 @@ class PipelineListView(APIView):
                     "name": object_name,
                     "description": object.metadata["X-Amz-Meta-Description"],
                     "check_status": object.metadata["X-Amz-Meta-Check_status"],
+                    "check_text": object.metadata["X-Amz-Meta-Check_text"],
                 }    
             )
 
@@ -94,6 +96,7 @@ class PipelineListView(APIView):
                     "description": f"{description}",
                     "created": f"{datetime.utcnow()}",
                     "check_status": "success", #check status should be always success when creating a new pipeline, as our provided templates are correct
+                    "check_text": "ValidPipeline", 
                 },
                 metadata_directive=REPLACE,
             )
@@ -133,6 +136,7 @@ class PipelineDetailView(APIView):
                     "name": name,
                     "description": object.metadata["X-Amz-Meta-Description"],
                     "check_status": object.metadata["X-Amz-Meta-Check_status"],
+                    "check_text": object.metadata["X-Amz-Meta-Check_text"],
                 },
                 status=status.HTTP_200_OK,
             )
@@ -152,7 +156,7 @@ class PipelineDetailView(APIView):
         # Check if the pipeline is valid
 
         # Usage:
-        valid_pipeline = check_pipeline_validity(name)
+        valid_pipeline, check_text = check_pipeline_validity(name)
         try:
             object = client.stat_object(
                 "pipelines", f"pipelines-created/{user_id}/{name}.hpl"
@@ -167,6 +171,7 @@ class PipelineDetailView(APIView):
                     "updated": f"{datetime.utcnow()}",
                     "created": object.metadata["X-Amz-Meta-Created"],
                     "check_status": "success" if valid_pipeline else "failed",
+                    "check_text": check_text,
                 },
             )
 
