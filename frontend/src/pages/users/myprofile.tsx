@@ -1,6 +1,7 @@
 import Layout from '@/common/components/Dashboard/Layout';
 import CryptoJS from 'crypto-js';
 import { countries } from '@/common/utils/countries';
+import getConfig from 'next/config';
 import { useTranslation } from 'react-i18next';
 import { Fragment, useEffect, useState } from 'react';
 import {
@@ -58,6 +59,7 @@ export const ProfileSettings = () => {
       gender: '',
     },
   });
+  const { publicRuntimeConfig } = getConfig();
 
   const [modifyUserMutation] = useModifyUserMutation();
 
@@ -75,10 +77,10 @@ export const ProfileSettings = () => {
       return;
     }
     try {
-      const key = CryptoJS.enc.Hex.parse(
-        '858341360ad20db825dfa81fac5ac066e93dd3b5d1e8da4e94969ad2e1683098'
-      );
-      const iv = CryptoJS.enc.Hex.parse('000102030405060708090a0b0c0d0e0f'); // Example static IV
+      const keyHex = publicRuntimeConfig.NEXT_PUBLIC_PASSWORD_HEX_KEY;
+      const ivHex = publicRuntimeConfig.NEXT_PUBLIC_PASSWORD_IVHEX;
+      const key = CryptoJS.enc.Hex.parse(keyHex);
+      const iv = CryptoJS.enc.Hex.parse(ivHex);
 
       const encryptedNewPassword = CryptoJS.AES.encrypt(newPass, key, {
         iv: iv,
@@ -93,7 +95,6 @@ export const ProfileSettings = () => {
       toast.success(t('passwordChangeSuccess'), { position: 'top-right' });
       setChangePassword(false);
     } catch (error) {
-      console.error('Encryption or network error:', error);
       toast.error(t('passwordChangeError'), { position: 'top-right' });
     }
   };
