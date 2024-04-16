@@ -2,6 +2,7 @@ export interface PipelineData {
   name: string;
   description: string;
   check_status: string;
+  check_text: string;
   parquet_path: string;
   path: string;
   user_id: string;
