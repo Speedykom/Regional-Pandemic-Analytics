@@ -132,10 +132,10 @@ const frTranslation = {
   },
 
   uploadMessages: {
-    selectImage: 'Veuillez sélectionner une image à télécharger',
-    uploadSuccess: "L'image de profil a été téléchargée avec succès",
+    selectImage: 'Veuillez sélectionner une image.',
+    uploadSuccess: 'La photo de profil a été actualisée avec succès',
     uploadError:
-      "Une erreur s'est produite lors du téléchargement de l'image de profil",
+      "Une erreur s'est produite lors du chargement de l'image de profil",
   },
 };
 
