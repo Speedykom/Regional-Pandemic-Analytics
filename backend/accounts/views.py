@@ -262,20 +262,16 @@ class UserAvatarView(APIView):
             return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
 
         uploaded_file = request.FILES.get("uploadedFile")
-        if not uploaded_file:
-            return Response({'status': 'error', "message": "Please provide a file to upload"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             bucket_name = 'avatars'
             prefix = f'{user_id}/'
+            object_name = f'{prefix}avatar'  # Always use the same object name
 
-            # Delete existing avatar
-            objects = client.list_objects(bucket_name, prefix=prefix, recursive=True)
-            for obj in objects:
-                client.remove_object(bucket_name, obj.object_name)
+            # Delete the old avatar if it exists
+            client.remove_object(bucket_name, object_name)  
 
             # Upload new avatar
-            object_name = f'{prefix}{uploaded_file.name}'
             client.put_object(
                 bucket_name=bucket_name,
                 object_name=object_name,
@@ -284,7 +280,7 @@ class UserAvatarView(APIView):
                 metadata={"uploaded": f"{datetime.utcnow()}"},
             )
 
-            new_avatar_url = f"{os.getenv('AVATAR_BASE_URL')}/{user_id}/{uploaded_file.name}"
+            new_avatar_url = f"{os.getenv('AVATAR_BASE_URL')}/{object_name}"
 
             # Update the user's avatar URL in Keycloak
             keycloak_admin = get_keycloak_admin()
@@ -292,6 +288,7 @@ class UserAvatarView(APIView):
             keycloak_admin.update_user(user_id, user_data)
             cache_key = f'user_avatar_{user_id}'
             cache.delete(cache_key)
+
             # Return new avatar URL in the response
             return Response({'message': 'Avatar uploaded successfully', 'newAvatarUrl': new_avatar_url}, status=status.HTTP_200_OK)
         except Exception as err:
