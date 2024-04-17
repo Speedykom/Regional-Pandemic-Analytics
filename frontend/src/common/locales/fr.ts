@@ -130,6 +130,13 @@ const frTranslation = {
     enable: 'activer',
     disable: 'désactiver',
   },
+
+  uploadMessages: {
+    selectImage: 'Veuillez sélectionner une image à télécharger',
+    uploadSuccess: "L'image de profil a été téléchargée avec succès",
+    uploadError:
+      "Une erreur s'est produite lors du téléchargement de l'image de profil",
+  },
 };
 
 export default frTranslation;

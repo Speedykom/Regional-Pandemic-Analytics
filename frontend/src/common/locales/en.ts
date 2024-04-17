@@ -123,6 +123,11 @@ const enTranslation = {
     enable: 'enable',
     disable: 'disable',
   },
+  uploadMessages: {
+    selectImage: 'Please select an image to upload',
+    uploadSuccess: 'Profile image uploaded successfully',
+    uploadError: 'An error occurred while uploading the profile image',
+  },
 };
 
 export default enTranslation;
