@@ -125,8 +125,8 @@ const enTranslation = {
   },
   uploadMessages: {
     selectImage: 'Please select an image to upload',
-    uploadSuccess: 'Profile image uploaded successfully',
-    uploadError: 'An error occurred while uploading the profile image',
+    uploadSuccess: 'Profile picture uploaded successfully',
+    uploadError: 'An error occurred while uploading the profile picture',
   },
 };
 
