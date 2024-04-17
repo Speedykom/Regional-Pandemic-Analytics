@@ -56,7 +56,7 @@ export const userApi = createApi({
     }),
     uploadAvatar: builder.mutation<any, FormData>({
       query: (FormData) => ({
-        url: `account/user/avatar-upload1`,
+        url: `account/user/avatar-upload`,
         method: 'POST',
         body: FormData,
       }),

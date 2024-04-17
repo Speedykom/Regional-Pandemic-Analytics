@@ -16,6 +16,8 @@ import {
 import { toast } from 'react-toastify';
 import { useGetUserQuery } from '@/modules/user/user';
 import { useUploadAvatarMutation } from '@/modules/user/user';
+import { useDropzone } from 'react-dropzone';
+import React, { useCallback } from 'react';
 
 import {
   CheckIcon,
@@ -34,16 +36,16 @@ import { useSelector } from 'react-redux';
 export const ProfileSettings = () => {
   const [changePassword, setChangePassword] = useState(false);
   const currentUser = useSelector(selectCurrentUser);
-
   const defaultImagePath = '/avater.png';
-  const [imageUrl, setImageUrl] = useState<string>(
+  const [imageUrl, setImageUrl] = useState(
     currentUser?.avatar || defaultImagePath
   );
-
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadAvatarMutation] = useUploadAvatarMutation();
   const { t } = useTranslation();
 
   const myId: any = currentUser?.id;
-  const { data, refetch } = useGetUserQuery(myId, {
+  const { data } = useGetUserQuery(myId, {
     refetchOnMountOrArgChange: true,
   });
 
@@ -51,16 +53,9 @@ export const ProfileSettings = () => {
   const [gender, setGender] = useState<string>();
   const [firstName] = useState(currentUser?.given_name);
   const [lastName] = useState(currentUser?.family_name);
-  /*const [email] = useState<string>();
-  const [username] = useState<string>();
-  const [enabled] = useState<string>();
-  const [emailVerified] = useState<string>();
-  const [role] = useState<string>();
-  const [avatar, setAvatar] = useState<string>();*/
+
   const [phone, setPhone] = useState<string>();
   const [newPass, setNewPass] = useState<string>('');
-
-  const [uploadAvatarMutation] = useUploadAvatarMutation();
 
   const onChange = (e?: string) => {
     setNewPass(String(e));
@@ -73,69 +68,37 @@ export const ProfileSettings = () => {
   const triggerPasswordChange = () => {
     setChangePassword(!changePassword);
   };
-  //const { data: avatarData } = useGetUserAvatarQuery(myId);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
-      const extension = file.name.split('.').pop()?.toLowerCase();
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    setSelectedFile(file);
+    setImageUrl(URL.createObjectURL(file));
+  }, []);
 
-      if (extension && allowedExtensions.includes(extension)) {
-        setSelectedFile(file);
-        setImageUrl(URL.createObjectURL(file));
-      } else {
-        setSelectedFile(null);
-        toast.error('File format is not supported');
-        setImageUrl(defaultImagePath);
-      }
-    } else {
-      setSelectedFile(null);
-      setImageUrl(currentUser?.avatar || defaultImagePath);
-    }
-  };
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/jpeg': ['.jpeg', '.jpg'],
+      'image/png': ['.png'],
+      'image/gif': ['.gif'],
+    },
+    maxFiles: 1,
+  });
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      toast.error('Please select an image to upload');
+      toast.error(t('uploadMessages.selectImage'));
       return;
     }
     try {
       const formData = new FormData();
       formData.append('uploadedFile', selectedFile);
       await uploadAvatarMutation(formData).unwrap();
-      toast.success('Profile image uploaded successfully', {
-        position: 'top-right',
-      });
-      refetch();
+      toast.success(t('uploadMessages.uploadSuccess'));
     } catch (error) {
-      toast.error('An error occurred while uploading the profile image');
+      toast.error(t('uploadMessages.uploadError'));
     }
   };
-
-  /*const saveUserProfile = async () => {
-    try {
-      const updatedProfile: SerialUser = {
-        firstName: firstName || '',
-        lastName: lastName || '',
-        phone: phone || '',
-        country: country || '',
-        gender: gender || '',
-        avatar: avatar || '',
-        id: currentUser?.id,
-        email: currentUser?.email || '',
-        username: currentUser?.username || '',
-        enabled: currentUser?.enabled || false,
-        emailVerified: currentUser?.emailVerified || false,
-        role: currentUser?.role || { id: '', name: '' },
-      };
-      await modifyUserMutation(updatedProfile);
-      console.log('User profile updated successfully');
-    } catch (error) {
-      console.error('Error updating user profile:', error);
-    }
-  };*/
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -156,23 +119,61 @@ export const ProfileSettings = () => {
         <div className="w-full md:w-2/3">
           {/* Profile Card */}
           <Card className="mb-6 bg-white p-5">
-            <div className="flex ">
-              <img
-                className="h-32 w-32 rounded-md"
-                src={imageUrl}
-                alt="avatar"
-                width={128}
-                height={128}
-              />
+            <div className="flex flex-col items-center justify-center p-4">
+              <div
+                {...getRootProps()}
+                className="w-64 h-64 rounded-lg overflow-hidden border-2 border-dashed border-gray-400 cursor-pointer hover:border-blue-500 transition-all relative"
+              >
+                <input {...getInputProps()} />
+                <div className="flex flex-col items-center justify-center h-full">
+                  {/* Conditional rendering for showing the image or a placeholder */}
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt="Profile avatar"
+                      className={`object-cover w-full h-full ${
+                        isDragActive ? 'opacity-50' : 'opacity-100'
+                      }`}
+                    />
+                  ) : (
+                    <div className="text-center">
+                      <svg
+                        className="mx-auto h-12 w-12 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m2-2l.101.101M13.015 6.015L12 5l1.414-1.414L15.828 2h2.344a2 2 0 012 2v2.344l-2.829 2.828L15 9l-1.985-2.985z"
+                        />
+                      </svg>
+                      <p className="mt-1 text-sm text-gray-600">
+                        Drag and drop here, or click to select files
+                      </p>
+                    </div>
+                  )}
+                  {/* Visual feedback when dragging files over this area */}
+                  {isDragActive && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25">
+                      <p className="text-white text-lg">
+                        Drop the files here...
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <button
+                onClick={handleUpload}
+                className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Upload Image
+              </button>
             </div>
-            <input
-              onChange={handleFileChange}
-              type="file"
-              id="profile"
-              name="profile"
-            />
-            <Button onClick={handleUpload}>Upload Image</Button>{' '}
-            {/* Trigger file input dialog */}
+
             <div className="">
               <h1 className="text-gray-900 font-bold text-xl leading-8 my-1">
                 {data?.firstName} {data?.lastName}
