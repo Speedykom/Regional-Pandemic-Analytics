@@ -13,6 +13,7 @@ import {
   Text,
   TextInput,
 } from '@tremor/react';
+import { FaCamera } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { useGetUserQuery } from '@/modules/user/user';
 import { useUploadAvatarMutation } from '@/modules/user/user';
@@ -87,7 +88,7 @@ export const ProfileSettings = () => {
 
   const handleUpload = async () => {
     if (!selectedFile) {
-      toast.error(t('uploadMessages.selectImage'));
+      toast.info(t('uploadMessages.selectImage'));
       return;
     }
     try {
@@ -126,37 +127,33 @@ export const ProfileSettings = () => {
               >
                 <input {...getInputProps()} />
                 <div className="flex flex-col items-center justify-center h-full">
-                  {/* Conditional rendering for showing the image or a placeholder */}
                   {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt="Profile avatar"
-                      className={`object-cover w-full h-full ${
-                        isDragActive ? 'opacity-50' : 'opacity-100'
-                      }`}
-                    />
+                    <div className="relative w-full h-full">
+                      <img
+                        src={imageUrl}
+                        alt="Profile avatar"
+                        className={`object-cover w-full h-full ${
+                          isDragActive ? 'opacity-50' : 'opacity-100'
+                        }`}
+                      />
+                      {/* Button for changing the profile picture */}
+                      <button
+                        onClick={handleUpload}
+                        className="absolute bottom-0 right-0 mb-2 mr-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                        style={{ zIndex: 10 }}
+                      >
+                        <FaCamera className="inline mr-2" />
+                        {t('changePicture')}
+                      </button>
+                    </div>
                   ) : (
                     <div className="text-center">
-                      <svg
-                        className="mx-auto h-12 w-12 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m2-2l.101.101M13.015 6.015L12 5l1.414-1.414L15.828 2h2.344a2 2 0 012 2v2.344l-2.829 2.828L15 9l-1.985-2.985z"
-                        />
-                      </svg>
+                      <FaCamera className="mx-auto h-12 w-12 text-gray-400" />
                       <p className="mt-1 text-sm text-gray-600">
-                        Drag and drop here, or click to select files
+                        Click or drag profile picture to upload
                       </p>
                     </div>
                   )}
-                  {/* Visual feedback when dragging files over this area */}
                   {isDragActive && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25">
                       <p className="text-white text-lg">
@@ -166,13 +163,13 @@ export const ProfileSettings = () => {
                   )}
                 </div>
               </div>
-              <button
-                onClick={handleUpload}
-                className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Upload Image
-              </button>
             </div>
+            <button
+              onClick={handleUpload}
+              className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              {t('uploadPicture')}
+            </button>
 
             <div className="">
               <h1 className="text-gray-900 font-bold text-xl leading-8 my-1">

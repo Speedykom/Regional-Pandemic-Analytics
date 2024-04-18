@@ -128,6 +128,8 @@ const enTranslation = {
     uploadSuccess: 'Profile picture uploaded successfully',
     uploadError: 'An error occurred while uploading the profile picture',
   },
+  changePicture: 'Change Picture',
+  uploadPicture: 'Upload Picture',
 };
 
 export default enTranslation;

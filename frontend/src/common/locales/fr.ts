@@ -137,6 +137,8 @@ const frTranslation = {
     uploadError:
       "Une erreur s'est produite lors du chargement de l'image de profil",
   },
+  changePicture: 'Changer la photo',
+  uploadPicture: 'Télécharger une photo',
 };
 
 export default frTranslation;
