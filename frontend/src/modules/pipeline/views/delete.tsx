@@ -12,7 +12,9 @@ import {
   TableCell,
   TableHeaderCell,
   TableRow,
+  TextInput,
 } from '@tremor/react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader } from '@/common/components/Loader';
 import { DagDetails } from '@/modules/process/interface';
@@ -29,6 +31,7 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
   const { data, isLoading, isSuccess } = useGetProcessByTaskIdQuery(taskId);
   const [deleteTask] = useDeletePipelineMutation();
   const [disableProcess] = useToggleProcessStatusMutation();
+  const [confirmationText, setConfirmationText] = useState('');
 
   const renderProcessChainData = (processChainList: DagDetails[]) => {
     if (!!processChainList) {
@@ -55,13 +58,6 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
   };
 
   const handleOk = (processChainList: DagDetails[]) => {
-    const isConfirmed = window.confirm(
-      t('deletePipeline.confirmDeletionMessage')
-    );
-    if (!isConfirmed) {
-      // If user cancels, do nothing
-      return;
-    }
     // diasble all related process chains
     if (!!processChainList) {
       const disablePromises: any[] = [];
@@ -147,6 +143,17 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
           </Card>
         </div>
       )}
+      <div>
+        <p className="mt-12 text-gray-500">
+          {t('deletePipeline.confirmationMessage')}
+        </p>
+        <TextInput
+          placeholder={t('deletePipeline.confirmationPlaceholder')}
+          value={confirmationText}
+          onChange={(e) => setConfirmationText(e.target.value)}
+          className="mt-4"
+        />
+      </div>
       <div className="mt-8 flex justify-end space-x-2">
         <Button
           type="button"
@@ -158,6 +165,7 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
         <Button
           onClick={() => data && data.dags && handleOk(data?.dags)}
           className="bg-prim hover:bg-prim-hover text-white border-0 text-sm"
+          disabled={confirmationText !== 'DELETE'}
         >
           {t('deletePipeline.deleteButton')}
         </Button>

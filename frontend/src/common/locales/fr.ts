@@ -153,6 +153,9 @@ const frTranslation = {
     processName: 'Nom',
     processScheduleIntervalLabel: 'Intervalle de planification',
     processStatus: 'Status',
+    confirmationMessage:
+      'Veuillez taper "DELETE" pour confirmer la suppression du pipeline:',
+    confirmationPlaceholder: 'Tapez...',
   },
 };
 
