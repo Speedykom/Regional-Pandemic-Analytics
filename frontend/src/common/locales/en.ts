@@ -143,6 +143,8 @@ const enTranslation = {
     processName: 'Name',
     processScheduleIntervalLabel: 'Schedule Interval',
     processStatus: 'Status',
+    confirmationMessage: 'Type "DELETE" to confirm the pipeline deletion:',
+    confirmationPlaceholder: 'Type...',
   },
 };
 
