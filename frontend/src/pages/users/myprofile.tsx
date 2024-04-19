@@ -448,7 +448,7 @@ export const ProfileSettings = () => {
                             className="block text-blueGray-600 text-xs font-bold mb-2"
                             htmlFor="newPassword"
                           >
-                            {t('new')}
+                            {t('newPass')}
                           </label>
                           <TextInput
                             id="newPassword"
