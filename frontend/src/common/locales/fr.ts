@@ -133,6 +133,9 @@ const frTranslation = {
     enable: 'activer',
     disable: 'désactiver',
   },
+  passwordChangeSuccess: 'Votre mot de passe a été changé avec succès.',
+  passwordChangeError:
+    'Une erreur est survenue lors du changement de votre mot de passe.',
 };
 
 export default frTranslation;
