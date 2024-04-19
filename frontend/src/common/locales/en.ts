@@ -125,6 +125,8 @@ const enTranslation = {
     enable: 'enable',
     disable: 'disable',
   },
+  passwordChangeSuccess: 'Your password has been successfully changed.',
+  passwordChangeError: 'There was an error changing your password.',
 };
 
 export default enTranslation;
