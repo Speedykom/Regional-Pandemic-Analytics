@@ -57,6 +57,7 @@ export const ProfileSettings = () => {
       phone: '',
       country: '',
       gender: '',
+      email: '',
     },
   });
   const { publicRuntimeConfig } = getConfig();
@@ -113,6 +114,7 @@ export const ProfileSettings = () => {
         gender: Array.isArray(data.attributes?.gender)
           ? data.attributes.gender[0] || ''
           : data.attributes?.gender || '',
+        email: data.email || '',
       });
     }
   }, [data, reset]);
@@ -133,6 +135,8 @@ export const ProfileSettings = () => {
       lastName: dirtyFields.lastName
         ? updatedValues.lastName
         : data?.lastName || '',
+      email: dirtyFields.email ? updatedValues.email : data?.email || '',
+
       attributes: {
         phone: dirtyFields.phone
           ? updatedValues.phone
@@ -177,14 +181,16 @@ export const ProfileSettings = () => {
             </div>
             <div>
               <span className="text-gray-500 leading-8 my-1">
-                Email Address
+                {t('emailAddress')}
               </span>
               <p id="emailId" className="">
                 {data?.email}
               </p>
             </div>
             <div className="mt-5">
-              <span className="text-gray-500 leading-8 my-1">Phone Number</span>
+              <span className="text-gray-500 leading-8 my-1">
+                {t('phoneNumber')}
+              </span>
               <p id="emailId" className="">
                 {data?.attributes?.phone}
               </p>
@@ -309,6 +315,25 @@ export const ProfileSettings = () => {
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                     placeholder="Phone Number*"
                     pattern="^\+?\d{0,13}"
+                  />
+                )}
+              />
+
+              <label htmlFor="email">{t('email')}</label>
+              <Controller
+                name="email"
+                control={control}
+                rules={{
+                  required: true,
+                  pattern: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
+                }}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    type="email"
+                    id="email"
+                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                    placeholder={t('email')}
                   />
                 )}
               />
