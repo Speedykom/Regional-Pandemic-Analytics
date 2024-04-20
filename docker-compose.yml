@@ -86,7 +86,6 @@ x-airflow-common: &airflow
     - ./hop:/hop
   depends_on:
     - airflow-pg
-    - airflow_cache
 
 x-superset-common: &superset
   build: ./superset/.
@@ -454,21 +453,6 @@ services:
     # =======
     # Airflow
     # =======
-  airflow_cache:
-    container_name: airflow_cache
-    image: redis:7
-    restart: always
-
-  airflow_worker:
-    <<: *airflow
-    container_name: airflow-worker
-    shm_size: 2g
-    depends_on:
-      - airflow-webserver
-      - airflow-scheduler
-      - airflow-triggerer
-    command: 'airflow celery worker'
-
   airflow-pg:
     image: postgres:14
     container_name: airflow-pg
