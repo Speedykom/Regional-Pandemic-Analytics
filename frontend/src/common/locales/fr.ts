@@ -96,7 +96,10 @@ const frTranslation = {
   active: 'Actif',
   inactive: 'Inactif',
   provideRoleDescrip: 'Veuillez fournir une description du rôle',
-
+  noChangesMade: 'Aucun changement apporté au profil.',
+  profileUpdateSuccess: 'Profil mis à jour avec succès.',
+  profileUpdateError:
+    "Une erreur s'est produite lors de la mise à jour du profil.",
   yourProfile: 'Votre Profil',
   logOut: 'Déconnexion',
   somethingWentWrong: "Quelque chose s'est mal passé !",
@@ -130,15 +133,9 @@ const frTranslation = {
     enable: 'activer',
     disable: 'désactiver',
   },
-
-  uploadMessages: {
-    selectImage: 'Veuillez sélectionner une image.',
-    uploadSuccess: 'La photo de profil a été actualisée avec succès',
-    uploadError:
-      "Une erreur s'est produite lors du chargement de l'image de profil",
-  },
-  changePicture: 'Changer la photo',
-  uploadPicture: 'Télécharger une photo',
+  passwordChangeSuccess: 'Votre mot de passe a été changé avec succès.',
+  passwordChangeError:
+    'Une erreur est survenue lors du changement de votre mot de passe.',
 };
 
 export default frTranslation;
