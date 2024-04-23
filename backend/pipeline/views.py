@@ -9,6 +9,7 @@ from minio.commonconfig import CopySource, REPLACE
 from datetime import datetime
 from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
+from urllib.parse import quote, unquote
 
 
 class EditAccessProcess:
@@ -40,19 +41,21 @@ class PipelineListView(APIView):
             object_name = object.object_name.removeprefix(
                         f"pipelines-created/{user_id}/"
                     ).removesuffix(".hpl")
+            description = object.metadata["X-Amz-Meta-Description"]
+            description = unquote(description)
             if query:
                 if (re.search(query, object_name, re.IGNORECASE)):
                     pipelines.append(
                         {
                             "name": object_name,
-                            "description": object.metadata["X-Amz-Meta-Description"],
+                            "description": description,
                         })
             else:
                 pipelines.append(
                 {
                     "name": object_name,
                     "description": object.metadata["X-Amz-Meta-Description"],
-                }    
+                }
             )
 
         return Response(
@@ -64,6 +67,7 @@ class PipelineListView(APIView):
         user_id = get_current_user_id(request)
         name = request.data.get("name")
         description = request.data.get("description")
+        description = quote(description.encode('utf-8'))
         template = request.data.get("template")
         try:
             # Checks if an object with the same name exits
@@ -123,11 +127,10 @@ class PipelineDetailView(APIView):
             payload = {"names": ["file:///files/{}.hpl".format(name)]}
             edit_hop = EditAccessProcess(file=self.file)
             edit_hop.request_edit(json.dumps(payload))
-
             return Response(
                 {
                     "name": name,
-                    "description": object.metadata["X-Amz-Meta-Description"],
+                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                 },
                 status=status.HTTP_200_OK,
             )
@@ -154,7 +157,7 @@ class PipelineDetailView(APIView):
                 f"pipelines-created/{user_id}/{name}.hpl",
                 f"/hop/pipelines/{name}.hpl",
                 metadata={
-                    "description": object.metadata["X-Amz-Meta-Description"],
+                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                     "updated": f"{datetime.utcnow()}",
                     "created": object.metadata["X-Amz-Meta-Created"],
                 },
@@ -177,8 +180,8 @@ class PipelineDownloadView(APIView):
     keycloak_scopes = {
         "GET": "pipeline:read",
     }
-    
-    def get(self, request, name=None):        
+
+    def get(self, request, name=None):
         """Download a specific pipeline."""
         user_id = get_current_user_id(request)
         try:
@@ -205,11 +208,12 @@ class PipelineUploadView(APIView):
         "POST": "pipeline:add",
         "GET": "pipeline:read",
     }
-    
+
     def post(self, request, format=None):
         user_id = get_current_user_id(request)
         name = request.data.get("name")
         description = request.data.get("description")
+        description = quote(description.encode('utf-8'))
         uploaded_file = request.FILES.get("uploadedFile")
         if (uploaded_file) :
             try:
@@ -227,7 +231,7 @@ class PipelineUploadView(APIView):
                     status=409,
                 )
             except:
-                # upload new pipeline 
+                # upload new pipeline
                 client_result = client.put_object(
                 bucket_name='pipelines',
                 object_name=f"pipelines-created/{user_id}/{name}.hpl",
@@ -237,7 +241,7 @@ class PipelineUploadView(APIView):
                     "description": f"{description}",
                     "created": f"{datetime.utcnow()}",
                 },
-                ) 
-                             
+                )
+
             return Response({"status": "success"}, status=status.HTTP_200_OK)
 
