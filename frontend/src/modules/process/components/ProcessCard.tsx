@@ -15,11 +15,13 @@ import { PipelineList } from '@/modules/pipeline/interface';
 interface ProcessCardProps {
   process: DagDetails;
   pipelineList: PipelineList;
+  showDisabled: boolean;
 }
 
 export default function ProcessCard({
   process,
   pipelineList,
+  showDisabled,
 }: ProcessCardProps) {
   const { t } = useTranslation();
 
