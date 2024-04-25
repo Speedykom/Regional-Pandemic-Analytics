@@ -31,7 +31,7 @@ export const AddPipeline = ({
     addPipeline({ ...value, template: template.name }).then((res: any) => {
       if (res.error) {
         const { data } = res.error;
-        const { message } = data ? data.message : 'An error occurred';
+        const { message } = data;
 
         toast.error(message, { position: 'top-right' });
         return;
@@ -51,18 +51,10 @@ export const AddPipeline = ({
   };
 
   const handleValueChange = (value: string) => {
-    const regex = /^[A-Za-z0-9À-ÿ\s!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]+$/;
-
     if (isWhitespace.test(value)) {
       setError('name', {
         type: 'pattern',
         message: 'Pipeline name cannot contain whitespaces',
-      });
-    } else if (!regex.test(value)) {
-      setError('name', {
-        type: 'pattern',
-        message:
-          'Pipeline name can only contain letters, numbers, and common special characters',
       });
     } else {
       clearErrors('name');
