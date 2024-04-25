@@ -8,6 +8,7 @@ import ProcessCard from '../components/ProcessCard';
 import { AddProcess } from './add';
 import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
 import { useTranslation } from 'react-i18next';
+
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();
   const [addComponent, setAddComponent] = useState(false);
@@ -16,32 +17,25 @@ export default function ProcessChainList() {
     setAddComponent(false);
   };
 
-  const { data: pipelineList, isSuccess: isSuccessPipeline } =
-    useGetAllPipelinesQuery('');
+  const { data: pipelineList, isSuccess: isSuccessPipeline } = useGetAllPipelinesQuery('');
 
   const [searchInput, setSearchInput] = useState<string>('');
-  const { data, isLoading, isSuccess, refetch } =
-    useGetProcessQuery(searchInput);
+  const { data, isLoading, isSuccess, refetch } = useGetProcessQuery(searchInput);
 
   const [currentPage, setCurrentPage] = useState(1);
   const defaultPageSize = 5;
 
-  const renderPagination = (processChainList: DagDetailsResponse) => {
-    if (
-      !defaultPageSize ||
-      !processChainList ||
-      processChainList?.dags?.length == 0
-    )
-      return null;
+  const [showDisabled, setShowDisabled] = useState(false);
+  const toggleShowDisabled = () => {
+    setShowDisabled(!showDisabled);
+  };
 
-    const totalPages = Math.ceil(
-      processChainList?.dags?.length / defaultPageSize
-    );
+  const renderPagination = (processChainList: DagDetailsResponse) => {
+    if (!defaultPageSize || !processChainList || processChainList?.dags?.length == 0) return null;
+
+    const totalPages = Math.ceil(processChainList?.dags?.length / defaultPageSize);
     const startItem = (currentPage - 1) * defaultPageSize + 1;
-    const endItem = Math.min(
-      currentPage * defaultPageSize,
-      processChainList?.dags?.length
-    );
+    const endItem = Math.min(currentPage * defaultPageSize, processChainList?.dags?.length);
 
     return (
       <div className="flex justify-end items-center mt-4">
@@ -50,7 +44,7 @@ export default function ProcessChainList() {
         </div>
         <div className="flex">
           <Button
-            className="bg-prim hover:bg-green-900  border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
+            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
             size="xs"
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
@@ -58,7 +52,7 @@ export default function ProcessChainList() {
             &larr; Prev
           </Button>
           <Button
-            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4  focus:outline-none cursor-pointer"
+            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer"
             size="xs"
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}
@@ -71,16 +65,9 @@ export default function ProcessChainList() {
   };
 
   const renderProcessChainData = (processChainList: DagDetails[]) => {
-    if (!defaultPageSize && !!pipelineList) {
-      return processChainList.map((process) => {
-        return (
-          <ProcessCard
-            key={process.dag_id}
-            process={process}
-            pipelineList={pipelineList}
-          />
-        );
-      });
+    let filteredList = processChainList;
+    if (!showDisabled) {
+      filteredList = processChainList.filter(process => process.status !== "inactive");
     }
 
     const startIndex = (currentPage - 1) * defaultPageSize;
@@ -92,6 +79,7 @@ export default function ProcessChainList() {
             key={process.dag_id}
             process={process}
             pipelineList={pipelineList}
+            showDisabled={showDisabled}
           />
         );
       });
@@ -103,11 +91,9 @@ export default function ProcessChainList() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl">{t('processChain')}</h2>
-          <p className="my-2 text-gray-600">
-            {t('viewAndManageProcessChains')}{' '}
-          </p>
+          <p className="my-2 text-gray-600">{t('viewAndManageProcessChains')}</p>
         </div>
-        <div>
+        <div className="flex justify-between">
           {hasPermission('process:add') && (
             <Button
               className="bg-prim hover:bg-prim-hover border-0"
@@ -119,6 +105,12 @@ export default function ProcessChainList() {
               {t('addProcessChain')}
             </Button>
           )}
+          <Button
+            className="ml-2 bg-prim hover:bg-prim-hover border-0"
+            onClick={toggleShowDisabled}
+          >
+            {showDisabled ? 'Hide Inactive Process Chains' : 'Show Inactive Process Chains'}
+          </Button>
         </div>
       </div>
       <input
