@@ -59,7 +59,6 @@ export const CreatePassword = ({ mail, token }: props) => {
     if (!lowercase || !uppercase || !specialChar || !num) {
       OpenNotification(
         'Validation error, please fix the errors and continue',
-        'topRight',
         'error'
       );
     } else {
@@ -78,16 +77,12 @@ export const CreatePassword = ({ mail, token }: props) => {
         )
         .then((res) => {
           setLoad(false);
-          OpenNotification(res.data?.message, 'topRight', 'success');
+          OpenNotification(res.data?.message, 'success');
           form.resetFields();
           router.push('/');
         })
         .catch((err) => {
-          OpenNotification(
-            err?.response?.data?.errorMessage,
-            'topRight',
-            'error'
-          );
+          OpenNotification(err?.response?.data?.errorMessage, 'error');
         });
     }
   };
