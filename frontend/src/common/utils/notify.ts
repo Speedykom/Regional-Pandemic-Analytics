@@ -1,18 +1,15 @@
-import { notification } from 'antd';
-import {
-  NotificationPlacement,
-  IconType,
-} from 'antd/es/notification/interface';
+import { useToast } from '../hooks/useToast';
 
 export const OpenNotification = (
-  text: string,
-  placement: NotificationPlacement,
-  type: IconType
+  text: any,
+  // placement: NotificationPlacement,
+  type: any
 ) => {
-  notification[type]({
-    message: 'Regional Pandemic',
+  const { toast } = useToast();
+  toast({
+    title: 'Regional Pandemic',
     description: text,
-    placement,
-    duration: 5,
+    variant: type,
+    duration: 5000,
   });
 };
