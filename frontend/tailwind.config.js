@@ -10,6 +10,22 @@ module.exports = {
     transparent: 'transparent',
     current: 'currentColor',
     extend: {
+      keyframes: {
+        hide: {
+          from: { opacity: '1' },
+          to: { opacity: '0' },
+        },
+        slideLeftAndFade: {
+          from: { opacity: '0', transform: 'translateX(6px)' },
+          to: { opacity: '1', transform: 'translateX(0)' },
+        },
+      },
+      animation: {
+        hide: 'hide 150ms cubic-bezier(0.16, 1, 0.3, 1)',
+        slideLeftAndFade:
+          'slideLeftAndFade 150ms cubic-bezier(0.16, 1, 0.3, 1)',
+      },
+
       colors: {
         // light mode
         tremor: {

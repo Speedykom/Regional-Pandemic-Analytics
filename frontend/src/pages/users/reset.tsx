@@ -21,11 +21,11 @@ export const ResetMe = () => {
         }
       )
       .then((res) => {
-        OpenNotification(res.data?.message, 'topRight', 'success');
+        OpenNotification(res.data?.message, 'success');
         router.push('/');
       })
       .catch((err) => {
-        OpenNotification(err.response?.data?.errorMessage, 'topRight', 'error');
+        OpenNotification(err.response?.data?.errorMessage, 'error');
       });
   };
 
