@@ -17,10 +17,12 @@ export default function ProcessChainList() {
     setAddComponent(false);
   };
 
-  const { data: pipelineList, isSuccess: isSuccessPipeline } = useGetAllPipelinesQuery('');
+  const { data: pipelineList, isSuccess: isSuccessPipeline } =
+    useGetAllPipelinesQuery('');
 
   const [searchInput, setSearchInput] = useState<string>('');
-  const { data, isLoading, isSuccess, refetch } = useGetProcessQuery(searchInput);
+  const { data, isLoading, isSuccess, refetch } =
+    useGetProcessQuery(searchInput);
 
   const [currentPage, setCurrentPage] = useState(1);
   const defaultPageSize = 5;
@@ -31,11 +33,21 @@ export default function ProcessChainList() {
   };
 
   const renderPagination = (processChainList: DagDetailsResponse) => {
-    if (!defaultPageSize || !processChainList || processChainList?.dags?.length == 0) return null;
+    if (
+      !defaultPageSize ||
+      !processChainList ||
+      processChainList?.dags?.length == 0
+    )
+      return null;
 
-    const totalPages = Math.ceil(processChainList?.dags?.length / defaultPageSize);
+    const totalPages = Math.ceil(
+      processChainList?.dags?.length / defaultPageSize
+    );
     const startItem = (currentPage - 1) * defaultPageSize + 1;
-    const endItem = Math.min(currentPage * defaultPageSize, processChainList?.dags?.length);
+    const endItem = Math.min(
+      currentPage * defaultPageSize,
+      processChainList?.dags?.length
+    );
 
     return (
       <div className="flex justify-end items-center mt-4">
@@ -67,7 +79,9 @@ export default function ProcessChainList() {
   const renderProcessChainData = (processChainList: DagDetails[]) => {
     let filteredList = processChainList;
     if (!showDisabled) {
-      filteredList = processChainList.filter(process => process.status !== "inactive");
+      filteredList = processChainList.filter(
+        (process) => process.status !== 'inactive'
+      );
     }
 
     const startIndex = (currentPage - 1) * defaultPageSize;
@@ -91,7 +105,9 @@ export default function ProcessChainList() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl">{t('processChain')}</h2>
-          <p className="my-2 text-gray-600">{t('viewAndManageProcessChains')}</p>
+          <p className="my-2 text-gray-600">
+            {t('viewAndManageProcessChains')}
+          </p>
         </div>
         <div className="flex justify-between">
           {hasPermission('process:add') && (
@@ -109,7 +125,9 @@ export default function ProcessChainList() {
             className="ml-2 bg-prim hover:bg-prim-hover border-0"
             onClick={toggleShowDisabled}
           >
-            {showDisabled ? 'Hide Inactive Process Chains' : 'Show Inactive Process Chains'}
+            {showDisabled
+              ? 'Hide Inactive Process Chains'
+              : 'Show Inactive Process Chains'}
           </Button>
         </div>
       </div>
