@@ -21,6 +21,10 @@ interface ChangePasswordResponse {
   message: string;
 }
 
+interface AvatarResponse {
+  avatar_url: string;
+}
+
 export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery,
@@ -95,15 +99,13 @@ export const userApi = createApi({
     }),
     uploadAvatar: builder.mutation<any, FormData>({
       query: (FormData) => ({
-        url: `account/user/avatar-upload`,
+        url: `account/user/avatar-upload1`,
         method: 'POST',
         body: FormData,
       }),
-      invalidatesTags: ['User'],
     }),
-    getUserAvatar: builder.query<any, { id: string }>({
-      query: (id) => `account/user/${id}/avatar`,
-      providesTags: ['User'],
+    getUserAvatar: builder.query<AvatarResponse, { id: string }>({
+      query: (id) => `account/${id}/avatar`,
     }),
   }),
 });
@@ -117,5 +119,4 @@ export const {
   useModifyUserMutation,
   useChangePasswordMutation,
   useUploadAvatarMutation,
-  useGetUserAvatarQuery,
 } = userApi;
