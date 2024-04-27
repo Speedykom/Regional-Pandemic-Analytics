@@ -89,7 +89,9 @@ const enTranslation = {
   inactive: 'Inactive',
 
   provideRoleDescrip: 'provide role description',
-
+  noChangesMade: 'No changes made to the profile.',
+  profileUpdateSuccess: 'Profile updated successfully',
+  profileUpdateError: 'An error occurred while updating the profile',
   yourProfile: 'Your Profile',
   logOut: 'Log Out',
   somethingWentWrong: 'Something went wrong!',
@@ -123,6 +125,8 @@ const enTranslation = {
     enable: 'enable',
     disable: 'disable',
   },
+  passwordChangeSuccess: 'Your password has been successfully changed.',
+  passwordChangeError: 'There was an error changing your password.',
   uploadMessages: {
     selectImage: 'Please select an image to upload',
     uploadSuccess: 'Profile picture uploaded successfully',
