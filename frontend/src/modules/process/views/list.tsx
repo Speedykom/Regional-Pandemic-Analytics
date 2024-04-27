@@ -84,6 +84,7 @@ export default function ProcessChainList() {
             key={process.dag_id}
             process={process}
             pipelineList={pipelineList}
+            showDisabled={showDisabled}
           />
         );
       });
