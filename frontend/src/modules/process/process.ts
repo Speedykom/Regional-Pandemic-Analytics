@@ -16,6 +16,10 @@ export const processApi = createApi({
   baseQuery,
   tagTypes: ['process'],
   endpoints: (builder) => ({
+    getDatasourceInfo: builder.query<DagDetailsResponse, string>({
+      query: (datasource_id) => `/process/datasource/${datasource_id}/`,
+      providesTags: ['process'],
+    }),
     getProcess: builder.query<DagDetailsResponse, string>({
       query: (query) => `/process?query=${query}`,
       providesTags: ['process'],
@@ -82,4 +86,5 @@ export const {
   useGetProcessHistoryByIdQuery,
   useGetProcessHistoryTasksbyIdQuery,
   useRunProcessByIdMutation,
+  useGetDatasourceInfoQuery,
 } = processApi;
