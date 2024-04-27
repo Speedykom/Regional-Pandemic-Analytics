@@ -250,14 +250,21 @@ class UserAvatarView(APIView):
             return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
 
         uploaded_file = request.FILES.get("uploadedFile")
+        if not uploaded_file:
+            return HttpResponseBadRequest("No file uploaded.")
 
         try:
+            keycloak_admin = get_keycloak_admin()
+            # Fetch the current user data to preserve existing attributes
+            current_user_data = keycloak_admin.get_user(user_id)
+            current_attributes = current_user_data.get('attributes', {})
+
             bucket_name = 'avatars'
             prefix = f'{user_id}/'
             object_name = f'{prefix}avatar'  # Always use the same object name
 
             # Delete the old avatar if it exists
-            client.remove_object(bucket_name, object_name)  
+            client.remove_object(bucket_name, object_name)
 
             # Upload new avatar
             client.put_object(
@@ -270,10 +277,11 @@ class UserAvatarView(APIView):
 
             new_avatar_url = f"{os.getenv('AVATAR_BASE_URL')}/{object_name}"
 
-            # Update the user's avatar URL in Keycloak
-            keycloak_admin = get_keycloak_admin()
-            user_data = {'attributes': {'avatar': new_avatar_url}}
-            keycloak_admin.update_user(user_id, user_data)
+            # Update the avatar URL in the current attributes
+            current_attributes['avatar'] = new_avatar_url
+
+            # Update the user's data in Keycloak with all preserved attributes
+            keycloak_admin.update_user(user_id, {'attributes': current_attributes})
             cache_key = f'user_avatar_{user_id}'
             cache.delete(cache_key)
 
