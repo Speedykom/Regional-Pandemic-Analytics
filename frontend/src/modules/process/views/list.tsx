@@ -77,11 +77,16 @@ export default function ProcessChainList() {
   };
 
   const renderProcessChainData = (processChainList: DagDetails[]) => {
-    let filteredList = processChainList;
-    if (!showDisabled) {
-      filteredList = processChainList.filter(
-        (process) => process.status !== 'inactive'
-      );
+    if (!defaultPageSize && !!pipelineList) {
+      return processChainList.map((process) => {
+        return (
+          <ProcessCard
+            key={process.dag_id}
+            process={process}
+            pipelineList={pipelineList}
+          />
+        );
+      });
     }
 
     const startIndex = (currentPage - 1) * defaultPageSize;
