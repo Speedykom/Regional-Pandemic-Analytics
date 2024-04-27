@@ -17,6 +17,7 @@ interface StepperProps {
   nextDagRun: string;
   lastParsedTime: string;
   createChartUrl: string | null;
+  data_source_name: string;
 }
 
 export default function Stepper({
@@ -28,8 +29,10 @@ export default function Stepper({
   nextDagRun,
   lastParsedTime,
   createChartUrl,
+  data_source_name,
 }: StepperProps) {
   const [activeStep, setActiveStep] = useState<number | null>(null);
+
   const steps = [
     {
       title: 'Data Source Selection',
@@ -58,8 +61,9 @@ export default function Stepper({
     {
       title: 'Analytics Data Model',
       icon: <BiTable size={24} />,
-      content: <AnalyticsDataModel />,
+      content: <AnalyticsDataModel dataSourceName={data_source_name} />,
     },
+
     {
       title: 'Charts',
       icon: <BiChart size={24} />,
