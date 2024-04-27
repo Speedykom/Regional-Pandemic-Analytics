@@ -147,30 +147,18 @@ class UserDetailView(APIView):
             "country": openapi.Schema(type=openapi.TYPE_STRING)
         }
     ))
+
+
     def put(self, request, *args, **kwargs):
-        form_data = {
-            "firstName": request.data.get("firstName", None),
-            "lastName": request.data.get("lastName", None),
-            "email": request.data.get("email", None),
-            "enabled": request.data.get("enabled", None),
-            "attributes": {
-                "code": request.data.get("code", None),
-                "phone": request.data.get("phone", None),
-                "gender": request.data.get("gender", None),
-                "country": request.data.get("country", None),
-            }
-        }
+        user_data = request.data  
 
         try:
             keycloak_admin = get_keycloak_admin()
-            keycloak_admin.update_user(kwargs['id'], form_data)
-            role = request.data.get("role", {})
-            client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
-            keycloak_admin.assign_client_role(client_id=client_id, user_id=kwargs['id'], roles=[role])
-            return Response({'message': 'Account details updated successfully'}, status=status.HTTP_200_OK)
+            keycloak_admin.update_user(kwargs['id'], user_data)
+            
+            return Response({'message': 'User updated successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
-            return Response({'errorMessage': 'Unable to update the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+            return Response({'errorMessage': 'Unable to update the user. Error: {}'.format(str(err))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     def delete(self, request, **kwargs):
         try:
             keycloak_admin = get_keycloak_admin()
