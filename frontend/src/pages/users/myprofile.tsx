@@ -1,8 +1,6 @@
 import Layout from '@/common/components/Dashboard/Layout';
 import CryptoJS from 'crypto-js';
-import CryptoJS from 'crypto-js';
 import { countries } from '@/common/utils/countries';
-import getConfig from 'next/config';
 import getConfig from 'next/config';
 import { useTranslation } from 'react-i18next';
 import { Fragment, useEffect, useState } from 'react';
