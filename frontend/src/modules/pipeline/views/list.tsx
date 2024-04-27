@@ -145,6 +145,15 @@ export const MyPipelines = () => {
             tooltip={t(item.check_text)}
           />
         );
+      } else {
+        statusIcon = (
+          <Icon
+            size="lg"
+            icon={XCircleIcon}
+            color="red"
+            tooltip={t(item.check_text)}
+          />
+        );
       }
       return (
         <TableRow key={index}>

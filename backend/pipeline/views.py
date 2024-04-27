@@ -46,16 +46,16 @@ class PipelineListView(APIView):
                         {
                             "name": object_name,
                             "description": object.metadata["X-Amz-Meta-Description"],
-                            "check_status": object.metadata["X-Amz-Meta-Check_status"],
-                            "check_text": object.metadata["X-Amz-Meta-Check_text"],
+                            "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
+                            "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                         })
             else:
                 pipelines.append(
                 {
                     "name": object_name,
                     "description": object.metadata["X-Amz-Meta-Description"],
-                    "check_status": object.metadata["X-Amz-Meta-Check_status"],
-                    "check_text": object.metadata["X-Amz-Meta-Check_text"],
+                    "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
+                    "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                 }    
             )
 
@@ -135,8 +135,8 @@ class PipelineDetailView(APIView):
                 {
                     "name": name,
                     "description": object.metadata["X-Amz-Meta-Description"],
-                    "check_status": object.metadata["X-Amz-Meta-Check_status"],
-                    "check_text": object.metadata["X-Amz-Meta-Check_text"],
+                    "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
+                    "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                 },
                 status=status.HTTP_200_OK,
             )
