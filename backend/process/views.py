@@ -13,7 +13,57 @@ class AirflowInstance:
     username = os.getenv("AIRFLOW_USER")
     password = os.getenv("AIRFLOW_PASSWORD")
 
+class DruidInstance:
+    url = os.getenv("DRUID_URL")
+    username = "admin"
+    password = os.getenv("DRUID_ADMIN_PASSWORD")
+
+
 SupersetUrl = os.getenv("SUPERSET_PUBLIC_URL")
+
+class DruidSegment:
+    def __init__(self, dataSource, interval, version, loadSpec, dimensions, metrics, shardSpec, binaryVersion, size, identifier):
+        self.data_source = dataSource
+        self.interval = interval
+        self.version = version
+        self.load_spec = loadSpec
+        self.dimensions = dimensions.split(',') if isinstance(dimensions, str) else dimensions
+        self.metrics = metrics.split(',') if isinstance(metrics, str) else metrics
+        
+        self.shard_spec = shardSpec
+        self.binary_version = binaryVersion
+        self.size = size
+        self.identifier = identifier
+
+    def to_dict(self):
+        return self.__dict__
+
+
+class DruidDataSource:
+    def __init__(self, name, properties, segments):
+        self.name = name
+        self.properties = properties
+        self.segments = [DruidSegment(
+            dataSource=segment.get('dataSource'),  
+            interval=segment.get('interval'),
+            version=segment.get('version'),
+            loadSpec=segment.get('loadSpec'),  
+            dimensions=segment.get('dimensions'),
+            metrics=segment.get('metrics'),
+            shardSpec=segment.get('shardSpec'),
+            binaryVersion=segment.get('binaryVersion'),
+            size=segment.get('size'),
+            identifier=segment.get('identifier')
+        ).to_dict() for segment in segments]
+
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "properties": self.properties,
+            "segments": self.segments
+        }
+
+
 
 class DagDTO:
     factory_id = "FACTORY"
@@ -326,6 +376,52 @@ class ProcessView(ViewSet):
             "dataset": None if dataset == None else { "id": dataset[0], "url": dataset[1] }
         }, status=status.HTTP_200_OK)
 
+    def get_datasource_info(self, request, datasource_id=None):
+        if datasource_id is None:
+            return Response({"error": "Datasource ID is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        druid_url = f"{DruidInstance.url}/druid/coordinator/v1/metadata/datasources/{datasource_id}"
+        response = requests.get(druid_url, auth=(DruidInstance.username, DruidInstance.password), verify=False)
+
+        if response.status_code == 200:
+            data = response.json()
+
+            segments_data = data.get("segments", [])
+            if segments_data:
+                segments_count = len(segments_data)  # Count the number of segments
+
+                # Calculate the total size of all segments
+                total_size = sum(segment['size'] for segment in segments_data)/1000
+
+                # Include only the newest segment
+                last_segment_data = segments_data[segments_count-1]
+                last_segment = DruidSegment(
+                    dataSource=last_segment_data["dataSource"],
+                    interval=last_segment_data["interval"],
+                    version=last_segment_data["version"],
+                    loadSpec=last_segment_data["loadSpec"],
+                    dimensions=last_segment_data["dimensions"],
+                    metrics=last_segment_data["metrics"],
+                    shardSpec=last_segment_data["shardSpec"],
+                    binaryVersion=last_segment_data["binaryVersion"],
+                    size=last_segment_data["size"],
+                    identifier=last_segment_data["identifier"]
+                ).to_dict()
+
+                druid_data_source = {
+                    "name": datasource_id,
+                    "properties": data.get("properties", {}),
+                    "segments_count": segments_count,
+                    "total_size": total_size,  
+                    "last_segment": last_segment  # Return only newest
+                }
+                
+                return Response(druid_data_source, status=status.HTTP_200_OK)
+            else:
+                return Response({"error": "No segments found for the given datasource ID"}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"error": "Failed to retrieve data from Druid"}, status=response.status_code)
+            
 class ProcessRunView(ViewSet):
     """
     This view handles Dag-Runs logic
