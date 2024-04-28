@@ -8,6 +8,7 @@ import ProcessCard from '../components/ProcessCard';
 import { AddProcess } from './add';
 import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
 import { useTranslation } from 'react-i18next';
+import { Switch } from '@tremor/react';
 
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();
@@ -115,7 +116,7 @@ export default function ProcessChainList() {
             {t('viewAndManageProcessChains')}
           </p>
         </div>
-        <div className="flex justify-between">
+        <div>
           {hasPermission('process:add') && (
             <Button
               className="bg-prim hover:bg-prim-hover border-0"
@@ -127,14 +128,6 @@ export default function ProcessChainList() {
               {t('addProcessChain')}
             </Button>
           )}
-          <Button
-            className="ml-2 bg-prim hover:bg-prim-hover border-0"
-            onClick={toggleShowDisabled}
-          >
-            {showDisabled
-              ? 'Hide Inactive Process Chains'
-              : 'Show Inactive Process Chains'}
-          </Button>
         </div>
       </div>
       <input
@@ -144,6 +137,17 @@ export default function ProcessChainList() {
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
       />
+      <div className="mt-3 flex justify-end items-center">
+        <label htmlFor="switch" className="mr-2 text-gray-600">
+          Show disabled Process Chains
+        </label>
+        <Switch
+          id="switch"
+          name="switch"
+          checked={showDisabled}
+          onChange={toggleShowDisabled}
+        />
+      </div>
       <div className="mt-5">
         {isLoading && (
           <div className="flex h-96 bg-white shadow-md border rounded-md items-center justify-center">
