@@ -54,7 +54,7 @@ class PipelineListView(APIView):
                 pipelines.append(
                 {
                     "name": object_name,
-                    "description": object.metadata["X-Amz-Meta-Description"],
+                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                 }
             )
 
