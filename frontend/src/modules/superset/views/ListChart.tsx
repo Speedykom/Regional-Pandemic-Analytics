@@ -158,7 +158,7 @@ export const ProcessChainChartList = ({ dagId }: ProcessChainChartProps) => {
   let processChainCharts: any;
   if (data?.result && dagId) {
     const filteredCharts = data.result.filter((element: any) =>
-      element.datasource_name_text.endsWith(`.${dagId}`)
+      element.datasource_name_text.endsWith(`${dagId}`)
     );
     processChainCharts = { ...data, result: filteredCharts };
   }
