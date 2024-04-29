@@ -94,7 +94,7 @@ class SupersetClient:
             logger.error("DB %s does not exist in Superset", db_name)
             raise RuntimeError("DB {} does not exist in Superset".format(db_name))
         create_dataset_url = urllib.parse.urljoin(self._base_url, "/api/v1/dataset/")
-        create_dataset_body = { "database": db_id, "table_name": name }
+        create_dataset_body = { "database": db_id, "table_name": name, "schema": "druid" }
         create_response = requests.post(url = create_dataset_url, headers = self.authorize({}, True), json = create_dataset_body)
         if create_response.status_code >= 400:
             logger.error("Failed to create dataset %s in database %s with status %d and message: %s", name, db_name, create_response.status_code, create_response.text)
