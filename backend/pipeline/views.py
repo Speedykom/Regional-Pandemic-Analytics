@@ -41,8 +41,7 @@ class PipelineListView(APIView):
             object_name = object.object_name.removeprefix(
                         f"pipelines-created/{user_id}/"
                     ).removesuffix(".hpl")
-            description = object.metadata["X-Amz-Meta-Description"]
-            description = unquote(description)
+            description = unquote(object.metadata["X-Amz-Meta-Description"])
             if query:
                 if (re.search(query, object_name, re.IGNORECASE)):
                     pipelines.append(
@@ -54,7 +53,7 @@ class PipelineListView(APIView):
                 pipelines.append(
                 {
                     "name": object_name,
-                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
+                    "description": description,
                 }
             )
 
