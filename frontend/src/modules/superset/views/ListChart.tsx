@@ -104,6 +104,7 @@ const ChartList = ({ filterByDagId = '' }) => {
                     {item.slice_name}
                   </Link>
                 </TableCell>
+
                 <MediaQuery minWidth={768}>
                   <TableCell>{item.viz_type}</TableCell>
                 </MediaQuery>
