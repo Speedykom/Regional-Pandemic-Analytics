@@ -273,6 +273,7 @@ class UserAvatarView(APIView):
                 object_name=object_name,
                 data=uploaded_file,
                 length=uploaded_file.size,
+                content_type=uploaded_file.content_type,
                 metadata = {"uploaded": f"{datetime.now(timezone.utc)}"}
             )
 
