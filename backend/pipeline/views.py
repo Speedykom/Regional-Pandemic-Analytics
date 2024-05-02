@@ -231,7 +231,6 @@ class PipelineUploadView(APIView):
             with open(f"/hop/pipelines/{name}.hpl", 'wb') as f:
                 for chunk in uploaded_file.chunks():
                     f.write(chunk)
-            f.close()
             try:
                 # Checks if an object with the same name exists
                 client_response = client.get_object(
