@@ -1,7 +1,12 @@
 // Need to use the React-specific entry point to import createApi
 import { baseQuery } from '@/common/redux/api';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { PipelineData, PipelineList, TemplateList } from './interface';
+import {
+  PipelineData,
+  PipelineDeleteRequest,
+  PipelineList,
+  TemplateList,
+} from './interface';
 
 export const pipelineApi = createApi({
   reducerPath: 'pipelineApi',
@@ -48,10 +53,11 @@ export const pipelineApi = createApi({
     }),
     deletePipeline: builder.mutation<
       { status: string; message?: string },
-      string
+      PipelineDeleteRequest
     >({
-      query: (name) => ({
+      query: ({ name, dags }) => ({
         url: `/pipeline/delete/${name}`,
+        body: { dags },
         method: 'DELETE',
       }),
       invalidatesTags: ['pipelines'],
