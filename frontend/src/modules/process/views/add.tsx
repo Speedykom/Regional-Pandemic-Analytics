@@ -146,7 +146,7 @@ export const AddProcess = ({
               name="date"
               control={control}
               render={({ field }) => {
-                const { value: _, ...rest } = field;
+                const { value: dateValue, ...rest } = field;
                 return (
                   <DatePicker
                     {...rest}
