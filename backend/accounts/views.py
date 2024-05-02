@@ -13,6 +13,7 @@ from utils.minio import client
 from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
 from django.core.cache import cache
+from datetime import datetime, timezone
 
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -272,7 +273,7 @@ class UserAvatarView(APIView):
                 object_name=object_name,
                 data=uploaded_file,
                 length=uploaded_file.size,
-                metadata={"uploaded": f"{datetime.utcnow()}"},
+                metadata = {"uploaded": f"{datetime.now(timezone.utc)}"}
             )
 
             new_avatar_url = f"{os.getenv('AVATAR_BASE_URL')}/{object_name}"
