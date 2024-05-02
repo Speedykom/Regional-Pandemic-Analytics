@@ -7,6 +7,7 @@ import {
   PipelineList,
   TemplateList,
 } from './interface';
+import { processApi } from '../process/process';
 
 export const pipelineApi = createApi({
   reducerPath: 'pipelineApi',
@@ -61,6 +62,10 @@ export const pipelineApi = createApi({
         method: 'DELETE',
       }),
       invalidatesTags: ['pipelines'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+        dispatch(processApi.util.invalidateTags(['process']));
+      },
     }),
   }),
 });
