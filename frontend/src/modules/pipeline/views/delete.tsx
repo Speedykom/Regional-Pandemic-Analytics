@@ -1,7 +1,4 @@
-import {
-  useGetProcessByTaskIdQuery,
-  useToggleProcessStatusMutation,
-} from '@/modules/process/process';
+import { useGetProcessByTaskIdQuery } from '@/modules/process/process';
 import { toast } from 'react-toastify';
 import {
   Button,
@@ -30,7 +27,6 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
 
   const { data, isLoading, isSuccess } = useGetProcessByTaskIdQuery(taskId);
   const [deleteTask] = useDeletePipelineMutation();
-  const [disableProcess] = useToggleProcessStatusMutation();
   const [confirmationText, setConfirmationText] = useState('');
 
   const renderProcessChainData = (processChainList: DagDetails[]) => {
@@ -58,37 +54,12 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
   };
 
   const handleOk = (processChainList: DagDetails[]) => {
-    // diasble all related process chains
-    if (!!processChainList) {
-      const disablePromises: any[] = [];
-      for (const process of processChainList) {
-        disablePromises.push(
-          disableProcess(process.dag_id).then((res: any) => {
-            if (res.error) {
-              toast.error(
-                `${t('deletePipeline.disableProcessErrorMessage')} ${
-                  process.name
-                }`,
-                {
-                  position: 'top-right',
-                }
-              );
-              return true;
-            }
-            return false;
-          })
-        );
-      }
-      Promise.all(disablePromises).then((results) => {
-        const isErrorOccurred = results.some((result) => result);
-        if (isErrorOccurred) {
-          hideModal();
-          return;
-        }
-      });
-    }
+    const dagIdList = processChainList.map((dag) => dag.dag_id);
     //delete pipeline
-    deleteTask(taskId).then((res: any) => {
+    deleteTask({
+      name: taskId,
+      dags: dagIdList,
+    }).then((res: any) => {
       if (res.error) {
         toast.error(`${t('deletePipeline.deletionErrorMessage')}`, {
           position: 'top-right',
@@ -163,7 +134,7 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
           {t('deletePipeline.cancelButton')}
         </Button>
         <Button
-          onClick={() => handleOk(data?.dags)}
+          onClick={() => handleOk(data?.dags || [])}
           className="bg-prim hover:bg-prim-hover text-white border-0 text-sm"
           disabled={confirmationText !== 'DELETE'}
         >
