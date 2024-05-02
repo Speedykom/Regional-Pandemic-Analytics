@@ -1,3 +1,4 @@
+import React from 'react';
 import Drawer from '@/common/components/common/Drawer';
 import { schedule_intervals } from '@/common/utils/processs';
 import {
@@ -28,7 +29,13 @@ export const AddProcess = ({
   panelState,
   closePanel,
 }: AddProcessProps) => {
-  const { register, handleSubmit, control, setValue } = useForm();
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    formState: { errors },
+  } = useForm(); // Destructure errors from formState
   const { t } = useTranslation();
 
   const [createProcess] = useCreateProcessMutation();
@@ -42,18 +49,12 @@ export const AddProcess = ({
           createProcess({
             name: values.processName,
             pipeline: values.pipelineTemplate,
-            // sending date without seconds because the backend is python3.9
-            // and it can not handle seconds in isoString
             date: values.date.toISOString().split('T')[0],
             schedule_interval: values.scheduleInterval,
             description: values.description,
           } as DagForm)
             .unwrap()
             .then(() => {
-              // WARNING !!!
-              // The only reason why we're using setTimeout
-              // is because Airflow takes time to rescan the dags directory
-              // NEED TO BE CHANGED !!!
               setTimeout(refetch, 1000);
               toast.success(t('addProcess.successMessage'));
               closePanel();
@@ -88,7 +89,19 @@ export const AddProcess = ({
           <div>
             <label>{t('addProcess.title')}</label>
             <TextInput
-              {...register('processName', { required: true })}
+              {...register('processName', {
+                required: true,
+                pattern: {
+                  //value: /^(?![\u0020-\u007E\u0080-\u019F\u0250-\u02AF\u20A0-\u20CF\u2000-\u206F\u2100-\u214F\u2150-\u218F\u2190-\u21FF\u2200-\u22FF\u2300-\u23FF]+$).*/,
+                  value: /^(?![!"#$%&'()*+,-\/.:;<=>?@\[\]^`{|}~]+$)/,
+                  message:
+                    "Invalid characters. Only letters from the specified Unicode range, '.', '-', and '_' are allowed.",
+                },
+              })}
+              error={!!errors.processName}
+              errorMessage={errors.processName && errors.processName.message}
+              type="text"
+              className="w-full h-12"
               placeholder="Process Chain"
             />
           </div>
@@ -133,14 +146,12 @@ export const AddProcess = ({
               name="date"
               control={control}
               render={({ field }) => {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { value: _, ...rest } = field;
                 return (
                   <DatePicker
                     {...rest}
                     minDate={new Date()}
                     onValueChange={(v) => {
-                      // the backend is using python 3.9 and it does not support iso string with milliseconds
                       setValue('date', v);
                     }}
                     placeholder="Select Date"
