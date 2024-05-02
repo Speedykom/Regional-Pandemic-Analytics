@@ -99,7 +99,11 @@ export const AddProcess = ({
                 },
               })}
               error={!!errors.processName}
-              errorMessage={errors.processName && errors.processName.message}
+              errorMessage={
+                errors.processName && typeof errors.processName === 'object'
+                  ? errors.processName.message
+                  : errors.processName
+              }
               type="text"
               className="w-full h-12"
               placeholder="Process Chain"
