@@ -15,7 +15,11 @@ import { useState } from 'react';
 import { usePermission } from '@/common/hooks/use-permission';
 import { useModal } from '@/common/hooks/use-modal';
 import { useRouter } from 'next/router';
-import { useGetAllPipelinesQuery, useDownloadPipelineQuery } from '../pipeline';
+import {
+  useGetAllPipelinesQuery,
+  useDownloadPipelineQuery,
+  useSavePipelineAsTemplateMutation,
+} from '../pipeline';
 import { AddPipeline } from './add';
 import { UploadPipeline } from './upload';
 import { TemplateModal } from './template-modal';
@@ -56,6 +60,8 @@ export const MyPipelines = () => {
   const [searchInput, setSearchInput] = useState<string>('');
 
   const { data, refetch } = useGetAllPipelinesQuery(searchInput);
+
+  const [savePipelineAsTemplate] = useSavePipelineAsTemplateMutation();
 
   const [selectedPipeline, setSelectedPipeline] = useState<string>('');
   const { data: downloadData } = useDownloadPipelineQuery(
@@ -140,6 +146,12 @@ export const MyPipelines = () => {
               >
                 {t('view')}
               </Button>
+              <Button
+                onClick={() => saveAsTemplate(item?.name)}
+                className="hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white"
+              >
+                {t('savePipelineAsTemplate.saveButton')}
+              </Button>
               <Icon
                 onClick={() => downloadPipeline(item?.name)}
                 size="lg"
@@ -150,6 +162,20 @@ export const MyPipelines = () => {
           </TableCell>
         </TableRow>
       );
+    });
+  };
+
+  const saveAsTemplate = (name: string) => {
+    savePipelineAsTemplate(name).then((res: any) => {
+      if (res.error) {
+        toast.error(`${t('savePipelineAsTemplate.errorMessage')}`, {
+          position: 'top-right',
+        });
+      } else {
+        toast.success(`${t('savePipelineAsTemplate.successMessage')}`, {
+          position: 'top-right',
+        });
+      }
     });
   };
 
