@@ -127,6 +127,11 @@ const enTranslation = {
   },
   passwordChangeSuccess: 'Your password has been successfully changed.',
   passwordChangeError: 'There was an error changing your password.',
+  savePipelineAsTemplate: {
+    errorMessage: 'Unable to save pipeline as template',
+    successMessage: 'Pipeline saved successfully as template',
+    saveButton: 'Save as Template',
+  },
 };
 
 export default enTranslation;
