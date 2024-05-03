@@ -136,6 +136,11 @@ const frTranslation = {
   passwordChangeSuccess: 'Votre mot de passe a été changé avec succès.',
   passwordChangeError:
     'Une erreur est survenue lors du changement de votre mot de passe.',
+  savePipelineAsTemplate: {
+    errorMessage: 'Impossible de sauvegarder le pipeline en tant que modèle',
+    successMessage: 'Pipeline enregistré avec succès en tant que modèle',
+    saveButton: 'Enregistrer comme modèle',
+  },
 };
 
 export default frTranslation;

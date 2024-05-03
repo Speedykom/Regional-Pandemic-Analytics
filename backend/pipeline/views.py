@@ -172,7 +172,29 @@ class PipelineDetailView(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+class PipelineSaveView(APIView):
+    keycloak_scopes = {
+        "PUT": "pipeline:update",
+    }
 
+    def put(self, request, name=None):
+        user_id = get_current_user_id(request)
+        try:
+            # save pipeline file as Template in Minio
+            client.copy_object(
+            "pipelines",
+            f"templates/{name}.hpl",
+            CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
+
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Unable to save the pipeline {} as Template: {}".format(name, e),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 class PipelineDownloadView(APIView):
     keycloak_scopes = {
         "GET": "pipeline:read",
