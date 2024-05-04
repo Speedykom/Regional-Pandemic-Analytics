@@ -119,4 +119,5 @@ export const {
   useModifyUserMutation,
   useChangePasswordMutation,
   useUploadAvatarMutation,
+  useGetUserAvatarQuery,
 } = userApi;
