@@ -139,7 +139,7 @@ export default function ProcessChainList() {
       />
       <div className="mt-3 flex justify-end items-center">
         <label htmlFor="switch" className="mr-2 text-gray-600">
-          Show disabled Process Chains
+        {t('ShowDisabledProcessChain')}
         </label>
         <Switch
           id="switch"

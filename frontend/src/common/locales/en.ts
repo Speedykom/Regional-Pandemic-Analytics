@@ -23,6 +23,7 @@ const enTranslation = {
   processChain: 'Process Chain',
   viewAndManageProcessChains: 'View and manage all process chains',
   addProcessChain: 'Add Process Chain',
+  ShowDisabledProcessChain: 'Show Disabled Process Chains',
 
   supersetCharts: 'Superset Charts',
   chartListCreatedOnSuperset: 'Chart list created on Apache Superset.',
