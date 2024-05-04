@@ -26,14 +26,15 @@ type ChartItem = {
 };
 
 interface ChartListProps {
-  filterByDagId: string;
+  filterByDagId?: string;
 }
 
 const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
   const { t } = useTranslation();
+  const [searchInput, setSearchInput] = useState<string>('');
+  const { data } = useGetChartsQuery(searchInput);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
-  const { data } = useGetChartsQuery('');
 
   let filteredCharts: any = { result: [] };
 
@@ -71,6 +72,13 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
           {filterByDagId ? t('Process Chain Charts') : t('supersetCharts')}
         </h2>
       </nav>
+      <input
+        type="text"
+        placeholder="Search for charts..."
+        className="w-full border border-gray-300 rounded-md p-2 mb-3"
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+      />
       <Card className="bg-white">
         <Table>
           <TableHead>
