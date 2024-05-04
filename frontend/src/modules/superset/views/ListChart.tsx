@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   Button,
   Card,
@@ -12,38 +13,48 @@ import Link from 'next/link';
 import MediaQuery from 'react-responsive';
 import { useGetChartsQuery } from '../superset';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
 
-interface ChartListResult {
-  slice_name: string;
+type ChartItem = {
   slice_url?: string;
-  viz_type?: string;
-  datasource_name_text?: string;
-  created_by?: { first_name: string; last_name: string };
-  changed_by?: { first_name: string; last_name: string };
-  created_on_delta_humanized?: string;
-  changed_on_delta_humanized?: string;
+  slice_name: string;
+  viz_type: string;
+  datasource_name_text: string;
+  created_by: { first_name: string; last_name: string };
+  created_on_delta_humanized: string;
+  changed_by: { first_name: string; last_name: string };
+  changed_on_delta_humanized: string;
+};
+
+interface ChartListProps {
+  filterByDagId: string;
 }
 
-const ChartList = ({ filterByDagId = '' }) => {
+const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
   const { t } = useTranslation();
-  const [searchInput, setSearchInput] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5);
-  const { data } = useGetChartsQuery(searchInput);
+  const [itemsPerPage] = useState(3);
+  const { data } = useGetChartsQuery('');
 
-  let charts: ChartListResult[] = data?.result || [];
+  let filteredCharts: any = { result: [] };
 
-  if (filterByDagId) {
-    charts = charts.filter(
-      (chart) => chart.datasource_name_text?.endsWith(`.${filterByDagId}`)
+  if (data?.result && filterByDagId) {
+    const filtered = data.result.filter(
+      (element: any) => element.datasource_name_text === filterByDagId
     );
+    filteredCharts = { ...data, result: filtered };
+  } else if (data?.result) {
+    filteredCharts = data;
   }
 
   const lastItemIndex = currentPage * itemsPerPage;
   const firstItemIndex = lastItemIndex - itemsPerPage;
-  const currentItems = charts.slice(firstItemIndex, lastItemIndex);
-  const totalPages = Math.ceil(charts.length / itemsPerPage);
+  const currentItems = filteredCharts.result.slice(
+    firstItemIndex,
+    lastItemIndex
+  );
+  const totalPages = Math.ceil(
+    (filteredCharts.result.length || 0) / itemsPerPage
+  );
 
   const nextPage = () => {
     setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
@@ -60,13 +71,6 @@ const ChartList = ({ filterByDagId = '' }) => {
           {filterByDagId ? t('Process Chain Charts') : t('supersetCharts')}
         </h2>
       </nav>
-      <input
-        type="text"
-        placeholder="Search for charts..."
-        className="w-full border border-gray-300 rounded-md p-2 mb-3"
-        value={searchInput}
-        onChange={(e) => setSearchInput(e.target.value)}
-      />
       <Card className="bg-white">
         <Table>
           <TableHead>
@@ -91,7 +95,7 @@ const ChartList = ({ filterByDagId = '' }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {currentItems.map((item, index) => (
+            {currentItems.map((item: ChartItem, index: number) => (
               <TableRow key={index}>
                 <TableCell>
                   <Link
@@ -137,7 +141,7 @@ const ChartList = ({ filterByDagId = '' }) => {
           size="xs"
           disabled={currentPage === 1}
         >
-          &larr; Prev
+          ← Prev
         </Button>
         <Button
           onClick={nextPage}
@@ -145,7 +149,7 @@ const ChartList = ({ filterByDagId = '' }) => {
           size="xs"
           disabled={currentPage === totalPages}
         >
-          Next &rarr;
+          Next →
         </Button>
       </div>
     </div>
