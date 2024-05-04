@@ -14,6 +14,12 @@ from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
 from django.core.cache import cache
 from datetime import datetime, timezone
+from django.http import StreamingHttpResponse
+import logging
+import requests
+from core.keycloak_impersonation import get_auth_token
+
+
 
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -214,9 +220,16 @@ class UserRolesView(APIView):
             return Response({'errorMessage': 'Unable to retrieve the user roles'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+
+
+
+from django.http import StreamingHttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseServerError
+import logging
+
+
 class UserAvatarView(APIView):
     """
-    API view to read/upload Keycloak user avatar to minio
+    API view to read/upload Keycloak user avatar to the backend.
     """
     keycloak_scopes = {
         'GET': 'user:read',
@@ -224,26 +237,38 @@ class UserAvatarView(APIView):
     }
     parser_classes = (MultiPartParser,)
 
-    def get(self, request, **kwargs):
+    def get(self, request, *args, **kwargs):
         try:
             user_id = get_current_user_id(request)
             if not user_id:
-                return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
+                return HttpResponseBadRequest("User ID is missing.")
 
             bucket_name = 'avatars'
             prefix = f'{user_id}/'
             objects = client.list_objects(bucket_name, prefix=prefix)
 
-            # Using next() to fetch the first object from the generator
             first_object = next(objects, None)
             if not first_object:
-                return HttpResponseNotFound("Avatar file not found for the specified user.")
+                return HttpResponseNotFound("Avatar not found.")
 
             object_name = first_object.object_name
             file_data = client.get_object(bucket_name, object_name)
-            return HttpResponse(file_data.read(), content_type=first_object.content_type)
+
+            # Set correct content type
+            if first_object.content_type:
+                content_type = first_object.content_type
+            else:
+                # Default to a common type if undefined
+                content_type = "image/jpeg"
+
+            response = StreamingHttpResponse(file_data, content_type=content_type)
+            response["Content-Disposition"] = f'inline; filename="{object_name}"'
+            return response
         except Exception as err:
-            return HttpResponseServerError(f"Error retrieving avatar: {str(err)}")
+            logging.error(f"Error retrieving avatar: {err}")
+            return HttpResponseServerError(f"Error: {err}")
+
+
 
     def post(self, request, **kwargs):
         user_id = get_current_user_id(request)
@@ -265,20 +290,22 @@ class UserAvatarView(APIView):
             object_name = f'{prefix}avatar'  # Always use the same object name
 
             # Delete the old avatar if it exists
+
             client.remove_object(bucket_name, object_name)
 
             # Upload new avatar
+
             client.put_object(
                 bucket_name=bucket_name,
                 object_name=object_name,
                 data=uploaded_file,
                 length=uploaded_file.size,
                 content_type=uploaded_file.content_type,
-                metadata = {"uploaded": f"{datetime.now(timezone.utc)}"}
+                metadata={"uploaded": f"{datetime.now(timezone.utc)}"}
             )
 
-            new_avatar_url = f"{os.getenv('AVATAR_BASE_URL')}/{object_name}"
-
+            backend_url = os.getenv("BACKEND_URL")
+            new_avatar_url = f"{backend_url}/api/account/user/{user_id}/avatar"
             # Update the avatar URL in the current attributes
             current_attributes['avatar'] = new_avatar_url
 
@@ -287,7 +314,7 @@ class UserAvatarView(APIView):
             cache_key = f'user_avatar_{user_id}'
             cache.delete(cache_key)
 
-            # Return new avatar URL in the response
             return Response({'message': 'Avatar uploaded successfully', 'newAvatarUrl': new_avatar_url}, status=status.HTTP_200_OK)
         except Exception as err:
+            logging.error(f"Unable to update the user avatar: {str(err)}")
             return Response({'errorMessage': f'Unable to update the user avatar: {str(err)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
