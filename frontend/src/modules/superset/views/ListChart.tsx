@@ -32,7 +32,7 @@ interface ChartListProps {
 const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(3);
+  const [itemsPerPage] = useState(5);
   const { data } = useGetChartsQuery('');
 
   let filteredCharts: any = { result: [] };
