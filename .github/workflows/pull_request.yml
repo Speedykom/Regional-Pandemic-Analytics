@@ -49,9 +49,11 @@ jobs:
     needs: [backend-integration, frontend-integration]
     steps:
       - name: Checkout
-      - uses: actions/checkout@v3
+        uses: actions/checkout@v3
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
+
         with:
           node-version: "18.x"
           working-directory: frontend
