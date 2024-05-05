@@ -7,7 +7,7 @@ describe('The login page', () => {
     // Start from the index page
     cy.get('#login-button').click();
     cy.get('#username').type('admin');
-    cy.get('#password').type('admin');
+    cy.get('#password').type('t0pSecret!');
     cy.get('#kc-login').click();
 
     // The new url should include "/home"

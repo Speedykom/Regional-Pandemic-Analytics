@@ -6,9 +6,9 @@ export default defineConfig({
       // implement node event listeners here
     },
     env: {
-      auth_base_url: 'https://keycloak.igad.local',
+      auth_base_url: 'https://auth2.igad-health.eu',
       auth_realm: 'regional-pandemic-analytics',
-      auth_client_id: 'repan-staging',
+      auth_client_id: 'frontend',
     },
   },
 });
