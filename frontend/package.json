@@ -11,7 +11,9 @@
     "type-check": "tsc",
     "lint:fix": "next lint --fix",
     "prepare:husky": "cd .. && husky install frontend/.husky",
-    "pre-commit": "npm run lint"
+    "pre-commit": "npm run lint",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "dependencies": {
     "@ant-design/icons": "^5.1.0",
@@ -59,6 +61,8 @@
     "@types/react-dom": "18.0.11",
     "@types/react-redux": "^7.1.28",
     "autoprefixer": "^10.4.14",
+    "cypress": "^13.8.1",
+    "cypress-keycloak-commands": "^1.2.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "postcss": "^8.4.23",
