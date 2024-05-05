@@ -104,8 +104,9 @@ export const userApi = createApi({
         body: FormData,
       }),
     }),
-    getUserAvatar: builder.query<AvatarResponse, { id: string }>({
+    getUserAvatar: builder.query<string, { id: string }>({
       query: (id) => `account/${id}/avatar`,
+      transformResponse: (response: AvatarResponse) => response.avatar_url,
     }),
   }),
 });
