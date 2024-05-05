@@ -31,6 +31,7 @@ export default function LoginForm() {
                       <div className="mb-5">
                         <Button
                           icon={KeyIcon}
+                          id="login-button"
                           type="button"
                           className="w-full bg-prim text-white rounded-md border-0 hover:bg-green-700"
                           size="lg"
