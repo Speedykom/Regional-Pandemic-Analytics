@@ -14,11 +14,10 @@ from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
 from django.core.cache import cache
 from datetime import datetime, timezone
-from django.http import StreamingHttpResponse
 import logging
 import requests
 from core.keycloak_impersonation import get_auth_token
-
+from django.http import StreamingHttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseServerError
 
 
 
@@ -223,8 +222,7 @@ class UserRolesView(APIView):
 
 
 
-from django.http import StreamingHttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseServerError
-import logging
+
 
 
 class UserAvatarView(APIView):
@@ -305,7 +303,7 @@ class UserAvatarView(APIView):
             )
 
             backend_url = os.getenv("BACKEND_URL")
-            new_avatar_url = f"{backend_url}/api/account/user/{user_id}/avatar"
+            new_avatar_url = f"https://{backend_url}/api/account/user/{user_id}/avatar"
             # Update the avatar URL in the current attributes
             current_attributes['avatar'] = new_avatar_url
 
