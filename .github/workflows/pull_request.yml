@@ -56,9 +56,6 @@ jobs:
           echo '${{ secrets.CYPRESS_ENV_CI }}' > cypress.env.json
 
       - name: Cypress run
-        env:
-          NEXT_TEST_USER_USERNAME: ${{ secrets.NEXT_TEST_USER_USERNAME }}
-          NEXT_TEST_USER_PASSWORD: ${{ secrets.NEXT_TEST_USER_PASSWORD }}
         uses: cypress-io/github-action@v6
 
         with:
