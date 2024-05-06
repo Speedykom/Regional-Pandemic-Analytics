@@ -11,6 +11,19 @@ describe('The login page', () => {
     loginButton.should('exist');
     loginButton.should('be.visible');
     loginButton.should('have.text', 'Sign-In with KeyCloak');
+  });
+
+  it('should navigate to the home page after login', () => {
+    // Start from the index page
+    cy.get('#login-button').click();
+    cy.get('#username').type(Cypress.env('test_user_username'));
+    cy.get('#password').type(Cypress.env('test_user_password'));
+    cy.get('#kc-login').click();
+
+    // The new url should include "/home"
+    cy.url().should('include', '/home');
+  });
+  afterEach(() => {
     cy.log('**username:** ' + Cypress.env('test_user_username'));
     cy.log('**password:** ' + Cypress.env('test_user_password'));
 
@@ -18,16 +31,4 @@ describe('The login page', () => {
     // to show what the env values were
     cy.screenshot('env', { capture: 'runner' });
   });
-
-  // it('should navigate to the home page after login', () => {
-  //   // Start from the index page
-  //   cy.get('#login-button').click();
-  //   cy.get('#username').type(Cypress.env('test_user_username'));
-  //   cy.get('#password').type(Cypress.env('test_user_password'));
-  //   cy.get('#kc-login').click();
-
-  //   // The new url should include "/home"
-  //   cy.url().should('include', '/home');
-  // });
-  // afterEach(() => {});
 });
