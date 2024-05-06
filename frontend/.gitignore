@@ -5,3 +5,4 @@ yarn.lock
 next-env.d.ts
 public/charts
 public/books
+cypress.env.json
