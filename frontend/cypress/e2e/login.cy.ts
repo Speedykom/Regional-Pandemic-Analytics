@@ -11,6 +11,7 @@ describe('The login page', () => {
     loginButton.should('exist');
     loginButton.should('be.visible');
     loginButton.should('have.text', 'Sign-In with KeyCloak');
+    cy.screenshot();
   });
 
   it('should navigate to the home page after login', () => {
@@ -22,13 +23,6 @@ describe('The login page', () => {
 
     // The new url should include "/home"
     cy.url().should('include', '/home');
-  });
-  afterEach(() => {
-    cy.log('**username:** ' + Cypress.env('test_user_username'));
-    cy.log('**password:** ' + Cypress.env('test_user_password'));
-
-    // save a screenshot of the test runner
-    // to show what the env values were
-    cy.screenshot('env', { capture: 'runner' });
+    cy.screenshot();
   });
 });

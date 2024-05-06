@@ -44,7 +44,7 @@ jobs:
         run: python manage.py test
         working-directory: backend
 
-  run-E2E-tests:
+  Run-E2E-Tests:
     runs-on: ubuntu-22.04
     needs: [backend-integration, frontend-integration]
     steps:
@@ -69,6 +69,6 @@ jobs:
         if: always()
         with:
           name: cypress-screenshots
-          path: cypress/screenshots
+          path: frontend/cypress/screenshots
           if-no-files-found: ignore # 'warn' or 'error' are also available, defaults to `warn`
 
