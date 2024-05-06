@@ -44,14 +44,16 @@ jobs:
         run: python manage.py test
         working-directory: backend
 
-  cypress-run:
+  run-E2E-tests:
     runs-on: ubuntu-22.04
     needs: [backend-integration, frontend-integration]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Write the cypress.env.json file 📝
+      - name: Write the cypress.env.json file
+        with:
+          working-directory: frontend
         run: |
           echo '${{ secrets.CYPRESS_ENV_CI }}' > cypress.env.json
 
