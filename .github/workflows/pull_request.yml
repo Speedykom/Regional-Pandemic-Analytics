@@ -52,11 +52,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Write the cypress.env.json file
-        uses: actions/github-script@v4
-        with:
-          working-directory: frontend
-          script: |
-            echo '${{ secrets.CYPRESS_ENV_CI }}' > cypress.env.json
+        run: |
+          echo '${{ secrets.CYPRESS_ENV_CI }}' > frontend/cypress.env.json
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
