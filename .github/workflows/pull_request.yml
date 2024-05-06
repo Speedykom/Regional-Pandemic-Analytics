@@ -51,6 +51,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Write the cypress.env.json file 📝
+        run: |
+          echo '${{ secrets.CYPRESS_ENV_CI }}' > cypress.env.json
+
       - name: Cypress run
         env:
           NEXT_TEST_USER_USERNAME: ${{ secrets.NEXT_TEST_USER_USERNAME }}
@@ -62,3 +66,10 @@ jobs:
           working-directory: frontend
           cache-dependency-path: frontend/package-lock.json
           cache: "npm"
+
+      - name: Save screenshots
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
