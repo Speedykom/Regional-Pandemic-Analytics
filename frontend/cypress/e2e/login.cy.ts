@@ -23,4 +23,12 @@ describe('The login page', () => {
     // The new url should include "/home"
     cy.url().should('include', '/home');
   });
+  afterEach(() => {
+    cy.log('**username:** ' + Cypress.env('test_user_username'));
+    cy.log('**password:** ' + Cypress.env('test_user_password'));
+
+    // save a screenshot of the test runner
+    // to show what the env values were
+    cy.screenshot('env', { capture: 'runner' });
+  });
 });
