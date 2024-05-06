@@ -1,4 +1,7 @@
 import { defineConfig } from 'cypress';
+import getConfig from 'next/config';
+
+const { publicRuntimeConfig } = getConfig();
 
 export default defineConfig({
   e2e: {
@@ -6,9 +9,9 @@ export default defineConfig({
       // implement node event listeners here
     },
     env: {
-      auth_base_url: 'https://auth2.igad-health.eu',
-      auth_realm: 'regional-pandemic-analytics',
-      auth_client_id: 'frontend',
+      auth_base_url: publicRuntimeConfig.NEXT_PUBLIC_KEYCLOAK_URL,
+      auth_realm: publicRuntimeConfig.NEXT_PUBLIC_KEYCLOAK_REALM,
+      auth_client_id: publicRuntimeConfig.NEXT_PUBLIC_KEYCLOAK_CLIENT_ID,
     },
   },
 });
