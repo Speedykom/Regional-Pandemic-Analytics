@@ -23,7 +23,6 @@ const enTranslation = {
   processChain: 'Process Chain',
   viewAndManageProcessChains: 'View and manage all process chains',
   addProcessChain: 'Add Process Chain',
-
   supersetCharts: 'Superset Charts',
   chartListCreatedOnSuperset: 'Chart list created on Apache Superset.',
   chartTitle: 'Chart Title',
@@ -124,6 +123,8 @@ const enTranslation = {
     run: 'run',
     enable: 'enable',
     disable: 'disable',
+    invalidCharacters:
+      'Invalid characters. Only letters from the specified Unicode range,. ,-, _ are allowed.',
   },
   passwordChangeSuccess: 'Your password has been successfully changed.',
   passwordChangeError: 'There was an error changing your password.',
