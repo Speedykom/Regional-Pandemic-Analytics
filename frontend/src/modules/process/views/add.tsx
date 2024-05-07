@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react'; // Added useState import
 import Drawer from '@/common/components/common/Drawer';
 import { schedule_intervals } from '@/common/utils/processs';
 import {
@@ -15,6 +15,7 @@ import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import punycode from 'punycode';
 
 interface AddProcessProps {
   pipelineList: PipelineList;
@@ -37,8 +38,18 @@ export const AddProcess = ({
     formState: { errors },
   } = useForm(); // Destructure errors from formState
   const { t } = useTranslation();
-
+  const [inputValue, setInputValue] = useState(''); // Added state for input value
   const [createProcess] = useCreateProcessMutation();
+  const unpermittedCharactersRegex = /[!"#$%&'()*+,-\/.:;<=>?@\[\]^`{|}~]/;
+
+  const handleInputChange = (value) => {
+    setInputValue(value);
+    const isValid = !unpermittedCharactersRegex.test(value);
+    setValue('processName', value, { shouldValidate: true });
+    if (!isValid && !errors.processName) {
+      setValue('processName', value);
+    }
+  };
 
   const footer = (
     <div className="space-x-2 p-2">
@@ -47,7 +58,7 @@ export const AddProcess = ({
         onClick={handleSubmit((values) => {
           values.date.setHours(12, 0, 0);
           createProcess({
-            name: values.processName,
+            name: punycode.toASCII(values.processName),
             pipeline: values.pipelineTemplate,
             date: values.date.toISOString().split('T')[0],
             schedule_interval: values.scheduleInterval,
@@ -91,11 +102,10 @@ export const AddProcess = ({
             <TextInput
               {...register('processName', {
                 required: true,
-                pattern: {
-                  //value: /^(?![\u0020-\u007E\u0080-\u019F\u0250-\u02AF\u20A0-\u20CF\u2000-\u206F\u2100-\u214F\u2150-\u218F\u2190-\u21FF\u2200-\u22FF\u2300-\u23FF]+$).*/,
-                  value: /^(?![!"#$%&'()*+,-\/.:;<=>?@\[\]^`{|}~]+$)/,
-                  message:
-                    "Invalid characters. Only letters from the specified Unicode range, '.', '-', and '_' are allowed.",
+                validate: {
+                  unpermittedChars: (value) =>
+                    !unpermittedCharactersRegex.test(value) ||
+                    t('addProcess.invalidCharacters'),
                 },
               })}
               error={!!errors.processName}
@@ -103,6 +113,8 @@ export const AddProcess = ({
               type="text"
               className="w-full h-12"
               placeholder="Process Chain"
+              value={inputValue} // Added input value prop
+              onChange={(e) => handleInputChange(e.target.value)} // Added onChange handler
             />
           </div>
 
