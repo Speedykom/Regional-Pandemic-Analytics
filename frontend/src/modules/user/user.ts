@@ -7,7 +7,6 @@ import {
   UserResponse,
   Users,
 } from './interface';
-
 interface DisableResponse {
   message: string;
 }
@@ -19,10 +18,6 @@ interface ChangePasswordRequest {
 
 interface ChangePasswordResponse {
   message: string;
-}
-
-interface AvatarResponse {
-  avatar_url: string;
 }
 
 export const userApi = createApi({
@@ -104,9 +99,36 @@ export const userApi = createApi({
         body: FormData,
       }),
     }),
-    getUserAvatar: builder.query<string, { id: string }>({
-      query: (id) => `account/${id}/avatar`,
-      transformResponse: (response: AvatarResponse) => response.avatar_url,
+    getUserAvatar: builder.query<string, string>({
+      query: (id) => `account/user/${id}/avatar`,
+      transformResponse: async (response: Response) => {
+        if (!response || !response.headers) {
+          //console.error('Invalid response or headers:', response);
+          throw new Error('Invalid response object');
+        }
+
+        if (
+          response.headers.get('Content-Type')?.includes('application/json')
+        ) {
+          return response.json();
+        } else if (response.headers.get('Content-Type')?.includes('image')) {
+          const blob = await response.blob();
+          return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              if (reader.result) {
+                resolve(reader.result.toString());
+              } else {
+                reject('Failed to convert blob to base64');
+              }
+            };
+            reader.onerror = () => reject(reader.error?.message);
+            reader.readAsDataURL(blob);
+          });
+        } else {
+          throw new Error('Unexpected response type');
+        }
+      },
     }),
   }),
 });
