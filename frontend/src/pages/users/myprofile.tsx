@@ -1,9 +1,10 @@
-import Layout from '@/common/components/Dashboard/Layout';
-import CryptoJS from 'crypto-js';
-import { countries } from '@/common/utils/countries';
-import getConfig from 'next/config';
+import React, { Fragment, useEffect, useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Fragment, useEffect, useState } from 'react';
+import getConfig from 'next/config';
+import { toast } from 'react-toastify';
+import { FaCamera } from 'react-icons/fa';
 import {
   Badge,
   Button,
@@ -14,20 +15,8 @@ import {
   Text,
   TextInput,
 } from '@tremor/react';
-import { toast } from 'react-toastify';
-import { FaCamera } from 'react-icons/fa';
-import { useUploadAvatarMutation } from '@/modules/user/user';
 import { useDropzone } from 'react-dropzone';
-import React, { useCallback } from 'react';
-import {
-  useGetUserQuery,
-  useChangePasswordMutation,
-} from '@/modules/user/user';
-import { useForm, Controller } from 'react-hook-form';
 import { Dialog, Transition } from '@headlessui/react';
-import { selectCurrentUser } from '@/modules/auth/auth';
-import { useSelector } from 'react-redux';
-import { useModifyUserMutation } from '@/modules/user/user';
 import {
   CheckIcon,
   PencilSquareIcon,
@@ -36,23 +25,43 @@ import {
   WifiIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
+import CryptoJS from 'crypto-js';
+import { countries } from '@/common/utils/countries';
+import Layout from '@/common/components/Dashboard/Layout';
+import {
+  useGetUserQuery,
+  useChangePasswordMutation,
+  useUploadAvatarMutation,
+  useGetUserAvatarQuery,
+  useModifyUserMutation,
+} from '@/modules/user/user';
+import { selectCurrentUser } from '@/modules/auth/auth';
+
 export const ProfileSettings = () => {
   const [changePassword, setChangePassword] = useState(false);
-  const [newPass, setNewPass] = useState<string>('');
-  const [confirmPass, setConfirmPass] = useState<string>('');
+  const [newPass, setNewPass] = useState('');
+  const [confirmPass, setConfirmPass] = useState('');
   const currentUser = useSelector(selectCurrentUser);
   const { t } = useTranslation();
-  const [changePasswordMutation] = useChangePasswordMutation();
+  const { publicRuntimeConfig } = getConfig();
 
-  const defaultImagePath = '/avater.png';
+  const myId = currentUser?.id || '';
+  const { data } = useGetUserQuery(myId);
+  const {
+    data: avatarData,
+    isLoading,
+    isError,
+  } = useGetUserAvatarQuery(myId, { skip: !myId });
+
+  //console.log('Avatar Blob data:', avatarBlob);
+
   const [imageUrl, setImageUrl] = useState(
-    currentUser?.avatar || defaultImagePath
+    currentUser?.avatar || '/avatar.png'
   );
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadAvatarMutation] = useUploadAvatarMutation();
-
-  const myId: any = currentUser?.id;
-  const { data } = useGetUserQuery(myId);
+  const [changePasswordMutation] = useChangePasswordMutation();
+  const [modifyUserMutation] = useModifyUserMutation();
   const {
     control,
     handleSubmit,
@@ -69,9 +78,6 @@ export const ProfileSettings = () => {
       email: '',
     },
   });
-  const { publicRuntimeConfig } = getConfig();
-
-  const [modifyUserMutation] = useModifyUserMutation();
 
   const triggerPasswordChange = () => {
     setChangePassword(!changePassword);
@@ -108,6 +114,14 @@ export const ProfileSettings = () => {
       toast.error(t('passwordChangeError'), { position: 'top-right' });
     }
   };
+  useEffect(() => {
+    if (!isLoading && !isError && avatarData) {
+      const blob = new Blob([avatarData], { type: 'image/png' });
+      const objectURL = URL.createObjectURL(blob);
+      setImageUrl(objectURL);
+      return () => URL.revokeObjectURL(objectURL);
+    }
+  }, [avatarData, isLoading, isError]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -130,9 +144,9 @@ export const ProfileSettings = () => {
       toast.info(t('uploadMessages.selectImage'));
       return;
     }
+    const formData = new FormData();
+    formData.append('uploadedFile', selectedFile);
     try {
-      const formData = new FormData();
-      formData.append('uploadedFile', selectedFile);
       await uploadAvatarMutation(formData).unwrap();
       toast.success(t('uploadMessages.uploadSuccess'));
     } catch (error) {
