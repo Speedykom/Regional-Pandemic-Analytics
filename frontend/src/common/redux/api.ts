@@ -12,23 +12,21 @@ const { publicRuntimeConfig } = getConfig();
 
 export const baseQueryWithAuthHeader = fetchBaseQuery({
   baseUrl: `${publicRuntimeConfig.NEXT_PUBLIC_BASE_URL}/api/`,
-  prepareHeaders: (headers: any, { endpoint }) => {
+  prepareHeaders: (headers, { endpoint }) => {
     const tokens = secureLocalStorage.getItem('tokens') as {
       accessToken: string;
       refreshToken: string;
     };
 
     if (tokens) {
-      const { accessToken, refreshToken } = tokens as any;
-
       headers.set(
         'AUTHORIZATION',
-        `Bearer ${endpoint === 'logout' ? refreshToken : accessToken}`
+        `Bearer ${
+          endpoint === 'logout' ? tokens.refreshToken : tokens.accessToken
+        }`
       );
     }
 
-    //TODO check if the content needs to set here
-    //headers.set('Content-Type', 'application/json');
     return headers;
   },
 });
@@ -39,7 +37,31 @@ export const baseQuery: BaseQueryFn<
   FetchBaseQueryError
 > = async (args, api, extraOptions) => {
   const result = await baseQueryWithAuthHeader(args, api, extraOptions);
+
+  // Handle non-JSON responses specifically
+  if (
+    result.error &&
+    result.error.status === 'PARSING_ERROR' &&
+    result.error.originalStatus === 200
+  ) {
+    try {
+      const blob = new Blob([result.error.data], {
+        type: 'application/octet-stream',
+      });
+      return { data: URL.createObjectURL(blob) };
+    } catch (e) {
+      //console.error('Failed to process binary response:', e);
+      return {
+        error: {
+          status: 'CUSTOM_ERROR',
+          error: 'Failed to process binary data.',
+        },
+      };
+    }
+  }
+
   if (result.error) {
+    //console.log('Error from server:', result.error);
     if (result.error.status === 401) {
       api.dispatch({
         payload: undefined,
@@ -51,10 +73,11 @@ export const baseQuery: BaseQueryFn<
         result.error.data &&
         typeof result.error.data === 'object' &&
         'message' in result.error.data
-          ? (result.error.data?.message as string)
-          : 'Uknown error'
+          ? (result.error.data.message as string)
+          : 'Unknown error'
       );
     }
   }
+
   return result;
 };
