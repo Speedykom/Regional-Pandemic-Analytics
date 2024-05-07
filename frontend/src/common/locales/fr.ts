@@ -132,6 +132,8 @@ const frTranslation = {
     run: 'exécuter',
     enable: 'activer',
     disable: 'désactiver',
+    invalidCharacters:
+      'Caractères invalides. Seuls les lettres de la plage Unicode spécifiée, ., -, et _ sont autorisés.',
   },
   passwordChangeSuccess: 'Votre mot de passe a été changé avec succès.',
   passwordChangeError:
