@@ -104,7 +104,7 @@ const enTranslation = {
     processChains: 'Process Chains',
     settings: 'Settings',
     accounts: 'Accounts',
-    pipelines: 'My pipelines',
+    pipelines: 'My Pipelines',
   },
   addProcess: {
     title: 'Add Process Chain',

@@ -133,6 +133,7 @@ export const MyPipelines = () => {
           <TableCell>
             <div className="flex space-x-2 justify-end">
               <Button
+                id="viewPipelineButton"
                 onClick={() =>
                   router.push(`/pipelines/${encodeURIComponent(item?.name)}`)
                 }
@@ -141,6 +142,7 @@ export const MyPipelines = () => {
                 {t('view')}
               </Button>
               <Icon
+                id="downloadPipelineButton"
                 onClick={() => downloadPipeline(item?.name)}
                 size="lg"
                 icon={ArrowDownTrayIcon}
@@ -183,6 +185,7 @@ export const MyPipelines = () => {
         <div className="flex">
           {hasPermission('pipeline:add') && (
             <Button
+              id="createPipelineButton"
               className="bg-prim hover:bg-prim-hover border-0 mr-2"
               onClick={showConfirmModal}
             >
@@ -191,6 +194,7 @@ export const MyPipelines = () => {
           )}
           {hasPermission('pipeline:add') && (
             <Button
+              id="uploadPipelineButton"
               className="bg-prim hover:bg-prim-hover border-0"
               onClick={showUploadModal}
             >
