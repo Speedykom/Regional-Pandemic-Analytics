@@ -60,4 +60,8 @@ describe('The My Pipelines page', () => {
     downloadPipelineButton.should('be.visible');
     cy.screenshot();
   });
+
+  after(() => {
+    cy.visit(Cypress.env('frontend_test_server'));
+  });
 });
