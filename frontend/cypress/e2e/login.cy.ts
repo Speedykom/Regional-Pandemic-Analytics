@@ -1,7 +1,7 @@
 describe('The login page', () => {
   beforeEach(() => {
     cy.kcLogout();
-    cy.visit(Cypress.env('frontend_test_server'), { timeout: 10000 });
+    cy.visit(Cypress.env('frontend_test_server'));
   });
 
   it('should have a Sign-In with keycloak', () => {
@@ -10,8 +10,8 @@ describe('The login page', () => {
 
     loginButton.should('exist');
     loginButton.should('be.visible');
-    loginButton.should('have.text', 'Sign-In with KeyCloak');
     cy.screenshot();
+    loginButton.should('have.text', 'Sign-In with KeyCloak');
   });
 
   it('should show the keycloak default login page when clicking on the Sign-In with KeyCloak button', () => {
@@ -22,7 +22,7 @@ describe('The login page', () => {
     loginButton.should('be.visible');
     loginButton.should('have.text', 'Sign-In with KeyCloak');
     loginButton.click();
-    cy.screenshot({ timeout: 10000 });
+    cy.screenshot();
     cy.url().should(
       'include',
       'auth2.igad-health.eu/realms/regional-pandemic-analytics/protocol/openid-connect'
@@ -35,9 +35,12 @@ describe('The login page', () => {
     cy.get('#username').type(Cypress.env('test_user_username'));
     cy.get('#password').type(Cypress.env('test_user_password'));
     cy.get('#kc-login').click();
-    cy.screenshot({ timeout: 10000 });
-
+    cy.screenshot();
     // The new url should include "/home"
     cy.url().should('include', '/home');
+  });
+
+  after(() => {
+    cy.visit(Cypress.env('frontend_test_server'));
   });
 });
