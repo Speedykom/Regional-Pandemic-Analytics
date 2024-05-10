@@ -283,24 +283,23 @@ class PipelineDeleteView(APIView):
             )
 
     def _toggle_processes(self, dag_ids):
-        if not dag_ids:
-            return {"status": "failed", "message": "No Processes provided."}
-        
-        all_successful = True
-        messages = []
+        if dag_ids is not None and dag_ids:
+            all_successful = True
+            messages = []
 
-        for dag_id in dag_ids:
-            result = self._toggle_process_status(dag_id)
-            if result["status"] == "failed":
-                all_successful = False
-                messages.append(result["message"])
+            for dag_id in dag_ids:
+                result = self._toggle_process_status(dag_id)
+                if result["status"] == "failed":
+                    all_successful = False
+                    messages.append(result["message"])
     
-        if all_successful:
-            return {"status": "success"}
-        else:
-            return {"status": "failed", 
+            if all_successful:
+                return {"status": "success"}
+            else:
+                return {"status": "failed", 
                     "message": "One or more process status toggles failed.",
                     "errors": messages}
+        return {"status": "success"}
 
     def _toggle_process_status(self, dag_id):
         route = f"{AirflowInstance.url}/dags/{dag_id}"
