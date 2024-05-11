@@ -1,6 +1,7 @@
 from datetime import datetime, date
 import requests
 import os
+import re
 from rest_framework.viewsets import ViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -29,7 +30,7 @@ class DruidSegment:
         self.load_spec = loadSpec
         self.dimensions = dimensions.split(',') if isinstance(dimensions, str) else dimensions
         self.metrics = metrics.split(',') if isinstance(metrics, str) else metrics
-        
+
         self.shard_spec = shardSpec
         self.binary_version = binaryVersion
         self.size = size
@@ -44,10 +45,10 @@ class DruidDataSource:
         self.name = name
         self.properties = properties
         self.segments = [DruidSegment(
-            dataSource=segment.get('dataSource'),  
+            dataSource=segment.get('dataSource'),
             interval=segment.get('interval'),
             version=segment.get('version'),
-            loadSpec=segment.get('loadSpec'),  
+            loadSpec=segment.get('loadSpec'),
             dimensions=segment.get('dimensions'),
             metrics=segment.get('metrics'),
             shardSpec=segment.get('shardSpec'),
@@ -216,11 +217,22 @@ class ProcessView(ViewSet):
                 owner=get_current_user_name(request),
                 description=request.data["description"],
                 user_id=get_current_user_id(request),
-                dag_id=request.data["name"].replace(" ", "-").lower(),
+                dag_id=request.data["name"],
                 pipeline_name=request.data["pipeline"],
                 schedule_interval=request.data["schedule_interval"],
                 date=datetime.fromisoformat(request.data["date"]),
             )
+            unpermitted_characters_regex = re.compile(r'[!"#$%&\'()*+,\-\s.\/:;<=>?@\[\]^`{|}~]')
+            if unpermitted_characters_regex.search(new_dag_config.dag_id):
+                return Response(
+                    {"status": "failed", "message": "DAG ID contains unpermitted characters"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if unpermitted_characters_regex.search(new_dag_config.pipeline_name):
+                return Response(
+                    {"status": "failed", "message": "Pipeline name contains unpermitted characters"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
             # Checks if the process chain already exists or not
             route = f"{AirflowInstance.url}/dags/{new_dag_config.dag_id}"
@@ -379,7 +391,7 @@ class ProcessView(ViewSet):
     def get_datasource_info(self, request, datasource_id=None):
         if datasource_id is None:
             return Response({"error": "Datasource ID is required"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         druid_url = f"{DruidInstance.url}/druid/coordinator/v1/metadata/datasources/{datasource_id}"
         response = requests.get(druid_url, auth=(DruidInstance.username, DruidInstance.password), verify=False)
 
@@ -412,16 +424,16 @@ class ProcessView(ViewSet):
                     "name": datasource_id,
                     "properties": data.get("properties", {}),
                     "segments_count": segments_count,
-                    "total_size": total_size,  
+                    "total_size": total_size,
                     "last_segment": last_segment  # Return only newest
                 }
-                
+
                 return Response(druid_data_source, status=status.HTTP_200_OK)
             else:
                 return Response({"error": "No segments found for the given datasource ID"}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({"error": "Failed to retrieve data from Druid"}, status=response.status_code)
-            
+
 class ProcessRunView(ViewSet):
     """
     This view handles Dag-Runs logic
