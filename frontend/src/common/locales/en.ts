@@ -1,5 +1,3 @@
-import Keycloak from 'keycloak-js';
-
 const enTranslation = {
   login: {
     PageTitle: 'Regional Pandemic Analytics Tool | Login',

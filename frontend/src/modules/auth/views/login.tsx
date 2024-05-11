@@ -4,9 +4,9 @@ import { Button } from '@tremor/react';
 import { useAuth } from '@/common/hooks/use-auth';
 import { KeyIcon } from '@heroicons/react/24/solid';
 import { useTranslation } from 'react-i18next';
-const { t } = useTranslation();
 
 export default function LoginForm() {
+  const { t } = useTranslation();
   const { signInWithKeyCloak } = useAuth();
   return (
     <>
