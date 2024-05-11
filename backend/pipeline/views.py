@@ -65,6 +65,12 @@ class PipelineListView(APIView):
         name = request.data.get("name")
         description = request.data.get("description")
         template = request.data.get("template")
+        unpermitted_characters_regex = re.compile(r'[!"#$%&\'()*+,\-\s.\/:;<=>?@\[\]^`{|}~]')
+        if unpermitted_characters_regex.search(name):
+            return Response(
+                {"status": "Fail", "message": "Pipeline name contains unpermitted characters"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         try:
             # Checks if an object with the same name exits
             client_response = client.get_object(
@@ -211,6 +217,12 @@ class PipelineUploadView(APIView):
         name = request.data.get("name")
         description = request.data.get("description")
         uploaded_file = request.FILES.get("uploadedFile")
+        unpermitted_characters_regex = re.compile(r'[!"#$%&\'()*+,\-\s.\/:;<=>?@\[\]^`{|}~]')
+        if unpermitted_characters_regex.search(name):
+            return Response(
+                {"status": "Fail", "message": "Pipeline name contains unpermitted characters"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         if (uploaded_file) :
             try:
                 # Checks if an object with the same name exits
