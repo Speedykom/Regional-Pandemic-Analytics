@@ -27,6 +27,7 @@ const frTranslation = {
   viewAndManageProcessChains:
     'Afficher et gérer toutes les chaînes de processus',
   addProcessChain: 'Ajouter une chaîne de processus',
+  ShowDisabledProcessChain: 'Afficher les chaînes de processus inactive',
 
   supersetCharts: 'Graphiques Superset',
   chartListCreatedOnSuperset:

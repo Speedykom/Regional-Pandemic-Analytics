@@ -8,6 +8,8 @@ import ProcessCard from '../components/ProcessCard';
 import { AddProcess } from './add';
 import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
 import { useTranslation } from 'react-i18next';
+import { Switch } from '@tremor/react';
+
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();
   const [addComponent, setAddComponent] = useState(false);
@@ -25,6 +27,11 @@ export default function ProcessChainList() {
 
   const [currentPage, setCurrentPage] = useState(1);
   const defaultPageSize = 5;
+
+  const [showDisabled, setShowDisabled] = useState(false);
+  const toggleShowDisabled = () => {
+    setShowDisabled(!showDisabled);
+  };
 
   const renderPagination = (processChainList: DagDetailsResponse) => {
     if (
@@ -50,7 +57,7 @@ export default function ProcessChainList() {
         </div>
         <div className="flex">
           <Button
-            className="bg-prim hover:bg-green-900  border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
+            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
             size="xs"
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
@@ -58,7 +65,7 @@ export default function ProcessChainList() {
             &larr; Prev
           </Button>
           <Button
-            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4  focus:outline-none cursor-pointer"
+            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer"
             size="xs"
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}
@@ -78,6 +85,7 @@ export default function ProcessChainList() {
             key={process.dag_id}
             process={process}
             pipelineList={pipelineList}
+            showDisabled={showDisabled}
           />
         );
       });
@@ -92,6 +100,7 @@ export default function ProcessChainList() {
             key={process.dag_id}
             process={process}
             pipelineList={pipelineList}
+            showDisabled={showDisabled}
           />
         );
       });
@@ -104,7 +113,7 @@ export default function ProcessChainList() {
         <div>
           <h2 className="text-3xl">{t('processChain')}</h2>
           <p className="my-2 text-gray-600">
-            {t('viewAndManageProcessChains')}{' '}
+            {t('viewAndManageProcessChains')}
           </p>
         </div>
         <div>
@@ -128,6 +137,17 @@ export default function ProcessChainList() {
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
       />
+      <div className="mt-3 flex justify-end items-center">
+        <label htmlFor="switch" className="mr-2 text-gray-600">
+        {t('ShowDisabledProcessChain')}
+        </label>
+        <Switch
+          id="switch"
+          name="switch"
+          checked={showDisabled}
+          onChange={toggleShowDisabled}
+        />
+      </div>
       <div className="mt-5">
         {isLoading && (
           <div className="flex h-96 bg-white shadow-md border rounded-md items-center justify-center">
