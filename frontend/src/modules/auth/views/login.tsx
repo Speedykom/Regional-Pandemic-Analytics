@@ -3,13 +3,15 @@ import Image from 'next/image';
 import { Button } from '@tremor/react';
 import { useAuth } from '@/common/hooks/use-auth';
 import { KeyIcon } from '@heroicons/react/24/solid';
+import { useTranslation } from 'react-i18next';
+const { t } = useTranslation();
 
 export default function LoginForm() {
   const { signInWithKeyCloak } = useAuth();
   return (
     <>
       <Head>
-        <title>Regional Pandemic Analytics Tool | Login</title>
+        <title>{t('login.PageTitle')}</title>
       </Head>
       <section className="gradient-form md:h-screen">
         <div className="container mx-auto px-6" style={{ marginTop: '10vh' }}>
@@ -36,7 +38,7 @@ export default function LoginForm() {
                           size="lg"
                           onClick={signInWithKeyCloak}
                         >
-                          Sign-In with KeyCloak
+                          {t('login.KeycloakSignIn')}
                         </Button>
                       </div>
                     </div>
@@ -44,14 +46,9 @@ export default function LoginForm() {
                   <div className="bg-prim lg:w-6/12 flex items-center lg:rounded-r-lg rounded-b-lg lg:rounded-bl-none">
                     <div className="text-white px-4 py-6 md:p-12 md:mx-6">
                       <h4 className="text-2xl font-semibold mb-4">
-                        Welcome back!
+                        {t('login.WelcomeMessage')}
                       </h4>
-                      <p className="text-sm">
-                        Simply login to access the IGAD regional pandemic
-                        analytics tool to collect, analyze, and report granular
-                        and aggregated data from multiple sources for informed
-                        decision-making.
-                      </p>
+                      <p className="text-sm">{t('login.WelcomeText')}</p>
                     </div>
                   </div>
                 </div>
