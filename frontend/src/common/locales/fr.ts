@@ -21,6 +21,8 @@ const frTranslation = {
   description: 'Description',
   createPipeline: 'Créer un pipeline',
   uploadPipeline: 'Charger un pipeline',
+  pipelineInvalidName:
+    'Caractères invalides. Seuls les lettres de la plage Unicode spécifiée, ., -, et _ sont autorisés.',
   view: 'Voir',
 
   processChain: 'Chaîne de processus',

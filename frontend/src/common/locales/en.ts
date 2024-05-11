@@ -19,6 +19,8 @@ const enTranslation = {
   description: 'Description',
   createPipeline: 'Create Pipeline',
   uploadPipeline: 'Upload Pipeline',
+  pipelineInvalidName:
+    'Invalid characters. Only letters from the specified Unicode range,. ,-, _ are allowed.',
   view: 'View',
   processChain: 'Process Chain',
   viewAndManageProcessChains: 'View and manage all process chains',
