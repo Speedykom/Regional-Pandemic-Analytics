@@ -1,4 +1,11 @@
 const frTranslation = {
+  login: {
+    PageTitle: "Outil d'analyse des pandémies régionales  | Connexion",
+    KeycloakSignIn: 'Connexion avec KeyCloak',
+    WelcomeMessage: 'Bienvenue!',
+    WelcomeText:
+      "Connectez-vous simplement pour accéder à l'outil d'analyse des pandémies régionales de l'IGAD afin de collecter, d'analyser et de rapporter des données granulaires et agrégées de plusieurs sources pour une prise de décision éclairée.",
+  },
   appAccounts: "Comptes de l'application",
   viewAndManage:
     "Afficher et gérer les paramètres liés aux utilisateurs de l'application.",
