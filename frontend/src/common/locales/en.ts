@@ -1,4 +1,13 @@
+import Keycloak from 'keycloak-js';
+
 const enTranslation = {
+  login: {
+    PageTitle: 'Regional Pandemic Analytics Tool | Login',
+    KeycloakSignIn: 'Sign-In with KeyCloak',
+    WelcomeMessage: 'Welcome back!',
+    WelcomeText:
+      'Simply login to access the IGAD regional pandemic analytics tool to collect, analyze, and report granular and aggregated data from multiple sources for informed decision-making.',
+  },
   appAccounts: 'App Accounts',
   viewAndManage: 'View and manage settings related to app users.',
   newUser: 'New User',
