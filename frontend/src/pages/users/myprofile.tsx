@@ -53,11 +53,7 @@ export const ProfileSettings = () => {
     isError,
   } = useGetUserAvatarQuery(myId, { skip: !myId });
 
-  //console.log('Avatar Blob data:', avatarBlob);
-
-  const [imageUrl, setImageUrl] = useState(
-    currentUser?.avatar || '/avatar.png'
-  );
+  const [imageUrl, setImageUrl] = useState(avatarData || '/avater.png');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadAvatarMutation] = useUploadAvatarMutation();
   const [changePasswordMutation] = useChangePasswordMutation();
@@ -116,10 +112,10 @@ export const ProfileSettings = () => {
   };
   useEffect(() => {
     if (!isLoading && !isError && avatarData) {
-      const blob = new Blob([avatarData], { type: 'image/png' });
-      const objectURL = URL.createObjectURL(blob);
-      setImageUrl(objectURL);
-      return () => URL.revokeObjectURL(objectURL);
+      // const blob = new Blob([avatarData], { type: 'image/png' });
+      // const objectURL = URL.createObjectURL(blob);
+      setImageUrl(avatarData);
+      // return () => URL.revokeObjectURL(objectURL);
     }
   }, [avatarData, isLoading, isError]);
 
@@ -200,7 +196,6 @@ export const ProfileSettings = () => {
         country: dirtyFields.country
           ? updatedValues.country
           : data?.attributes?.country || '',
-        avatar: currentUser?.avatar || '',
       },
     };
 
