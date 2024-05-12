@@ -98,37 +98,23 @@ export const userApi = createApi({
         method: 'POST',
         body: FormData,
       }),
+      invalidatesTags: ['User'],
     }),
-    getUserAvatar: builder.query<string, string>({
-      query: (id) => `account/user/${id}/avatar`,
-      transformResponse: async (response: Response) => {
-        if (!response || !response.headers) {
-          //console.error('Invalid response or headers:', response);
-          throw new Error('Invalid response object');
-        }
 
-        if (
-          response.headers.get('Content-Type')?.includes('application/json')
-        ) {
-          return response.json();
-        } else if (response.headers.get('Content-Type')?.includes('image')) {
-          const blob = await response.blob();
-          return new Promise<string>((resolve, reject) => {
+    getUserAvatar: builder.query<string, string>({
+      query: (id) => ({
+        url: `account/user/${id}/avatar`,
+        responseHandler: async (response: Response) =>
+          new Promise(async (resolve) => {
             const reader = new FileReader();
-            reader.onloadend = () => {
-              if (reader.result) {
-                resolve(reader.result.toString());
-              } else {
-                reject('Failed to convert blob to base64');
-              }
-            };
-            reader.onerror = () => reject(reader.error?.message);
-            reader.readAsDataURL(blob);
-          });
-        } else {
-          throw new Error('Unexpected response type');
-        }
-      },
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(await response.blob());
+          }),
+        validateStatus(res: Response) {
+          return res.ok && res.status !== 202;
+        },
+      }),
+      providesTags: (result, error, id) => [{ type: 'User', id }],
     }),
   }),
 });
