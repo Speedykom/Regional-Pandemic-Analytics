@@ -302,17 +302,13 @@ class UserAvatarView(APIView):
                 metadata={"uploaded": f"{datetime.now(timezone.utc)}"}
             )
 
-            backend_url = os.getenv("BACKEND_URL")
-            new_avatar_url = f"https://{backend_url}/api/account/user/{user_id}/avatar"
             # Update the avatar URL in the current attributes
-            current_attributes['avatar'] = new_avatar_url
 
             # Update the user's data in Keycloak with all preserved attributes
-            keycloak_admin.update_user(user_id, {'attributes': current_attributes})
             cache_key = f'user_avatar_{user_id}'
             cache.delete(cache_key)
 
-            return Response({'message': 'Avatar uploaded successfully', 'newAvatarUrl': new_avatar_url}, status=status.HTTP_200_OK)
+            return Response({'message': 'Avatar uploaded successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
             logging.error(f"Unable to update the user avatar: {str(err)}")
             return Response({'errorMessage': f'Unable to update the user avatar: {str(err)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
