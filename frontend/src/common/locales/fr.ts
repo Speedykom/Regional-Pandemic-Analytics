@@ -140,7 +140,8 @@ const frTranslation = {
   passwordChangeError:
     'Une erreur est survenue lors du changement de votre mot de passe.',
   uploadMessages: {
-    selectImage: 'Veuillez sélectionner une image.',
+    selectImage:
+      'Veuillez sélectionner une image et cliquer sur "Télécharger une photo".',
     uploadSuccess: 'La photo de profil a été actualisée avec succès',
     uploadError:
       "Une erreur s'est produite lors du chargement de l'image de profil",
