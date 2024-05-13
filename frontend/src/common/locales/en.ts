@@ -144,7 +144,8 @@ const enTranslation = {
   passwordChangeSuccess: 'Your password has been successfully changed.',
   passwordChangeError: 'There was an error changing your password.',
   uploadMessages: {
-    selectImage: 'Please select an image to upload',
+    selectImage:
+      'Please select an image to upload and click the "Upload Picture" button',
     uploadSuccess: 'Profile picture uploaded successfully',
     uploadError: 'An error occurred while uploading the profile picture',
   },
