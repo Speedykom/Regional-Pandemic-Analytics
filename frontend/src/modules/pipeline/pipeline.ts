@@ -54,7 +54,7 @@ export const pipelineApi = createApi({
     >({
       query: (name) => ({
         url: `/pipeline/save/${name}`,
-        method: 'PUT',
+        method: 'POST',
       }),
     }),
   }),
