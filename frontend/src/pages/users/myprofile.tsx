@@ -112,10 +112,7 @@ export const ProfileSettings = () => {
   };
   useEffect(() => {
     if (!isLoading && !isError && avatarData) {
-      // const blob = new Blob([avatarData], { type: 'image/png' });
-      // const objectURL = URL.createObjectURL(blob);
       setImageUrl(avatarData);
-      // return () => URL.revokeObjectURL(objectURL);
     }
   }, [avatarData, isLoading, isError]);
 
