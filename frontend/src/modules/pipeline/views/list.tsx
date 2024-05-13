@@ -19,7 +19,11 @@ import { useGetAllPipelinesQuery, useDownloadPipelineQuery } from '../pipeline';
 import { AddPipeline } from './add';
 import { UploadPipeline } from './upload';
 import { TemplateModal } from './template-modal';
-import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowDownTrayIcon,
+  XCircleIcon,
+  CheckCircleIcon,
+} from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 
@@ -122,6 +126,35 @@ export const MyPipelines = () => {
       : data?.data;
 
     return visiblePipelines?.map((item, index) => {
+      let statusIcon;
+      if (item.check_status === 'success') {
+        statusIcon = (
+          <Icon
+            size="lg"
+            icon={CheckCircleIcon}
+            color="green"
+            tooltip={t(item.check_text)}
+          />
+        );
+      } else if (item.check_status === 'failed') {
+        statusIcon = (
+          <Icon
+            size="lg"
+            icon={XCircleIcon}
+            color="red"
+            tooltip={t(item.check_text)}
+          />
+        );
+      } else {
+        statusIcon = (
+          <Icon
+            size="lg"
+            icon={XCircleIcon}
+            color="red"
+            tooltip={t(item.check_text)}
+          />
+        );
+      }
       return (
         <TableRow key={index}>
           <TableCell className="font-sans">{item?.name}</TableCell>
@@ -130,6 +163,7 @@ export const MyPipelines = () => {
               {item?.description}
             </TableCell>
           </MediaQuery>
+          <TableCell>{statusIcon}</TableCell>
           <TableCell>
             <div className="flex space-x-2 justify-end">
               <Button
@@ -217,6 +251,7 @@ export const MyPipelines = () => {
                     {t('description')}
                   </TableHeaderCell>
                 </MediaQuery>
+                <TableHeaderCell>Check Status</TableHeaderCell>
                 <TableHeaderCell />
               </TableRow>
             </TableHead>
