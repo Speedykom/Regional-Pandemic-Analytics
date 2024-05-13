@@ -48,9 +48,23 @@ export const baseQuery: BaseQueryFn<
       const blob = new Blob([result.error.data], {
         type: 'application/octet-stream',
       });
-      return { data: URL.createObjectURL(blob) };
+      const blobToBase64 = (blob: Blob): Promise<string> => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            if (typeof reader.result === 'string') {
+              resolve(reader.result);
+            } else {
+              reject(new Error('Failed to convert blob to base64'));
+            }
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      };
+      const dataUrl = `data:${blob.type};base64,${await blobToBase64(blob)}`;
+      return { data: dataUrl };
     } catch (e) {
-      //console.error('Failed to process binary response:', e);
       return {
         error: {
           status: 'CUSTOM_ERROR',
@@ -61,7 +75,6 @@ export const baseQuery: BaseQueryFn<
   }
 
   if (result.error) {
-    //console.log('Error from server:', result.error);
     if (result.error.status === 401) {
       api.dispatch({
         payload: undefined,
