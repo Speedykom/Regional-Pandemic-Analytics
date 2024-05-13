@@ -143,7 +143,7 @@ export const ProfileSettings = () => {
     const formData = new FormData();
     formData.append('uploadedFile', selectedFile);
     try {
-      await uploadAvatarMutation(formData).unwrap();
+      await uploadAvatarMutation({ avatarData: formData, id: myId }).unwrap();
       toast.success(t('uploadMessages.uploadSuccess'));
     } catch (error) {
       toast.error(t('uploadMessages.uploadError'));

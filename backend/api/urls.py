@@ -61,10 +61,7 @@ urlpatterns = [
     path("account/user/<str:id>/delete", views.UserDetailView.as_view()),  # delete user
     path("account/user/<str:id>/update", views.UserDetailView.as_view()),  # update user
     path("account/user/<str:id>/roles", views.UserRolesView.as_view()),  # assign user
-    path(
-        "account/user/avatar-upload", views.UserAvatarView.as_view()
-    ),  # update avatar
-    path("account/user/<str:id>/avatar", views.UserAvatarView.as_view()),  # get avatar
+    path("account/user/<str:id>/avatar", views.UserAvatarView.as_view()),  # get or update avatar
     # ---------------------- API Role Endpoints --------------------------
     path("role/", role_view.RoleApiView.as_view()),  # create role
     path("role/<str:name>/update", role_view.RoleApiView.as_view()),  # get role
