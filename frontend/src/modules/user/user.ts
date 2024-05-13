@@ -92,11 +92,11 @@ export const userApi = createApi({
         },
       }),
     }),
-    uploadAvatar: builder.mutation<any, FormData>({
-      query: (FormData) => ({
-        url: `account/user/avatar-upload`,
+    uploadAvatar: builder.mutation<any, { id: string; avatarData: FormData }>({
+      query: ({ id, avatarData }) => ({
+        url: `account/user/${id}/avatar`,
         method: 'POST',
-        body: FormData,
+        body: avatarData,
       }),
       invalidatesTags: ['User'],
     }),

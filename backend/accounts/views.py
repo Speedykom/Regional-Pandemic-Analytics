@@ -237,7 +237,7 @@ class UserAvatarView(APIView):
 
     def get(self, request, *args, **kwargs):
         try:
-            user_id = get_current_user_id(request)
+            user_id = kwargs['id']
             if not user_id:
                 return HttpResponseBadRequest("User ID is missing.")
 
@@ -269,7 +269,7 @@ class UserAvatarView(APIView):
 
 
     def post(self, request, **kwargs):
-        user_id = get_current_user_id(request)
+        user_id = kwargs['id']
         if not user_id:
             return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
 
