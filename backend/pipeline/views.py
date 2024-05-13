@@ -174,10 +174,10 @@ class PipelineDetailView(APIView):
             )
 class PipelineSaveView(APIView):
     keycloak_scopes = {
-        "PUT": "pipeline:update",
+        "POST": "pipeline:add",
     }
 
-    def put(self, request, name=None):
+    def post(self, request, name=None):
         user_id = get_current_user_id(request)
         try:
             # save pipeline file as Template in Minio
