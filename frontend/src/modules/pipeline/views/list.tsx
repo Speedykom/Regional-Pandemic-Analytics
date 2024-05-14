@@ -109,7 +109,7 @@ export const MyPipelines = () => {
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
           >
-            &larr; Prev
+            &larr; {t('prev')}
           </Button>
           <Button
             className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4  focus:outline-none cursor-pointer"
@@ -117,7 +117,7 @@ export const MyPipelines = () => {
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}
           >
-            Next &rarr;
+            {t('next')} &rarr;
           </Button>
         </div>
       </div>
@@ -261,7 +261,7 @@ export const MyPipelines = () => {
       </nav>
       <input
         type="text"
-        placeholder="Search for pipelines..."
+        placeholder={t('searchForPipelines')}
         className="w-full border border-gray-300 rounded-md p-2 mb-3"
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
