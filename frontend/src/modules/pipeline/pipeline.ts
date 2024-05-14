@@ -49,6 +49,15 @@ export const pipelineApi = createApi({
       }),
       invalidatesTags: ['pipelines'],
     }),
+    savePipelineAsTemplate: builder.mutation<
+      { status: string; message?: string },
+      string
+    >({
+      query: (name) => ({
+        url: `/pipeline/save/${name}`,
+        method: 'POST',
+      }),
+    }),
   }),
 });
 
@@ -60,4 +69,5 @@ export const {
   useCreatePipelineMutation,
   useUploadPipelineMutation,
   useUpdatePipelineMutation,
+  useSavePipelineAsTemplateMutation,
 } = pipelineApi;
