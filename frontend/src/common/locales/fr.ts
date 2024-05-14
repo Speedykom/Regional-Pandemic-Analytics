@@ -6,6 +6,10 @@ const frTranslation = {
     WelcomeText:
       "Connectez-vous simplement pour accéder à l'outil d'analyse des pandémies régionales de l'IGAD afin de collecter, d'analyser et de rapporter des données granulaires et agrégées de plusieurs sources pour une prise de décision éclairée.",
   },
+
+  next: 'Suivant',
+  prev: 'Précédent',
+
   appAccounts: "Comptes de l'application",
   viewAndManage:
     "Afficher et gérer les paramètres liés aux utilisateurs de l'application.",
@@ -31,23 +35,38 @@ const frTranslation = {
   pipelineCheckSuccessful: 'Vérification du pipeline réussie',
   pipelineCheckFailed: 'Échec de la vérification du pipeline',
   view: 'Voir',
-
+  searchForPipelines: 'Rechercher des pipelines...',
   processChain: 'Chaîne de processus',
   viewAndManageProcessChains:
     'Afficher et gérer toutes les chaînes de processus',
   addProcessChain: 'Ajouter une chaîne de processus',
   ShowDisabledProcessChain: 'Afficher les chaînes de processus inactive',
+  searchForProcesscChains: 'Rechercher des chaînes de processus..',
+  unverified: 'Non vérifié',
+  verified: 'Vérifié',
+  pipelineName: 'Nom du pipeline*',
+  pipelineNameRequired: 'Le nom du pipeline est réquis',
+  pipelineNamePatter: "Le nom du pipeline ne peut pas contenir d'espaces",
+  enterPipelineName: 'Saisir le nom du pipeline',
+  descRequired: 'La description est réquise',
+  enterDesc: 'Saisir la description',
+  fileUploadDesc:
+    'Faites glisser et déposez le fichier de pipeline .hpl ici, ou cliquez pour sélectionner un fichier',
+  upload: 'Charger',
+  selectedFiles: 'Fichiers sélctionnés',
 
   supersetCharts: 'Graphiques Superset',
   chartListCreatedOnSuperset:
     'Liste des graphiques créés avec Apache Superset.',
   chartTitle: 'Titre du Graphique',
   visualizationType: 'Type de Visualisation',
+  processChainCharts: 'Les graphiques du chaine de processus',
   dataset: 'Ensemble de Données',
   createdBy: 'Créé par',
   createdOn: 'Créé le',
   modifiedBy: 'Modifié par',
   lastModified: 'Dernière Modification',
+  searchForCharts: 'Rechercher des graphiques...',
 
   supersetDashboards: 'Tableaux de bord Superset',
   dashboardListCreatedOnSuperset:
@@ -58,6 +77,7 @@ const frTranslation = {
   published: 'Publié',
   unpublished: 'Non publié',
   preview: 'Aperçu',
+  searchForDashboard: 'Rechercher des tableaux de bord...',
 
   from: 'de',
 
@@ -75,8 +95,10 @@ const frTranslation = {
   provideContactNumber: 'Veuillez fournir un numéro de contact',
   userInformation: 'Informations utilisateur',
   username_Required:
-    "Le nom d'utilisateur est requis, longueur minimale de 4 caractères",
+    "Le nom d'utilisateur est requis et longueur minimale est 4 caractères",
+  selectRole: 'Selectionner un role...',
   emailAddress: 'Adresse e-mail',
+  phonenumber: 'Numero de téléphone',
   validEmail: 'Une adresse e-mail valide est requise',
   isEmailVerified: "L'e-mail est-il vérifié",
   enableUser: "Activer l'utilisateur",
@@ -130,6 +152,7 @@ const frTranslation = {
     pipelineTemplateLabel: 'Modèle de pipeline',
     startDateLabel: 'Date de début',
     scheduleIntervalLabel: 'Intervalle de planification',
+    scheduleIntervalPlaceholder: 'Choisir un intervalle de planification',
     descriptionLabel: 'Description',
     submitButton: 'Soumettre',
     cancelButton: 'Annuler',
@@ -139,9 +162,17 @@ const frTranslation = {
     inactive: 'inactif',
     name: 'Nom',
     status: 'Statut',
-    run: 'exécuter',
-    enable: 'activer',
-    disable: 'désactiver',
+    run: 'Exécuter',
+    enable: 'Activer',
+    disable: 'Désactiver',
+    note: "Remarque: La date de début est le jour où les chaînes de processus de planification commencent. Il n'est pas possible d'exécuter manuellement une chaîne de processus dont la date de début est proche.",
+    selectDate: 'Choisir une date',
+    descriptionPlaceholder: 'Ajouter une description',
+  },
+  home: {
+    favorite_dashboard: 'Tableaux de bord favoris',
+    no_fav_dashboards_msg:
+      "Aucun tableau de bord favori n'existe actuellement. Veuillez créer un tableau de bord et l'ajouter à vos favoris.",
   },
   passwordChangeSuccess: 'Votre mot de passe a été changé avec succès.',
   passwordChangeError:
@@ -150,6 +181,73 @@ const frTranslation = {
     errorMessage: 'Impossible de sauvegarder le pipeline en tant que modèle',
     successMessage: 'Pipeline enregistré avec succès en tant que modèle',
     saveButton: 'Enregistrer comme modèle',
+  },
+
+  user: {
+    userDetails: "Détails de l'utilisateur",
+    basicInformation: 'Simples informations',
+    firstName: 'Prénom',
+    lastName: 'Nom',
+    gender: 'Genre',
+    country: 'Pays',
+    contactNumber: 'Numéro de contact',
+    userInformation: "Informations de l'utilisateur",
+    username: "Nom d'utilisateur",
+    email: 'Email',
+    emailStatus: "Statut de l'email",
+    enable: 'Activé',
+    disable: 'Désactivé',
+    userStatus: "Statut de l'utilisateur",
+    active: 'Actif',
+    inactive: 'Inactif',
+    userRole: "Rôle de l'utilisateur",
+  },
+
+  hop: {
+    firstMessage:
+      "Veuillez vous assurer que vous enregistrez les modifications dans l'interface de Hop",
+  },
+
+  processChains: {
+    dataSourceSelection: 'Sélection du source des données',
+    orchestration: 'Orchestration',
+    charts: 'Graphiques',
+    analyticsDataModel: "Modèle de l'analyse des données",
+  },
+
+  dataSourceSelection: {
+    pipelineUsed: 'Pipeline utilisé',
+    piplineTemplate: 'Modèle de pipeline',
+    save: 'Enregistrer',
+  },
+
+  orchestration: {
+    processchainSummary: 'Résumé de la chaîne de processus',
+    lastUpdate: 'Dernière mise à jour',
+    nextScheduleExection: 'Prochaine exécution programmée',
+    lastExecution: 'Dernière exécution',
+    selectExecution: 'Veuillez sélectionner une exécution',
+  },
+
+  analyticsDataModel: {
+    dataSourceInfo: 'Informations sur la source de données',
+    name: 'Nom',
+    createdAt: 'Créé à',
+    segmentCount: 'Nombre de segments',
+    dimentions: 'Dimentions',
+    totalSize: 'Taille totale',
+  },
+
+
+
+  addChart: 'Ajouter un graphique',
+
+  footer: {
+    learnMore: 'Savoir plus',
+    privacy: 'Confidentialité',
+    termsOfService: "Conditions d'utilisation",
+    businessAgreement: 'Accords de business',
+    allRightsReserved: 'Tous droits réservés.',
   },
 };
 

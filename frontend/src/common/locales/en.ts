@@ -1,3 +1,7 @@
+import Dashboard from '@/pages/dashboards';
+import BusinessAgreement from '../components/BusinessAgreement';
+import { z } from 'zod';
+
 const enTranslation = {
   login: {
     PageTitle: 'Regional Pandemic Analytics Tool | Login',
@@ -6,6 +10,10 @@ const enTranslation = {
     WelcomeText:
       'Simply login to access the IGAD regional pandemic analytics tool to collect, analyze, and report granular and aggregated data from multiple sources for informed decision-making.',
   },
+
+  next: 'Next',
+  prev: 'Prev',
+
   appAccounts: 'App Accounts',
   viewAndManage: 'View and manage settings related to app users.',
   newUser: 'New User',
@@ -46,16 +54,32 @@ const enTranslation = {
   viewAndManageProcessChains: 'View and manage all process chains',
   addProcessChain: 'Add Process Chain',
   ShowDisabledProcessChain: 'Show Disabled Process Chains',
+  searchForProcesscChains: 'Search for process chains..',
+  searchForPipelines: 'Search for pipelines...',
+  unverified: 'Unverified',
+  verified: 'Verified',
+  pipelineName: 'Pipeline Name*',
+  pipelineNameRequired: 'Pipeline name is required',
+  pipelineNamePatter: 'Pipeline name cannot contain whitespaces',
+  enterPipelineName: 'Enter pipeline name',
+  descRequired: 'Pipeline description is required',
+  enterDesc: 'Enter pipeline description',
+  fileUploadDesc:
+    "Drag 'n' drop .hpl pipeline file here, or click to select a file",
+  upload: 'Upload',
+  selectedFiles: 'Selected Files',
 
   supersetCharts: 'Superset Charts',
   chartListCreatedOnSuperset: 'Chart list created on Apache Superset.',
   chartTitle: 'Chart Title',
+  processChainCharts: 'Process Chain Charts',
   visualizationType: 'Visualization Type',
   dataset: 'Dataset',
   createdBy: 'Created By',
   createdOn: 'Created On',
   modifiedBy: 'Modified By',
   lastModified: 'Last Modified',
+  searchForCharts: 'Search for charts...',
 
   supersetDashboards: 'Superset Dashboards',
   dashboardListCreatedOnSuperset: 'Dashboard list created on Apache Superset',
@@ -65,6 +89,7 @@ const enTranslation = {
   published: 'Published',
   unpublished: 'Unpublished',
   preview: 'Preview',
+  searchForDashboard: 'Search for dashboards...',
 
   from: 'from',
 
@@ -84,6 +109,8 @@ const enTranslation = {
   username_Required: 'Username is required, min length 4 chars',
   emailAddress: 'Email Address',
   validEmail: 'Valid email is required',
+  selectRole: 'Select a role...',
+  phonenumber: 'Phone Number',
   isEmailVerified: 'Is Email Verified',
   enableUser: 'Enable User',
   saveUser: 'Save User',
@@ -135,6 +162,7 @@ const enTranslation = {
     pipelineTemplateLabel: 'Pipeline Template',
     startDateLabel: 'Start Date',
     scheduleIntervalLabel: 'Schedule Interval',
+    scheduleIntervalPlaceholder: 'Choose a schedule interval',
     descriptionLabel: 'Description',
     submitButton: 'Submit',
     cancelButton: 'Cancel',
@@ -147,7 +175,80 @@ const enTranslation = {
     run: 'run',
     enable: 'enable',
     disable: 'disable',
+    note: 'Note: Start Date is the day when scheduling process chains begin. It is not possible to manually run a process chain that has an upcoming start date.',
+    selectDate: 'Select Date',
+    descriptionPlaceholder: 'Add description',
   },
+  home: {
+    favorite_dashboard: 'Favorite Dashboards',
+    no_fav_dashboards_msg:
+      'No favorite dashboards currently exist. Kindly create a dashboard and add it to your favorites.',
+  },
+
+  user: {
+    userDetails: 'User Details',
+    basicInformation: 'Basic Information',
+    firstName: 'First Name',
+    lastName: 'Last Name',
+    gender: 'Gender',
+    country: 'Country',
+    contactNumber: 'Contact Number',
+    userInformation: 'User Information',
+    username: 'Username',
+    email: 'Email',
+    emailStatus: 'Email Status',
+    enable: 'Enable',
+    disable: 'Disable',
+    userStatus: 'User Status',
+    active: 'Active',
+    inactive: 'Inactive',
+    userRole: 'User Role',
+  },
+
+  hop: {
+    firstMessage: 'Please make sure you are saving changes in Hop UI',
+  },
+
+  footer: {
+    learnMore: 'Learn More',
+    privacy: 'Privacy',
+    termsOfService: 'Terms of Service',
+    businessAgreement: 'Business Agreement',
+    allRightsReserved: 'All Rights Reserved.',
+  },
+
+  processChains: {
+    dataSourceSelection: 'Data Source Selection',
+    orchestration: 'Orchestration',
+    charts: 'Charts',
+    analyticsDataModel: 'Analytics Data Model',
+  },
+
+  orchestration: {
+    processchainSummary: 'Process Chain Summary',
+    lastUpdate: 'Last update',
+    nextScheduleExection: 'Prochaine exécution programmée',
+    lastExecution: 'Last Execution',
+    selectExecution: 'Please select an execution',
+  },
+
+  dataSourceSelection: {
+    pipelineUsed: 'Used Pipeline',
+    piplineTemplate: 'Pipeline Template',
+    save: 'Save',
+  },
+
+  analyticsDataModel: {
+    dataSourceInfo: 'Data Source Information',
+    name: 'Name',
+    createdAt: 'Create at',
+    segmentCount: 'Segment Count',
+    dimentions: 'Dimentions',
+    totalSize: 'Total Size',
+  },
+
+  addChart: 'Add a Chart',
+
   passwordChangeSuccess: 'Your password has been successfully changed.',
   passwordChangeError: 'There was an error changing your password.',
   savePipelineAsTemplate: {
