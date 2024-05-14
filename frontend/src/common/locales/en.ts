@@ -19,12 +19,28 @@ const enTranslation = {
   description: 'Description',
   createPipeline: 'Create Pipeline',
   uploadPipeline: 'Upload Pipeline',
+  pipelineCheckSuccessful: 'Pipeline check successful',
+  pipelineCheckFailed: 'Pipeline check failed',
+
+  // Pipeline validation check
+  MissingParquetTransform: 'One Parquet transform should be available',
+  InvalidFilenameBase:
+    'Filename base should be set to ftp://${minio_ftp}/parquets/${user_id}/${dag_id}',
+  InvalidFilenameExtension: 'Filename extension should be set to parquet',
+  InvalidFilenameIncludeCopy: 'Filename include copy should be set to N',
+  InvalidFilenameIncludeDate: 'Filename include date should be set to N',
+  InvalidFilenameIncludeDatetime:
+    'Filename include datetime should be set to N',
+  InvalidFilenameIncludeSplit: 'Filename include split should be set to N',
+  InvalidFilenameIncludeTime: 'Filename include time should be set to N',
+  ValidPipeline: 'Pipeline is valid',
   pipelineInvalidName:
     'Invalid characters. Only letters from the specified Unicode range,. ,-, _ are allowed.',
   view: 'View',
   processChain: 'Process Chain',
   viewAndManageProcessChains: 'View and manage all process chains',
   addProcessChain: 'Add Process Chain',
+  ShowDisabledProcessChain: 'Show Disabled Process Chains',
 
   supersetCharts: 'Superset Charts',
   chartListCreatedOnSuperset: 'Chart list created on Apache Superset.',
@@ -129,6 +145,11 @@ const enTranslation = {
   },
   passwordChangeSuccess: 'Your password has been successfully changed.',
   passwordChangeError: 'There was an error changing your password.',
+  savePipelineAsTemplate: {
+    errorMessage: 'Unable to save pipeline as template',
+    successMessage: 'Pipeline saved successfully as template',
+    saveButton: 'Save as Template',
+  },
 };
 
 export default enTranslation;
