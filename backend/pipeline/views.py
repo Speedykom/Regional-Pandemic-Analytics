@@ -10,7 +10,7 @@ from minio.commonconfig import CopySource, REPLACE
 from datetime import datetime
 from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
-
+from .validator import check_pipeline_validity
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")
     username = os.getenv("AIRFLOW_USER")
@@ -51,12 +51,16 @@ class PipelineListView(APIView):
                         {
                             "name": object_name,
                             "description": object.metadata["X-Amz-Meta-Description"],
+                            "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
+                            "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                         })
             else:
                 pipelines.append(
                 {
                     "name": object_name,
                     "description": object.metadata["X-Amz-Meta-Description"],
+                    "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
+                    "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                 }    
             )
 
@@ -96,11 +100,14 @@ class PipelineListView(APIView):
                 metadata={
                     "description": f"{description}",
                     "created": f"{datetime.utcnow()}",
+                    "check_status": "success", #check status should be always success when creating a new pipeline, as our provided templates are correct
+                    "check_text": "ValidPipeline", 
                 },
                 metadata_directive=REPLACE,
             )
 
             return Response({"status": "success"}, status=status.HTTP_200_OK)
+
 class PipelineDetailView(APIView):
     keycloak_scopes = {
         "PUT": "pipeline:update",
@@ -133,6 +140,8 @@ class PipelineDetailView(APIView):
                 {
                     "name": name,
                     "description": object.metadata["X-Amz-Meta-Description"],
+                    "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
+                    "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                 },
                 status=status.HTTP_200_OK,
             )
@@ -149,6 +158,10 @@ class PipelineDetailView(APIView):
 
     def put(self, request, name=None):
         user_id = get_current_user_id(request)
+        # Check if the pipeline is valid
+
+        # Usage:
+        valid_pipeline, check_text = check_pipeline_validity(name)
         try:
             object = client.stat_object(
                 "pipelines", f"pipelines-created/{user_id}/{name}.hpl"
@@ -162,6 +175,8 @@ class PipelineDetailView(APIView):
                     "description": object.metadata["X-Amz-Meta-Description"],
                     "updated": f"{datetime.utcnow()}",
                     "created": object.metadata["X-Amz-Meta-Created"],
+                    "check_status": "success" if valid_pipeline else "failed",
+                    "check_text": check_text,
                 },
             )
 
@@ -177,7 +192,29 @@ class PipelineDetailView(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+class PipelineSaveView(APIView):
+    keycloak_scopes = {
+        "POST": "pipeline:add",
+    }
 
+    def post(self, request, name=None):
+        user_id = get_current_user_id(request)
+        try:
+            # save pipeline file as Template in Minio
+            client.copy_object(
+            "pipelines",
+            f"templates/{name}.hpl",
+            CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
+
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Unable to save the pipeline {} as Template: {}".format(name, e),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 class PipelineDownloadView(APIView):
     keycloak_scopes = {
         "GET": "pipeline:read",
@@ -216,9 +253,13 @@ class PipelineUploadView(APIView):
         name = request.data.get("name")
         description = request.data.get("description")
         uploaded_file = request.FILES.get("uploadedFile")
-        if (uploaded_file) :
+        if uploaded_file:
+            # To check if file is valid we first have to have it saved on the local file system
+            with open(f"/hop/pipelines/{name}.hpl", 'wb') as f:
+                for chunk in uploaded_file.chunks():
+                    f.write(chunk)
             try:
-                # Checks if an object with the same name exits
+                # Checks if an object with the same name exists
                 client_response = client.get_object(
                     "pipelines", f"pipelines-created/{user_id}/{name}.hpl"
                 )
@@ -226,25 +267,28 @@ class PipelineUploadView(APIView):
                 client_response.release_conn()
                 return Response(
                     {
-                        "status": "Fail",
-                        "message": f"file already exists with the name {name}.hpl",
+                    "status": "Fail",
+                    "message": f"file already exists with the name {name}.hpl",
                     },
                     status=409,
                 )
             except:
-                # upload new pipeline 
-                client_result = client.put_object(
-                bucket_name='pipelines',
-                object_name=f"pipelines-created/{user_id}/{name}.hpl",
-                data=uploaded_file,
-                length=uploaded_file.size,
-                metadata={
-                    "description": f"{description}",
-                    "created": f"{datetime.utcnow()}",
-                },
-                ) 
-                             
-            return Response({"status": "success"}, status=status.HTTP_200_OK)
+                # Upload new pipeline
+                valid_pipeline, check_text = check_pipeline_validity(name)
+                with open(f"/hop/pipelines/{name}.hpl", 'rb') as f:
+                    client_result = client.put_object(
+                    bucket_name='pipelines',
+                    object_name=f"pipelines-created/{user_id}/{name}.hpl",
+                    data=f,
+                    length=os.path.getsize(f.name),
+                    metadata={
+                        "description": f"{description}",
+                        "created": f"{datetime.utcnow()}",
+                        "check_status": "success" if valid_pipeline else "failed",
+                        "check_text": check_text,
+                    },
+                    )
+                return Response({"status": "success"}, status=status.HTTP_200_OK)
 class PipelineDeleteView(APIView):
     keycloak_scopes = {
         "DELETE": "pipeline:delete",
