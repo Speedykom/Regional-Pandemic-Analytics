@@ -142,6 +142,7 @@ export const ProfileSettings = () => {
     try {
       await uploadAvatarMutation({ avatarData: formData, id: myId }).unwrap();
       toast.success(t('uploadMessages.uploadSuccess'));
+      setSelectedFile(null);
     } catch (error) {
       toast.error(t('uploadMessages.uploadError'));
     }
@@ -228,14 +229,14 @@ export const ProfileSettings = () => {
                         }`}
                       />
                       {/* Button for changing the profile picture */}
-                      <button
+                      <Button
                         onClick={handleUpload}
                         className="absolute bottom-0 right-0 mb-2 mr-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
                         style={{ zIndex: 10 }}
                       >
                         <FaCamera className="inline mr-2" />
                         {t('changePicture')}
-                      </button>
+                      </Button>
                     </div>
                   ) : (
                     <div className="text-center">
@@ -255,12 +256,13 @@ export const ProfileSettings = () => {
                 </div>
               </div>
             </div>
-            <button
+            <Button
               onClick={handleUpload}
+              disabled={!selectedFile}
               className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
               {t('uploadPicture')}
-            </button>
+            </Button>
             <div className="">
               <h1 className="text-gray-900 font-bold text-xl leading-8 my-1">
                 {data?.firstName} {data?.lastName}
