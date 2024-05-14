@@ -53,6 +53,8 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
         return './images/sormas.jpg';
       case 'blank':
         return './images/blank.png';
+      default:
+        return './images/custom.png'; // Return custom icon if no match is found
     }
   };
 
