@@ -4,6 +4,8 @@ import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { useUploadPipelineMutation } from '../pipeline';
+import { useTranslation } from 'react-i18next';
+
 interface UploadPipelineProps {
   state: boolean;
   onClose: () => void;
@@ -27,7 +29,7 @@ export const UploadPipeline = ({
   const [uploadPipeline, { isLoading }] = useUploadPipelineMutation();
   const isWhitespace = /\s/;
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
-
+  const { t } = useTranslation();
   const onFinish = (value: any) => {
     const file = acceptedFiles[0];
     // Create a FormData object
@@ -78,20 +80,20 @@ export const UploadPipeline = ({
         className="bg-prim text-white border-0 hover:bg-prim-hover"
         onClick={handleSubmit((values: any) => onFinish(values))}
       >
-        Upload
+        {t('upload')}
       </Button>
       <Button
         onClick={cancel}
         className="bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
       >
-        Cancel
+        {t('cancel')}
       </Button>
     </div>
   );
 
   return (
     <Drawer
-      title="Upload Pipeline"
+      title={t('uploadPipeline')}
       isOpen={state}
       onClose={cancel}
       placement="right"
@@ -105,17 +107,17 @@ export const UploadPipeline = ({
               className="block text-blueGray-600 text-xs font-bold mb-2"
               htmlFor="descriptiond"
             >
-              Name*
+              {t('pipelineName')}
             </label>
             <TextInput
               {...register('name', {
                 required: {
                   value: true,
-                  message: 'Please enter a pipeline name',
+                  message: t('pipelineNameRequired'),
                 },
                 pattern: {
                   value: /^\S*$/,
-                  message: 'Pipeline name cannot contain whitespaces',
+                  message: t('pipelineNamePatter'),
                 },
                 onChange: (event: any) =>
                   handleValueChange(event.target?.value),
@@ -124,7 +126,7 @@ export const UploadPipeline = ({
               errorMessage={errors?.name?.message?.toString()}
               type="text"
               className="w-full h-12"
-              placeholder="Enter Name"
+              placeholder={t('enterPipelineName')}
             />
           </div>
           <div className="relative w-full mb-3">
@@ -139,12 +141,10 @@ export const UploadPipeline = ({
                 required: true,
               })}
               error={!!errors.description}
-              errorMessage={
-                errors.description ? 'Please enter your description' : ''
-              }
+              errorMessage={errors.description ? t('descRequired') : ''}
               type="text"
               className="w-full h-12"
-              placeholder="Enter Description"
+              placeholder={t('enterDesc')}
             />
           </div>
           <div className="relative w-full mb-3">
@@ -160,15 +160,12 @@ export const UploadPipeline = ({
                         })}
                       >
                         <input {...getInputProps()} />
-                        <p>
-                          Drag 'n' drop .hpl pipeline file here, or click to
-                          select a file
-                        </p>
+                        <p>{t('fileUploadDesc')}</p>
                       </div>
                       {acceptedFiles.length === 1 && (
                         <div>
                           <h4 className="text-lg font-semibold">
-                            Selected Files:
+                            {t('selectedFiles')}:
                           </h4>
                           {acceptedFiles.map((file) => (
                             <p key={file.name} className="mt-2">
