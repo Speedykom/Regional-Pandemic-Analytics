@@ -148,6 +148,11 @@ const frTranslation = {
   },
   changePicture: 'Changer la photo',
   uploadPicture: 'Télécharger une photo',
+  savePipelineAsTemplate: {
+    errorMessage: 'Impossible de sauvegarder le pipeline en tant que modèle',
+    successMessage: 'Pipeline enregistré avec succès en tant que modèle',
+    saveButton: 'Enregistrer comme modèle',
+  },
 };
 
 export default frTranslation;
