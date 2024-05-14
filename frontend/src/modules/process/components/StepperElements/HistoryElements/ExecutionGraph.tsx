@@ -4,6 +4,8 @@ import { BiLoaderAlt, BiCheck } from 'react-icons/bi';
 import { IconContext } from 'react-icons';
 import { DagRunTask } from '@/modules/process/interface';
 import { ArrowLongRightIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
+import { useTranslation } from 'react-i18next';
+
 interface ExecutionGraphProps {
   dagId: string;
   dagRunId: string;
@@ -67,11 +69,12 @@ export default function ExecutionGraph({
     dag_id: dagId,
     dag_run_id: dagRunId,
   });
+  const { t } = useTranslation();
 
   return (
     <Card className="h-72">
       {dagRunId === '' ? (
-        'Please select an execution'
+        t('orchestration.selectExecution')
       ) : (
         <div className="flex flex-col h-full text-center">
           <div className="basis-1/4 flex flex-row-reverse">

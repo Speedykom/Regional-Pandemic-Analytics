@@ -74,7 +74,7 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
       </nav>
       <input
         type="text"
-        placeholder="Search for charts..."
+        placeholder={t('searchForCharts')}
         className="w-full border border-gray-300 rounded-md p-2 mb-3"
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
@@ -149,7 +149,7 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
           size="xs"
           disabled={currentPage === 1}
         >
-          ← Prev
+          ← {t('prev')}
         </Button>
         <Button
           onClick={nextPage}
@@ -157,7 +157,7 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
           size="xs"
           disabled={currentPage === totalPages}
         >
-          Next →
+        {t('next')} →
         </Button>
       </div>
     </div>
