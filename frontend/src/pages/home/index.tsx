@@ -13,10 +13,12 @@ import { Unauthorized } from '@/common/components/common/unauth';
 import { skipToken } from '@reduxjs/toolkit/dist/query';
 import { usePermission } from '@/common/hooks/use-permission';
 import getConfig from 'next/config';
+import { useTranslation } from 'react-i18next';
 
 const { publicRuntimeConfig } = getConfig();
 
 export default function Home() {
+  const { t } = useTranslation();
   const { hasPermission } = usePermission();
 
   const { data } = useGetDashboardsQuery('');
@@ -48,7 +50,9 @@ export default function Home() {
     <Layout>
       <nav className="mb-5">
         <div>
-          <h2 className="text-3xl">Favorite Dashboards</h2>
+          <h2 className="text-3xl">
+            {t('home.favorite_dashboard')}
+          </h2>
         </div>
       </nav>
       <EmbedDashboards
