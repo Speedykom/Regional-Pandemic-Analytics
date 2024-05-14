@@ -21,12 +21,15 @@ const frTranslation = {
   description: 'Description',
   createPipeline: 'Créer un pipeline',
   uploadPipeline: 'Charger un pipeline',
+  pipelineCheckSuccessful: 'Vérification du pipeline réussie',
+  pipelineCheckFailed: 'Échec de la vérification du pipeline',
   view: 'Voir',
 
   processChain: 'Chaîne de processus',
   viewAndManageProcessChains:
     'Afficher et gérer toutes les chaînes de processus',
   addProcessChain: 'Ajouter une chaîne de processus',
+  ShowDisabledProcessChain: 'Afficher les chaînes de processus inactive',
 
   supersetCharts: 'Graphiques Superset',
   chartListCreatedOnSuperset:
@@ -96,7 +99,10 @@ const frTranslation = {
   active: 'Actif',
   inactive: 'Inactif',
   provideRoleDescrip: 'Veuillez fournir une description du rôle',
-
+  noChangesMade: 'Aucun changement apporté au profil.',
+  profileUpdateSuccess: 'Profil mis à jour avec succès.',
+  profileUpdateError:
+    "Une erreur s'est produite lors de la mise à jour du profil.",
   yourProfile: 'Votre Profil',
   logOut: 'Déconnexion',
   somethingWentWrong: "Quelque chose s'est mal passé !",
@@ -129,6 +135,14 @@ const frTranslation = {
     run: 'exécuter',
     enable: 'activer',
     disable: 'désactiver',
+  },
+  passwordChangeSuccess: 'Votre mot de passe a été changé avec succès.',
+  passwordChangeError:
+    'Une erreur est survenue lors du changement de votre mot de passe.',
+  savePipelineAsTemplate: {
+    errorMessage: 'Impossible de sauvegarder le pipeline en tant que modèle',
+    successMessage: 'Pipeline enregistré avec succès en tant que modèle',
+    saveButton: 'Enregistrer comme modèle',
   },
 };
 

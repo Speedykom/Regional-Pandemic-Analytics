@@ -1,5 +1,7 @@
 import Layout from '@/common/components/Dashboard/Layout';
+import CryptoJS from 'crypto-js';
 import { countries } from '@/common/utils/countries';
+import getConfig from 'next/config';
 import { useTranslation } from 'react-i18next';
 import { Fragment, useEffect, useState } from 'react';
 import {
@@ -7,13 +9,21 @@ import {
   Button,
   Card,
   Divider,
-  NumberInput,
   SearchSelect,
   SearchSelectItem,
   Text,
   TextInput,
 } from '@tremor/react';
-import { useGetUserQuery } from '@/modules/user/user';
+import { toast } from 'react-toastify';
+import {
+  useGetUserQuery,
+  useChangePasswordMutation,
+} from '@/modules/user/user';
+import { useForm, Controller } from 'react-hook-form';
+import { Dialog, Transition } from '@headlessui/react';
+import { selectCurrentUser } from '@/modules/auth/auth';
+import { useSelector } from 'react-redux';
+import { useModifyUserMutation } from '@/modules/user/user';
 import {
   CheckIcon,
   PencilSquareIcon,
@@ -22,52 +32,132 @@ import {
   WifiIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { useForm } from 'react-hook-form';
-import { Dialog, Transition } from '@headlessui/react';
-import { selectCurrentUser } from '@/modules/auth/auth';
-import { useSelector } from 'react-redux';
-
 export const ProfileSettings = () => {
   const [changePassword, setChangePassword] = useState(false);
+  const [newPass, setNewPass] = useState<string>('');
+  const [confirmPass, setConfirmPass] = useState<string>('');
   const currentUser = useSelector(selectCurrentUser);
   const { t } = useTranslation();
+  const [changePasswordMutation] = useChangePasswordMutation();
+
+  const [avatar] = useState(currentUser?.avatar);
 
   const myId: any = currentUser?.id;
   const { data } = useGetUserQuery(myId);
-
-  const [country, setCountry] = useState<string>();
-  const [gender, setGender] = useState<string>();
-  const [firstName] = useState(currentUser?.given_name);
-  const [lastName] = useState(currentUser?.family_name);
-  const [phone, setPhone] = useState<string>();
-  const [avatar] = useState(currentUser?.avatar);
-
-  const [newPass, setNewPass] = useState<string>('');
-
-  const onChange = (e?: string) => {
-    setNewPass(String(e));
-  };
-
   const {
-    formState: { errors },
-  } = useForm();
+    control,
+    handleSubmit,
+    reset,
+    getValues,
+    formState: { dirtyFields, isDirty },
+  } = useForm({
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      phone: '',
+      country: '',
+      gender: '',
+      email: '',
+    },
+  });
+  const { publicRuntimeConfig } = getConfig();
+
+  const [modifyUserMutation] = useModifyUserMutation();
 
   const triggerPasswordChange = () => {
     setChangePassword(!changePassword);
   };
+  const onChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!currentUser?.id) {
+      toast.error(t('userUndefined'));
+      return;
+    }
+    if (newPass !== confirmPass) {
+      toast.error(t('passwordsDoNotMatch'), { position: 'top-right' });
+      return;
+    }
+    try {
+      const keyHex = publicRuntimeConfig.NEXT_PUBLIC_PASSWORD_HEX_KEY;
+      const ivHex = publicRuntimeConfig.NEXT_PUBLIC_PASSWORD_IVHEX;
+      const key = CryptoJS.enc.Hex.parse(keyHex);
+      const iv = CryptoJS.enc.Hex.parse(ivHex);
+
+      const encryptedNewPassword = CryptoJS.AES.encrypt(newPass, key, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+      }).toString();
+      await changePasswordMutation({
+        id: currentUser.id,
+        newPassword: encryptedNewPassword,
+        confirmPassword: encryptedNewPassword,
+      }).unwrap();
+      toast.success(t('passwordChangeSuccess'), { position: 'top-right' });
+      setChangePassword(false);
+    } catch (error) {
+      toast.error(t('passwordChangeError'), { position: 'top-right' });
+    }
+  };
 
   useEffect(() => {
-    if (typeof window !== undefined) {
-      const attributes = data?.attributes;
-      if (attributes) {
-        const { gender, country, phone } = attributes;
-        gender && setGender(gender[0]);
-        country && setCountry(country[0]);
-        phone && setPhone(phone[0]);
-      }
+    if (data) {
+      reset({
+        firstName: data.firstName || '',
+        lastName: data.lastName || '',
+        phone: Array.isArray(data.attributes?.phone)
+          ? data.attributes.phone[0] || ''
+          : data.attributes?.phone || '',
+        country: Array.isArray(data.attributes?.country)
+          ? data.attributes.country[0] || ''
+          : data.attributes?.country || '',
+        gender: Array.isArray(data.attributes?.gender)
+          ? data.attributes.gender[0] || ''
+          : data.attributes?.gender || '',
+        email: data.email || '',
+      });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [data, reset]);
+
+  const saveChanges = async () => {
+    if (!isDirty) {
+      toast.info(t('noChangesMade'), { position: 'top-right' });
+      return;
+    }
+
+    // Get updated values from the form
+    const updatedValues = getValues();
+
+    const formData = {
+      firstName: dirtyFields.firstName
+        ? updatedValues.firstName
+        : data?.firstName || '',
+      lastName: dirtyFields.lastName
+        ? updatedValues.lastName
+        : data?.lastName || '',
+      email: dirtyFields.email ? updatedValues.email : data?.email || '',
+
+      attributes: {
+        phone: dirtyFields.phone
+          ? updatedValues.phone
+          : data?.attributes?.phone || '',
+        gender: dirtyFields.gender
+          ? updatedValues.gender
+          : data?.attributes?.gender || '',
+        country: dirtyFields.country
+          ? updatedValues.country
+          : data?.attributes?.country || '',
+        avatar: currentUser?.avatar || '',
+      },
+    };
+
+    try {
+      await modifyUserMutation({ id: myId, userData: formData });
+      toast.success(t('profileUpdateSuccess'), { position: 'top-right' });
+    } catch (error) {
+      toast.error(t('profileUpdateError'), { position: 'top-right' });
+    }
+  };
 
   return (
     <div className="my-5 w-full lg:w-8/12 px-4 mx-auto">
@@ -91,14 +181,16 @@ export const ProfileSettings = () => {
             </div>
             <div>
               <span className="text-gray-500 leading-8 my-1">
-                Email Address
+                {t('emailAddress')}
               </span>
               <p id="emailId" className="">
                 {data?.email}
               </p>
             </div>
             <div className="mt-5">
-              <span className="text-gray-500 leading-8 my-1">Phone Number</span>
+              <span className="text-gray-500 leading-8 my-1">
+                {t('phoneNumber')}
+              </span>
               <p id="emailId" className="">
                 {data?.attributes?.phone}
               </p>
@@ -179,46 +271,83 @@ export const ProfileSettings = () => {
           </Card>
         </div>
         {/* Right Side */}
-        <div className="w-full md:w-full md:mx-2">
+        <div className="w-full md:w-2/3">
+          {/* Profile Card */}
           <Card className="bg-white mb-8">
-            <div className="border-b-2 mb-6 flex items-center justify-between">
-              <p className="flex items-center">{t('editProfile')}</p>
-            </div>
-            <div className="lg:col-span-2">
-              <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
-                <div className="md:col-span-5">
-                  <label htmlFor="firstName">{t('givenNames')}</label>
+            <form onSubmit={handleSubmit(saveChanges)}>
+              <label htmlFor="firstName">{t('firstName')}</label>
+              <Controller
+                name="firstName"
+                control={control}
+                render={({ field }) => (
                   <TextInput
-                    value={firstName}
+                    {...field}
+                    id="firstName"
+                    placeholder={t('givenNames')}
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                   />
-                </div>
-                <div className="md:col-span-5">
-                  <label htmlFor="lastName">{t('lastName2')}</label>
+                )}
+              />
+
+              <label htmlFor="lastName">{t('lastName2')}</label>
+              <Controller
+                name="lastName"
+                control={control}
+                render={({ field }) => (
                   <TextInput
-                    value={lastName}
+                    {...field}
+                    id="lastName"
+                    placeholder={t('lastName')}
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                   />
-                </div>
-                <div className="md:col-span-5">
-                  <label htmlFor="phone">{t('phoneNumber')}</label>
-                  <NumberInput
-                    enableStepper={false}
-                    onInput={(e: any) => setPhone(e.target.value)}
-                    value={phone}
-                    defaultValue={phone}
+                )}
+              />
+
+              <label htmlFor="phone">{t('phone')}</label>
+              <Controller
+                name="phone"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    type="tel"
+                    id="phone"
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                    placeholder={phone || 'phone'}
+                    placeholder="Phone Number*"
+                    pattern="^\+?\d{0,13}"
                   />
-                </div>
-                <div className="md:col-span-3">
-                  <label htmlFor="country">{t('country2')}</label>
+                )}
+              />
+
+              <label htmlFor="email">{t('email')}</label>
+              <Controller
+                name="email"
+                control={control}
+                rules={{
+                  required: true,
+                  pattern: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
+                }}
+                render={({ field }) => (
+                  <input
+                    {...field}
+                    type="email"
+                    id="email"
+                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                    placeholder={t('email')}
+                  />
+                )}
+              />
+
+              <label htmlFor="country">{t('country2')}</label>
+              <Controller
+                name="country"
+                control={control}
+                render={({ field }) => (
                   <SearchSelect
-                    onValueChange={(e) => {
-                      setCountry(e);
-                    }}
+                    {...field}
+                    id="country"
+                    onValueChange={field.onChange}
                     className="bg-white"
-                    value={country}
                   >
                     {countries.map((item, index) => (
                       <SearchSelectItem
@@ -230,44 +359,42 @@ export const ProfileSettings = () => {
                       </SearchSelectItem>
                     ))}
                   </SearchSelect>
-                </div>
-                <div className="md:col-span-2 w-full">
-                  <label htmlFor="gender">{t('gender2')}</label>
-                  <div className="flex">
-                    <Button
-                      onClick={() => setGender('Male')}
-                      className={`rounded-l ${
-                        gender == 'Male' ? 'bg-indigo-400 text-white' : ''
-                      } text-sm`}
-                    >
-                      {t('male')}
-                    </Button>
-                    <Button
-                      onClick={() => setGender('Female')}
-                      className={`rounded-r ${
-                        gender == 'Female' && 'bg-indigo-400 text-white'
-                      } text-sm ml-2`} //
-                    >
-                      {t('female')}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-8">
-              <Divider className="border border-gray-200" />
-              <div>
-                <div className="flex space-x-2 items-end justify-end">
-                  <Button
-                    type="submit"
-                    className="flex items-center hover:bg-prim-hover text-white"
-                    icon={PlusCircleIcon}
+                )}
+              />
+
+              <label htmlFor="gender">{t('gender2')}</label>
+              <Controller
+                name="gender"
+                control={control}
+                render={({ field }) => (
+                  <SearchSelect
+                    {...field}
+                    id="gender"
+                    onValueChange={field.onChange}
+                    className="bg-white"
                   >
-                    {t('saveChanges')}
-                  </Button>
-                </div>
-              </div>
-            </div>
+                    {[t('male'), t('female')].map((gender, index) => (
+                      <SearchSelectItem
+                        className="bg-white cursor-pointer"
+                        key={index}
+                        value={gender}
+                      >
+                        {gender}
+                      </SearchSelectItem>
+                    ))}
+                  </SearchSelect>
+                )}
+              />
+
+              <Divider className="border border-gray-200" />
+              <Button
+                type="submit"
+                className="flex items-center hover:bg-prim-hover text-white"
+                icon={PlusCircleIcon}
+              >
+                {t('saveChanges')}
+              </Button>
+            </form>
           </Card>
           <Card className="bg-white">
             <div className="mt-1 border-b-2 mb-6 flex items-center justify-between">
@@ -336,60 +463,54 @@ export const ProfileSettings = () => {
                     </Dialog.Title>
                     <div className="mt-5 flex-auto px-4 py-10 pt-0">
                       <form
-                      // onSubmit={handleSubmit((data: any) => onSubmit(data))}
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          onChangePassword(e);
+                        }}
                       >
                         <div className="relative w-full mb-3">
                           <label
                             className="block text-blueGray-600 text-xs font-bold mb-2"
-                            htmlFor="descriptiond"
+                            htmlFor="newPassword"
                           >
-                            {t('new')}
+                            {t('newPass')}
                           </label>
                           <TextInput
+                            id="newPassword"
                             type="password"
                             value={newPass}
-                            onChange={(e) => {
-                              onChange(e.currentTarget.value);
-                            }}
+                            onChange={(e) => setNewPass(e.currentTarget.value)}
                             placeholder="new password"
                             className="mt-1 bg-gray-50"
                           />
-                          {errors.description && (
-                            <span className="text-sm text-red-600">
-                              {t('provideRoleDescrip')}{' '}
-                            </span>
-                          )}
                         </div>
                         <div className="relative w-full mb-3">
                           <label
                             className="block text-blueGray-600 text-xs font-bold mb-2"
-                            htmlFor="descriptiond"
+                            htmlFor="confirmPassword"
                           >
                             {t('confirmPass')}
                           </label>
                           <TextInput
+                            id="confirmPassword"
                             type="password"
+                            value={confirmPass}
+                            onChange={(e) =>
+                              setConfirmPass(e.currentTarget.value)
+                            }
                             placeholder="confirm password"
                             className="mt-1 bg-gray-50"
                           />
-                          {errors.description && (
-                            <span className="text-sm text-red-600">
-                              {t('provideRoleDescrip')}{' '}
-                            </span>
-                          )}
                         </div>
                         <div className="mt-16 flex justify-end space-x-2">
                           <Button
                             type="button"
                             className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                            onClick={() => {
-                              setChangePassword(false);
-                            }}
+                            onClick={() => setChangePassword(false)}
                           >
                             Cancel
                           </Button>
                           <Button
-                            // loading={loading}
                             type="submit"
                             className="inline-flex justify-center rounded-md border border-transparent bg-prim px-4 py-2 text-sm font-medium text-white hover:bg-prim-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                           >
