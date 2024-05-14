@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import {
   Button,
   Card,
@@ -7,28 +8,54 @@ import {
   TableHead,
   TableHeaderCell,
   TableRow,
-  Text,
 } from '@tremor/react';
 import Link from 'next/link';
 import MediaQuery from 'react-responsive';
 import { useGetChartsQuery } from '../superset';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
 
-export const ChartList = () => {
+type ChartItem = {
+  slice_url?: string;
+  slice_name: string;
+  viz_type: string;
+  datasource_name_text: string;
+  created_by: { first_name: string; last_name: string };
+  created_on_delta_humanized: string;
+  changed_by: { first_name: string; last_name: string };
+  changed_on_delta_humanized: string;
+};
+
+interface ChartListProps {
+  filterByDagId?: string;
+}
+
+const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
   const { t } = useTranslation();
   const [searchInput, setSearchInput] = useState<string>('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(5); // Adjusted to 5 items per page
   const { data } = useGetChartsQuery(searchInput);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+
+  let filteredCharts: any = { result: [] };
+
+  if (data?.result && filterByDagId) {
+    const filtered = data.result.filter(
+      (element: any) => element.datasource_name_text === filterByDagId
+    );
+    filteredCharts = { ...data, result: filtered };
+  } else if (data?.result) {
+    filteredCharts = data;
+  }
 
   const lastItemIndex = currentPage * itemsPerPage;
   const firstItemIndex = lastItemIndex - itemsPerPage;
-  const currentItems = data?.result.slice(firstItemIndex, lastItemIndex);
-  const totalPages = Math.ceil((data?.result.length || 0) / itemsPerPage);
-
-  const startItem = firstItemIndex + 1;
-  const endItem = Math.min(lastItemIndex, data?.result.length || 0);
+  const currentItems = filteredCharts.result.slice(
+    firstItemIndex,
+    lastItemIndex
+  );
+  const totalPages = Math.ceil(
+    (filteredCharts.result.length || 0) / itemsPerPage
+  );
 
   const nextPage = () => {
     setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
@@ -41,12 +68,9 @@ export const ChartList = () => {
   return (
     <div>
       <nav className="mb-5">
-        <div>
-          <h2 className="text-3xl">{t('supersetCharts')}</h2>
-          <p className="mt-2 text-gray-600">
-            {t('chartListCreatedOnSuperset')}
-          </p>
-        </div>
+        <h2 className="text-3xl">
+          {filterByDagId ? t('Process Chain Charts') : t('supersetCharts')}
+        </h2>
       </nav>
       <input
         type="text"
@@ -79,44 +103,39 @@ export const ChartList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {currentItems?.map((item, index) => (
+            {currentItems.map((item: ChartItem, index: number) => (
               <TableRow key={index}>
                 <TableCell>
-                  <Text className="font-sans">{item.slice_name}</Text>
+                  <Link
+                    style={{ textDecoration: 'underline' }}
+                    href={`${process.env.NEXT_PUBLIC_SUPERSET_URL}${
+                      item.slice_url || '#'
+                    }`}
+                    target="_blank"
+                  >
+                    {item.slice_name}
+                  </Link>
                 </TableCell>
+
                 <MediaQuery minWidth={768}>
-                  <TableCell>
-                    <Text>{item?.viz_type}</Text>
-                  </TableCell>
+                  <TableCell>{item.viz_type}</TableCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1090}>
-                  <TableCell>
-                    <Text>{item?.datasource_name_text}</Text>
-                  </TableCell>
+                  <TableCell>{item.datasource_name_text}</TableCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1220}>
                   <TableCell>
-                    <Text>
-                      {item?.created_by?.first_name}{' '}
-                      {item?.created_by?.last_name}
-                    </Text>
+                    {item.created_by?.first_name} {item.created_by?.last_name}
                   </TableCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1350}>
+                  <TableCell>{item.created_on_delta_humanized}</TableCell>
                   <TableCell>
-                    <Text>{item?.created_on_delta_humanized}</Text>
-                  </TableCell>
-                  <TableCell>
-                    <Text>
-                      {item?.changed_by?.first_name}{' '}
-                      {item?.changed_by?.last_name}
-                    </Text>
+                    {item.changed_by?.first_name} {item.changed_by?.last_name}
                   </TableCell>
                 </MediaQuery>
-                <TableCell>
-                  <div className="flex space-x-2 justify-end">
-                    <Text>{item?.changed_on_delta_humanized}</Text>
-                  </div>
+                <TableCell className="justify-end">
+                  {item.changed_on_delta_humanized}
                 </TableCell>
               </TableRow>
             ))}
@@ -124,139 +143,25 @@ export const ChartList = () => {
         </Table>
       </Card>
       <div className="flex justify-end items-center mt-4">
-        <div className="mr-4">
-          Showing {startItem} – {endItem} of {data?.count}
-        </div>
-        <div className="flex">
-          <Button
-            onClick={prevPage}
-            className="bg-prim hover:bg-green-900  border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
-            size="xs"
-            disabled={currentPage === 1}
-          >
-            &larr; Prev
-          </Button>
-          <Button
-            onClick={nextPage}
-            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4  focus:outline-none cursor-pointer"
-            size="xs"
-            disabled={currentPage === totalPages}
-          >
-            Next &rarr;
-          </Button>
-        </div>
+        <Button
+          onClick={prevPage}
+          className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
+          size="xs"
+          disabled={currentPage === 1}
+        >
+          ← Prev
+        </Button>
+        <Button
+          onClick={nextPage}
+          className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none cursor-pointer"
+          size="xs"
+          disabled={currentPage === totalPages}
+        >
+          Next →
+        </Button>
       </div>
     </div>
   );
 };
-interface ProcessChainChartProps {
-  dagId: string;
-}
-export const ProcessChainChartList = ({ dagId }: ProcessChainChartProps) => {
-  const { t } = useTranslation();
-  const { data } = useGetChartsQuery('');
-  let processChainCharts: any;
-  if (data?.result && dagId) {
-    const filteredCharts = data.result.filter((element: any) =>
-      element.datasource_name_text.endsWith(`${dagId}`)
-    );
-    processChainCharts = { ...data, result: filteredCharts };
-  }
-  return (
-    <div className="">
-      <nav className="mb-5">
-        <div>
-          <h2 className="text-2xl">{t('Process Chain Charts')}</h2>
-        </div>
-      </nav>
-      <div>
-        <Card className="bg-white">
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableHeaderCell>{t('chartTitle')}</TableHeaderCell>
-                <MediaQuery minWidth={768}>
-                  <TableHeaderCell className="">
-                    {t('visualizationType')}
-                  </TableHeaderCell>
-                </MediaQuery>
-                <MediaQuery minWidth={1090}>
-                  <TableHeaderCell className="">{t('dataset')}</TableHeaderCell>
-                </MediaQuery>
-                <MediaQuery minWidth={1220}>
-                  <TableHeaderCell className="">
-                    {t('createdBy')}
-                  </TableHeaderCell>
-                </MediaQuery>
-                <MediaQuery minWidth={1350}>
-                  <TableHeaderCell className="">
-                    {t('createdOn')}
-                  </TableHeaderCell>
-                </MediaQuery>
-                <MediaQuery minWidth={1624}>
-                  <TableHeaderCell className="">
-                    {t('modifiedBy')}
-                  </TableHeaderCell>
-                </MediaQuery>
-                <TableHeaderCell className="justify-end">
-                  {t('lastModified')}
-                </TableHeaderCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {processChainCharts?.result.map((item: any, index: any) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    <Link
-                      style={{ textDecoration: 'underline' }}
-                      href={
-                        process.env.NEXT_PUBLIC_SUPERSET_URL + item.slice_url
-                      }
-                      target="_blank"
-                    >
-                      {item.slice_name}
-                    </Link>
-                  </TableCell>
-                  <MediaQuery minWidth={768}>
-                    <TableCell className="">
-                      <Text>{item?.viz_type}</Text>
-                    </TableCell>
-                  </MediaQuery>
-                  <MediaQuery minWidth={1090}>
-                    <TableCell className="">
-                      <Text>{item?.datasource_name_text}</Text>
-                    </TableCell>
-                  </MediaQuery>
-                  <MediaQuery minWidth={1220}>
-                    <TableCell className="">
-                      <Text>
-                        {item?.created_by?.first_name}{' '}
-                        {item?.created_by?.last_name}
-                      </Text>
-                    </TableCell>
-                  </MediaQuery>
-                  <MediaQuery minWidth={1350}>
-                    <TableCell className="">
-                      <Text>{item?.created_on_delta_humanized}</Text>
-                    </TableCell>
-                    <TableCell className="">
-                      <Text>
-                        {item?.changed_by?.first_name}{' '}
-                        {item?.changed_by?.last_name}
-                      </Text>
-                    </TableCell>
-                  </MediaQuery>
-                  <TableCell>
-                    <div className="flex space-x-2 justify-end">
-                      <Text>{item?.changed_on_delta_humanized}</Text>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Card>
-      </div>
-    </div>
-  );
-};
+
+export { ChartList };
