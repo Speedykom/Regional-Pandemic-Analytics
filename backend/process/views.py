@@ -14,7 +14,7 @@ class AirflowInstance:
     password = os.getenv("AIRFLOW_PASSWORD")
 
 class DruidInstance:
-    url = os.getenv("DRUID_COORDINATOR_URL")
+    url = os.getenv("DRUID_URL")
     username = "admin"
     password = os.getenv("DRUID_ADMIN_PASSWORD")
 
