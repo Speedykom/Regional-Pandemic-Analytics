@@ -21,6 +21,8 @@ const frTranslation = {
   description: 'Description',
   createPipeline: 'Créer un pipeline',
   uploadPipeline: 'Charger un pipeline',
+  pipelineCheckSuccessful: 'Vérification du pipeline réussie',
+  pipelineCheckFailed: 'Échec de la vérification du pipeline',
   pipelineInvalidName:
     'Caractères invalides. Seuls les lettres de la plage Unicode spécifiée, ., -, et _ sont autorisés.',
   view: 'Voir',
@@ -29,6 +31,7 @@ const frTranslation = {
   viewAndManageProcessChains:
     'Afficher et gérer toutes les chaînes de processus',
   addProcessChain: 'Ajouter une chaîne de processus',
+  ShowDisabledProcessChain: 'Afficher les chaînes de processus inactive',
 
   supersetCharts: 'Graphiques Superset',
   chartListCreatedOnSuperset:
@@ -138,6 +141,11 @@ const frTranslation = {
   passwordChangeSuccess: 'Votre mot de passe a été changé avec succès.',
   passwordChangeError:
     'Une erreur est survenue lors du changement de votre mot de passe.',
+  savePipelineAsTemplate: {
+    errorMessage: 'Impossible de sauvegarder le pipeline en tant que modèle',
+    successMessage: 'Pipeline enregistré avec succès en tant que modèle',
+    saveButton: 'Enregistrer comme modèle',
+  },
 };
 
 export default frTranslation;
