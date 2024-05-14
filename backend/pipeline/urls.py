@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import PipelineDeleteView, PipelineUploadView, PipelineDownloadView, PipelineListView, PipelineDetailView
+from .views import PipelineSaveView, PipelineDeleteView, PipelineUploadView, PipelineDownloadView, PipelineListView, PipelineDetailView
 
 urlpatterns = [
     path("", PipelineListView.as_view()),
@@ -9,4 +9,5 @@ urlpatterns = [
     path("/<str:name>", PipelineDetailView.as_view()),
     path("/download/<str:name>", PipelineDownloadView.as_view()),
     path("/delete/<str:name>", PipelineDeleteView.as_view()),
+    path("/save/<str:name>", PipelineSaveView.as_view()),
 ]
