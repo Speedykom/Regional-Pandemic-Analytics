@@ -102,16 +102,18 @@ export const AddProcess = ({
               render={({ field }) => {
                 return (
                   <SearchSelect {...field} placeholder="Pipeline Template">
-                    {pipelineList.data.map((pipeline) => {
-                      return (
-                        <SearchSelectItem
-                          key={pipeline.name}
-                          value={pipeline.name}
-                        >
-                          {pipeline.name}
-                        </SearchSelectItem>
-                      );
-                    })}
+                    {pipelineList.data
+                      .filter((pipeline) => pipeline.check_status === 'success')
+                      .map((pipeline) => {
+                        return (
+                          <SearchSelectItem
+                            key={pipeline.name}
+                            value={pipeline.name}
+                          >
+                            {pipeline.name}
+                          </SearchSelectItem>
+                        );
+                      })}
                   </SearchSelect>
                 );
               }}
