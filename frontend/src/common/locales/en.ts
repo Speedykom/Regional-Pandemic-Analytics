@@ -159,6 +159,7 @@ const enTranslation = {
     successMessage: 'Pipeline deleted successfully',
     deleteButton: 'Delete',
     cancelButton: 'Cancel',
+    deleteCommand: 'DELETE',
     active: 'active',
     inactive: 'inactive',
     processName: 'Name',
