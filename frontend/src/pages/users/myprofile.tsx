@@ -1,9 +1,10 @@
-import Layout from '@/common/components/Dashboard/Layout';
-import CryptoJS from 'crypto-js';
-import { countries } from '@/common/utils/countries';
-import getConfig from 'next/config';
+import React, { Fragment, useEffect, useState, useCallback } from 'react';
+import { useSelector } from 'react-redux';
+import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Fragment, useEffect, useState } from 'react';
+import getConfig from 'next/config';
+import { toast } from 'react-toastify';
+import { FaCamera } from 'react-icons/fa';
 import {
   Badge,
   Button,
@@ -14,16 +15,8 @@ import {
   Text,
   TextInput,
 } from '@tremor/react';
-import { toast } from 'react-toastify';
-import {
-  useGetUserQuery,
-  useChangePasswordMutation,
-} from '@/modules/user/user';
-import { useForm, Controller } from 'react-hook-form';
+import { useDropzone } from 'react-dropzone';
 import { Dialog, Transition } from '@headlessui/react';
-import { selectCurrentUser } from '@/modules/auth/auth';
-import { useSelector } from 'react-redux';
-import { useModifyUserMutation } from '@/modules/user/user';
 import {
   CheckIcon,
   PencilSquareIcon,
@@ -32,18 +25,39 @@ import {
   WifiIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
+import CryptoJS from 'crypto-js';
+import { countries } from '@/common/utils/countries';
+import Layout from '@/common/components/Dashboard/Layout';
+import {
+  useGetUserQuery,
+  useChangePasswordMutation,
+  useUploadAvatarMutation,
+  useGetUserAvatarQuery,
+  useModifyUserMutation,
+} from '@/modules/user/user';
+import { selectCurrentUser } from '@/modules/auth/auth';
+
 export const ProfileSettings = () => {
   const [changePassword, setChangePassword] = useState(false);
-  const [newPass, setNewPass] = useState<string>('');
-  const [confirmPass, setConfirmPass] = useState<string>('');
+  const [newPass, setNewPass] = useState('');
+  const [confirmPass, setConfirmPass] = useState('');
   const currentUser = useSelector(selectCurrentUser);
   const { t } = useTranslation();
-  const [changePasswordMutation] = useChangePasswordMutation();
+  const { publicRuntimeConfig } = getConfig();
 
-  const [avatar] = useState(currentUser?.avatar);
-
-  const myId: any = currentUser?.id;
+  const myId = currentUser?.id || '';
   const { data } = useGetUserQuery(myId);
+  const {
+    data: avatarData,
+    isLoading,
+    isError,
+  } = useGetUserAvatarQuery(myId, { skip: !myId });
+
+  const [imageUrl, setImageUrl] = useState(avatarData || '/avater.png');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadAvatarMutation] = useUploadAvatarMutation();
+  const [changePasswordMutation] = useChangePasswordMutation();
+  const [modifyUserMutation] = useModifyUserMutation();
   const {
     control,
     handleSubmit,
@@ -60,9 +74,6 @@ export const ProfileSettings = () => {
       email: '',
     },
   });
-  const { publicRuntimeConfig } = getConfig();
-
-  const [modifyUserMutation] = useModifyUserMutation();
 
   const triggerPasswordChange = () => {
     setChangePassword(!changePassword);
@@ -99,7 +110,43 @@ export const ProfileSettings = () => {
       toast.error(t('passwordChangeError'), { position: 'top-right' });
     }
   };
+  useEffect(() => {
+    if (!isLoading && !isError && avatarData) {
+      setImageUrl(avatarData);
+    }
+  }, [avatarData, isLoading, isError]);
 
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    setSelectedFile(file);
+    setImageUrl(URL.createObjectURL(file));
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      'image/jpeg': ['.jpeg', '.jpg'],
+      'image/png': ['.png'],
+      'image/gif': ['.gif'],
+    },
+    maxFiles: 1,
+  });
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      toast.info(t('uploadMessages.selectImage'));
+      return;
+    }
+    const formData = new FormData();
+    formData.append('uploadedFile', selectedFile);
+    try {
+      await uploadAvatarMutation({ avatarData: formData, id: myId }).unwrap();
+      toast.success(t('uploadMessages.uploadSuccess'));
+      setSelectedFile(null);
+    } catch (error) {
+      toast.error(t('uploadMessages.uploadError'));
+    }
+  };
   useEffect(() => {
     if (data) {
       reset({
@@ -147,7 +194,6 @@ export const ProfileSettings = () => {
         country: dirtyFields.country
           ? updatedValues.country
           : data?.attributes?.country || '',
-        avatar: currentUser?.avatar || '',
       },
     };
 
@@ -166,14 +212,57 @@ export const ProfileSettings = () => {
         <div className="w-full md:w-2/3">
           {/* Profile Card */}
           <Card className="mb-6 bg-white p-5">
-            <div className="flex ">
-              <img
-                className="h-32 w-32 rounded-md"
-                src={avatar || '/avater.png'}
-                alt=""
-              />
-              <input type="file" style={{ display: 'none' }} />
+            <div className="flex flex-col items-center justify-center p-4">
+              <div
+                {...getRootProps()}
+                className="w-64 h-64 rounded-lg overflow-hidden border-2 border-dashed border-gray-400 cursor-pointer hover:border-blue-500 transition-all relative"
+              >
+                <input {...getInputProps()} />
+                <div className="flex flex-col items-center justify-center h-full">
+                  {imageUrl ? (
+                    <div className="relative w-full h-full">
+                      <img
+                        src={imageUrl}
+                        alt="Profile avatar"
+                        className={`object-cover w-full h-full ${
+                          isDragActive ? 'opacity-50' : 'opacity-100'
+                        }`}
+                      />
+                      {/* Button for changing the profile picture */}
+                      <Button
+                        onClick={handleUpload}
+                        className="absolute bottom-0 right-0 mb-2 mr-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                        style={{ zIndex: 10 }}
+                      >
+                        <FaCamera className="inline mr-2" />
+                        {t('changePicture')}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <FaCamera className="mx-auto h-12 w-12 text-gray-400" />
+                      <p className="mt-1 text-sm text-gray-600">
+                        Click or drag profile picture to upload
+                      </p>
+                    </div>
+                  )}
+                  {isDragActive && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-25">
+                      <p className="text-white text-lg">
+                        Drop the files here...
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
+            <Button
+              onClick={handleUpload}
+              disabled={!selectedFile}
+              className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              {t('uploadPicture')}
+            </Button>
             <div className="">
               <h1 className="text-gray-900 font-bold text-xl leading-8 my-1">
                 {data?.firstName} {data?.lastName}
