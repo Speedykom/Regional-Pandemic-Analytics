@@ -139,6 +139,15 @@ const frTranslation = {
   passwordChangeSuccess: 'Votre mot de passe a été changé avec succès.',
   passwordChangeError:
     'Une erreur est survenue lors du changement de votre mot de passe.',
+  uploadMessages: {
+    selectImage:
+      'Veuillez sélectionner une image et cliquer sur "Télécharger une photo".',
+    uploadSuccess: 'La photo de profil a été actualisée avec succès',
+    uploadError:
+      "Une erreur s'est produite lors du chargement de l'image de profil",
+  },
+  changePicture: 'Changer la photo',
+  uploadPicture: 'Télécharger une photo',
   savePipelineAsTemplate: {
     errorMessage: 'Impossible de sauvegarder le pipeline en tant que modèle',
     successMessage: 'Pipeline enregistré avec succès en tant que modèle',
