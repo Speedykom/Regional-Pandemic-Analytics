@@ -156,13 +156,14 @@ const frTranslation = {
     successMessage: 'Le pipeline a été supprimé avec succès.',
     deleteButton: 'Supprimer',
     cancelButton: 'Annuler',
+    deleteCommand: 'SUPPRIMER',
     active: 'actif',
     inactive: 'inactif',
     processName: 'Nom',
     processScheduleIntervalLabel: 'Intervalle de planification',
     processStatus: 'Status',
     confirmationMessage:
-      'Veuillez taper "DELETE" pour confirmer la suppression du pipeline:',
+      'Veuillez taper "SUPPRIMER" pour confirmer la suppression du pipeline:',
     confirmationPlaceholder: 'Tapez...',
   },
 };
