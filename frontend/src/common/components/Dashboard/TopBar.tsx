@@ -18,6 +18,7 @@ import {
 } from '@/modules/auth/auth';
 import { toast } from 'react-toastify';
 import LanguageSelector from '../LanguageSelector';
+import { useGetUserAvatarQuery } from '@/modules/user/user';
 
 interface props {
   isOpen: boolean;
@@ -32,6 +33,13 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
   const [logoutFromHop] = useLogoutFromHopMutation();
   const currentUser = useSelector(selectCurrentUser);
   const username = currentUser?.given_name;
+  const myId = currentUser?.id || '';
+
+  const { data: userProfileImage } = useGetUserAvatarQuery(myId, {
+    skip: !myId,
+    refetchOnMountOrArgChange: true,
+  });
+
   const { t } = useTranslation();
   const handleLogout = async () => {
     logout()
@@ -72,11 +80,7 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
             <Menu.Button className="inline-flex w-full justify-center items-center">
               <picture>
                 <img
-                  src={
-                    currentUser && currentUser?.avatar
-                      ? currentUser?.avatar
-                      : '/avater.png'
-                  }
+                  src={userProfileImage ? userProfileImage : '/avater.png'}
                   className="rounded-full h-8 md:mr-4 border-2 border-white shadow-sm"
                   alt="avat"
                 />
