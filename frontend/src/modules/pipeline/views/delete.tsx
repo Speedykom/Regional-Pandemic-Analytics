@@ -136,7 +136,7 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
         <Button
           onClick={() => handleOk(data?.dags || [])}
           className="bg-prim hover:bg-prim-hover text-white border-0 text-sm"
-          disabled={confirmationText !== 'DELETE'}
+          disabled={confirmationText !== t('deletePipeline.deleteCommand')}
         >
           {t('deletePipeline.deleteButton')}
         </Button>
