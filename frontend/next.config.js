@@ -17,6 +17,9 @@ const nextConfig = {
     NEXT_PUBLIC_PASSWORD_IVHEX: process.env.NEXT_PUBLIC_PASSWORD_IVHEX,
 
   },
+  images: {
+    domains: [process.env.NEXT_MINIO_DOMAIN_NAME],
+  },
 };
 
 module.exports = nextConfig;
