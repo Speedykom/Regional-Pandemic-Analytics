@@ -1,12 +1,25 @@
+
 import os
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+from datetime import datetime
 from utils.filename import gen_filename
+from utils.minio import client
+from utils.keycloak_auth import get_current_user_id
+from rest_framework.parsers import MultiPartParser
+from django.core.cache import cache
+from datetime import datetime, timezone
+import logging
+import requests
+from core.keycloak_impersonation import get_auth_token
+from django.http import StreamingHttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseServerError
+
+
 
 from django.utils.datastructures import MultiValueDictKeyError
 
@@ -16,6 +29,7 @@ from .models import *
 from utils.generators import get_random_secret
 from utils.keycloak_auth import get_keycloak_admin
 from django.conf import settings
+from django.http import HttpResponseBadRequest, HttpResponseServerError, HttpResponseNotFound
 
 
 def homepage():
@@ -205,9 +219,15 @@ class UserRolesView(APIView):
             return Response({'errorMessage': 'Unable to retrieve the user roles'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+
+
+
+
+
+
 class UserAvatarView(APIView):
     """
-    API view to read/upload Keycloak user avatar to minio
+    API view to read/upload Keycloak user avatar to the backend.
     """
     keycloak_scopes = {
         'GET': 'user:read',
@@ -215,28 +235,80 @@ class UserAvatarView(APIView):
     }
     parser_classes = (MultiPartParser,)
 
-    def get(self, request, **kwargs):
-        filename = request.query_params['filename']
-        return Response(url.read(), content_type='binary/octet-stream')
+    def get(self, request, *args, **kwargs):
+        try:
+            user_id = kwargs['id']
+            if not user_id:
+                return HttpResponseBadRequest("User ID is missing.")
+
+            bucket_name = 'avatars'
+            prefix = f'{user_id}/'
+            objects = client.list_objects(bucket_name, prefix=prefix)
+
+            first_object = next(objects, None)
+            if not first_object:
+                return HttpResponseNotFound("Avatar not found.")
+
+            object_name = first_object.object_name
+            file_data = client.get_object(bucket_name, object_name)
+
+            # Set correct content type
+            if first_object.content_type:
+                content_type = first_object.content_type
+            else:
+                # Default to a common type if undefined
+                content_type = "image/jpeg"
+
+            response = StreamingHttpResponse(file_data, content_type=content_type)
+            response["Content-Disposition"] = f'inline; filename="{object_name}"'
+            return response
+        except Exception as err:
+            logging.error(f"Error retrieving avatar: {err}")
+            return HttpResponseServerError(f"Error: {err}")
+
+
 
     def post(self, request, **kwargs):
-        """Receives a request to upload a file and sends it to filesystem for now. Later the file will be uploaded to minio server."""
+        user_id = kwargs['id']
+        if not user_id:
+            return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
+
+        uploaded_file = request.FILES.get("uploadedFile")
+        if not uploaded_file:
+            return HttpResponseBadRequest("No file uploaded.")
+
         try:
-            file_obj = request.data['file']
+            keycloak_admin = get_keycloak_admin()
+            # Fetch the current user data to preserve existing attributes
+            current_user_data = keycloak_admin.get_user(user_id)
+            current_attributes = current_user_data.get('attributes', {})
 
-            name_generator = gen_filename(file_obj.name)
-            file_obj.name = name_generator['newName']
+            bucket_name = 'avatars'
+            prefix = f'{user_id}/'
+            object_name = f'{prefix}avatar'  # Always use the same object name
 
-            try:
-                keycloak_admin = get_keycloak_admin()
-                user_data = {
-                    'attributes': {
-                        'avatar': f'{os.getenv("AVATAR_BASE_URL")}{file_obj.name}'
-                    }
-                }
-                keycloak_admin.update_user(kwargs['id'], user_data)
-                return Response({'message': 'Avatar uploaded successfully'}, status=status.HTTP_200_OK)
-            except Exception as err:
-                return Response({'errorMessage': 'Unable to update the user avatar'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        except MultiValueDictKeyError:
-            return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
+            # Delete the old avatar if it exists
+
+            client.remove_object(bucket_name, object_name)
+
+            # Upload new avatar
+
+            client.put_object(
+                bucket_name=bucket_name,
+                object_name=object_name,
+                data=uploaded_file,
+                length=uploaded_file.size,
+                content_type=uploaded_file.content_type,
+                metadata={"uploaded": f"{datetime.now(timezone.utc)}"}
+            )
+
+            # Update the avatar URL in the current attributes
+
+            # Update the user's data in Keycloak with all preserved attributes
+            cache_key = f'user_avatar_{user_id}'
+            cache.delete(cache_key)
+
+            return Response({'message': 'Avatar uploaded successfully'}, status=status.HTTP_200_OK)
+        except Exception as err:
+            logging.error(f"Unable to update the user avatar: {str(err)}")
+            return Response({'errorMessage': f'Unable to update the user avatar: {str(err)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
