@@ -11,7 +11,6 @@ export interface User {
   lastName: string;
   email: string;
   attributes: {
-    avatar?: string[];
     code?: string[];
     phone?: string[];
     country?: string[];
