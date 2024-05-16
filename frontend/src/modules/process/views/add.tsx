@@ -42,7 +42,7 @@ export const AddProcess = ({
   const [createProcess] = useCreateProcessMutation();
   const unpermittedCharactersRegex = /[!"#$%&'()*+,-\/.:;<=>?@\[\]^`{|}~]/;
 
-  const handleInputChange = (value) => {
+  const handleInputChange = (value: string) => {
     setInputValue(value);
     const isValid = !unpermittedCharactersRegex.test(value);
     setValue('processName', value, { shouldValidate: true });
@@ -114,7 +114,7 @@ export const AddProcess = ({
               className="w-full h-12"
               placeholder="Process Chain"
               value={inputValue} // Added input value prop
-              onChange={(e) => handleInputChange(e.target.value)} // Added onChange handler
+              onChange={(e) => handleInputChange(e.target?.value)} // Added onChange handler
             />
           </div>
 
