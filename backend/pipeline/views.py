@@ -298,7 +298,7 @@ class PipelineDeleteView(APIView):
         # Disable all dags using the pipeline
         dag_ids = request.data.get("dags", [])
         
-        result = self._toggle_processes(dag_ids)
+        result = self._deactivate_processes(dag_ids)
         if result["status"] == "failed":    
             return Response({"status": "failed", "message": result["message"] }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
   
@@ -326,48 +326,46 @@ class PipelineDeleteView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
-    def _toggle_processes(self, dag_ids):
+    def _deactivate_processes(self, dag_ids):
         if dag_ids is not None and dag_ids:
             all_successful = True
             messages = []
+            deactivated_processes = []
 
             for dag_id in dag_ids:
-                result = self._toggle_process_status(dag_id)
+                result = self._set_process_status(dag_id, True)
                 if result["status"] == "failed":
                     all_successful = False
                     messages.append(result["message"])
+                else:
+                    deactivated_processes.append(dag_id)
     
             if all_successful:
                 return {"status": "success"}
             else:
+                # reactivate all deactivated processes
+                for dag_id in deactivated_processes:
+                    reactivation_result = self._set_process_status(dag_id, False)
+                    messages.append(reactivation_result["message"])
                 return {"status": "failed", 
-                    "message": "One or more process status toggles failed.",
+                    "message": "One or more process deactivation failed.",
                     "errors": messages}
         return {"status": "success"}
 
-    def _toggle_process_status(self, dag_id):
+    def _set_process_status(self, dag_id, is_deactivated):
         route = f"{AirflowInstance.url}/dags/{dag_id}"
-    
-        try:
-            # Retrieve the current status of a process
-            airflow_response = requests.get(
-                route, auth=(AirflowInstance.username, AirflowInstance.password)
-            )
-            if not airflow_response.ok:
-                return {"status": "failed", "message": f"Failed to retrieve DAG status for {dag_id}"}
-        
-            is_paused = airflow_response.json()["is_paused"]
 
-            # Toggle the process status
+        try:
+            # deactivate the process status
             airflow_toggle_response = requests.patch(
                 route,
                 auth=(AirflowInstance.username, AirflowInstance.password),
-                json={"is_paused": not is_paused},
+                json={"is_paused": is_deactivated},
             )
         
             if airflow_toggle_response.ok:
                 return {"status": "success"}
             else:
-                return {"status": "failed", "message": f"Failed to toggle process status for {dag_id}"}
+                return {"status": "failed", "message": f"Failed to update process status for {dag_id}"}
         except Exception as e:
-            return {"status": "failed", "message": f"Exception occured while process toggle {dag_id}: {str(e)}"}
+            return {"status": "failed", "message": f"Exception occured while updating process status {dag_id}: {str(e)}"}
