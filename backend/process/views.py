@@ -146,6 +146,9 @@ class ProcessView(ViewSet):
         "DELETE": "process:delete",
     }
 
+    def __init__(self):
+        self.unpermitted_characters_regex = re.compile(r'[!"#$%&\'()*+,\-\s.\/:;<=>?@\[\]^`{|}~]')
+
     def list(self, request):
         try:
             # Get username
@@ -222,13 +225,12 @@ class ProcessView(ViewSet):
                 schedule_interval=request.data["schedule_interval"],
                 date=datetime.fromisoformat(request.data["date"]),
             )
-            unpermitted_characters_regex = re.compile(r'[!"#$%&\'()*+,\-\s.\/:;<=>?@\[\]^`{|}~]')
-            if unpermitted_characters_regex.search(new_dag_config.dag_id):
+            if self.unpermitted_characters_regex.search(new_dag_config.dag_id):
                 return Response(
                     {"status": "failed", "message": "DAG ID contains unpermitted characters"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            if unpermitted_characters_regex.search(new_dag_config.pipeline_name):
+            if self.unpermitted_characters_regex.search(new_dag_config.pipeline_name):
                 return Response(
                     {"status": "failed", "message": "Pipeline name contains unpermitted characters"},
                     status=status.HTTP_400_BAD_REQUEST
