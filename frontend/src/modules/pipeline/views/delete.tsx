@@ -11,7 +11,7 @@ import {
   TableRow,
   TextInput,
 } from '@tremor/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader } from '@/common/components/Loader';
 import { DagDetails } from '@/modules/process/interface';
@@ -28,10 +28,26 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
   const { data, isLoading, isSuccess } = useGetProcessByTaskIdQuery(taskId);
   const [deleteTask] = useDeletePipelineMutation();
   const [confirmationText, setConfirmationText] = useState('');
+  const [deactivatedProcesses, setDeactivatedProcesses] = useState<
+    DagDetails[]
+  >([]);
 
-  const renderProcessChainData = (processChainList: DagDetails[]) => {
-    if (!!processChainList) {
-      return processChainList.map((process) => {
+  useEffect(() => {
+    if (isSuccess) {
+      const deactivated =
+        data?.dags.filter((process: { status: any }) => !process.status) || [];
+      setDeactivatedProcesses(deactivated);
+    }
+  }, [isSuccess, data]);
+
+  const renderProcessChainData = () => {
+    return deactivatedProcesses.map(
+      (process: {
+        dag_id: any;
+        name: any;
+        schedule_interval: any;
+        status: any;
+      }) => {
         return (
           <TableRow key={process.dag_id}>
             <TableCell className="font-sans">{process.name}</TableCell>
@@ -49,12 +65,14 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
             )}
           </TableRow>
         );
-      });
-    }
+      }
+    );
   };
 
-  const handleOk = (processChainList: DagDetails[]) => {
-    const dagIdList = processChainList.map((dag) => dag.dag_id);
+  const handleOk = () => {
+    const dagIdList = deactivatedProcesses.map(
+      (dag: { dag_id: any }) => dag.dag_id
+    );
     //delete pipeline
     deleteTask({
       name: taskId,
@@ -109,7 +127,7 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
                   <TableHeaderCell />
                 </TableRow>
               </TableHead>
-              <TableBody>{renderProcessChainData(data?.dags)}</TableBody>
+              <TableBody>{renderProcessChainData()}</TableBody>
             </Table>
           </Card>
         </div>
@@ -134,7 +152,7 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
           {t('deletePipeline.cancelButton')}
         </Button>
         <Button
-          onClick={() => handleOk(data?.dags || [])}
+          onClick={() => handleOk()}
           className="bg-prim hover:bg-prim-hover text-white border-0 text-sm"
           disabled={confirmationText !== t('deletePipeline.deleteCommand')}
         >
