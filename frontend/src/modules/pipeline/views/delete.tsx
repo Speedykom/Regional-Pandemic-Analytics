@@ -28,20 +28,20 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
   const { data, isLoading, isSuccess } = useGetProcessByTaskIdQuery(taskId);
   const [deleteTask] = useDeletePipelineMutation();
   const [confirmationText, setConfirmationText] = useState('');
-  const [deactivatedProcesses, setDeactivatedProcesses] = useState<
-    DagDetails[]
-  >([]);
+  const [activatedProcesses, setActivatedProcesses] = useState<DagDetails[]>(
+    []
+  );
 
   useEffect(() => {
     if (isSuccess) {
-      const deactivated =
+      const activated =
         data?.dags.filter((process: { status: any }) => !process.status) || [];
-      setDeactivatedProcesses(deactivated);
+      setActivatedProcesses(activated);
     }
   }, [isSuccess, data]);
 
   const renderProcessChainData = () => {
-    return deactivatedProcesses.map(
+    return activatedProcesses.map(
       (process: {
         dag_id: any;
         name: any;
@@ -70,7 +70,7 @@ export const DeletePipeline = ({ hideModal, taskId }: DeletePipelineProps) => {
   };
 
   const handleOk = () => {
-    const dagIdList = deactivatedProcesses.map(
+    const dagIdList = activatedProcesses.map(
       (dag: { dag_id: any }) => dag.dag_id
     );
     //delete pipeline
