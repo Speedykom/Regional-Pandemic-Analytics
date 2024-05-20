@@ -272,9 +272,7 @@ export const AddUser = () => {
                         pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                       })}
                       error={!!errors.email}
-                      errorMessage={
-                        errors.email ? t('validEmail') : ''
-                      }
+                      errorMessage={errors.email ? t('validEmail') : ''}
                       placeholder="john.doe@mail.com"
                       type="text"
                       className="bg-white"
