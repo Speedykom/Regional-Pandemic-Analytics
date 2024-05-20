@@ -7,7 +7,6 @@ import {
   UserResponse,
   Users,
 } from './interface';
-
 interface DisableResponse {
   message: string;
 }
@@ -93,6 +92,30 @@ export const userApi = createApi({
         },
       }),
     }),
+    uploadAvatar: builder.mutation<any, { id: string; avatarData: FormData }>({
+      query: ({ id, avatarData }) => ({
+        url: `account/user/${id}/avatar`,
+        method: 'POST',
+        body: avatarData,
+      }),
+      invalidatesTags: ['User'],
+    }),
+
+    getUserAvatar: builder.query<string, string>({
+      query: (id) => ({
+        url: `account/user/${id}/avatar`,
+        responseHandler: async (response: Response) =>
+          new Promise(async (resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(await response.blob());
+          }),
+        validateStatus(res: Response) {
+          return res.ok && res.status !== 202;
+        },
+      }),
+      providesTags: (result, error, id) => [{ type: 'User', id }],
+    }),
   }),
 });
 
@@ -104,4 +127,6 @@ export const {
   useResetPasswordMutation,
   useModifyUserMutation,
   useChangePasswordMutation,
+  useUploadAvatarMutation,
+  useGetUserAvatarQuery,
 } = userApi;

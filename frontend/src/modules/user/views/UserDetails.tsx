@@ -5,13 +5,23 @@ import {
   WifiIcon,
   SignalSlashIcon,
 } from '@heroicons/react/24/outline';
-import { useGetUserQuery } from '@/modules/user/user';
+import { useGetUserAvatarQuery, useGetUserQuery } from '@/modules/user/user';
 import { useRouter } from 'next/router';
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '@/modules/auth/auth';
 
 export const UserDetails = () => {
   const router = useRouter();
   const { id } = router.query;
   const { data } = useGetUserQuery(String(id));
+  const currentUser = useSelector(selectCurrentUser);
+
+  const { data: userProfileImage } = useGetUserAvatarQuery(
+    currentUser?.id ?? '',
+    {
+      skip: !currentUser?.id,
+    }
+  );
 
   return (
     <section className="py-1 bg-blueGray-50">
@@ -23,11 +33,8 @@ export const UserDetails = () => {
                 User Details
               </h6>
               <img
-                src={
-                  data?.attributes?.avatar
-                    ? data?.attributes?.avatar[0]
-                    : '/avater.png'
-                }
+                src={userProfileImage ? userProfileImage : '/avater.png'}
+                alt="avatar"
                 className="h-24 w-24 rounded-md"
               />
             </div>
