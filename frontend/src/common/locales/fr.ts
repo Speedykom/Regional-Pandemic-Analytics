@@ -238,8 +238,6 @@ const frTranslation = {
     totalSize: 'Taille totale',
   },
 
-
-
   addChart: 'Ajouter un graphique',
 
   footer: {

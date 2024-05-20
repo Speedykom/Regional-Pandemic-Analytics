@@ -34,11 +34,10 @@ export default function DataSourceSelection({
 
   return (
     <div className="flex flex-col space-y-3">
-      
       <div className="flex justify-center">
         <Table className="flex justify-center overflow-visible w-1/2">
           <TableRow className="">
-          <TableHeaderCell>
+            <TableHeaderCell>
               {t('dataSourceSelection.pipelineUsed')}
             </TableHeaderCell>
             <TableCell>{pipeline.slice(0, -4)}</TableCell>

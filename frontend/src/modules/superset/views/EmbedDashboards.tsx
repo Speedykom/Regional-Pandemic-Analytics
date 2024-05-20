@@ -21,7 +21,6 @@ import { embedDashboard } from '@superset-ui/embedded-sdk';
 
 import { useTranslation } from 'react-i18next';
 
-
 type EmbeddedDashboardProps = {
   selectedDashboard: string | null;
   supersetBaseUrl: string;
