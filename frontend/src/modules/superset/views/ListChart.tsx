@@ -157,7 +157,7 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
           size="xs"
           disabled={currentPage === totalPages}
         >
-        {t('next')} →
+          {t('next')} →
         </Button>
       </div>
     </div>
