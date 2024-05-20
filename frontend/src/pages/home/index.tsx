@@ -50,9 +50,7 @@ export default function Home() {
     <Layout>
       <nav className="mb-5">
         <div>
-          <h2 className="text-3xl">
-            {t('home.favorite_dashboard')}
-          </h2>
+          <h2 className="text-3xl">{t('home.favorite_dashboard')}</h2>
         </div>
       </nav>
       <EmbedDashboards
