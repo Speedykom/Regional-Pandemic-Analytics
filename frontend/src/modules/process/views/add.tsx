@@ -159,7 +159,10 @@ export const AddProcess = ({
               defaultValue={''}
               render={({ field }) => {
                 return (
-                  <SearchSelect {...field} placeholder={t('addProcess.scheduleIntervalPlaceholder')}>
+                  <SearchSelect
+                    {...field}
+                    placeholder={t('addProcess.scheduleIntervalPlaceholder')}
+                  >
                     {schedule_intervals.map((interval) => {
                       return (
                         <SearchSelectItem key={interval} value={interval}>
