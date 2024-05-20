@@ -182,6 +182,7 @@ export const MyPipelines = () => {
               </Button>
               <Button
                 onClick={() => saveAsTemplate(item?.name)}
+                disabled={item?.check_status === 'failed'}
                 className="hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white"
               >
                 {t('savePipelineAsTemplate.saveButton')}
