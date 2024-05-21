@@ -24,7 +24,7 @@ const frTranslation = {
   pipelineCheckSuccessful: 'Vérification du pipeline réussie',
   pipelineCheckFailed: 'Échec de la vérification du pipeline',
   pipelineInvalidName:
-    'Caractères invalides. Seuls les lettres de la plage Unicode spécifiée, ., -, et _ sont autorisés.',
+    'Caractères invalides. Le nom du pipeline doit être composé exclusivement de caractères alphanumériques, de tirets, de points et de tirets bas.',
   view: 'Voir',
 
   processChain: 'Chaîne de processus',
