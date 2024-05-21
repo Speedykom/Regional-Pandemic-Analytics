@@ -42,13 +42,12 @@ class PipelineListView(APIView):
             object_name = object.object_name.removeprefix(
                         f"pipelines-created/{user_id}/"
                     ).removesuffix(".hpl")
-            description = unquote(object.metadata["X-Amz-Meta-Description"])
             if query:
                 if (re.search(query, object_name, re.IGNORECASE)):
                     pipelines.append(
                         {
                             "name": object_name,
-                            "description": description,
+                            "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                             "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
                             "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                         })
@@ -56,7 +55,7 @@ class PipelineListView(APIView):
                 pipelines.append(
                 {
                     "name": object_name,
-                    "description": description,
+                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                     "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
                     "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                 }
@@ -71,7 +70,6 @@ class PipelineListView(APIView):
         user_id = get_current_user_id(request)
         name = request.data.get("name")
         description = request.data.get("description")
-        description = quote(description.encode('utf-8'))
         template = request.data.get("template")
         try:
             # Checks if an object with the same name exits
@@ -97,7 +95,7 @@ class PipelineListView(APIView):
                 f"pipelines-created/{user_id}/{name}.hpl",
                 CopySource("pipelines", f"templates/{template}"),
                 metadata={
-                    "description": f"{description}",
+                    "description": f"{quote(description.encode('utf-8'))}",
                     "created": f"{datetime.utcnow()}",
                     "check_status": "success", #check status should be always success when creating a new pipeline, as our provided templates are correct
                     "check_text": "ValidPipeline", 
@@ -250,7 +248,6 @@ class PipelineUploadView(APIView):
         user_id = get_current_user_id(request)
         name = request.data.get("name")
         description = request.data.get("description")
-        description = quote(description.encode('utf-8'))
         uploaded_file = request.FILES.get("uploadedFile")
         if uploaded_file:
             # To check if file is valid we first have to have it saved on the local file system
@@ -281,7 +278,7 @@ class PipelineUploadView(APIView):
                     data=f,
                     length=os.path.getsize(f.name),
                     metadata={
-                        "description": f"{description}",
+                        "description": f"{quote(description.encode('utf-8'))}",
                         "created": f"{datetime.utcnow()}",
                         "check_status": "success" if valid_pipeline else "failed",
                         "check_text": check_text,
