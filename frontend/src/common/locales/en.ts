@@ -35,7 +35,7 @@ const enTranslation = {
   InvalidFilenameIncludeTime: 'Filename include time should be set to N',
   ValidPipeline: 'Pipeline is valid',
   pipelineInvalidName:
-    'Invalid characters. Only letters from the specified Unicode range,. ,-, _ are allowed.',
+    'Invalid characters. Pipeline Name must consist exclusively of alphanumeric characters, dashes, dots and underscores.',
   view: 'View',
   processChain: 'Process Chain',
   viewAndManageProcessChains: 'View and manage all process chains',
