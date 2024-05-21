@@ -27,9 +27,9 @@ export const UploadPipeline = ({
     formState: { errors },
   } = useForm({ mode: 'onChange' });
   const [uploadPipeline, { isLoading }] = useUploadPipelineMutation();
-  const unpermittedCharactersRegex = /[!"#$%&'()*+,\-\s.\/:;<=>?@\[\]^`{|}~]/; //includes whitespace
   const { t } = useTranslation();
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
+  const permittedCharactersRegex = /^[a-zA-Z0-9._-]+$/;
 
   const onFinish = (value: any) => {
     const file = acceptedFiles[0];
@@ -57,17 +57,6 @@ export const UploadPipeline = ({
   const cancel = () => {
     reset();
     onClose();
-  };
-
-  const handleValueChange = (value: string) => {
-    if (unpermittedCharactersRegex.test(value)) {
-      setError('name', {
-        type: 'pattern',
-        message: t('pipelineInvalidName'),
-      });
-    } else {
-      clearErrors('name');
-    }
   };
 
   const footer = (
@@ -117,11 +106,9 @@ export const UploadPipeline = ({
                   message: 'Please enter a pipeline name',
                 },
                 pattern: {
-                  value: /^(?!.*[!"#$%&'()*+,\-\s.\/:;<=>?@\[\]^`{|}~]).*$/,
+                  value: permittedCharactersRegex,
                   message: t('pipelineInvalidName'),
                 },
-                onChange: (event: any) =>
-                  handleValueChange(event.target?.value),
               })}
               error={!!errors.name}
               errorMessage={errors?.name?.message?.toString()}
