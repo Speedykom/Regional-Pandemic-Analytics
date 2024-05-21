@@ -28,7 +28,7 @@ class PipelineListView(APIView):
     }
 
     def __init__(self):
-        self.unpermitted_characters_regex = re.compile(r'[!"#$%&\'()*+,\-\s.\/:;<=>?@\[\]^`{|}~]')
+        self.permitted_characters_regex = re.compile(r'^[a-zA-Z0-9._-]+$')
 
     def get(self, request , query = None):
         """Return a user created pipelines"""
@@ -72,7 +72,7 @@ class PipelineListView(APIView):
         name = request.data.get("name")
         description = request.data.get("description")
         template = request.data.get("template")
-        if self.unpermitted_characters_regex.search(name):
+        if not self.permitted_characters_regex.search(name):
             return Response(
                 {"status": "Fail", "message": "Pipeline name contains unpermitted characters"},
                 status=status.HTTP_400_BAD_REQUEST
@@ -256,7 +256,7 @@ class PipelineUploadView(APIView):
         name = request.data.get("name")
         description = request.data.get("description")
         uploaded_file = request.FILES.get("uploadedFile")
-        if self.unpermitted_characters_regex.search(name):
+        if not self.permitted_characters_regex.search(name):
             return Response(
                 {"status": "Fail", "message": "Pipeline name contains unpermitted characters"},
                 status=status.HTTP_400_BAD_REQUEST
