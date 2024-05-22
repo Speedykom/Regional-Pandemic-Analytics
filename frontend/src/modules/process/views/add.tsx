@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; // Added useState import
+import React from 'react'; // Added useState import
 import Drawer from '@/common/components/common/Drawer';
 import { schedule_intervals } from '@/common/utils/processs';
 import {
@@ -36,25 +36,17 @@ export const AddProcess = ({
     control,
     setValue,
     formState: { errors },
-  } = useForm(); // Destructure errors from formState
+  } = useForm({ mode: 'onChange' });
   const { t } = useTranslation();
-  const [inputValue, setInputValue] = useState(''); // Added state for input value
-  const [createProcess] = useCreateProcessMutation();
-  const unpermittedCharactersRegex = /[!"#$%&'()*+,-\/.:;<=>?@\[\]^`{|}~]/;
 
-  const handleInputChange = (value: string) => {
-    setInputValue(value);
-    const isValid = !unpermittedCharactersRegex.test(value);
-    setValue('processName', value, { shouldValidate: true });
-    if (!isValid && !errors.processName) {
-      setValue('processName', value);
-    }
-  };
+  const [createProcess] = useCreateProcessMutation();
+  const permittedCharactersRegex = /^[a-zA-Z0-9._-]+$/;
 
   const footer = (
     <div className="space-x-2 p-2">
       <Button
         className="bg-prim text-white border-0 hover:bg-prim-hover"
+        disabled={!!errors.processName}
         onClick={handleSubmit((values) => {
           values.date.setHours(12, 0, 0);
           createProcess({
@@ -102,10 +94,9 @@ export const AddProcess = ({
             <TextInput
               {...register('processName', {
                 required: true,
-                validate: {
-                  unpermittedChars: (value) =>
-                    !unpermittedCharactersRegex.test(value) ||
-                    t('addProcess.invalidCharacters'),
+                pattern: {
+                  value: permittedCharactersRegex,
+                  message: t('addProcess.invalidProcessName'),
                 },
               })}
               error={!!errors.processName}
@@ -113,8 +104,6 @@ export const AddProcess = ({
               type="text"
               className="w-full h-12"
               placeholder="Process Chain"
-              value={inputValue} // Added input value prop
-              onChange={(e) => handleInputChange(e.target?.value)} // Added onChange handler
             />
           </div>
 
