@@ -135,8 +135,8 @@ const frTranslation = {
     run: 'exécuter',
     enable: 'activer',
     disable: 'désactiver',
-    invalidCharacters:
-      'Caractères invalides. Seuls les lettres de la plage Unicode spécifiée, ., -, et _ sont autorisés.',
+    invalidProcessName:
+      'Le nom de la chaîne de processus doit être composé exclusivement de caractères alphanumériques, de tirets, de points et de tirets bas.',
   },
   passwordChangeSuccess: 'Votre mot de passe a été changé avec succès.',
   passwordChangeError:
