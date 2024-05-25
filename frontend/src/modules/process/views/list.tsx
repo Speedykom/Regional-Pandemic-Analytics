@@ -53,7 +53,8 @@ export default function ProcessChainList() {
     return (
       <div className="flex justify-end items-center mt-4">
         <div className="mr-4">
-          Showing {startItem} – {endItem} of {processChainList.dags?.length}
+          {t('showing')} {startItem} – {endItem} {t('of')}{' '}
+          {processChainList.dags?.length}
         </div>
         <div className="flex">
           <Button
