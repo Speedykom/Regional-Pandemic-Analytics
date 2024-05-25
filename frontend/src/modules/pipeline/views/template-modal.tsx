@@ -3,6 +3,7 @@ import { Button, Card, Title } from '@tremor/react';
 import { useState } from 'react';
 import { useTemplatesQuery } from '../pipeline';
 import { Template } from '../interface';
+import { useTranslation } from 'react-i18next';
 
 type TemplateModalProps = {
   onSelect: (value: any) => void;
@@ -10,6 +11,8 @@ type TemplateModalProps = {
 };
 
 export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
+  const { t } = useTranslation();
+
   const [selected, setSelected] = useState<Template>();
   const [searchQuery, setSearchQuery] = useState<string>(''); // Step 1
   const { data: templates } = useTemplatesQuery(searchQuery);
@@ -75,11 +78,11 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
   return (
     <div className="border-t h-90 w-full">
       <p className="bg-yellow-200 px-3 py-2 rounded-md mt-3 text-gray-500">
-        Note: select a template and press continue
+        {t('addPipelineNote')}
       </p>
       <input
         type="text"
-        placeholder="Search for templates..."
+        placeholder={t('searchForTemplate')}
         className="w-full border border-gray-300 rounded-md p-2 mt-3"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
@@ -121,14 +124,14 @@ export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
           className=" bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
           onClick={handleCancel}
         >
-          Cancel
+          {t('cancel')}
         </Button>
         <Button
           disabled={selected == undefined}
           onClick={handleOk}
           className="bg-prim hover:bg-prim-hover text-white border-0 text-sm"
         >
-          Continue
+          {t('continue')}
         </Button>
       </div>
     </div>

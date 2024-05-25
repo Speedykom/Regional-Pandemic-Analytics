@@ -3,6 +3,8 @@ import { Button, TextInput } from '@tremor/react';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { useCreatePipelineMutation } from '../pipeline';
+import { useTranslation } from 'react-i18next';
+
 interface AddPipelineProps {
   state: boolean;
   onClose: () => void;
@@ -26,6 +28,7 @@ export const AddPipeline = ({
   } = useForm({ mode: 'onChange' });
   const [addPipeline, { isLoading }] = useCreatePipelineMutation();
   const isWhitespace = /\s/;
+  const { t } = useTranslation();
 
   const onFinish = (value: any) => {
     addPipeline({ ...value, template: template.name }).then((res: any) => {
@@ -37,7 +40,7 @@ export const AddPipeline = ({
         return;
       }
 
-      toast.success('Process created successfully', {
+      toast.success(t('pipelineCreatedSuccessfully'), {
         position: 'top-right',
       });
       cancel();
@@ -54,7 +57,7 @@ export const AddPipeline = ({
     if (isWhitespace.test(value)) {
       setError('name', {
         type: 'pattern',
-        message: 'Pipeline name cannot contain whitespaces',
+        message: t('pipelineSpaceMessage'),
       });
     } else {
       clearErrors('name');
@@ -70,20 +73,20 @@ export const AddPipeline = ({
         className="bg-prim text-white border-0 hover:bg-prim-hover"
         onClick={handleSubmit((values: any) => onFinish(values))}
       >
-        Submit
+        {t('submit')}
       </Button>
       <Button
         onClick={cancel}
         className="bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
       >
-        Cancel
+        {t('cancel')}
       </Button>
     </div>
   );
 
   return (
     <Drawer
-      title="Add Pipeline"
+      title={t('addPipeline')}
       isOpen={state}
       onClose={cancel}
       placement="right"
@@ -97,17 +100,17 @@ export const AddPipeline = ({
               className="block text-blueGray-600 text-xs font-bold mb-2"
               htmlFor="descriptiond"
             >
-              Name*
+              {t('name')}*
             </label>
             <TextInput
               {...register('name', {
                 required: {
                   value: true,
-                  message: 'Please enter a pipeline name',
+                  message: t('addPipelineMessage'),
                 },
                 pattern: {
                   value: /^\S*$/,
-                  message: 'Pipeline name cannot contain whitespaces',
+                  message: t('pipelineSpaceMessage'),
                 },
                 onChange: (event: any) =>
                   handleValueChange(event.target?.value),
@@ -116,7 +119,7 @@ export const AddPipeline = ({
               errorMessage={errors?.name?.message?.toString()}
               type="text"
               className="w-full h-12"
-              placeholder="Enter Name"
+              placeholder={t('enterName')}
             />
           </div>
           <div className="relative w-full mb-3">
@@ -124,7 +127,7 @@ export const AddPipeline = ({
               className="block text-blueGray-600 text-xs font-bold mb-2"
               htmlFor="path"
             >
-              Template
+              {t('template')}*
             </label>
             <TextInput
               disabled
@@ -144,12 +147,10 @@ export const AddPipeline = ({
                 required: true,
               })}
               error={!!errors.description}
-              errorMessage={
-                errors.description ? 'Please enter your description' : ''
-              }
+              errorMessage={errors.description ? t('descMessage') : ''}
               type="text"
               className="w-full h-12"
-              placeholder="Enter Description"
+              placeholder={t('descPlaceholder')}
             />
           </div>
         </form>

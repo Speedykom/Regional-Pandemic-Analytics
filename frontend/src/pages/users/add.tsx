@@ -187,7 +187,7 @@ export const AddUser = () => {
                         setCountryValid(true);
                       }}
                       className="bg-white"
-                      placeholder="Select country..."
+                      placeholder={t('selectCountry')}
                       value={country}
                     >
                       {countries.map((item, index) => (
