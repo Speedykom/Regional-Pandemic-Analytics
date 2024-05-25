@@ -9,7 +9,9 @@ const enTranslation = {
 
   next: 'Next',
   prev: 'Prev',
-
+  save: 'Save',
+  cancel: 'Cancel',
+  continue: 'Continue',
   appAccounts: 'App Accounts',
   viewAndManage: 'View and manage settings related to app users.',
   newUser: 'New User',
@@ -32,7 +34,19 @@ const enTranslation = {
   uploadPipeline: 'Upload Pipeline',
   pipelineCheckSuccessful: 'Pipeline check successful',
   pipelineCheckFailed: 'Pipeline check failed',
+  addPipelineNote: 'Note: select a template and press continue',
+  hopTemplate: 'HOP Template',
+  addPipeline: 'Add Pipeline',
+  addPipelineMessage: 'Please enter a pipeline name',
+  pipelineSpaceMessage: 'Pipeline name cannot contain whitespaces',
+  enterName: 'Enter Name',
+  template: 'Template',
+  descPlaceholder: 'Enter Description',
+  descMessage: 'Please enter your description',
+  submit: 'Submit',
 
+  showing: 'Showing',
+  of: 'of',
   // Pipeline validation check
   MissingParquetTransform: 'One Parquet transform should be available',
   InvalidFilenameBase:
@@ -52,6 +66,8 @@ const enTranslation = {
   ShowDisabledProcessChain: 'Show Disabled Process Chains',
   searchForProcesscChains: 'Search for process chains..',
   searchForPipelines: 'Search for pipelines...',
+  searchForTemplate: 'Search for template...',
+  pipelineCreatedSuccessfully: 'Pipeline created successfully',
   unverified: 'Unverified',
   verified: 'Verified',
   pipelineName: 'Pipeline Name*',
@@ -120,7 +136,6 @@ const enTranslation = {
   newPass: 'New Password',
   confirmPass: 'Confirm Password',
   saveChanges: 'Save Changes',
-  cancel: 'Cancel',
   country2: 'Country *',
   lastName2: 'Last name *',
   gender2: 'Gender *',
