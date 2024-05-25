@@ -15,6 +15,7 @@ import { useState } from 'react';
 import { usePermission } from '@/common/hooks/use-permission';
 import { useModal } from '@/common/hooks/use-modal';
 import { useRouter } from 'next/router';
+
 import {
   useGetAllPipelinesQuery,
   useDownloadPipelineQuery,
@@ -77,7 +78,7 @@ export const MyPipelines = () => {
 
   const showConfirmModal = () =>
     showModal({
-      title: 'Hop Template',
+      title: t('hopTemplate'),
       Component: () => (
         <div data-testid="delete-chart-modal">
           <div className="mb-6">
@@ -100,7 +101,7 @@ export const MyPipelines = () => {
     return (
       <div className="flex justify-end items-center mt-4">
         <div className="mr-4">
-          Showing {startItem} – {endItem} of {data?.data?.length}
+          {t('showing')} {startItem} – {endItem} {t('of')} {data?.data?.length}
         </div>
         <div className="flex">
           <Button
