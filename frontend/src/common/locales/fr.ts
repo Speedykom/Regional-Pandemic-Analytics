@@ -10,6 +10,9 @@ const frTranslation = {
   next: 'Suivant',
   prev: 'Précédent',
 
+  save: 'Enregistrer',
+  cancel: 'Annuler',
+  continue: 'Continuer',
   appAccounts: "Comptes de l'application",
   viewAndManage:
     "Afficher et gérer les paramètres liés aux utilisateurs de l'application.",
@@ -27,6 +30,13 @@ const frTranslation = {
   deleteUserConfirmation:
     "Cet utilisateur se verra refuser l'accès, continuer ?",
   myPipelines: 'Mes pipelines',
+  addPipelineMessage: 'Veuillez saisir un nom de pipeline',
+  pipelineSpaceMessage: "Le nom du pipeline ne peut pas contenir d'espaces",
+  enterName: 'Entrer le nom',
+  template: 'modèle',
+  descPlaceholder: 'Entrer une description',
+  descMessage: 'Veuillez entrer votre description',
+  submit: 'Soumettre',
   createYourPipeline: 'Créez votre pipeline hop.',
   name: 'Nom',
   description: 'Description',
@@ -34,7 +44,10 @@ const frTranslation = {
   uploadPipeline: 'Charger un pipeline',
   pipelineCheckSuccessful: 'Vérification du pipeline réussie',
   pipelineCheckFailed: 'Échec de la vérification du pipeline',
+  addPipeline: 'Ajouter un Pipeline',
   view: 'Voir',
+  addPipelineNote: 'Remarque : sélectionnez un modèle et appuyez sur Continuer',
+  hopTemplate: 'Modèle HOP',
   searchForPipelines: 'Rechercher des pipelines...',
   processChain: 'Chaîne de processus',
   viewAndManageProcessChains:
@@ -54,6 +67,8 @@ const frTranslation = {
     'Faites glisser et déposez le fichier de pipeline .hpl ici, ou cliquez pour sélectionner un fichier',
   upload: 'Charger',
   selectedFiles: 'Fichiers sélctionnés',
+  searchForTemplate: 'Rechercher un modèle...',
+  pipelineCreatedSuccessfully: 'Pipeline créé avec succès',
 
   supersetCharts: 'Graphiques Superset',
   chartListCreatedOnSuperset:
@@ -67,7 +82,8 @@ const frTranslation = {
   modifiedBy: 'Modifié par',
   lastModified: 'Dernière Modification',
   searchForCharts: 'Rechercher des graphiques...',
-
+  showing: 'Montrant',
+  of: 'de',
   supersetDashboards: 'Tableaux de bord Superset',
   dashboardListCreatedOnSuperset:
     'Liste des tableaux de bord créés sur Apache Superset',
@@ -113,7 +129,6 @@ const frTranslation = {
   newPass: 'Nouveau mot de passe',
   confirmPass: 'Confirmer le mot de passe',
   saveChanges: 'Enregistrer les modifications',
-  cancel: 'Annuler',
   givenNames: 'Prénom *',
   lastName2: 'Nom de famille *',
 
