@@ -60,6 +60,8 @@ const enTranslation = {
   InvalidFilenameIncludeSplit: 'Filename include split should be set to N',
   InvalidFilenameIncludeTime: 'Filename include time should be set to N',
   ValidPipeline: 'Pipeline is valid',
+  pipelineInvalidName:
+    'Invalid characters. Pipeline Name must consist exclusively of alphanumeric characters, dashes, dots and underscores.',
   view: 'View',
   processChain: 'Process Chain',
   viewAndManageProcessChains: 'View and manage all process chains',

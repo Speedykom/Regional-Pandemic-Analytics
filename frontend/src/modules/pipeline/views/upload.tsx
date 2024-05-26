@@ -22,14 +22,13 @@ export const UploadPipeline = ({
     register,
     handleSubmit,
     reset,
-    setError,
-    clearErrors,
     formState: { errors },
   } = useForm({ mode: 'onChange' });
   const [uploadPipeline, { isLoading }] = useUploadPipelineMutation();
-  const isWhitespace = /\s/;
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
   const { t } = useTranslation();
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
+  const permittedCharactersRegex = /^[a-zA-Z0-9._-]+$/;
+
   const onFinish = (value: any) => {
     const file = acceptedFiles[0];
     // Create a FormData object
@@ -56,17 +55,6 @@ export const UploadPipeline = ({
   const cancel = () => {
     reset();
     onClose();
-  };
-
-  const handleValueChange = (value: string) => {
-    if (isWhitespace.test(value)) {
-      setError('name', {
-        type: 'pattern',
-        message: 'Pipeline name cannot contain whitespaces',
-      });
-    } else {
-      clearErrors('name');
-    }
   };
 
   const footer = (
@@ -116,11 +104,9 @@ export const UploadPipeline = ({
                   message: t('pipelineNameRequired'),
                 },
                 pattern: {
-                  value: /^\S*$/,
-                  message: t('pipelineNamePatter'),
+                  value: permittedCharactersRegex,
+                  message: t('pipelineInvalidName'),
                 },
-                onChange: (event: any) =>
-                  handleValueChange(event.target?.value),
               })}
               error={!!errors.name}
               errorMessage={errors?.name?.message?.toString()}
