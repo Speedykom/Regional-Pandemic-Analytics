@@ -11,6 +11,8 @@ from datetime import datetime
 from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
 from .validator import check_pipeline_validity
+from urllib.parse import quote, unquote
+
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")
     username = os.getenv("AIRFLOW_USER")
@@ -50,7 +52,7 @@ class PipelineListView(APIView):
                     pipelines.append(
                         {
                             "name": object_name,
-                            "description": object.metadata["X-Amz-Meta-Description"],
+                            "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                             "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
                             "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                         })
@@ -58,10 +60,10 @@ class PipelineListView(APIView):
                 pipelines.append(
                 {
                     "name": object_name,
-                    "description": object.metadata["X-Amz-Meta-Description"],
+                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                     "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
                     "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
-                }    
+                }
             )
 
         return Response(
@@ -98,7 +100,7 @@ class PipelineListView(APIView):
                 f"pipelines-created/{user_id}/{name}.hpl",
                 CopySource("pipelines", f"templates/{template}"),
                 metadata={
-                    "description": f"{description}",
+                    "description": f"{quote(description.encode('utf-8'))}",
                     "created": f"{datetime.utcnow()}",
                     "check_status": "success", #check status should be always success when creating a new pipeline, as our provided templates are correct
                     "check_text": "ValidPipeline", 
@@ -135,11 +137,10 @@ class PipelineDetailView(APIView):
             payload = {"names": ["file:///files/{}.hpl".format(name)]}
             edit_hop = EditAccessProcess(file=self.file)
             edit_hop.request_edit(json.dumps(payload))
-
             return Response(
                 {
                     "name": name,
-                    "description": object.metadata["X-Amz-Meta-Description"],
+                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                     "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
                     "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                 },
@@ -172,7 +173,7 @@ class PipelineDetailView(APIView):
                 f"pipelines-created/{user_id}/{name}.hpl",
                 f"/hop/pipelines/{name}.hpl",
                 metadata={
-                    "description": object.metadata["X-Amz-Meta-Description"],
+                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                     "updated": f"{datetime.utcnow()}",
                     "created": object.metadata["X-Amz-Meta-Created"],
                     "check_status": "success" if valid_pipeline else "failed",
@@ -219,8 +220,8 @@ class PipelineDownloadView(APIView):
     keycloak_scopes = {
         "GET": "pipeline:read",
     }
-    
-    def get(self, request, name=None):        
+
+    def get(self, request, name=None):
         """Download a specific pipeline."""
         user_id = get_current_user_id(request)
         try:
@@ -247,7 +248,7 @@ class PipelineUploadView(APIView):
         "POST": "pipeline:add",
         "GET": "pipeline:read",
     }
-    
+
     def post(self, request, format=None):
         user_id = get_current_user_id(request)
         name = request.data.get("name")
@@ -282,7 +283,7 @@ class PipelineUploadView(APIView):
                     data=f,
                     length=os.path.getsize(f.name),
                     metadata={
-                        "description": f"{description}",
+                        "description": f"{quote(description.encode('utf-8'))}",
                         "created": f"{datetime.utcnow()}",
                         "check_status": "success" if valid_pipeline else "failed",
                         "check_text": check_text,
