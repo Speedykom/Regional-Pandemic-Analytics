@@ -278,7 +278,7 @@ export const MyPipelines = () => {
                     {t('description')}
                   </TableHeaderCell>
                 </MediaQuery>
-                <TableHeaderCell>Check Status</TableHeaderCell>
+                <TableHeaderCell>{t('checkStatus')}</TableHeaderCell>
                 <TableHeaderCell />
               </TableRow>
             </TableHead>
