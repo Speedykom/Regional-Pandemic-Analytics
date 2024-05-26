@@ -22,13 +22,11 @@ export const AddPipeline = ({
     register,
     handleSubmit,
     reset,
-    setError,
-    clearErrors,
     formState: { errors },
   } = useForm({ mode: 'onChange' });
   const [addPipeline, { isLoading }] = useCreatePipelineMutation();
-  const isWhitespace = /\s/;
   const { t } = useTranslation();
+  const permittedCharactersRegex = /^[a-zA-Z0-9._-]+$/;
 
   const onFinish = (value: any) => {
     addPipeline({ ...value, template: template.name }).then((res: any) => {
@@ -51,17 +49,6 @@ export const AddPipeline = ({
   const cancel = () => {
     reset();
     onClose();
-  };
-
-  const handleValueChange = (value: string) => {
-    if (isWhitespace.test(value)) {
-      setError('name', {
-        type: 'pattern',
-        message: t('pipelineSpaceMessage'),
-      });
-    } else {
-      clearErrors('name');
-    }
   };
 
   const footer = (
@@ -109,11 +96,9 @@ export const AddPipeline = ({
                   message: t('addPipelineMessage'),
                 },
                 pattern: {
-                  value: /^\S*$/,
-                  message: t('pipelineSpaceMessage'),
+                  value: permittedCharactersRegex,
+                  message: t('pipelineInvalidName'),
                 },
-                onChange: (event: any) =>
-                  handleValueChange(event.target?.value),
               })}
               error={!!errors.name}
               errorMessage={errors?.name?.message?.toString()}
