@@ -6,7 +6,7 @@ urlpatterns = [
     #re_path(r"(?P<query>.+)/$", ProcessView.as_view({"get": "list"})),
     # Assuming we want to match any non-empty string that doesn't contain a slash:
 
-    path("<str:query>/", ProcessView.as_view({"get": "list"})),
+    path("<str:query>/<str:taskId>/", ProcessView.as_view({"get": "list"})),
 
     path("", ProcessView.as_view({"get": "list", "post": "create"})),
 

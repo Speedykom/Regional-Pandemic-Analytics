@@ -1,6 +1,7 @@
 import os
 import json
 import re
+import requests
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,6 +13,10 @@ from rest_framework.parsers import MultiPartParser
 from .validator import check_pipeline_validity
 from urllib.parse import quote, unquote
 
+class AirflowInstance:
+    url = os.getenv("AIRFLOW_API")
+    username = os.getenv("AIRFLOW_USER")
+    password = os.getenv("AIRFLOW_PASSWORD")
 
 class EditAccessProcess:
     def __init__(self, file):
@@ -285,4 +290,83 @@ class PipelineUploadView(APIView):
                     },
                     )
                 return Response({"status": "success"}, status=status.HTTP_200_OK)
+class PipelineDeleteView(APIView):
+    keycloak_scopes = {
+        "DELETE": "pipeline:delete",
+    }
 
+    def delete(self, request, name=None):
+        # Disable all dags using the pipeline
+        dag_ids = request.data.get("dags", [])
+        
+        result = self._deactivate_processes(dag_ids)
+        if result["status"] == "failed":    
+            return Response({"status": "failed", "message": result["message"] }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+  
+        # Back up and then delete the pipeline
+        user_id = get_current_user_id(request)
+        try:
+            # back up pipeline file
+            client.copy_object(
+            "pipelines",
+            f"pipelines-deleted/{user_id}/{name}_{datetime.utcnow()}.hpl",
+            CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
+
+            # delete pipeline file from Minio
+            client.remove_object(
+                "pipelines", 
+                f"pipelines-created/{user_id}/{name}.hpl")
+
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
+        except:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Unable to delete the pipeline {}".format(name),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def _deactivate_processes(self, dag_ids):
+        if dag_ids is not None and dag_ids:
+            all_successful = True
+            messages = []
+            deactivated_processes = []
+
+            for dag_id in dag_ids:
+                result = self._set_process_status(dag_id, True)
+                if result["status"] == "failed":
+                    all_successful = False
+                    messages.append(result["message"])
+                else:
+                    deactivated_processes.append(dag_id)
+    
+            if all_successful:
+                return {"status": "success"}
+            else:
+                # reactivate all deactivated processes
+                for dag_id in deactivated_processes:
+                    reactivation_result = self._set_process_status(dag_id, False)
+                    messages.append(reactivation_result["message"])
+                return {"status": "failed", 
+                    "message": "One or more process deactivation failed.",
+                    "errors": messages}
+        return {"status": "success"}
+
+    def _set_process_status(self, dag_id, is_deactivated):
+        route = f"{AirflowInstance.url}/dags/{dag_id}"
+
+        try:
+            # deactivate the process status
+            airflow_toggle_response = requests.patch(
+                route,
+                auth=(AirflowInstance.username, AirflowInstance.password),
+                json={"is_paused": is_deactivated},
+            )
+        
+            if airflow_toggle_response.ok:
+                return {"status": "success"}
+            else:
+                return {"status": "failed", "message": f"Failed to update process status for {dag_id}"}
+        except Exception as e:
+            return {"status": "failed", "message": f"Exception occured while updating process status {dag_id}: {str(e)}"}
