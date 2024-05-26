@@ -10,6 +10,9 @@ const frTranslation = {
   next: 'Suivant',
   prev: 'Précédent',
 
+  checkStatus: 'Statut du pipeline',
+  ValidPipeline: 'Pipeline est valide',
+
   save: 'Enregistrer',
   cancel: 'Annuler',
   continue: 'Continuer',
@@ -94,7 +97,6 @@ const frTranslation = {
   unpublished: 'Non publié',
   preview: 'Aperçu',
   searchForDashboard: 'Rechercher des tableaux de bord...',
-
   from: 'de',
 
   createUser: 'Créer un utilisateur',
@@ -184,6 +186,14 @@ const frTranslation = {
     selectDate: 'Choisir une date',
     descriptionPlaceholder: 'Ajouter une description',
   },
+  schedule_intervals: {
+    once: '@une fois',
+    hourly: '@une fois par heure',
+    daily: '@quotidien',
+    weekly: '@hebdomadaire',
+    monthly: '@mensuelle',
+    yearly: '@annuelle',
+  },
   home: {
     favorite_dashboard: 'Tableaux de bord favoris',
     no_fav_dashboards_msg:
@@ -207,6 +217,30 @@ const frTranslation = {
     saveButton: 'Enregistrer comme modèle',
   },
 
+  months: {
+    0: 'janvier',
+    1: 'février',
+    2: 'mars',
+    3: 'avril',
+    4: 'mai',
+    5: 'juin',
+    6: 'juillet',
+    7: 'août',
+    8: 'septembre',
+    9: 'octobre',
+    10: 'novembre',
+    11: 'décembre',
+  },
+
+  days: {
+    0: 'Dimanche',
+    1: 'Lundi',
+    2: 'Mardi',
+    3: 'Mercredi',
+    4: 'Jeudi',
+    5: 'Vendredi',
+    6: 'Samedi',
+  },
   user: {
     userDetails: "Détails de l'utilisateur",
     basicInformation: 'Simples informations',
