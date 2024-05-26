@@ -3,6 +3,8 @@ import { Button, TextInput } from '@tremor/react';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { useCreatePipelineMutation } from '../pipeline';
+import { useTranslation } from 'react-i18next';
+
 interface AddPipelineProps {
   state: boolean;
   onClose: () => void;
@@ -20,12 +22,11 @@ export const AddPipeline = ({
     register,
     handleSubmit,
     reset,
-    setError,
-    clearErrors,
     formState: { errors },
   } = useForm({ mode: 'onChange' });
   const [addPipeline, { isLoading }] = useCreatePipelineMutation();
-  const isWhitespace = /\s/;
+  const { t } = useTranslation();
+  const permittedCharactersRegex = /^[a-zA-Z0-9._-]+$/;
 
   const onFinish = (value: any) => {
     addPipeline({ ...value, template: template.name }).then((res: any) => {
@@ -48,17 +49,6 @@ export const AddPipeline = ({
   const cancel = () => {
     reset();
     onClose();
-  };
-
-  const handleValueChange = (value: string) => {
-    if (isWhitespace.test(value)) {
-      setError('name', {
-        type: 'pattern',
-        message: 'Pipeline name cannot contain whitespaces',
-      });
-    } else {
-      clearErrors('name');
-    }
   };
 
   const footer = (
@@ -106,11 +96,9 @@ export const AddPipeline = ({
                   message: 'Please enter a pipeline name',
                 },
                 pattern: {
-                  value: /^\S*$/,
-                  message: 'Pipeline name cannot contain whitespaces',
+                  value: permittedCharactersRegex,
+                  message: t('pipelineInvalidName'),
                 },
-                onChange: (event: any) =>
-                  handleValueChange(event.target?.value),
               })}
               error={!!errors.name}
               errorMessage={errors?.name?.message?.toString()}
