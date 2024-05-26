@@ -18,7 +18,6 @@ export default function Orchestration({
   const lastParsedTimeDate = new Date(lastParsedTime);
   const nextDagRunDate = new Date(nextDagRun);
   const { t } = useTranslation();
-
   const isValidDate = (date: Date) => {
     return date.getTime() !== new Date(0).getTime();
   };
@@ -44,7 +43,15 @@ export default function Orchestration({
                 {t('orchestration.lastUpdate')}
               </td>
               <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
-                {lastParsedTimeDate.toUTCString()}
+                {t(`days.${lastParsedTimeDate.getUTCDay()}`)},{' '}
+                {lastParsedTimeDate.getUTCDate()}{' '}
+                {t(`months.${lastParsedTimeDate.getUTCMonth()}`)}{' '}
+                {lastParsedTimeDate.getUTCFullYear()}{' '}
+                {lastParsedTimeDate.getUTCHours().toString().padStart(2, '0')}:
+                {lastParsedTimeDate.getUTCMinutes().toString().padStart(2, '0')}
+                :
+                {lastParsedTimeDate.getUTCSeconds().toString().padStart(2, '0')}{' '}
+                GMT
               </td>
             </tr>
             {isValidDate(nextDagRunDate) && (
@@ -54,6 +61,14 @@ export default function Orchestration({
                 </td>
                 <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
                   {nextDagRunDate.toUTCString()}
+                  {t(`days.${nextDagRunDate.getUTCDay()}`)},{' '}
+                  {nextDagRunDate.getUTCDate()}{' '}
+                  {t(`months.${nextDagRunDate.getUTCMonth()}`)}{' '}
+                  {nextDagRunDate.getUTCFullYear()}{' '}
+                  {nextDagRunDate.getUTCHours().toString().padStart(2, '0')}:
+                  {nextDagRunDate.getUTCMinutes().toString().padStart(2, '0')}:
+                  {nextDagRunDate.getUTCSeconds().toString().padStart(2, '0')}{' '}
+                  GMT
                 </td>
               </tr>
             )}
