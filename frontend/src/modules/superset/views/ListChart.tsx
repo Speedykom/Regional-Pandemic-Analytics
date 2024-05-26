@@ -69,7 +69,7 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
     <div>
       <nav className="mb-5">
         <h2 className="text-3xl">
-          {filterByDagId ? t('Process Chain Charts') : t('supersetCharts')}
+          {filterByDagId ? t('processChainCharts') : t('supersetCharts')}
         </h2>
       </nav>
       <input
