@@ -7,6 +7,7 @@ const enTranslation = {
       'Simply login to access the IGAD regional pandemic analytics tool to collect, analyze, and report granular and aggregated data from multiple sources for informed decision-making.',
   },
 
+  checkStatus: 'Check Status',
   next: 'Next',
   prev: 'Prev',
   save: 'Save',
@@ -190,12 +191,43 @@ const enTranslation = {
     selectDate: 'Select Date',
     descriptionPlaceholder: 'Add description',
   },
+  schedule_intervals: {
+    once: '@once',
+    hourly: '@hourly',
+    daily: '@daily',
+    weekly: '@weekly',
+    monthly: '@monthly',
+    yearly: '@yearly',
+  },
   home: {
     favorite_dashboard: 'Favorite Dashboards',
     no_fav_dashboards_msg:
       'No favorite dashboards currently exist. Kindly create a dashboard and add it to your favorites.',
   },
 
+  months: {
+    0: 'January',
+    1: 'February',
+    2: 'March',
+    3: 'April',
+    4: 'May',
+    5: 'June',
+    6: 'July',
+    7: 'August',
+    8: 'September',
+    9: 'October',
+    10: 'November',
+    11: 'December',
+  },
+  days: {
+    0: 'Sunday',
+    1: 'Monday',
+    2: 'Tuesday',
+    3: 'Wednesday',
+    4: 'Thursday',
+    5: 'Friday',
+    6: 'Saturday',
+  },
   user: {
     userDetails: 'User Details',
     basicInformation: 'Basic Information',
