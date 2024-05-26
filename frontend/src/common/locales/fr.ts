@@ -23,6 +23,8 @@ const frTranslation = {
   uploadPipeline: 'Charger un pipeline',
   pipelineCheckSuccessful: 'Vérification du pipeline réussie',
   pipelineCheckFailed: 'Échec de la vérification du pipeline',
+  pipelineInvalidName:
+    'Caractères invalides. Le nom du pipeline doit être composé exclusivement de caractères alphanumériques, de tirets, de points et de tirets bas.',
   view: 'Voir',
   delete: 'Supprimer',
 
