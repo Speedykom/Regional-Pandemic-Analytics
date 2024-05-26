@@ -48,6 +48,8 @@ const frTranslation = {
   pipelineCheckSuccessful: 'Vérification du pipeline réussie',
   pipelineCheckFailed: 'Échec de la vérification du pipeline',
   addPipeline: 'Ajouter un Pipeline',
+  pipelineInvalidName:
+    'Caractères invalides. Le nom du pipeline doit être composé exclusivement de caractères alphanumériques, de tirets, de points et de tirets bas.',
   view: 'Voir',
   addPipelineNote: 'Remarque : sélectionnez un modèle et appuyez sur Continuer',
   hopTemplate: 'Modèle HOP',
