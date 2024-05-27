@@ -22,7 +22,7 @@ export const DashboardList = () => {
       </nav>
       <input
         type="text"
-        placeholder="Search for dashboards..."
+        placeholder={t('searchForDashboard')}
         className="w-full border border-gray-300 rounded-md p-2 mb-3"
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
