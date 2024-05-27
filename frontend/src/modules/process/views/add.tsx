@@ -1,3 +1,4 @@
+import React from 'react'; // Added useState import
 import Drawer from '@/common/components/common/Drawer';
 import { schedule_intervals } from '@/common/utils/processs';
 import {
@@ -28,15 +29,23 @@ export const AddProcess = ({
   panelState,
   closePanel,
 }: AddProcessProps) => {
-  const { register, handleSubmit, control, setValue } = useForm();
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    formState: { errors },
+  } = useForm({ mode: 'onChange' });
   const { t } = useTranslation();
 
   const [createProcess] = useCreateProcessMutation();
+  const permittedCharactersRegex = /^[a-zA-Z0-9._-]+$/;
 
   const footer = (
     <div className="space-x-2 p-2">
       <Button
         className="bg-prim text-white border-0 hover:bg-prim-hover"
+        disabled={!!errors.processName}
         onClick={handleSubmit((values) => {
           values.date.setHours(12, 0, 0);
           createProcess({
@@ -88,7 +97,17 @@ export const AddProcess = ({
           <div>
             <label>{t('addProcess.title')}</label>
             <TextInput
-              {...register('processName', { required: true })}
+              {...register('processName', {
+                required: true,
+                pattern: {
+                  value: permittedCharactersRegex,
+                  message: t('addProcess.invalidProcessName'),
+                },
+              })}
+              error={!!errors.processName}
+              errorMessage={errors?.processName?.message?.toString()}
+              type="text"
+              className="w-full h-12"
               placeholder="Process Chain"
             />
           </div>
@@ -136,7 +155,7 @@ export const AddProcess = ({
               control={control}
               render={({ field }) => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const { value: _, ...rest } = field;
+                const { ...rest } = field;
                 return (
                   <DatePicker
                     {...rest}

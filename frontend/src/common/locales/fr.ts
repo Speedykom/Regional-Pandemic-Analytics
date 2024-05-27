@@ -138,6 +138,8 @@ const frTranslation = {
     run: 'exécuter',
     enable: 'activer',
     disable: 'désactiver',
+    invalidProcessName:
+      'Le nom de la chaîne de processus doit être composé exclusivement de caractères alphanumériques, de tirets, de points et de tirets bas.',
   },
   passwordChangeSuccess: 'Votre mot de passe a été changé avec succès.',
   passwordChangeError:
