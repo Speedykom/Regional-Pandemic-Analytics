@@ -12,6 +12,7 @@ import { useUpdateProcessPipelineByIdMutation } from '../../process';
 import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 interface DataSourceSelectionProps {
   dagId: string;
@@ -29,13 +30,16 @@ export default function DataSourceSelection({
   const [newPipeline, setNewPipeline] = useState('');
 
   const [updateProcessPipelineById] = useUpdateProcessPipelineByIdMutation();
+  const { t } = useTranslation();
 
   return (
     <div className="flex flex-col space-y-3">
       <div className="flex justify-center">
         <Table className="flex justify-center overflow-visible w-1/2">
           <TableRow className="">
-            <TableHeaderCell>Pipeline used</TableHeaderCell>
+            <TableHeaderCell>
+              {t('dataSourceSelection.pipelineUsed')}
+            </TableHeaderCell>
             <TableCell>{pipeline.slice(0, -4)}</TableCell>
           </TableRow>
           <TableRow className=" overflow-auto">
@@ -46,18 +50,20 @@ export default function DataSourceSelection({
                   defaultValue=""
                   value={newPipeline}
                   onValueChange={setNewPipeline}
-                  placeholder="Pipeline Template"
+                  placeholder={t('dataSourceSelection.piplineTemplate')}
                 >
-                  {pipelineList.data.map((pipeline) => {
-                    return (
-                      <SearchSelectItem
-                        key={pipeline.name}
-                        value={pipeline.name}
-                      >
-                        {pipeline.name}
-                      </SearchSelectItem>
-                    );
-                  })}
+                  {pipelineList.data
+                    .filter((pipeline) => pipeline.check_status === 'success')
+                    .map((pipeline) => {
+                      return (
+                        <SearchSelectItem
+                          key={pipeline.name}
+                          value={pipeline.name}
+                        >
+                          {pipeline.name}
+                        </SearchSelectItem>
+                      );
+                    })}
                 </SearchSelect>
               </div>
             </TableCell>
@@ -89,7 +95,7 @@ export default function DataSourceSelection({
               });
           }}
         >
-          Save
+          {t('dataSourceSelection.save')}
         </Button>
       </div>
     </div>

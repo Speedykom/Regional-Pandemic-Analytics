@@ -44,7 +44,7 @@ export const UserList = () => {
       }
     });
   };
-  //{t('')}
+
   return (
     <div className="">
       <nav className="mb-5 flex justify-between items-center">
@@ -95,19 +95,6 @@ export const UserList = () => {
                 <TableRow key={index}>
                   <TableCell>
                     <div className="flex items-center pr-1">
-                      <div>
-                        <div className="w-10 h-10 mr-3 overflow-hidden rounded-full flex items-center justify-center border border-gray-300">
-                          <img
-                            src={
-                              item?.attributes?.avatar &&
-                              item?.attributes?.avatar[0] != ''
-                                ? item?.attributes?.avatar[0]
-                                : '/avater.png'
-                            }
-                            className="w-full h-full"
-                          />
-                        </div>
-                      </div>
                       <Text className="font-sans">
                         {item.firstName} {item?.lastName}
                       </Text>
@@ -156,11 +143,11 @@ export const UserList = () => {
                           icon={CheckIcon}
                           color="indigo"
                         >
-                          Verified
+                          {t('verified')}
                         </Badge>
                       ) : (
                         <Badge icon={XMarkIcon} color="red">
-                          Unverified
+                          {t('unverified')}
                         </Badge>
                       )}{' '}
                     </TableCell>
@@ -171,11 +158,11 @@ export const UserList = () => {
                           color="green"
                           icon={WifiIcon}
                         >
-                          Active
+                          {t('active')}
                         </Badge>
                       ) : (
                         <Badge color="red" icon={SignalSlashIcon}>
-                          Disabled
+                          {t('disabled')}
                         </Badge>
                       )}{' '}
                     </TableCell>
