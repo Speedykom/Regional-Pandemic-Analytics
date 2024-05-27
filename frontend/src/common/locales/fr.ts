@@ -307,6 +307,7 @@ const frTranslation = {
     businessAgreement: 'Accords de business',
     allRightsReserved: 'Tous droits réservés.',
   },
+  download: 'Télécharger',
 };
 
 export default frTranslation;
