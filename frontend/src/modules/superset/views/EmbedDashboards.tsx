@@ -19,6 +19,8 @@ import {
 
 import { embedDashboard } from '@superset-ui/embedded-sdk';
 
+import { useTranslation } from 'react-i18next';
+
 type EmbeddedDashboardProps = {
   selectedDashboard: string | null;
   supersetBaseUrl: string;
@@ -159,13 +161,14 @@ const ShowEmbeddedDashboards = (inputs: {
 };
 
 export const NoEmbeddedDashboards = () => {
+  const { t } = useTranslation();
   return (
     <>
       <Card className="w-full">
-        <Text>Favorite Dashboards</Text>
+        <Text>{t('home.favorite_dashboard')}</Text>
         <Callout
           className="h-12 mt-4"
-          title="No favorite dashboards currently exist. Kindly create a dashboard and add it to your favorites."
+          title={t('home.no_fav_dashboards_msg')}
           icon={ExclamationCircleIcon}
           color="rose"
         ></Callout>

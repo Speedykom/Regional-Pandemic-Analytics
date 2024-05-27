@@ -93,7 +93,7 @@ export const AddUser = () => {
                       className="block uppercase text-blueGray-600 text-xs font-bold mb-2"
                       htmlFor="grid-password"
                     >
-                      {t('firsName')}
+                      {t('firstName')}
                     </label>
                     <TextInput
                       {...register('firstName', {
@@ -103,7 +103,7 @@ export const AddUser = () => {
                       icon={UserIcon}
                       error={!!errors.firstName}
                       errorMessage={
-                        errors.firstName ? 'given names required' : ''
+                        errors.firstName ? t('givenNamesRequired') : ''
                       }
                       placeholder="John"
                       type="text"
@@ -127,7 +127,7 @@ export const AddUser = () => {
                       icon={UserIcon}
                       error={!!errors.lastName}
                       errorMessage={
-                        errors.lastName ? 'last name is required' : ''
+                        errors.lastName ? t('lastNameRequired') : ''
                       }
                       placeholder="Doe"
                       type="text"
@@ -187,7 +187,7 @@ export const AddUser = () => {
                         setCountryValid(true);
                       }}
                       className="bg-white"
-                      placeholder="Select country..."
+                      placeholder={t('selectCountry')}
                       value={country}
                     >
                       {countries.map((item, index) => (
@@ -222,9 +222,9 @@ export const AddUser = () => {
                       enableStepper={false}
                       error={!!errors.phone}
                       errorMessage={
-                        errors.phone ? 'provide contact number please' : ''
+                        errors.phone ? t('provideContactNumber') : ''
                       }
-                      placeholder="phone number..."
+                      placeholder={t('phonenumber')}
                       className="border border-gray-200 h-10 rounded-md bg-white px-2"
                     />
                   </div>
@@ -249,9 +249,7 @@ export const AddUser = () => {
                       })}
                       error={!!errors.username}
                       errorMessage={
-                        errors.username
-                          ? 'username is required, min length 4 chars'
-                          : ''
+                        errors.username ? t('username_Required') : ''
                       }
                       placeholder="john-doe01"
                       type="text"
@@ -274,9 +272,7 @@ export const AddUser = () => {
                         pattern: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                       })}
                       error={!!errors.email}
-                      errorMessage={
-                        errors.email ? 'valid email is required' : ''
-                      }
+                      errorMessage={errors.email ? t('validEmail') : ''}
                       placeholder="john.doe@mail.com"
                       type="text"
                       className="bg-white"
@@ -349,7 +345,7 @@ export const AddUser = () => {
                         });
                         setRoleValid(true);
                       }}
-                      placeholder="Select role..."
+                      placeholder={t('selectRole')}
                       className="bg-white"
                     >
                       {(data || []).map((item: any, index) => (

@@ -15,11 +15,22 @@ import { useState } from 'react';
 import { usePermission } from '@/common/hooks/use-permission';
 import { useModal } from '@/common/hooks/use-modal';
 import { useRouter } from 'next/router';
-import { useGetAllPipelinesQuery, useDownloadPipelineQuery } from '../pipeline';
+
+import {
+  useGetAllPipelinesQuery,
+  useDownloadPipelineQuery,
+  useSavePipelineAsTemplateMutation,
+} from '../pipeline';
 import { AddPipeline } from './add';
+import { DeletePipeline } from './delete';
 import { UploadPipeline } from './upload';
 import { TemplateModal } from './template-modal';
-import { ArrowDownTrayIcon } from '@heroicons/react/24/outline';
+import {
+  ArrowDownTrayIcon,
+  TrashIcon,
+  XCircleIcon,
+  CheckCircleIcon,
+} from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 
@@ -57,6 +68,8 @@ export const MyPipelines = () => {
 
   const { data, refetch } = useGetAllPipelinesQuery(searchInput);
 
+  const [savePipelineAsTemplate] = useSavePipelineAsTemplateMutation();
+
   const [selectedPipeline, setSelectedPipeline] = useState<string>('');
   const { data: downloadData } = useDownloadPipelineQuery(
     selectedPipeline || skipToken,
@@ -67,11 +80,23 @@ export const MyPipelines = () => {
 
   const showConfirmModal = () =>
     showModal({
-      title: 'Hop Template',
+      title: t('hopTemplate'),
       Component: () => (
         <div data-testid="delete-chart-modal">
           <div className="mb-6">
             <TemplateModal onSelect={onSelect} hideModal={hideModal} />
+          </div>
+        </div>
+      ),
+    });
+
+  const showPipelineDeleteConfirmModal = (name: string) =>
+    showModal({
+      title: `${t('deletePipeline.title')} ${name}`,
+      Component: () => (
+        <div data-testid="delete-chart-modal">
+          <div className="mb-6">
+            <DeletePipeline hideModal={hideModal} taskId={name} />
           </div>
         </div>
       ),
@@ -90,7 +115,7 @@ export const MyPipelines = () => {
     return (
       <div className="flex justify-end items-center mt-4">
         <div className="mr-4">
-          Showing {startItem} – {endItem} of {data?.data?.length}
+          {t('showing')} {startItem} – {endItem} {t('of')} {data?.data?.length}
         </div>
         <div className="flex">
           <Button
@@ -99,7 +124,7 @@ export const MyPipelines = () => {
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
           >
-            &larr; Prev
+            &larr; {t('prev')}
           </Button>
           <Button
             className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4  focus:outline-none cursor-pointer"
@@ -107,7 +132,7 @@ export const MyPipelines = () => {
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}
           >
-            Next &rarr;
+            {t('next')} &rarr;
           </Button>
         </div>
       </div>
@@ -122,6 +147,35 @@ export const MyPipelines = () => {
       : data?.data;
 
     return visiblePipelines?.map((item, index) => {
+      let statusIcon;
+      if (item.check_status === 'success') {
+        statusIcon = (
+          <Icon
+            size="lg"
+            icon={CheckCircleIcon}
+            color="green"
+            tooltip={t(item.check_text)}
+          />
+        );
+      } else if (item.check_status === 'failed') {
+        statusIcon = (
+          <Icon
+            size="lg"
+            icon={XCircleIcon}
+            color="red"
+            tooltip={t(item.check_text)}
+          />
+        );
+      } else {
+        statusIcon = (
+          <Icon
+            size="lg"
+            icon={XCircleIcon}
+            color="red"
+            tooltip={t(item.check_text)}
+          />
+        );
+      }
       return (
         <TableRow key={index}>
           <TableCell className="font-sans">{item?.name}</TableCell>
@@ -130,6 +184,7 @@ export const MyPipelines = () => {
               {item?.description}
             </TableCell>
           </MediaQuery>
+          <TableCell>{statusIcon}</TableCell>
           <TableCell>
             <div className="flex space-x-2 justify-end">
               <Button
@@ -140,16 +195,36 @@ export const MyPipelines = () => {
               >
                 {t('view')}
               </Button>
+              <Button
+                onClick={() => saveAsTemplate(item?.name)}
+                className="hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white"
+              >
+                {t('savePipelineAsTemplate.saveButton')}
+              </Button>
               <Icon
                 onClick={() => downloadPipeline(item?.name)}
                 size="lg"
                 icon={ArrowDownTrayIcon}
-                tooltip="Download"
+                tooltip={t('download')}
               />
             </div>
           </TableCell>
         </TableRow>
       );
+    });
+  };
+
+  const saveAsTemplate = (name: string) => {
+    savePipelineAsTemplate(name).then((res: any) => {
+      if (res.error) {
+        toast.error(`${t('savePipelineAsTemplate.errorMessage')}`, {
+          position: 'top-right',
+        });
+      } else {
+        toast.success(`${t('savePipelineAsTemplate.successMessage')}`, {
+          position: 'top-right',
+        });
+      }
     });
   };
 
@@ -201,7 +276,7 @@ export const MyPipelines = () => {
       </nav>
       <input
         type="text"
-        placeholder="Search for pipelines..."
+        placeholder={t('searchForPipelines')}
         className="w-full border border-gray-300 rounded-md p-2 mb-3"
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
@@ -217,6 +292,7 @@ export const MyPipelines = () => {
                     {t('description')}
                   </TableHeaderCell>
                 </MediaQuery>
+                <TableHeaderCell>{t('checkStatus')}</TableHeaderCell>
                 <TableHeaderCell />
               </TableRow>
             </TableHead>
