@@ -6,7 +6,20 @@ const frTranslation = {
     WelcomeText:
       "Connectez-vous simplement pour accéder à l'outil d'analyse des pandémies régionales de l'IGAD afin de collecter, d'analyser et de rapporter des données granulaires et agrégées de plusieurs sources pour une prise de décision éclairée.",
   },
-
+  secondago: 'il y a une seconde',
+  secondsago: 'il y a quelques secondes',
+  minuteago: 'il y a une minute',
+  minutesago: 'il y a quelques minutes',
+  hourago: 'il y a une heure',
+  hoursago: 'il y a quelques heures',
+  dayago: 'il y a un jour',
+  daysago: 'il y a quelques jours',
+  weekago: 'il y a une semaine',
+  weeksago: 'il y a quelques semaines',
+  monthago: 'il y a un mois',
+  monthsago: 'il y a quelques mois',
+  yearago: 'il y a un an',
+  yearsago: 'il y a quelques années',
   next: 'Suivant',
   prev: 'Précédent',
 
