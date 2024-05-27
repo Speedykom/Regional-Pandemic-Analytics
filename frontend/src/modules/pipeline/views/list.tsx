@@ -191,7 +191,7 @@ export const MyPipelines = () => {
                 onClick={() => downloadPipeline(item?.name)}
                 size="lg"
                 icon={ArrowDownTrayIcon}
-                tooltip="Download"
+                tooltip={t('download')}
               />
             </div>
           </TableCell>
