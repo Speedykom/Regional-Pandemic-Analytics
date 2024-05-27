@@ -65,6 +65,17 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
     setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
   };
 
+  const translateTimeDelta = (timeDelta: string): string => {
+    const parts = timeDelta.split(' ');
+    if (parts.length === 3) {
+      const [value, unit] = parts;
+      const singularUnit = unit.endsWith('s') ? unit.slice(0, -1) : unit;
+      const key = `${singularUnit}ago`;
+      return t(key, { value });
+    }
+    return timeDelta;
+  };
+
   return (
     <div>
       <nav className="mb-5">
@@ -129,13 +140,15 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
                   </TableCell>
                 </MediaQuery>
                 <MediaQuery minWidth={1350}>
-                  <TableCell>{item.created_on_delta_humanized}</TableCell>
+                  <TableCell>
+                    {translateTimeDelta(item.created_on_delta_humanized)}
+                  </TableCell>
                   <TableCell>
                     {item.changed_by?.first_name} {item.changed_by?.last_name}
                   </TableCell>
                 </MediaQuery>
                 <TableCell className="justify-end">
-                  {item.changed_on_delta_humanized}
+                  {translateTimeDelta(item.changed_on_delta_humanized)}
                 </TableCell>
               </TableRow>
             ))}
