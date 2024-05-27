@@ -3,12 +3,14 @@ import { Button } from '@tremor/react';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import { useGetPipelineQuery, useUpdatePipelineMutation } from '../pipeline';
+import { useTranslation } from 'react-i18next';
 
 interface HopUIProps {
   name: string;
 }
 
 export const HopUI = ({ name }: HopUIProps) => {
+  const { t } = useTranslation();
   const { data } = useGetPipelineQuery(name, {
     refetchOnMountOrArgChange: true,
   });
@@ -53,14 +55,14 @@ export const HopUI = ({ name }: HopUIProps) => {
             onClick={navigateToPipelines}
             className="bg-gray-400 hover:bg-gray-400-hover border-0 mx-1"
           >
-            Cancel
+            {t('cancel')}
           </Button>
           <Button
             icon={CheckCircleIcon}
             onClick={savePipeline}
             className="bg-prim hover:bg-prim-hover border-0 mx-1"
           >
-            Save
+            {t('save')}
           </Button>
         </div>
       </nav>

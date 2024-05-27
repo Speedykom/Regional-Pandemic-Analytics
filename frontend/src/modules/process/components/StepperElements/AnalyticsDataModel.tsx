@@ -1,5 +1,6 @@
 import React from 'react';
 import { useGetDatasourceInfoQuery } from '../../process';
+import { useTranslation } from 'react-i18next';
 
 interface DatasourceInfoProps {
   dataSourceName: string;
@@ -7,6 +8,7 @@ interface DatasourceInfoProps {
 
 const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
   const { data, error, isLoading } = useGetDatasourceInfoQuery(dataSourceName);
+  const { t } = useTranslation();
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>An error occurred</div>;
@@ -17,7 +19,7 @@ const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
   return (
     <div className="flex flex-col space-y-4 p-4 max-w-4xl mx-auto bg-white rounded-lg shadow">
       <div className="text-l font-bold text-gray-800 text-center">
-        Datasource Information
+        {t('analyticsDataModel.dataSourceInfo')}
       </div>
       <div className="overflow-auto" style={{ maxHeight: '300px' }}>
         <table className="w-full border-collapse">
@@ -25,7 +27,7 @@ const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
             {/* Name */}
             <tr>
               <td className="p-3 font-bold bg-prim text-white w-1/4 border border-gray-200">
-                Name
+                {t('analyticsDataModel.name')}
               </td>
               <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
                 {datasourceData.name}
@@ -34,7 +36,7 @@ const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
             {/* Created At */}
             <tr>
               <td className="p-3 font-bold bg-prim text-white w-1/4 border border-gray-200">
-                Created At
+                {t('analyticsDataModel.createdAt')}
               </td>
               <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
                 {datasourceData.properties?.created}
@@ -43,7 +45,7 @@ const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
             {/* Number of Segments */}
             <tr>
               <td className="p-3 font-bold bg-prim text-white w-1/4 border border-gray-200">
-                Segment Count
+                {t('analyticsDataModel.segmentCount')}
               </td>
               <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
                 {datasourceData.segments_count}
@@ -52,7 +54,7 @@ const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
             {/* Dimensions */}
             <tr>
               <td className="p-3 font-bold bg-prim text-white w-1/4 border border-gray-200">
-                Dimensions
+                {t('analyticsDataModel.dimentions')}
               </td>
               <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
                 {datasourceData.last_segment.dimensions.join(', ')}
@@ -61,7 +63,7 @@ const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
             {/* Size (Size * Number of Segments) */}
             <tr>
               <td className="p-3 font-bold bg-prim text-white w-1/4 border border-gray-200">
-                Total Size
+                {t('analyticsDataModel.totalSize')}
               </td>
               <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
                 {datasourceData.total_size} Kb
