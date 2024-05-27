@@ -1,7 +1,13 @@
 // Need to use the React-specific entry point to import createApi
 import { baseQuery } from '@/common/redux/api';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { PipelineData, PipelineList, TemplateList } from './interface';
+import {
+  PipelineData,
+  PipelineDeleteRequest,
+  PipelineList,
+  TemplateList,
+} from './interface';
+import { processApi } from '../process/process';
 
 export const pipelineApi = createApi({
   reducerPath: 'pipelineApi',
@@ -15,11 +21,9 @@ export const pipelineApi = createApi({
     getPipeline: builder.query<PipelineData, string>({
       query: (name) => `/pipeline/${name}`,
     }),
-
     downloadPipeline: builder.query<any, string>({
       query: (name) => `/pipeline/download/${name}`,
     }),
-
     templates: builder.query<TemplateList, string>({
       query: (query) => `/hop/${query}`,
     }),
@@ -58,6 +62,21 @@ export const pipelineApi = createApi({
         method: 'POST',
       }),
     }),
+    deletePipeline: builder.mutation<
+      { status: string; message?: string },
+      PipelineDeleteRequest
+    >({
+      query: ({ name, dags }) => ({
+        url: `/pipeline/delete/${name}`,
+        body: { dags },
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['pipelines'],
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
+        await queryFulfilled;
+        dispatch(processApi.util.invalidateTags(['process']));
+      },
+    }),
   }),
 });
 
@@ -70,4 +89,5 @@ export const {
   useUploadPipelineMutation,
   useUpdatePipelineMutation,
   useSavePipelineAsTemplateMutation,
+  useDeletePipelineMutation,
 } = pipelineApi;
