@@ -309,6 +309,7 @@ const enTranslation = {
     successMessage: 'Pipeline saved successfully as template',
     saveButton: 'Save as Template',
   },
+  download: 'Download',
 };
 
 export default enTranslation;
