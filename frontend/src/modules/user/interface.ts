@@ -55,3 +55,9 @@ export interface UserResponse {
 export type ResetRequest = {
   email: string;
 };
+
+export type ResetPasswordRequest = {
+  newPassword: string;
+  confirmPassword: string;
+  token: string;
+};
