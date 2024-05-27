@@ -15,7 +15,6 @@ import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import punycode from 'punycode';
 
 interface AddProcessProps {
   pipelineList: PipelineList;
@@ -50,14 +49,20 @@ export const AddProcess = ({
         onClick={handleSubmit((values) => {
           values.date.setHours(12, 0, 0);
           createProcess({
-            name: punycode.toASCII(values.processName),
+            name: values.processName,
             pipeline: values.pipelineTemplate,
+            // sending date without seconds because the backend is python3.9
+            // and it can not handle seconds in isoString
             date: values.date.toISOString().split('T')[0],
             schedule_interval: values.scheduleInterval,
             description: values.description,
           } as DagForm)
             .unwrap()
             .then(() => {
+              // WARNING !!!
+              // The only reason why we're using setTimeout
+              // is because Airflow takes time to rescan the dags directory
+              // NEED TO BE CHANGED !!!
               setTimeout(refetch, 1000);
               toast.success(t('addProcess.successMessage'));
               closePanel();
@@ -149,12 +154,14 @@ export const AddProcess = ({
               name="date"
               control={control}
               render={({ field }) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { ...rest } = field;
                 return (
                   <DatePicker
                     {...rest}
                     minDate={new Date()}
                     onValueChange={(v) => {
+                      // the backend is using python 3.9 and it does not support iso string with milliseconds
                       setValue('date', v);
                     }}
                     placeholder="Select Date"
