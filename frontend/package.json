@@ -14,13 +14,10 @@
     "pre-commit": "npm run lint"
   },
   "dependencies": {
-    "@ant-design/icons": "^5.1.0",
     "@headlessui/react": "^1.7.13",
     "@heroicons/react": "^2.0.13",
     "@hookform/resolvers": "^3.1.0",
-    "@radix-ui/react-toast": "^1.1.5",
     "@reduxjs/toolkit": "^1.9.5",
-    "@remixicon/react": "^4.2.0",
     "@superset-ui/embedded-sdk": "^0.1.0-alpha.9",
     "@tremor/react": "3.12.0",
     "@types/react-i18next": "^8.1.0",
