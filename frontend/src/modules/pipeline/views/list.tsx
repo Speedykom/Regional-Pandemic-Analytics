@@ -22,10 +22,12 @@ import {
   useSavePipelineAsTemplateMutation,
 } from '../pipeline';
 import { AddPipeline } from './add';
+import { DeletePipeline } from './delete';
 import { UploadPipeline } from './upload';
 import { TemplateModal } from './template-modal';
 import {
   ArrowDownTrayIcon,
+  TrashIcon,
   XCircleIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
@@ -83,6 +85,18 @@ export const MyPipelines = () => {
         <div data-testid="delete-chart-modal">
           <div className="mb-6">
             <TemplateModal onSelect={onSelect} hideModal={hideModal} />
+          </div>
+        </div>
+      ),
+    });
+
+  const showPipelineDeleteConfirmModal = (name: string) =>
+    showModal({
+      title: `${t('deletePipeline.title')} ${name}`,
+      Component: () => (
+        <div data-testid="delete-chart-modal">
+          <div className="mb-6">
+            <DeletePipeline hideModal={hideModal} taskId={name} />
           </div>
         </div>
       ),
@@ -191,7 +205,7 @@ export const MyPipelines = () => {
                 onClick={() => downloadPipeline(item?.name)}
                 size="lg"
                 icon={ArrowDownTrayIcon}
-                tooltip="Download"
+                tooltip={t('download')}
               />
             </div>
           </TableCell>
