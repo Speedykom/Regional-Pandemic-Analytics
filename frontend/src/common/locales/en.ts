@@ -143,6 +143,8 @@ const enTranslation = {
     run: 'run',
     enable: 'enable',
     disable: 'disable',
+    invalidProcessName:
+      'Pocess Chain Name must consist exclusively of alphanumeric characters, dashes, dots and underscores.',
   },
   passwordChangeSuccess: 'Your password has been successfully changed.',
   passwordChangeError: 'There was an error changing your password.',
