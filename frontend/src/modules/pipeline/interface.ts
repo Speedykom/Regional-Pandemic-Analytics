@@ -8,6 +8,11 @@ export interface PipelineData {
   user_id: string;
 }
 
+export interface PipelineDeleteRequest {
+  name: string;
+  dags: string[];
+}
+
 export type PipelineList = {
   status: string;
   data: Array<PipelineData>;

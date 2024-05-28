@@ -1,6 +1,7 @@
 from datetime import datetime, date
 import requests
 import os
+import re
 from rest_framework.viewsets import ViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -29,7 +30,7 @@ class DruidSegment:
         self.load_spec = loadSpec
         self.dimensions = dimensions.split(',') if isinstance(dimensions, str) else dimensions
         self.metrics = metrics.split(',') if isinstance(metrics, str) else metrics
-        
+
         self.shard_spec = shardSpec
         self.binary_version = binaryVersion
         self.size = size
@@ -44,10 +45,10 @@ class DruidDataSource:
         self.name = name
         self.properties = properties
         self.segments = [DruidSegment(
-            dataSource=segment.get('dataSource'),  
+            dataSource=segment.get('dataSource'),
             interval=segment.get('interval'),
             version=segment.get('version'),
-            loadSpec=segment.get('loadSpec'),  
+            loadSpec=segment.get('loadSpec'),
             dimensions=segment.get('dimensions'),
             metrics=segment.get('metrics'),
             shardSpec=segment.get('shardSpec'),
@@ -145,62 +146,59 @@ class ProcessView(ViewSet):
         "DELETE": "process:delete",
     }
 
+    def __init__(self):
+        self.permitted_characters_regex = re.compile(r'^[a-zA-Z0-9._-]+$')
+
     def list(self, request):
         try:
-            # Get username
-            user_name = get_current_user_name(request)
+            # Get request params
             query = request.GET.get("query")
+            taskId = request.GET.get("taskId")
+
             # Get username
             user_name = get_current_user_name(request)
 
             # Define processes array to store Airflow response
             processes = []
-
-            # Get the list of process chains defined in Airflow over REST API
+            
             if query:
+                # Filter by query
                 # Get the list of process chains defined in Airflow over REST API
-                airflow_response = requests.get(
+                airflow_dags_response = requests.get(
                     f"{AirflowInstance.url}/dags",
                     auth=(AirflowInstance.username, AirflowInstance.password),
                     params={"dag_id_pattern": query},
                 )
             else:
-                airflow_response = requests.get(
+                airflow_dags_response = requests.get(
                     f"{AirflowInstance.url}/dags",
                     auth=(AirflowInstance.username, AirflowInstance.password),
                 )
 
-            if airflow_response.ok:
-                airflow_json = airflow_response.json()["dags"]
-                # Only returns the dags which owners flag is the same as the username
+            if airflow_dags_response.ok:
+                airflow_json = airflow_dags_response.json()["dags"]
                 for dag in airflow_json:
+                    # Only returns the dags which owners flag is the same as the username
                     if user_name in dag["owners"]:
-                        airflow_start_date_response = requests.get(
-                            f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
-                            auth=(AirflowInstance.username, AirflowInstance.password),
-                        )
-                        dataset_info_success, dataset_info = self._get_dataset_info_internal(dag['dag_id'])
-                        processes.append(
-                            Dag(
-                                dag["dag_id"],
-                                dag["dag_id"],
-                                dag["dag_id"],
-                                airflow_start_date_response.json()["start_date"],
-                                dag["schedule_interval"]["value"],
-                                dag["is_paused"],
-                                dag["description"],
-                                dag["last_parsed_time"],
-                                dag["next_dagrun"],
-                                dataset_info_success,
-                                dataset_info[0] if dataset_info != None else None,
-                                dataset_info[1] if dataset_info != None else None
-                            ).__dict__
-                        )
+                        if taskId:
+                            # Filter by Task
+                            airflow_dag_tasks_response, dag_has_task = self._dag_has_task(dag, taskId)
+                            if airflow_dag_tasks_response.ok:
+                                if not dag_has_task:
+                                    # Only return dags having the specified task
+                                    continue
+                            else:
+                                return Response(
+                                    {"status": "failed", "message": "Internal Server Error"},
+                                    status=airflow_dag_tasks_response.status_code,
+                                )
+                        augmentedDag = self._augment_dag(dag)
+                        processes.append(augmentedDag)
                 return Response({"dags": processes}, status=status.HTTP_200_OK)
             else:
                 return Response(
                     {"status": "failed", "message": "Internal Server Error"},
-                    status=airflow_response.status_code,
+                    status=airflow_dags_response.status_code,
                 )
         except:
             return Response(
@@ -216,11 +214,21 @@ class ProcessView(ViewSet):
                 owner=get_current_user_name(request),
                 description=request.data["description"],
                 user_id=get_current_user_id(request),
-                dag_id=request.data["name"].replace(" ", "-").lower(),
+                dag_id=request.data["name"],
                 pipeline_name=request.data["pipeline"],
                 schedule_interval=request.data["schedule_interval"],
                 date=datetime.fromisoformat(request.data["date"]),
             )
+            if not self.permitted_characters_regex.search(new_dag_config.dag_id):
+                return Response(
+                    {"status": "failed", "message": "DAG ID contains unpermitted characters"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if not self.permitted_characters_regex.search(new_dag_config.pipeline_name):
+                return Response(
+                    {"status": "failed", "message": "Pipeline name contains unpermitted characters"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
             # Checks if the process chain already exists or not
             route = f"{AirflowInstance.url}/dags/{new_dag_config.dag_id}"
@@ -323,6 +331,43 @@ class ProcessView(ViewSet):
             return Response({"status": "success"})
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
+        
+    def _augment_dag(self, dag):
+        airflow_start_date_response = requests.get(
+                            f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
+                            auth=(AirflowInstance.username, AirflowInstance.password),
+                        )
+        dataset_info_success, dataset_info = self._get_dataset_info_internal(dag['dag_id'])
+        augmentedDag= Dag(
+                                dag["dag_id"],
+                                dag["dag_id"],
+                                dag["dag_id"],
+                                airflow_start_date_response.json()["start_date"],
+                                dag["schedule_interval"]["value"],
+                                dag["is_paused"],
+                                dag["description"],
+                                dag["last_parsed_time"],
+                                dag["next_dagrun"],
+                                dataset_info_success,
+                                dataset_info[0] if dataset_info != None else None,
+                                dataset_info[1] if dataset_info != None else None
+                            ).__dict__
+            
+        return augmentedDag
+    
+    def _dag_has_task(self, dag, taskId):
+        result = False
+        route = f"{AirflowInstance.url}/dags/{dag['dag_id']}/tasks"
+        airflow_dag_tasks_response = requests.get(
+                        route,
+                        auth=(AirflowInstance.username, AirflowInstance.password),
+                    )
+        if airflow_dag_tasks_response.ok:
+            airflow_json = airflow_dag_tasks_response.json()["tasks"]
+            for task in airflow_json:
+                if (task["operator_name"] == "HopPipelineOperator") and (task["task_id"] == f"{taskId}.hpl"):
+                    result=True
+        return airflow_dag_tasks_response,result
 
     def _get_dataset_info_internal(self, dag_id) -> Tuple[bool, Union[Tuple[int, str], None]]:
         route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns"
@@ -379,7 +424,7 @@ class ProcessView(ViewSet):
     def get_datasource_info(self, request, datasource_id=None):
         if datasource_id is None:
             return Response({"error": "Datasource ID is required"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         druid_url = f"{DruidInstance.url}/druid/coordinator/v1/metadata/datasources/{datasource_id}"
         response = requests.get(druid_url, auth=(DruidInstance.username, DruidInstance.password), verify=False)
 
@@ -412,16 +457,16 @@ class ProcessView(ViewSet):
                     "name": datasource_id,
                     "properties": data.get("properties", {}),
                     "segments_count": segments_count,
-                    "total_size": total_size,  
+                    "total_size": total_size,
                     "last_segment": last_segment  # Return only newest
                 }
-                
+
                 return Response(druid_data_source, status=status.HTTP_200_OK)
             else:
                 return Response({"error": "No segments found for the given datasource ID"}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({"error": "Failed to retrieve data from Druid"}, status=response.status_code)
-            
+
 class ProcessRunView(ViewSet):
     """
     This view handles Dag-Runs logic
@@ -499,3 +544,4 @@ class ProcessRunView(ViewSet):
             return Response({"tasks": tasks}, status=status.HTTP_200_OK)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
+     
