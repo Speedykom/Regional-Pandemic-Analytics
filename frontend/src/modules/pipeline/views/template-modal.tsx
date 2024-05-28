@@ -1,7 +1,7 @@
 import Tooltip from '@/common/components/common/Tooltip';
 import { Button, Card, Title } from '@tremor/react';
 import { useState } from 'react';
-import { useTemplatesQuery } from '../pipeline';
+import { useGetAllTemplatesQuery } from '../pipeline';
 import { Template } from '../interface';
 
 type TemplateModalProps = {
@@ -12,7 +12,7 @@ type TemplateModalProps = {
 export const TemplateModal = ({ onSelect, hideModal }: TemplateModalProps) => {
   const [selected, setSelected] = useState<Template>();
   const [searchQuery, setSearchQuery] = useState<string>(''); // Step 1
-  const { data: templates } = useTemplatesQuery(searchQuery);
+  const { data: templates } = useGetAllTemplatesQuery(searchQuery);
 
   const getIcon = (name: string) => {
     const icons = [
