@@ -203,6 +203,8 @@ const enTranslation = {
     run: 'run',
     enable: 'enable',
     disable: 'disable',
+    invalidProcessName:
+      'Pocess Chain Name must consist exclusively of alphanumeric characters, dashes, dots and underscores.',
     note: 'Note: Start Date is the day when scheduling process chains begin. It is not possible to manually run a process chain that has an upcoming start date.',
     selectDate: 'Select Date',
     descriptionPlaceholder: 'Add description',

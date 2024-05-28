@@ -198,6 +198,8 @@ const frTranslation = {
     run: 'Exécuter',
     enable: 'Activer',
     disable: 'Désactiver',
+    invalidProcessName:
+      'Le nom de la chaîne de processus doit être composé exclusivement de caractères alphanumériques, de tirets, de points et de tirets bas.',
     note: "Remarque: La date de début est le jour où les chaînes de processus de planification commencent. Il n'est pas possible d'exécuter manuellement une chaîne de processus dont la date de début est proche.",
     selectDate: 'Choisir une date',
     descriptionPlaceholder: 'Ajouter une description',
