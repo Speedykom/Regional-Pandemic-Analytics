@@ -34,7 +34,10 @@ const enTranslation = {
   InvalidFilenameIncludeSplit: 'Filename include split should be set to N',
   InvalidFilenameIncludeTime: 'Filename include time should be set to N',
   ValidPipeline: 'Pipeline is valid',
+  pipelineInvalidName:
+    'Invalid characters. Pipeline Name must consist exclusively of alphanumeric characters, dashes, dots and underscores.',
   view: 'View',
+  delete: 'Delete',
   processChain: 'Process Chain',
   viewAndManageProcessChains: 'View and manage all process chains',
   addProcessChain: 'Add Process Chain',
@@ -140,6 +143,8 @@ const enTranslation = {
     run: 'run',
     enable: 'enable',
     disable: 'disable',
+    invalidProcessName:
+      'Pocess Chain Name must consist exclusively of alphanumeric characters, dashes, dots and underscores.',
   },
   passwordChangeSuccess: 'Your password has been successfully changed.',
   passwordChangeError: 'There was an error changing your password.',
@@ -155,6 +160,25 @@ const enTranslation = {
     errorMessage: 'Unable to save pipeline as template',
     successMessage: 'Pipeline saved successfully as template',
     saveButton: 'Save as Template',
+  },
+  deletePipeline: {
+    title: 'Delete Pipeline: ',
+    confirmDeletionMessage: 'Are you sure you want to delete this pipeline?',
+    disableProcessErrorMessage: 'Unable to disable Process Chain: ',
+    warningMessage:
+      'Warning! After deleting the pipeline, the following process chains will be disabled:',
+    deletionErrorMessage: 'Unable to delete pipeline',
+    successMessage: 'Pipeline deleted successfully',
+    deleteButton: 'Delete',
+    cancelButton: 'Cancel',
+    deleteCommand: 'DELETE',
+    active: 'active',
+    inactive: 'inactive',
+    processName: 'Name',
+    processScheduleIntervalLabel: 'Schedule Interval',
+    processStatus: 'Status',
+    confirmationMessage: 'Type "DELETE" to confirm the pipeline deletion:',
+    confirmationPlaceholder: 'Type...',
   },
 };
 
