@@ -266,16 +266,52 @@ class PipelineUploadView(APIView):
 
 class TemplateView(APIView):
     keycloak_scopes = {
+        "GET": "pipeline:read",
         "POST": "pipeline:add",
     }
 
-    def post(self, request, name=None):
+    def get(self, request, query=None):
+      """ Return hop templates from minio bucket """
+      
+      user_id = get_current_user_id(request)
+      pipelines_templates:list[str]=[]
+      try:
+        global_templates=client.list_objects("pipelines",prefix="templates/")
+        for template in global_templates:
+            object_name=template.object_name.removeprefix("templates/")
+            if query:
+                if (re.search(query, object_name, re.IGNORECASE)):
+                    pipelines_templates.append({"name": object_name})
+            else:       
+                pipelines_templates.append({"name": object_name})
+        if user_id:
+            user_templates = client.list_objects('pipelines', prefix=f'templates/{user_id}/')
+            for template in user_templates:
+                object_name=template.object_name.removeprefix(f'templates/{user_id}/')
+                if query:
+                    if (re.search(query, object_name, re.IGNORECASE)):
+                        pipelines_templates.append({"name": object_name})
+                else:       
+                    pipelines_templates.append({"name": object_name})
+                
+        return Response({'status': 'success', "data": pipelines_templates}, status=200)
+      except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": f"Unable to fetch templates: {e}",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+    
+    def post(self, request):
         user_id = get_current_user_id(request)
+        name = request.data.get("name", None)
         try:
             # save pipeline file as Template in Minio
             client.copy_object(
             "pipelines",
-            f"templates/{name}.hpl",
+            f"templates/{user_id}/{name}.hpl",
             CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
 
             return Response({"status": "success"}, status=status.HTTP_200_OK)
