@@ -20,9 +20,6 @@ export const pipelineApi = createApi({
       query: (name) => `/pipeline/download/${name}`,
     }),
 
-    templates: builder.query<TemplateList, string>({
-      query: (query) => `/hop/${query}`,
-    }),
     createPipeline: builder.mutation<any, string>({
       query: (body) => ({
         url: '/pipeline',
@@ -49,13 +46,18 @@ export const pipelineApi = createApi({
       }),
       invalidatesTags: ['pipelines'],
     }),
-    savePipelineAsTemplate: builder.mutation<
+
+    getAllTemplates: builder.query<TemplateList, string>({
+      query: (query) => `/pipeline/template/${query}`,
+    }),
+    uploadTemplate: builder.mutation<
       { status: string; message?: string },
       string
     >({
       query: (name) => ({
-        url: `/pipeline/${name}/save`,
+        url: `/pipeline/template/`,
         method: 'POST',
+        body: { name },
       }),
     }),
   }),
@@ -65,9 +67,9 @@ export const {
   useGetAllPipelinesQuery,
   useGetPipelineQuery,
   useDownloadPipelineQuery,
-  useTemplatesQuery,
   useCreatePipelineMutation,
   useUploadPipelineMutation,
   useUpdatePipelineMutation,
-  useSavePipelineAsTemplateMutation,
+  useGetAllTemplatesQuery,
+  useUploadTemplateMutation,
 } = pipelineApi;
