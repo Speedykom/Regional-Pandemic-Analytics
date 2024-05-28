@@ -54,7 +54,7 @@ const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
             {/* Dimensions */}
             <tr>
               <td className="p-3 font-bold bg-prim text-white w-1/4 border border-gray-200">
-                {t('analyticsDataModel.dimentions')}
+                {t('analyticsDataModel.dimensions')}
               </td>
               <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
                 {datasourceData.last_segment.dimensions.join(', ')}

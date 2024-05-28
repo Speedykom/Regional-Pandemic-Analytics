@@ -402,7 +402,7 @@ export const ProfileSettings = () => {
                     type="tel"
                     id="phone"
                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                    placeholder="Phone Number*"
+                    placeholder={t('phoneNumber')}
                     pattern="^\+?\d{0,13}"
                   />
                 )}
@@ -569,7 +569,7 @@ export const ProfileSettings = () => {
                             type="password"
                             value={newPass}
                             onChange={(e) => setNewPass(e.currentTarget.value)}
-                            placeholder="new password"
+                            placeholder={t('newPass')}
                             className="mt-1 bg-gray-50"
                           />
                         </div>
@@ -587,7 +587,7 @@ export const ProfileSettings = () => {
                             onChange={(e) =>
                               setConfirmPass(e.currentTarget.value)
                             }
-                            placeholder="confirm password"
+                            placeholder={t('confirmPass')}
                             className="mt-1 bg-gray-50"
                           />
                         </div>
