@@ -23,7 +23,10 @@ const frTranslation = {
   uploadPipeline: 'Charger un pipeline',
   pipelineCheckSuccessful: 'Vérification du pipeline réussie',
   pipelineCheckFailed: 'Échec de la vérification du pipeline',
+  pipelineInvalidName:
+    'Caractères invalides. Le nom du pipeline doit être composé exclusivement de caractères alphanumériques, de tirets, de points et de tirets bas.',
   view: 'Voir',
+  delete: 'Supprimer',
 
   processChain: 'Chaîne de processus',
   viewAndManageProcessChains:
@@ -135,6 +138,8 @@ const frTranslation = {
     run: 'exécuter',
     enable: 'activer',
     disable: 'désactiver',
+    invalidProcessName:
+      'Le nom de la chaîne de processus doit être composé exclusivement de caractères alphanumériques, de tirets, de points et de tirets bas.',
   },
   passwordChangeSuccess: 'Votre mot de passe a été changé avec succès.',
   passwordChangeError:
@@ -152,6 +157,27 @@ const frTranslation = {
     errorMessage: 'Impossible de sauvegarder le pipeline en tant que modèle',
     successMessage: 'Pipeline enregistré avec succès en tant que modèle',
     saveButton: 'Enregistrer comme modèle',
+  },
+  deletePipeline: {
+    title: 'Supprimer le pipeline: ',
+    confirmDeletionMessage: 'Êtes-vous sûr de vouloir supprimer ce pipeline ?',
+    disableProcessErrorMessage:
+      'Impossible de désactiver la chaîne du processus: ',
+    warningMessage:
+      'Attention! Après la suppression du pipeline, les chaînes de processus suivantes seront désactivées :',
+    deletionErrorMessage: 'Impossible de supprimer le pipeline',
+    successMessage: 'Le pipeline a été supprimé avec succès.',
+    deleteButton: 'Supprimer',
+    cancelButton: 'Annuler',
+    deleteCommand: 'SUPPRIMER',
+    active: 'actif',
+    inactive: 'inactif',
+    processName: 'Nom',
+    processScheduleIntervalLabel: 'Intervalle de planification',
+    processStatus: 'Status',
+    confirmationMessage:
+      'Veuillez taper "SUPPRIMER" pour confirmer la suppression du pipeline:',
+    confirmationPlaceholder: 'Tapez...',
   },
 };
 
