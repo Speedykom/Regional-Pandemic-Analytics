@@ -1,6 +1,7 @@
 import os
 import json
 import re
+import requests
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,6 +11,12 @@ from datetime import datetime
 from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
 from .validator import check_pipeline_validity
+from urllib.parse import quote, unquote
+
+class AirflowInstance:
+    url = os.getenv("AIRFLOW_API")
+    username = os.getenv("AIRFLOW_USER")
+    password = os.getenv("AIRFLOW_PASSWORD")
 
 class EditAccessProcess:
     def __init__(self, file):
@@ -26,6 +33,9 @@ class PipelineListView(APIView):
         "POST": "pipeline:add",
         "GET": "pipeline:read",
     }
+
+    def __init__(self):
+        self.permitted_characters_regex = re.compile(r'^[a-zA-Z0-9._-]+$')
 
     def get(self, request , query = None):
         """Return a user created pipelines"""
@@ -45,7 +55,7 @@ class PipelineListView(APIView):
                     pipelines.append(
                         {
                             "name": object_name,
-                            "description": object.metadata["X-Amz-Meta-Description"],
+                            "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                             "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
                             "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                         })
@@ -53,10 +63,10 @@ class PipelineListView(APIView):
                 pipelines.append(
                 {
                     "name": object_name,
-                    "description": object.metadata["X-Amz-Meta-Description"],
+                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                     "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
                     "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
-                }    
+                }
             )
 
         return Response(
@@ -69,6 +79,11 @@ class PipelineListView(APIView):
         name = request.data.get("name")
         description = request.data.get("description")
         template = request.data.get("template")
+        if not self.permitted_characters_regex.search(name):
+            return Response(
+                {"status": "Fail", "message": "Pipeline name contains unpermitted characters"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         try:
             # Checks if an object with the same name exits
             client_response = client.get_object(
@@ -93,7 +108,7 @@ class PipelineListView(APIView):
                 f"pipelines-created/{user_id}/{name}.hpl",
                 CopySource("pipelines", f"templates/{template}"),
                 metadata={
-                    "description": f"{description}",
+                    "description": f"{quote(description.encode('utf-8'))}",
                     "created": f"{datetime.utcnow()}",
                     "check_status": "success", #check status should be always success when creating a new pipeline, as our provided templates are correct
                     "check_text": "ValidPipeline", 
@@ -130,11 +145,10 @@ class PipelineDetailView(APIView):
             payload = {"names": ["file:///files/{}.hpl".format(name)]}
             edit_hop = EditAccessProcess(file=self.file)
             edit_hop.request_edit(json.dumps(payload))
-
             return Response(
                 {
                     "name": name,
-                    "description": object.metadata["X-Amz-Meta-Description"],
+                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                     "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
                     "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                 },
@@ -167,7 +181,7 @@ class PipelineDetailView(APIView):
                 f"pipelines-created/{user_id}/{name}.hpl",
                 f"/hop/pipelines/{name}.hpl",
                 metadata={
-                    "description": object.metadata["X-Amz-Meta-Description"],
+                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                     "updated": f"{datetime.utcnow()}",
                     "created": object.metadata["X-Amz-Meta-Created"],
                     "check_status": "success" if valid_pipeline else "failed",
@@ -192,8 +206,8 @@ class PipelineDownloadView(APIView):
     keycloak_scopes = {
         "GET": "pipeline:read",
     }
-    
-    def get(self, request, name=None):        
+
+    def get(self, request, name=None):
         """Download a specific pipeline."""
         user_id = get_current_user_id(request)
         try:
@@ -220,12 +234,17 @@ class PipelineUploadView(APIView):
         "POST": "pipeline:add",
         "GET": "pipeline:read",
     }
-    
+
     def post(self, request, format=None):
         user_id = get_current_user_id(request)
         name = request.data.get("name")
         description = request.data.get("description")
         uploaded_file = request.FILES.get("uploadedFile")
+        if not self.permitted_characters_regex.search(name):
+            return Response(
+                {"status": "Fail", "message": "Pipeline name contains unpermitted characters"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         if uploaded_file:
             # To check if file is valid we first have to have it saved on the local file system
             with open(f"/hop/pipelines/{name}.hpl", 'wb') as f:
@@ -255,14 +274,92 @@ class PipelineUploadView(APIView):
                     data=f,
                     length=os.path.getsize(f.name),
                     metadata={
-                        "description": f"{description}",
+                        "description": f"{quote(description.encode('utf-8'))}",
                         "created": f"{datetime.utcnow()}",
                         "check_status": "success" if valid_pipeline else "failed",
                         "check_text": check_text,
                     },
                     )
                 return Response({"status": "success"}, status=status.HTTP_200_OK)
+class PipelineDeleteView(APIView):
+    keycloak_scopes = {
+        "DELETE": "pipeline:delete",
+    }
 
+    def delete(self, request, name=None):
+        # Disable all dags using the pipeline
+        dag_ids = request.data.get("dags", [])
+        
+        result = self._deactivate_processes(dag_ids)
+        if result["status"] == "failed":    
+            return Response({"status": "failed", "message": result["message"] }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+  
+        # Back up and then delete the pipeline
+        user_id = get_current_user_id(request)
+        try:
+            # back up pipeline file
+            client.copy_object(
+            "pipelines",
+            f"pipelines-deleted/{user_id}/{name}_{datetime.utcnow()}.hpl",
+            CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
+            # delete pipeline file from Minio
+            client.remove_object(
+                "pipelines", 
+                f"pipelines-created/{user_id}/{name}.hpl")
+
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
+        except:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Unable to delete the pipeline {}".format(name),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def _deactivate_processes(self, dag_ids):
+        if dag_ids is not None and dag_ids:
+            all_successful = True
+            messages = []
+            deactivated_processes = []
+
+            for dag_id in dag_ids:
+                result = self._set_process_status(dag_id, True)
+                if result["status"] == "failed":
+                    all_successful = False
+                    messages.append(result["message"])
+                else:
+                    deactivated_processes.append(dag_id)
+    
+            if all_successful:
+                return {"status": "success"}
+            else:
+                # reactivate all deactivated processes
+                for dag_id in deactivated_processes:
+                    reactivation_result = self._set_process_status(dag_id, False)
+                    messages.append(reactivation_result["message"])
+                return {"status": "failed", 
+                    "message": "One or more process deactivation failed.",
+                    "errors": messages}
+        return {"status": "success"}
+
+    def _set_process_status(self, dag_id, is_deactivated):
+        route = f"{AirflowInstance.url}/dags/{dag_id}"
+
+        try:
+            # deactivate the process status
+            airflow_toggle_response = requests.patch(
+                route,
+                auth=(AirflowInstance.username, AirflowInstance.password),
+                json={"is_paused": is_deactivated},
+            )
+        
+            if airflow_toggle_response.ok:
+                return {"status": "success"}
+            else:
+                return {"status": "failed", "message": f"Failed to update process status for {dag_id}"}
+        except Exception as e:
+            return {"status": "failed", "message": f"Exception occured while updating process status {dag_id}: {str(e)}"}
 
 class TemplateView(APIView):
     keycloak_scopes = {
