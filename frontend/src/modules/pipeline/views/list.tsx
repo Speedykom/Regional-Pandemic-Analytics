@@ -18,7 +18,7 @@ import { useRouter } from 'next/router';
 import {
   useGetAllPipelinesQuery,
   useDownloadPipelineQuery,
-  useSavePipelineAsTemplateMutation,
+  useUploadTemplateMutation,
 } from '../pipeline';
 import { AddPipeline } from './add';
 import { UploadPipeline } from './upload';
@@ -65,7 +65,7 @@ export const MyPipelines = () => {
 
   const { data, refetch } = useGetAllPipelinesQuery(searchInput);
 
-  const [savePipelineAsTemplate] = useSavePipelineAsTemplateMutation();
+  const [savePipelineAsTemplate] = useUploadTemplateMutation();
 
   const [selectedPipeline, setSelectedPipeline] = useState<string>('');
   const { data: downloadData } = useDownloadPipelineQuery(
