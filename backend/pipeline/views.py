@@ -34,6 +34,9 @@ class PipelineListView(APIView):
         "GET": "pipeline:read",
     }
 
+    def __init__(self):
+        self.permitted_characters_regex = re.compile(r'^[a-zA-Z0-9._-]+$')
+
     def get(self, request , query = None):
         """Return a user created pipelines"""
         user_id = get_current_user_id(request)
@@ -76,6 +79,11 @@ class PipelineListView(APIView):
         name = request.data.get("name")
         description = request.data.get("description")
         template = request.data.get("template")
+        if not self.permitted_characters_regex.search(name):
+            return Response(
+                {"status": "Fail", "message": "Pipeline name contains unpermitted characters"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         try:
             # Checks if an object with the same name exits
             client_response = client.get_object(
@@ -254,6 +262,11 @@ class PipelineUploadView(APIView):
         name = request.data.get("name")
         description = request.data.get("description")
         uploaded_file = request.FILES.get("uploadedFile")
+        if not self.permitted_characters_regex.search(name):
+            return Response(
+                {"status": "Fail", "message": "Pipeline name contains unpermitted characters"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         if uploaded_file:
             # To check if file is valid we first have to have it saved on the local file system
             with open(f"/hop/pipelines/{name}.hpl", 'wb') as f:

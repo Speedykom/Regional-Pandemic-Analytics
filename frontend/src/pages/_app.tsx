@@ -3,7 +3,6 @@ import { AppProps } from 'next/app';
 import '@/common/styles/globals.css';
 import 'react-toastify/dist/ReactToastify.css';
 import { Provider } from 'react-redux';
-import { ConfigProvider } from 'antd';
 import { store } from '@/common/redux/store';
 import { ModalProvider } from '@/common/hooks/use-modal';
 import dynamic from 'next/dynamic';
@@ -16,20 +15,10 @@ function CsrApp({ Component, pageProps }: AppProps) {
     <Provider store={store}>
       <ModalProvider>
         <AuthProvider>
-          <ConfigProvider
-            theme={{
-              components: {},
-              token: {
-                colorPrimary: '#007b38',
-                fontSize: 14,
-              },
-            }}
-          >
-            <I18nextProvider i18n={i18n}>
-              <Component {...pageProps} />
-            </I18nextProvider>
-            <ToastContainer />
-          </ConfigProvider>
+          <I18nextProvider i18n={i18n}>
+            <Component {...pageProps} />
+          </I18nextProvider>
+          <ToastContainer />
         </AuthProvider>
       </ModalProvider>
     </Provider>
