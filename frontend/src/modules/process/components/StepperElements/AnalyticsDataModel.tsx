@@ -15,6 +15,7 @@ const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
   if (!data) return <div>No data available</div>;
 
   const datasourceData: any = data;
+  const last_segment = datasourceData.last_segment || {};
 
   return (
     <div className="flex flex-col space-y-4 p-4 max-w-4xl mx-auto bg-white rounded-lg shadow">
@@ -57,7 +58,9 @@ const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
                 {t('analyticsDataModel.dimensions')}
               </td>
               <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
-                {datasourceData.last_segment.dimensions.join(', ')}
+                {Array.isArray(last_segment.dimensions)
+                  ? last_segment.dimensions.join(', ')
+                  : 'No dimensions available'}
               </td>
             </tr>
             {/* Size (Size * Number of Segments) */}
