@@ -167,7 +167,7 @@ export const UserDetails = () => {
                     </Badge>
                   ) : (
                     <Badge color="red" icon={SignalSlashIcon}>
-                      {t('user.insactive')}
+                      {t('user.inactive')}
                     </Badge>
                   )}
                 </div>
