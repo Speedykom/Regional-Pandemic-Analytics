@@ -70,7 +70,7 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
     if (parts.length === 3) {
       const [value, unit] = parts;
       const singularUnit = unit.endsWith('s') ? unit.slice(0, -1) : unit;
-      const key = `${singularUnit}ago`;
+      const key = `supersetcharts.${singularUnit}ago`;
       return t(key, { value });
     }
     return timeDelta;
