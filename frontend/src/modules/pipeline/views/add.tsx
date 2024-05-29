@@ -38,7 +38,7 @@ export const AddPipeline = ({
         return;
       }
 
-      toast.success('Process created successfully', {
+      toast.success(t('pipelineCreatedSuccessfully'), {
         position: 'top-right',
       });
       cancel();
@@ -60,20 +60,20 @@ export const AddPipeline = ({
         className="bg-prim text-white border-0 hover:bg-prim-hover"
         onClick={handleSubmit((values: any) => onFinish(values))}
       >
-        Submit
+        {t('submit')}
       </Button>
       <Button
         onClick={cancel}
         className="bg-blue-100 px-4 py-2 text-sm text-blue-900 hover:bg-blue-200 border-0"
       >
-        Cancel
+        {t('cancel')}
       </Button>
     </div>
   );
 
   return (
     <Drawer
-      title="Add Pipeline"
+      title={t('addPipeline')}
       isOpen={state}
       onClose={cancel}
       placement="right"
@@ -87,13 +87,13 @@ export const AddPipeline = ({
               className="block text-blueGray-600 text-xs font-bold mb-2"
               htmlFor="descriptiond"
             >
-              Name*
+              {t('name')}*
             </label>
             <TextInput
               {...register('name', {
                 required: {
                   value: true,
-                  message: 'Please enter a pipeline name',
+                  message: t('addPipelineMessage'),
                 },
                 pattern: {
                   value: permittedCharactersRegex,
@@ -104,7 +104,7 @@ export const AddPipeline = ({
               errorMessage={errors?.name?.message?.toString()}
               type="text"
               className="w-full h-12"
-              placeholder="Enter Name"
+              placeholder={t('enterName')}
             />
           </div>
           <div className="relative w-full mb-3">
@@ -112,7 +112,7 @@ export const AddPipeline = ({
               className="block text-blueGray-600 text-xs font-bold mb-2"
               htmlFor="path"
             >
-              Template
+              {t('template')}*
             </label>
             <TextInput
               disabled
@@ -132,12 +132,10 @@ export const AddPipeline = ({
                 required: true,
               })}
               error={!!errors.description}
-              errorMessage={
-                errors.description ? 'Please enter your description' : ''
-              }
+              errorMessage={errors.description ? t('descMessage') : ''}
               type="text"
               className="w-full h-12"
-              placeholder="Enter Description"
+              placeholder={t('descPlaceholder')}
             />
           </div>
         </form>

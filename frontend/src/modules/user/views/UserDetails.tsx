@@ -9,11 +9,13 @@ import { useGetUserAvatarQuery, useGetUserQuery } from '@/modules/user/user';
 import { useRouter } from 'next/router';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '@/modules/auth/auth';
+import { useTranslation } from 'react-i18next';
 
 export const UserDetails = () => {
   const router = useRouter();
   const { id } = router.query;
   const { data } = useGetUserQuery(String(id));
+  const { t } = useTranslation();
   const currentUser = useSelector(selectCurrentUser);
 
   const { data: userProfileImage } = useGetUserAvatarQuery(
@@ -30,7 +32,7 @@ export const UserDetails = () => {
           <div className="rounded-t bg-white mb-0 px-6 py-6">
             <div className="text-center flex justify-between">
               <h6 className="text-blueGray-700 text-xl font-bold">
-                User Details
+                {t('user.userDetails')}
               </h6>
               <img
                 src={userProfileImage ? userProfileImage : '/avater.png'}
@@ -41,7 +43,7 @@ export const UserDetails = () => {
           </div>
           <div className="flex-auto px-4 lg:px-10 py-10 pt-0">
             <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-              Basic Information
+              {t('user.basicInformation')}
             </h6>
             <div className="flex flex-wrap">
               <div className="w-full lg:w-6/12 px-4">
@@ -50,7 +52,7 @@ export const UserDetails = () => {
                     className="block text-gray-600 text-xs mb-2"
                     htmlFor="firstName"
                   >
-                    First Name
+                    {t('user.firstName')}
                   </label>
                   <Text className="text-black px-2">{data?.firstName}</Text>
                 </div>
@@ -61,7 +63,7 @@ export const UserDetails = () => {
                     className="block text-gray-600 text-xs mb-2"
                     htmlFor="lastName"
                   >
-                    Last Name
+                    {t('user.lastName')}
                   </label>
                   <Text className="text-black px-2">{data?.lastName}</Text>
                 </div>
@@ -72,7 +74,7 @@ export const UserDetails = () => {
                     className="block text-gray-600 text-xs mb-2"
                     htmlFor="gender"
                   >
-                    Gender
+                    {t('user.gender')}
                   </label>
                   <Text className="text-black px-2">
                     {data?.attributes?.gender}
@@ -85,7 +87,7 @@ export const UserDetails = () => {
                     className="block text-gray-600 text-xs mb-2"
                     htmlFor="country"
                   >
-                    Country
+                    {t('user.country')}
                   </label>
                   <Text className="text-black px-2">
                     {data?.attributes?.country}
@@ -98,7 +100,7 @@ export const UserDetails = () => {
                     className="block text-gray-600 text-xs mb-2"
                     htmlFor="phone"
                   >
-                    Contact Number
+                    {t('user.contactNumber')}
                   </label>
                   <Text className="text-black px-2">
                     {data?.attributes?.phone}
@@ -107,7 +109,7 @@ export const UserDetails = () => {
               </div>
             </div>
             <h6 className="text-blueGray-400 text-sm mt-3 mb-6 font-bold uppercase">
-              User Information
+              {t('user.userInformation')}
             </h6>
             <div className="flex flex-wrap">
               <div className="w-full lg:w-6/12 px-4">
@@ -116,7 +118,7 @@ export const UserDetails = () => {
                     className="block text-gray-600 text-xs mb-2"
                     htmlFor="firstName"
                   >
-                    Username
+                    {t('user.username')}
                   </label>
                   <Text className="text-black px-2">{data?.username}</Text>
                 </div>
@@ -127,7 +129,7 @@ export const UserDetails = () => {
                     className="block text-gray-600 text-xs mb-2"
                     htmlFor="email"
                   >
-                    Email
+                    {t('user.email')}
                   </label>
                   <Text className="text-black px-2">{data?.email}</Text>
                 </div>
@@ -138,15 +140,15 @@ export const UserDetails = () => {
                     className="block text-gGray-600 text-xs mb-2"
                     htmlFor="emailVerify"
                   >
-                    Email Status
+                    {t('user.emailStatus')}
                   </label>
                   {data?.emailVerified ? (
                     <Badge color="indigo" icon={CheckIcon}>
-                      Enable
+                      {t('user.enable')}
                     </Badge>
                   ) : (
                     <Badge color="red" icon={XMarkIcon}>
-                      Disabled
+                      {t('user.disable')}
                     </Badge>
                   )}
                 </div>
@@ -157,15 +159,15 @@ export const UserDetails = () => {
                     className="block text-gray-600 text-xs mb-2"
                     htmlFor="enable"
                   >
-                    User Status
+                    {t('user.userStatus')}
                   </label>
                   {data?.enabled ? (
                     <Badge color="green" icon={WifiIcon}>
-                      Active
+                      {t('user.active')}
                     </Badge>
                   ) : (
                     <Badge color="red" icon={SignalSlashIcon}>
-                      Inactive
+                      {t('user.inactive')}
                     </Badge>
                   )}
                 </div>
@@ -176,7 +178,7 @@ export const UserDetails = () => {
                     className="block text-gray-600 text-xs mb-2"
                     htmlFor="role"
                   >
-                    User Role
+                    {t('user.userRole')}
                   </label>
                   <div>
                     <div className="flex px-2">
