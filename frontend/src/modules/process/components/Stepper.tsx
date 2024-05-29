@@ -7,6 +7,7 @@ import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
 import AnalyticsDataModel from './StepperElements/AnalyticsDataModel';
 import Charts from './StepperElements/Charts';
+import { useTranslation } from 'react-i18next';
 
 interface StepperProps {
   pipeline: string;
@@ -32,10 +33,11 @@ export default function Stepper({
   data_source_name,
 }: StepperProps) {
   const [activeStep, setActiveStep] = useState<number | null>(null);
+  const { t } = useTranslation();
 
   const steps = [
     {
-      title: 'Data Source Selection',
+      title: t('processChains.dataSourceSelection'),
       icon: <BiGitMerge size={24} />,
       content: (
         <DataSourceSelection
@@ -47,7 +49,7 @@ export default function Stepper({
       ),
     },
     {
-      title: 'Orchestration',
+      title: t('processChains.orchestration'),
       icon: <AiOutlineSchedule size={24} />,
       content: (
         <Orchestration
@@ -59,13 +61,13 @@ export default function Stepper({
       ),
     },
     {
-      title: 'Analytics Data Model',
+      title: t('processChains.analyticsDataModel'),
       icon: <BiTable size={24} />,
       content: <AnalyticsDataModel dataSourceName={data_source_name} />,
     },
 
     {
-      title: 'Charts',
+      title: t('processChains.charts'),
       icon: <BiChart size={24} />,
       content: <Charts createChartUrl={createChartUrl} dagId={dagId} />,
     },

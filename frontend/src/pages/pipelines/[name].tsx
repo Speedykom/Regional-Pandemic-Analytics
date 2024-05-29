@@ -5,15 +5,17 @@ import { HopUI } from '@/modules/pipeline/views/HopUI';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { useTranslation } from 'react-i18next';
 
 export default function Pipeline() {
   const router = useRouter();
   const { hasPermission } = usePermission();
   const { name } = router.query as { name: string };
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (name && hasPermission('pipeline:read')) {
-      toast.info('Please make sure you are saving changes in Hop UI', {
+      toast.info(t('hop.firstMessage'), {
         position: 'bottom-right',
       });
     }

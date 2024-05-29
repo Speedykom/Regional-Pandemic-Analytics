@@ -15,6 +15,7 @@ import { useState } from 'react';
 import { usePermission } from '@/common/hooks/use-permission';
 import { useModal } from '@/common/hooks/use-modal';
 import { useRouter } from 'next/router';
+
 import {
   useGetAllPipelinesQuery,
   useDownloadPipelineQuery,
@@ -79,7 +80,7 @@ export const MyPipelines = () => {
 
   const showConfirmModal = () =>
     showModal({
-      title: 'Hop Template',
+      title: t('hopTemplate'),
       Component: () => (
         <div data-testid="delete-chart-modal">
           <div className="mb-6">
@@ -114,7 +115,7 @@ export const MyPipelines = () => {
     return (
       <div className="flex justify-end items-center mt-4">
         <div className="mr-4">
-          Showing {startItem} – {endItem} of {data?.data?.length}
+          {t('showing')} {startItem} – {endItem} {t('of')} {data?.data?.length}
         </div>
         <div className="flex">
           <Button
@@ -123,7 +124,7 @@ export const MyPipelines = () => {
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
           >
-            &larr; Prev
+            &larr; {t('prev')}
           </Button>
           <Button
             className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4  focus:outline-none cursor-pointer"
@@ -131,7 +132,7 @@ export const MyPipelines = () => {
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}
           >
-            Next &rarr;
+            {t('next')} &rarr;
           </Button>
         </div>
       </div>
@@ -204,7 +205,7 @@ export const MyPipelines = () => {
                 onClick={() => downloadPipeline(item?.name)}
                 size="lg"
                 icon={ArrowDownTrayIcon}
-                tooltip="Download"
+                tooltip={t('download')}
                 className="cursor-pointer"
                 variant="shadow"
               />
@@ -285,7 +286,7 @@ export const MyPipelines = () => {
       </nav>
       <input
         type="text"
-        placeholder="Search for pipelines..."
+        placeholder={t('searchForPipelines')}
         className="w-full border border-gray-300 rounded-md p-2 mb-3"
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
@@ -301,7 +302,7 @@ export const MyPipelines = () => {
                     {t('description')}
                   </TableHeaderCell>
                 </MediaQuery>
-                <TableHeaderCell>Check Status</TableHeaderCell>
+                <TableHeaderCell>{t('checkStatus')}</TableHeaderCell>
                 <TableHeaderCell />
               </TableRow>
             </TableHead>

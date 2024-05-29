@@ -1,8 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
+  const { t } = useTranslation();
 
   return (
     <footer className="bg-white py-4 fixed bottom-0 w-full">
@@ -12,12 +14,12 @@ const Footer: React.FC = () => {
             <ul className="mb-4 md:mb-0 flex space-x-4">
               <li>
                 <Link href="/footer/learn-more" className="text-prim text-xs">
-                  Learn More
+                  {t('footer.learnMore')}
                 </Link>
               </li>
               <li>
                 <Link href="/footer/privacy" className="text-prim text-xs">
-                  Privacy
+                  {t('footer.privacy')}
                 </Link>
               </li>
               <li>
@@ -25,7 +27,7 @@ const Footer: React.FC = () => {
                   href="/footer/terms-of-service"
                   className="text-prim text-xs"
                 >
-                  Terms of Service
+                  {t('footer.termsOfService')}
                 </Link>
               </li>
               <li>
@@ -33,13 +35,13 @@ const Footer: React.FC = () => {
                   href="/footer/business-agreement"
                   className="text-prim text-xs"
                 >
-                  Business Agreement
+                  {t('footer.businessAgreement')}
                 </Link>
               </li>
             </ul>
           </div>
           <div className="text-xs text-gray-500">
-            &copy; {currentYear} IGAD. All Rights Reserved.
+            &copy; {currentYear} IGAD. {t('footer.allRightsReserved')}
           </div>
         </div>
       </div>

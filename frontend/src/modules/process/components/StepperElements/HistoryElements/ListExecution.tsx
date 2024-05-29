@@ -3,6 +3,7 @@ import { useGetProcessHistoryByIdQuery } from '@/modules/process/process';
 import { RadioGroup } from '@headlessui/react';
 import { Dispatch, SetStateAction } from 'react';
 import { BiCheckCircle } from 'react-icons/bi';
+import { useTranslation } from 'react-i18next';
 
 interface ListExecutionProps {
   dagId: string;
@@ -21,6 +22,7 @@ export default function ListExecution({
   setSelected,
 }: ListExecutionProps) {
   const { data, isSuccess } = useGetProcessHistoryByIdQuery(dagId);
+  const { t } = useTranslation();
 
   return (
     <RadioGroup value={selected} onChange={setSelected}>
@@ -52,7 +54,35 @@ export default function ListExecution({
                               checked ? 'text-white' : 'text-gray-900'
                             }`}
                           >
-                            {convertDagRunId(dagRun.dag_run_id).toUTCString()}
+                            {t(
+                              `days.${convertDagRunId(
+                                dagRun.dag_run_id
+                              ).getUTCDay()}`
+                            )}
+                            , {convertDagRunId(dagRun.dag_run_id).getUTCDate()}{' '}
+                            {t(
+                              `months.${convertDagRunId(
+                                dagRun.dag_run_id
+                              ).getUTCMonth()}`
+                            )}{' '}
+                            {convertDagRunId(
+                              dagRun.dag_run_id
+                            ).getUTCFullYear()}{' '}
+                            {convertDagRunId(dagRun.dag_run_id)
+                              .getUTCHours()
+                              .toString()
+                              .padStart(2, '0')}
+                            :
+                            {convertDagRunId(dagRun.dag_run_id)
+                              .getUTCMinutes()
+                              .toString()
+                              .padStart(2, '0')}
+                            :
+                            {convertDagRunId(dagRun.dag_run_id)
+                              .getUTCSeconds()
+                              .toString()
+                              .padStart(2, '0')}{' '}
+                            GMT
                           </RadioGroup.Label>
                         </div>
                       </div>

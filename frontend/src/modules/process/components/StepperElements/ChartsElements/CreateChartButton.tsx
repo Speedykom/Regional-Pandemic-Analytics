@@ -2,6 +2,7 @@ import { Button } from '@tremor/react';
 import { FiPieChart } from 'react-icons/fi';
 import { useGetDatasetInfoQuery } from '@/modules/process/process';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface createChartButtonProps {
   createChartUrl: string | null;
@@ -32,6 +33,7 @@ export default function CreateChartButton({
       hasDatasetUrl: true,
     });
   }
+  const { t } = useTranslation();
 
   return (
     <Button
@@ -40,7 +42,7 @@ export default function CreateChartButton({
       disabled={!state.hasDatasetUrl}
       onClick={() => openSupersetWithNewChart(state.createChartUrl as string)}
     >
-      Add a chart
+      {t('addChart')}
     </Button>
   );
 }

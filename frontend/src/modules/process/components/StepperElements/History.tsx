@@ -2,6 +2,7 @@ import { Title } from '@tremor/react';
 import { useState } from 'react';
 import ListExecution from './HistoryElements/ListExecution';
 import ExecutionGraph from './HistoryElements/ExecutionGraph';
+import { useTranslation } from 'react-i18next';
 
 interface IHistroyProps {
   dagId: string;
@@ -9,10 +10,11 @@ interface IHistroyProps {
 
 export default function History({ dagId }: IHistroyProps) {
   const [selected, setSelected] = useState('');
+  const { t } = useTranslation();
 
   return (
     <div>
-      <Title>Last Execution</Title>
+      <Title> {t('orchestration.lastExecution')}</Title>
       <div className="flex space-x-4 flex-end ">
         <div className="basis-1/4">
           <ListExecution
