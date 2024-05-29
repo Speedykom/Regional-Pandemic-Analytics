@@ -425,7 +425,7 @@ class ProcessView(ViewSet):
         if datasource_id is None:
             return Response({"error": "Datasource ID is required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        druid_url = f"{DruidInstance.url}/druid/coordinator/v1/metadata/datasources/{datasource_id}"
+        druid_url = f"{DruidInstance.url}druid/coordinator/v1/metadata/datasources/{datasource_id}"
         response = requests.get(druid_url, auth=(DruidInstance.username, DruidInstance.password), verify=False)
 
         if response.status_code == 200:
