@@ -53,7 +53,8 @@ export default function ProcessChainList() {
     return (
       <div className="flex justify-end items-center mt-4">
         <div className="mr-4">
-          Showing {startItem} – {endItem} of {processChainList.dags?.length}
+          {t('showing')} {startItem} – {endItem} {t('of')}{' '}
+          {processChainList.dags?.length}
         </div>
         <div className="flex">
           <Button
@@ -62,7 +63,7 @@ export default function ProcessChainList() {
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(currentPage - 1)}
           >
-            &larr; Prev
+            &larr; {t('prev')}
           </Button>
           <Button
             className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer"
@@ -70,7 +71,7 @@ export default function ProcessChainList() {
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(currentPage + 1)}
           >
-            Next &rarr;
+            {t('next')} &rarr;
           </Button>
         </div>
       </div>
@@ -132,7 +133,7 @@ export default function ProcessChainList() {
       </div>
       <input
         type="text"
-        placeholder="Search for process chains..."
+        placeholder={t('searchForProcesscChains')}
         className="w-full border border-gray-300 rounded-md p-2 mt-3"
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}

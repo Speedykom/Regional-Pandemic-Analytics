@@ -85,7 +85,7 @@ export const AddProcess = ({
 
   return (
     <Drawer
-      title={'Add Process Chain'}
+      title={t('addProcess.title')}
       isOpen={panelState}
       onClose={closePanel}
       placement="right"
@@ -108,7 +108,7 @@ export const AddProcess = ({
               errorMessage={errors?.processName?.message?.toString()}
               type="text"
               className="w-full h-12"
-              placeholder="Process Chain"
+              placeholder={t('addProcess.processChainLabel')}
             />
           </div>
 
@@ -120,7 +120,10 @@ export const AddProcess = ({
               defaultValue={''}
               render={({ field }) => {
                 return (
-                  <SearchSelect {...field} placeholder="Pipeline Template">
+                  <SearchSelect
+                    {...field}
+                    placeholder={t('addProcess.pipelineTemplateLabel')}
+                  >
                     {pipelineList.data
                       .filter((pipeline) => pipeline.check_status === 'success')
                       .map((pipeline) => {
@@ -143,11 +146,7 @@ export const AddProcess = ({
             <label>
               <div>{t('addProcess.startDateLabel')}</div>
               <div className="p-1 pb-2">
-                <p className="text-sm italic">
-                  Note: Start Date is the day when scheduling process chains
-                  begin. It is not possible to manually run a process chain that
-                  has an upcoming start date.
-                </p>
+                <p className="text-sm italic">{t('addProcess.note')}</p>
               </div>
             </label>
             <Controller
@@ -164,7 +163,7 @@ export const AddProcess = ({
                       // the backend is using python 3.9 and it does not support iso string with milliseconds
                       setValue('date', v);
                     }}
-                    placeholder="Select Date"
+                    placeholder={t('addProcess.selectDate')}
                   />
                 );
               }}
@@ -179,7 +178,10 @@ export const AddProcess = ({
               defaultValue={''}
               render={({ field }) => {
                 return (
-                  <SearchSelect {...field} placeholder="Schedule Interval">
+                  <SearchSelect
+                    {...field}
+                    placeholder={t('addProcess.scheduleIntervalPlaceholder')}
+                  >
                     {schedule_intervals.map((interval) => {
                       return (
                         <SearchSelectItem key={interval} value={interval}>
@@ -197,7 +199,7 @@ export const AddProcess = ({
             <label>{t('addProcess.descriptionLabel')}</label>
             <TextInput
               {...register('description', { required: true })}
-              placeholder="Description"
+              placeholder={t('addProcess.descriptionPlaceholder')}
             />
           </div>
         </div>
