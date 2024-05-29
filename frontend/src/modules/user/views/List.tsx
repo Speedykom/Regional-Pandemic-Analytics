@@ -143,11 +143,11 @@ export const UserList = () => {
                           icon={CheckIcon}
                           color="indigo"
                         >
-                          Verified
+                          {t('verified')}
                         </Badge>
                       ) : (
                         <Badge icon={XMarkIcon} color="red">
-                          Unverified
+                          {t('unverified')}
                         </Badge>
                       )}{' '}
                     </TableCell>
@@ -158,11 +158,11 @@ export const UserList = () => {
                           color="green"
                           icon={WifiIcon}
                         >
-                          Active
+                          {t('active')}
                         </Badge>
                       ) : (
                         <Badge color="red" icon={SignalSlashIcon}>
-                          Disabled
+                          {t('disabled')}
                         </Badge>
                       )}{' '}
                     </TableCell>
