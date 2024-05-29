@@ -206,6 +206,16 @@ export const MyPipelines = () => {
                 size="lg"
                 icon={ArrowDownTrayIcon}
                 tooltip={t('download')}
+                className="cursor-pointer"
+                variant="shadow"
+              />
+              <Icon
+                onClick={() => showPipelineDeleteConfirmModal(item?.name)}
+                size="lg"
+                icon={TrashIcon}
+                tooltip={t('delete')}
+                className="cursor-pointer"
+                variant="shadow"
               />
             </div>
           </TableCell>
