@@ -449,12 +449,15 @@ class ProcessView(ViewSet):
 
                 # Include only the newest segment
                 last_segment_data = segments_data[segments_count - 1]
+                dimensions = last_segment_data.get("dimensions", "")
+                dimensions_list = dimensions.split(",") if dimensions else []
+
                 last_segment = {
                     "dataSource": last_segment_data["dataSource"],
                     "interval": last_segment_data["interval"],
                     "version": last_segment_data["version"],
                     "loadSpec": last_segment_data["loadSpec"],
-                    "dimensions": last_segment_data["dimensions"],
+                    "dimensions": dimensions_list,
                     "metrics": last_segment_data["metrics"],
                     "shardSpec": last_segment_data["shardSpec"],
                     "binaryVersion": last_segment_data["binaryVersion"],

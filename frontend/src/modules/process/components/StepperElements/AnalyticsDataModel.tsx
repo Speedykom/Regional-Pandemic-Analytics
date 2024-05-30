@@ -58,7 +58,8 @@ const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
                 {t('analyticsDataModel.dimensions')}
               </td>
               <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
-                {Array.isArray(last_segment.dimensions)
+                {Array.isArray(last_segment.dimensions) &&
+                last_segment.dimensions.length > 0
                   ? last_segment.dimensions.join(', ')
                   : 'No dimensions available'}
               </td>
