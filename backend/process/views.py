@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from typing import Tuple, Union
 from utils.keycloak_auth import get_current_user_id, get_current_user_name
+import punycode
 
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")
@@ -75,17 +76,21 @@ class DagDTO:
         description,
         user_id,
         dag_id,
+        dag_display_name,
         date,
         schedule_interval,
         pipeline_name,
+        pipeline_display_name,
     ):
         self.owner = owner
         self.description = description
         self.user_id = user_id
         self.dag_id = dag_id
+        self.dag_display_name = dag_display_name,
         self.date = date
         self.schedule_interval = schedule_interval
         self.pipeline_name = pipeline_name
+        self.pipeline_display_name = pipeline_display_name,
 
 
 class Dag:
@@ -93,6 +98,7 @@ class Dag:
         self,
         name,
         dag_id,
+        dag_display_name,
         data_source_name,
         start_date,
         schedule_interval,
@@ -106,6 +112,7 @@ class Dag:
     ):
         self.name = name
         self.dag_id = dag_id
+        self.dag_display_name = dag_display_name,
         self.data_source_name = data_source_name
         self.start_date = (start_date,)
         self.schedule_interval = schedule_interval
@@ -146,8 +153,8 @@ class ProcessView(ViewSet):
         "DELETE": "process:delete",
     }
 
-    def __init__(self):
-        self.permitted_characters_regex = re.compile(r'^[a-zA-Z0-9._-]+$')
+    #def __init__(self):
+        #self.permitted_characters_regex = re.compile(r'^[a-zA-Z0-9._-]+$')
 
     def list(self, request):
         try:
@@ -160,7 +167,7 @@ class ProcessView(ViewSet):
 
             # Define processes array to store Airflow response
             processes = []
-            
+
             if query:
                 # Filter by query
                 # Get the list of process chains defined in Airflow over REST API
@@ -214,21 +221,22 @@ class ProcessView(ViewSet):
                 owner=get_current_user_name(request),
                 description=request.data["description"],
                 user_id=get_current_user_id(request),
-                dag_id=request.data["name"],
+                dag_display_name=request.data["name"],
+                dag_id=punycode.encode(dag_display_name),
                 pipeline_name=request.data["pipeline"],
                 schedule_interval=request.data["schedule_interval"],
                 date=datetime.fromisoformat(request.data["date"]),
             )
-            if not self.permitted_characters_regex.search(new_dag_config.dag_id):
-                return Response(
-                    {"status": "failed", "message": "DAG ID contains unpermitted characters"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            if not self.permitted_characters_regex.search(new_dag_config.pipeline_name):
-                return Response(
-                    {"status": "failed", "message": "Pipeline name contains unpermitted characters"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+            #if not self.permitted_characters_regex.search(new_dag_config.dag_id):
+            #    return Response(
+            #        {"status": "failed", "message": "DAG ID contains unpermitted characters"},
+             #       status=status.HTTP_400_BAD_REQUEST
+              #  )
+            #if not self.permitted_characters_regex.search(new_dag_config.pipeline_name):
+            #    return Response(
+            #        {"status": "failed", "message": "Pipeline name contains unpermitted characters"},
+            #        status=status.HTTP_400_BAD_REQUEST
+            #    )
 
             # Checks if the process chain already exists or not
             route = f"{AirflowInstance.url}/dags/{new_dag_config.dag_id}"
@@ -254,9 +262,12 @@ class ProcessView(ViewSet):
                         "description": f"{new_dag_config.description}",
                         "user_id": f"{new_dag_config.user_id}",
                         "dag_id": f"{new_dag_config.dag_id}",
+                        "dag_display_name": f"{new_dag_config.dag_display_name}",
                         "date": f"{new_dag_config.date.year}, {new_dag_config.date.month}, {new_dag_config.date.day}",
                         "schedule_interval": f"{new_dag_config.schedule_interval}",
                         "pipeline_name": f"{new_dag_config.pipeline_name}.hpl",
+                        "pipeline_display_name": f"{new_dag_config.pipeline_display_name}.hpl",
+
                     }
                 },
             )
@@ -331,7 +342,7 @@ class ProcessView(ViewSet):
             return Response({"status": "success"})
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
-        
+
     def _augment_dag(self, dag):
         airflow_start_date_response = requests.get(
                             f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
@@ -342,6 +353,7 @@ class ProcessView(ViewSet):
                                 dag["dag_id"],
                                 dag["dag_id"],
                                 dag["dag_id"],
+                                dag["dag_display_name"],
                                 airflow_start_date_response.json()["start_date"],
                                 dag["schedule_interval"]["value"],
                                 dag["is_paused"],
@@ -352,9 +364,9 @@ class ProcessView(ViewSet):
                                 dataset_info[0] if dataset_info != None else None,
                                 dataset_info[1] if dataset_info != None else None
                             ).__dict__
-            
+
         return augmentedDag
-    
+
     def _dag_has_task(self, dag, taskId):
         result = False
         route = f"{AirflowInstance.url}/dags/{dag['dag_id']}/tasks"
@@ -544,4 +556,4 @@ class ProcessRunView(ViewSet):
             return Response({"tasks": tasks}, status=status.HTTP_200_OK)
         else:
             return Response({"status": "failed"}, status=airflow_response.status_code)
-     
+
