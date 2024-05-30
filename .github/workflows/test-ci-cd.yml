@@ -2,7 +2,7 @@ name: Build Pipeline
 
 on:
   push:
-    branches: [test/ci-cd-improvemen]
+    branches: [test/ci-cd-improvement]
 
 jobs:
   run-linters:
