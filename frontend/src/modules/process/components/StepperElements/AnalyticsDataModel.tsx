@@ -61,7 +61,7 @@ const DatasourceInfo: React.FC<DatasourceInfoProps> = ({ dataSourceName }) => {
                 {Array.isArray(last_segment.dimensions) &&
                 last_segment.dimensions.length > 0
                   ? last_segment.dimensions.join(', ')
-                  : 'No dimensions available'}
+                  : t('analyticsDataModel.nodimensionsavailable')}
               </td>
             </tr>
             {/* Size (Size * Number of Segments) */}
