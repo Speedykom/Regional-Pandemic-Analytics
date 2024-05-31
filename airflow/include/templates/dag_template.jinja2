@@ -156,7 +156,7 @@ class SupersetOperator(BaseOperator):
     return db_id
 
 
-with DAG("{{dag_id}}", default_args=default_args,start_date=datetime({{date}}), schedule_interval="{{schedule_interval}}", description="{{description}}", catchup=False, is_paused_upon_creation=False) as dag:
+with DAG("{{dag_id}}", dag_display_name="{{dag_id}}",default_args=default_args,start_date=datetime({{date}}), schedule_interval="{{schedule_interval}}", description="{{description}}", catchup=False, is_paused_upon_creation=False) as dag:
 
     task_logger.debug('Setting up components of DAG')
 
