@@ -80,7 +80,7 @@ class DagDTO:
         date,
         schedule_interval,
         pipeline_name,
-        pipeline_display_name,
+        #pipeline_display_name,
     ):
         self.owner = owner
         self.description = description
@@ -90,7 +90,7 @@ class DagDTO:
         self.date = date
         self.schedule_interval = schedule_interval
         self.pipeline_name = pipeline_name
-        self.pipeline_display_name = pipeline_display_name,
+        #self.pipeline_display_name = pipeline_display_name,
 
 
 class Dag:
@@ -222,7 +222,7 @@ class ProcessView(ViewSet):
                 description=request.data["description"],
                 user_id=get_current_user_id(request),
                 dag_display_name=request.data["name"],
-                dag_id=punycode.encode(dag_display_name),
+                dag_id=request.data["id"],
                 pipeline_name=request.data["pipeline"],
                 schedule_interval=request.data["schedule_interval"],
                 date=datetime.fromisoformat(request.data["date"]),
