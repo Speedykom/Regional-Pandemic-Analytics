@@ -153,8 +153,8 @@ class ProcessView(ViewSet):
         "DELETE": "process:delete",
     }
 
-    #def __init__(self):
-        #self.permitted_characters_regex = re.compile(r'^[a-zA-Z0-9._-]+$')
+    def __init__(self):
+        self.permitted_characters_regex = re.compile(r'^[^\s!@#$%^&*()+=[\]{}\\|;:\'",<>/?]*$')
 
     def list(self, request):
         try:
@@ -227,16 +227,16 @@ class ProcessView(ViewSet):
                 schedule_interval=request.data["schedule_interval"],
                 date=datetime.fromisoformat(request.data["date"]),
             )
-            #if not self.permitted_characters_regex.search(new_dag_config.dag_id):
-            #    return Response(
-            #        {"status": "failed", "message": "DAG ID contains unpermitted characters"},
-             #       status=status.HTTP_400_BAD_REQUEST
-              #  )
-            #if not self.permitted_characters_regex.search(new_dag_config.pipeline_name):
-            #    return Response(
-            #        {"status": "failed", "message": "Pipeline name contains unpermitted characters"},
-            #        status=status.HTTP_400_BAD_REQUEST
-            #    )
+            if not self.permitted_characters_regex.search(new_dag_config.dag_id):
+                return Response(
+                    {"status": "failed", "message": "DAG ID contains unpermitted characters"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            if not self.permitted_characters_regex.search(new_dag_config.pipeline_name):
+                return Response(
+                    {"status": "failed", "message": "Pipeline name contains unpermitted characters"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
             # Checks if the process chain already exists or not
             route = f"{AirflowInstance.url}/dags/{new_dag_config.dag_id}"
