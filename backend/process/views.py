@@ -86,7 +86,7 @@ class DagDTO:
         self.description = description
         self.user_id = user_id
         self.dag_id = dag_id
-        self.dag_display_name = dag_display_name,
+        self.dag_display_name = dag_display_name
         self.date = date
         self.schedule_interval = schedule_interval
         self.pipeline_name = pipeline_name
@@ -112,7 +112,7 @@ class Dag:
     ):
         self.name = name
         self.dag_id = dag_id
-        self.dag_display_name = dag_display_name,
+        self.dag_display_name = dag_display_name
         self.data_source_name = data_source_name
         self.start_date = (start_date,)
         self.schedule_interval = schedule_interval
@@ -266,7 +266,7 @@ class ProcessView(ViewSet):
                         "date": f"{new_dag_config.date.year}, {new_dag_config.date.month}, {new_dag_config.date.day}",
                         "schedule_interval": f"{new_dag_config.schedule_interval}",
                         "pipeline_name": f"{new_dag_config.pipeline_name}.hpl",
-                        "pipeline_display_name": f"{new_dag_config.pipeline_display_name}.hpl",
+                        #"pipeline_display_name": f"{new_dag_config.pipeline_display_name}.hpl",
 
                     }
                 },
