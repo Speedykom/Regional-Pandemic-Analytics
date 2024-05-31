@@ -310,6 +310,7 @@ const enTranslation = {
     segmentCount: 'Segment Count',
     dimensions: 'Dimensions',
     totalSize: 'Total Size',
+    nodimensionsavailable: 'No dimensions available',
   },
 
   addChart: 'Add a Chart',
