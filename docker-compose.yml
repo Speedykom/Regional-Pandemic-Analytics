@@ -499,7 +499,7 @@ services:
     container_name: airflow-webserver
     restart: always
     entrypoint: /bin/bash
-    command: -c "sleep 60 && airflow db upgrade && airflow webserver"
+    command: webserver
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
       interval: 30s
