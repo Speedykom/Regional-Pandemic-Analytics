@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from typing import Tuple, Union
 from utils.keycloak_auth import get_current_user_id, get_current_user_name
-import punycode
+
 
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")
@@ -253,6 +253,7 @@ class ProcessView(ViewSet):
 
             # Run factory by passing config to create a process chain
             airflow_internal_url = AirflowInstance.url.removesuffix("/api/v1")
+            pipeline_name_id = new_dag_config.pipeline_name.encode('idna').decode()
             airflow_response = requests.post(
                 f"{airflow_internal_url}/factory",
                 auth=(AirflowInstance.username, AirflowInstance.password),
@@ -265,8 +266,8 @@ class ProcessView(ViewSet):
                         "dag_display_name": f"{new_dag_config.dag_display_name}",
                         "date": f"{new_dag_config.date.year}, {new_dag_config.date.month}, {new_dag_config.date.day}",
                         "schedule_interval": f"{new_dag_config.schedule_interval}",
-                        "pipeline_name": f"{new_dag_config.pipeline_name}.hpl",
-                        #"pipeline_display_name": f"{new_dag_config.pipeline_display_name}.hpl",
+                        "pipeline_display_name": f"{new_dag_config.pipeline_name}", #task display name
+                        "pipeline_name": f"{pipeline_name_id}.hpl", #represents task id
 
                     }
                 },
