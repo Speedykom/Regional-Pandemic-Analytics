@@ -26,7 +26,7 @@ export const AddPipeline = ({
   } = useForm({ mode: 'onChange' });
   const [addPipeline, { isLoading }] = useCreatePipelineMutation();
   const { t } = useTranslation();
-  const permittedCharactersRegex = /^[a-zA-Z0-9._-]+$/;
+  const permittedCharactersRegex = /^[^\s!@#$%^&*()+=[\]{}\\|;:'",<>/?]*$/;
 
   const onFinish = (value: any) => {
     addPipeline({ ...value, template: template.name }).then((res: any) => {
