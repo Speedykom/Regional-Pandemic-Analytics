@@ -2662,8 +2662,8 @@
   "eventsEnabled": false,
   "eventsListeners": ["jboss-logging"],
   "enabledEventTypes": [],
-  "adminEventsEnabled": true,
-  "adminEventsDetailsEnabled": true,
+  "adminEventsEnabled": false,
+  "adminEventsDetailsEnabled": false,
   "identityProviders": [],
   "identityProviderMappers": [],
   "components": {
