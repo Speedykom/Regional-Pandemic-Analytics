@@ -1,0 +1,6 @@
+projectKey=Repan
+serverUrl=http://localhost:9001
+serverVersion=10.5.1.90531
+dashboardUrl=http://localhost:9001/dashboard?id=Repan
+ceTaskId=257e47bf-922f-495a-a489-08ab57634811
+ceTaskUrl=http://localhost:9001/api/ce/task?id=257e47bf-922f-495a-a489-08ab57634811
