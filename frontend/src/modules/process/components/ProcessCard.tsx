@@ -57,7 +57,7 @@ export default function ProcessCard({
                       {t('addProcess.name')}
                     </div>
                     <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                      {process.name}
+                      {process.dag_display_name}
                     </Badge>
                   </div>
                   <div>
