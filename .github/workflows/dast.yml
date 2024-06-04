@@ -77,9 +77,11 @@ jobs:
     runs-on: devserver
     needs: [deploy-dev]
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.10.0
         with:
           target: "https://home2.igad-health.eu/"
-          rules_file_name: 'zap/rules.tsv'
-          cmd_options: '-a'
+          rules_file_name: "zap/rules.tsv"
+          cmd_options: "-a"
