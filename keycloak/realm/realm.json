@@ -2813,8 +2813,9 @@
       }
     ]
   },
-  "internationalizationEnabled": false,
-  "supportedLocales": [],
+  "internationalizationEnabled": true,
+  "supportedLocales": ["en", "fr"],
+  "defaultLocale": "en",
   "authenticationFlows": [
     {
       "id": "a92a4c9f-3561-46a1-832a-2ca454b33220",
