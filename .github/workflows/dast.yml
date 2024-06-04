@@ -70,7 +70,7 @@ jobs:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.10.0
         with:
-          target: "https://home2.igad-health.eu/"
+          target: "https://data2.igad-health.eu/"
 
   dast-front:
     name: Dynamic Security testing with ZAP on front
@@ -81,3 +81,5 @@ jobs:
         uses: zaproxy/action-full-scan@v0.10.0
         with:
           target: "https://home2.igad-health.eu/"
+          rules_file_name: 'zap/rules.tsv'
+          cmd_options: '-a'
