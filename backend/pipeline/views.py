@@ -367,32 +367,31 @@ class TemplateView(APIView):
         "POST": "pipeline:add",
     }
 
-    def get(self, request, query=None):
-      """ Return hop templates from minio bucket """
-      
-      user_id = get_current_user_id(request)
-      pipelines_templates:list[str]=[]
-      try:
-        global_templates=client.list_objects("pipelines",prefix="templates/")
-        for template in global_templates:
-            object_name=template.object_name.removeprefix("templates/")
-            if query:
-                if (re.search(query, object_name, re.IGNORECASE)):
-                    pipelines_templates.append({"name": object_name})
-            else:       
-                pipelines_templates.append({"name": object_name})
-        if user_id:
-            user_templates = client.list_objects('pipelines', prefix=f'templates/{user_id}/')
-            for template in user_templates:
-                object_name=template.object_name.removeprefix(f'templates/{user_id}/')
-                if query:
-                    if (re.search(query, object_name, re.IGNORECASE)):
-                        pipelines_templates.append({"name": object_name})
-                else:       
-                    pipelines_templates.append({"name": object_name})
-                
-        return Response({'status': 'success', "data": pipelines_templates}, status=200)
-      except Exception as e:
+    def get(self, request, query: str = None):
+        """ Return hop templates from minio bucket """
+        user_id = get_current_user_id(request)
+        pipelines_templates = []
+        
+        try:
+            # Function to process template objects
+            def process_templates(templates, prefix):
+                return [
+                    {"name": template.object_name.removeprefix(prefix)}
+                    for template in templates
+                    if template.object_name.endswith('.hpl') and (not query or re.search(query, template.object_name.removeprefix(prefix), re.IGNORECASE))
+                ]
+            
+            # Fetch global templates
+            global_templates = client.list_objects("pipelines", prefix="templates/")
+            pipelines_templates.extend(process_templates(global_templates, "templates/"))
+            
+            # Fetch user-specific templates
+            if user_id:
+                user_templates = client.list_objects('pipelines', prefix=f'templates/{user_id}/')
+                pipelines_templates.extend(process_templates(user_templates, f'templates/{user_id}/'))
+            
+            return Response({'status': 'success', "data": pipelines_templates}, status=200)    
+        except Exception as e:
             return Response(
                 {
                     "status": "error",
