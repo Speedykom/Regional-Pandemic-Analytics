@@ -1,4 +1,4 @@
-import React, { useState } from 'react'; // Added useState import
+import React from 'react';
 import Drawer from '@/common/components/common/Drawer';
 import { schedule_intervals } from '@/common/utils/processs';
 import {
@@ -15,6 +15,7 @@ import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import punycode from 'punycode';
 
 interface AddProcessProps {
   pipelineList: PipelineList;
@@ -39,7 +40,6 @@ export const AddProcess = ({
   const { t } = useTranslation();
 
   const [createProcess] = useCreateProcessMutation();
-  const punycode = require('punycode/');
   const permittedCharactersRegex = /^[^\s!@#$%^&*()+=[\]{}\\|;:'",<>/?]*$/;
 
   const footer = (
