@@ -498,7 +498,6 @@ services:
         condition: service_healthy
     container_name: airflow-webserver
     restart: always
-    entrypoint: /bin/bash
     command: webserver
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]

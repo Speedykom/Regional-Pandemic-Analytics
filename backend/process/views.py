@@ -80,7 +80,6 @@ class DagDTO:
         date,
         schedule_interval,
         pipeline_name,
-        #pipeline_display_name,
     ):
         self.owner = owner
         self.description = description
@@ -90,7 +89,6 @@ class DagDTO:
         self.date = date
         self.schedule_interval = schedule_interval
         self.pipeline_name = pipeline_name
-        #self.pipeline_display_name = pipeline_display_name,
 
 
 class Dag:
