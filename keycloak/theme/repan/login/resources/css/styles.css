@@ -1,135 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+
+/* Define custom properties */
 :root {
-    --textColor: #f6f5f7;
-    --textOffColor: #7c858d;
-    --baseColor: #23333f;
-    --baseDarkColor: #1e2b36;
-    --baseLightColor: #283b48;
-    --secColor: #11f7e2;
-  }
+  --font-family: 'Inter', sans-serif;
+  --textColor: #ffffff;
+  --textOffColor: #7c858d;
+  --baseColor: #f3f4f6; /* Shade of gray for background */
+  --baseDarkColor: #ffffff; /* Shade of white for card */
+  --baseLightColor: #ffffff;
+  --secColor: #31713b;
+}
 
-  body {
-    background: var(--baseColor) !important;
-    color: var(--textColor);
-    font-size: 18px;
-  }
+body {
+  font-family: var(--font-family);
+  background: var(--baseColor) !important;
+  color: var(--textColor);
+  font-size: 18px;
+}
 
-  /* Login Card */
+/* Login Card */
+.login-pf-page .card-pf {
+  border-radius: 20px; /* Rounded corners */
+  background: var(--baseDarkColor); /* Shade of white */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add light shadow */
+}
 
-  .login-pf-page .card-pf {
-    border-radius: 20px;
-    background: var(--baseColor);
-    box-shadow: 15px 15px 30px var(--baseDarkColor), -15px -15px 30px var(--baseLightColor);
-  }
+/* Card Title */
+.login-pf-page .login-pf-header {
+  margin-bottom: 50px;
+  color: #31713b; /* Green title color */
+}
 
-  /* Card Title */
+#kc-page-title {
+  font-size: 26px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
 
-  .login-pf-page .login-pf-header {
-    margin-bottom: 50px;
-  }
+/* Login Form */
+.login-pf-page .form-group {
+  margin-bottom: 30px;
+}
 
-  #kc-page-title {
-    font-size: 26px;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
+.login-pf-page .form-control {
+  border: none;
+  padding: 22px 30px;
+  font-size: 18px;
+  color: var(--textColor);
+  height: auto;
+  border-radius: 32px;
+  background: var(--baseColor); /* Shade of gray */
+}
 
-  /* Login Form */
+.login-pf-page .form-control::placeholder {
+  font-style: normal;
+  color: var(--textOffColor);
+}
 
-  .login-pf-page .form-group {
-    margin-bottom: 30px;
-  }
+/* Remember Me Toggle */
+#kc-form-options .checkbox {
+  font-size: 16px;
+  color: #7c858d; /* Grey color for Remember Me */
+  margin-bottom: 0;
+}
 
-  .login-pf-page .form-control {
-    border: none;
-    padding: 22px 30px;
-    font-size: 18px;
-    color: var(--textColor);
-    height: auto;
+#kc-form-options label {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  padding-left: 8px;
+}
 
-    border-radius: 32px;
-    background: var(--baseColor);
-    box-shadow: inset 15px 15px 30px var(--baseDarkColor), inset -15px -15px 30px var(--baseLightColor);
-  }
+#kc-form-options .toggle {
+  isolation: isolate;
+  position: relative;
+  height: 30px;
+  width: 60px;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add light shadow */
+}
 
-  .login-pf-page .form-control::placeholder {
-    font-style: normal;
-    color: var(--textOffColor);
-  }
+#rememberMe {
+  display: none;
+}
 
-  /* Remember Me Toggle */
+#kc-form-options .dot {
+  height: 100%;
+  width: 200%;
+  background: var(--baseColor);
+  border-radius: 15px;
+  transform: translate3d(-75%, 0, 0);
+  transition: transform 0.4s cubic-bezier(0.85, 0.05, 0.18, 1.35);
+}
 
-  #kc-form-options .checkbox {
-    font-size: 16px;
-    color: var(--textOffColor);
-    margin-bottom: 0;
-  }
+#rememberMe:checked ~ .dot {
+  transform: translate3d(25%, 0, 0);
+}
 
-  #kc-form-options label {
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-    padding-left: 8px;
-  }
+#kc-form-options .label-text {
+  margin-left: 16px;
+}
 
-  #kc-form-options .toggle {
-    isolation: isolate;
-    position: relative;
-    height: 30px;
-    width: 60px;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: -8px -4px 8px var(--baseLightColor), 8px 4px 12px var(--baseDarkColor),
-      4px 4px 4px var(--baseDarkColor) inset, -4px -4px 4px var(--baseLightColor) inset;
-  }
+/* Reset Password Link */
+#kc-form-reset-psw a {
+  font-size: 16px;
+  color: var(--secColor);
+  padding-right: 8px;
+}
 
-  #rememberMe {
-    display: none;
-  }
+#kc-form-buttons {
+  margin-top: 50px;
+}
 
-  #kc-form-options .dot {
-    height: 100%;
-    width: 200%;
-    background: var(--baseColor);
-    border-radius: 15px;
-    transform: translate3d(-75%, 0, 0);
-    transition: transform 0.4s cubic-bezier(0.85, 0.05, 0.18, 1.35);
-    box-shadow: -8px -4px 8px var(--baseLightColor), 8px 4px 12px var(--baseDarkColor);
-  }
-
-  #rememberMe:checked ~ .dot {
-    transform: translate3d(25%, 0, 0);
-  }
-
-  #kc-form-options .label-text {
-    margin-left: 16px;
-  }
-
-  /* Reset Password Link */
-
-  #kc-form-reset-psw a {
-    font-size: 16px;
-    color: var(--secColor);
-    padding-right: 8px;
-  }
-
-  #kc-form-buttons {
-    margin-top: 50px;
-  }
-
-  /* Login Button */
-
-  #kc-login {
-    border: none;
-    padding: 22px 30px;
-    font-size: 18px;
-    color: var(--secColor);
-
-    border-radius: 32px;
-    background: linear-gradient(145deg, #253743, #202e39);
-    box-shadow: 15px 15px 30px var(--baseDarkColor), -15px -15px 30px var(--baseLightColor);
-  }
-
-  #kc-login:active:focus {
-    background: linear-gradient(145deg, #202e39, #253743) !important;
-    outline: none;
-  }
+/* Login Button */
+#kc-login {
+  border: none;
+  padding: 22px 30px;
+  font-size: 18px;
+  color: #ffffff;
+  border-radius: 32px;
+  background: #31713b;
+}
