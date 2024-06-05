@@ -41,6 +41,7 @@ const enTranslation = {
   emailVerified: 'Email Verified',
   status: 'Status',
   viewDetails: 'View Details',
+  Thisuserwillbedeniedaccess: 'This user will be denied access, continue?',
   disableUser: 'Disable User',
   deleteUserConfirmation: 'This user will be denied access, continue?',
   myPipelines: 'My Pipelines',
