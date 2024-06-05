@@ -178,7 +178,7 @@ export const UserList = () => {
                       </Button>
 
                       <Popconfirm
-                        title="This user will be denied access, continue?"
+                        title={t('Thisuserwillbedeniedaccess')}
                         cancelText="Cancel"
                         okText="Confirm"
                         onConfirm={() => onDelete(item.id)}
