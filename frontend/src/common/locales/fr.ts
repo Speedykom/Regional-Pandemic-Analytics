@@ -336,6 +336,7 @@ const frTranslation = {
     segmentCount: 'Nombre de segments',
     dimensions: 'Dimensions',
     totalSize: 'Taille totale',
+    nodimensionsavailable: 'Aucune dimension disponible',
   },
 
   addChart: 'Ajouter un graphique',
