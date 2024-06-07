@@ -19,19 +19,39 @@ import {
 } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/router';
 import MediaQuery from 'react-responsive';
-import { FiDelete, FiEye } from 'react-icons/fi';
+import { FiXCircle, FiEye, FiCheckCircle } from 'react-icons/fi';
 import { toast } from 'react-toastify';
 import Popconfirm from '@/common/components/common/popconfirm';
-import { useDisableUserMutation, useGetUsersQuery } from '../user';
+import {
+  useDisableUserMutation,
+  useEnableUserMutation,
+  useGetUsersQuery,
+} from '../user';
 
 export const UserList = () => {
   const { data, refetch } = useGetUsersQuery();
   const [disableUser, { isLoading }] = useDisableUserMutation();
+  const [enableUser, { isLoading: isEnabling }] = useEnableUserMutation();
   const router = useRouter();
   const { t } = useTranslation();
 
   const onDelete = (id: string) => {
     disableUser(id).then((res: any) => {
+      if (res.error) {
+        toast.error(res?.response?.data?.message, {
+          position: 'top-right',
+        });
+      } else {
+        toast.success(res?.data?.message, {
+          position: 'top-right',
+        });
+        refetch();
+      }
+    });
+  };
+
+  const onEnable = (id: string) => {
+    enableUser(id).then((res: any) => {
       if (res.error) {
         toast.error(res?.response?.data?.message, {
           position: 'top-right',
@@ -188,7 +208,21 @@ export const UserList = () => {
                           loading={isLoading}
                           className="text-white bg-red-500 border-0"
                         >
-                          <FiDelete />
+                          <FiXCircle />
+                        </Button>
+                      </Popconfirm>
+                      <Popconfirm
+                        title={t('Thisuserwillbeenabled')}
+                        cancelText="Cancel"
+                        okText="Confirm"
+                        onConfirm={() => onEnable(item.id)}
+                      >
+                        <Button
+                          title={t('enableUser')}
+                          loading={isLoading}
+                          className="text-white bg-green-500 border-0"
+                        >
+                          <FiCheckCircle />
                         </Button>
                       </Popconfirm>
                     </div>
