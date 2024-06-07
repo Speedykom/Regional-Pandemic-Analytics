@@ -49,6 +49,9 @@ const frTranslation = {
   disableUser: "Désactiver l'utilisateur",
   deleteUserConfirmation:
     "Cet utilisateur se verra refuser l'accès, continuer ?",
+  Thisuserwillbeenabled: 'Cet utilisateur sera activé, continuer ?',
+  enableUser: "Activer l'utilisateur",
+  enableUserConfirmation: 'Cet utilisateur sera activé, continuer ?',
   myPipelines: 'Mes pipelines',
   addPipelineMessage: 'Veuillez saisir un nom de pipeline',
   pipelineSpaceMessage: "Le nom du pipeline ne peut pas contenir d'espaces",
@@ -139,7 +142,6 @@ const frTranslation = {
   phonenumber: 'Numero de téléphone',
   validEmail: 'Une adresse e-mail valide est requise',
   isEmailVerified: "L'e-mail est-il vérifié",
-  enableUser: "Activer l'utilisateur",
   saveUser: "Enregistrer l'utilisateur",
   userRole: 'Role utilisateur',
   selectUserRole: 'Sélectionner role utilisateur',
