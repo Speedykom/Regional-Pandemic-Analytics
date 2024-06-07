@@ -2672,6 +2672,7 @@
     "fromDisplayName": "Speedykom",
     "user": "kom.speedy@gmail.com"
   },
+  "emailTheme": "repan",
   "eventsEnabled": false,
   "eventsListeners": ["jboss-logging"],
   "enabledEventTypes": [],

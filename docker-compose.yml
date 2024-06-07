@@ -570,6 +570,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./keycloak/realm/realm.json:/opt/keycloak/data/import/realm.json
+      - ./keycloak/theme/repan:/opt/keycloak/themes/repan
     depends_on:
       - keycloak-pg
     healthcheck:
