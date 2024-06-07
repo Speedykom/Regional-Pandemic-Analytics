@@ -219,7 +219,7 @@ export const UserList = () => {
                       >
                         <Button
                           title={t('enableUser')}
-                          loading={isLoading}
+                          loading={isEnabling}
                           className="text-white bg-green-500 border-0"
                         >
                           <FiCheckCircle />
