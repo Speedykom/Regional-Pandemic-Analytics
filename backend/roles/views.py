@@ -26,6 +26,10 @@ class RoleApiView(APIView):
     API view to update Keycloak client role
     """
     def put(self, request, *args, **kwargs):
+        """
+        name -- string -- required
+        description -- string -- required
+        """
         form_data = {
             "name": request.data.get("name", None),
             "description": request.data.get("description", None),
