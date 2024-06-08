@@ -207,6 +207,13 @@ class ProcessView(ViewSet):
             )
 
     def create(self, request):
+        """
+        name -- string -- required
+        description -- string -- required
+        pipeline -- string -- required 
+        schedule_interval -- string -- required
+        date -- date -- required 
+        """
         try:
             # Create DagDTO object
             # Object contains config that will be passed to the dag factory to create new dag from templates
@@ -294,6 +301,10 @@ class ProcessView(ViewSet):
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
     def update(self, request, dag_id=None):
+        """
+        old_pipeline -- string -- required
+        new_pipeline -- string -- required
+        """
         old_pipeline = request.data["old_pipeline"]
         new_pipeline = request.data["new_pipeline"]
 
