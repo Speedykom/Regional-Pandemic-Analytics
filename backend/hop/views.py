@@ -74,7 +74,10 @@ class GetSingleHopAPIView(APIView):
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
 
     def post(self, request, filename):
-      """Receive a request and add a new tag"""
+      """
+      Receive a request and add a new tag
+        
+      """
       result = get_file_by_name(filename)
       if result:
         bs_content = get_xml_content(result)
