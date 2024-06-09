@@ -55,7 +55,7 @@ class DruidOperator(BaseOperator):
     self.base_url = "{}/druid/indexer/v1/task".format(druid_coordinator_url)
 
   def execute(self, context: Context):
-    timestamp_spec, schema = read_parquet_schema_for_druid(file = "{{dag_id}}.parquet", path = "{{user_id}}")
+    timestamp_spec, schema = read_parquet_schema_for_druid(file = "{{dag_display_name}}.parquet", path = "{{user_id}}")
     payload = {
       "type": "index_parallel",
       "spec": {
@@ -80,7 +80,7 @@ class DruidOperator(BaseOperator):
             "objects": [
               {
                 "bucket": "parquets",
-                "path": "{{user_id}}/{{dag_id}}.parquet"
+                "path": "{{user_id}}/{{dag_display_name}}.parquet"
               }
             ],
             "properties": {
@@ -99,7 +99,7 @@ class DruidOperator(BaseOperator):
           }
         },
         "dataSchema": {
-          "dataSource": "{{dag_id}}",
+          "dataSource": "{{dag_display_name}}",
           "timestampSpec": timestamp_spec,
           "dimensionsSpec": {
             "dimensions": schema
@@ -145,7 +145,7 @@ class SupersetOperator(BaseOperator):
   def execute(self, context: Context):
     client = SupersetClient(base_url = superset_base_url)
     db_id = self.prepare_db(client)
-    dataset_id, explore_url = client.create_or_update_dataset(name = '{{dag_id}}', db_name = db_id)
+    dataset_id, explore_url = client.create_or_update_dataset(name = '{{dag_display_name}}', db_name = db_id)
     self.xcom_push(context, 'superset_dataset_id', dataset_id)
     self.xcom_push(context, 'superset_dataset_url', explore_url)
 
@@ -168,7 +168,7 @@ with DAG("{{dag_id}}", dag_display_name="{{dag_display_name}}",default_args=defa
 
     # Run Hop pipeline by sending it over HTTP to Hop server
     hop = HopPipelineOperator(
-      task_id="{{pipeline_name}}",
+      task_id="{{pipeline_name_id}}",
       task_display_name="{{pipeline_display_name}}",
       pipeline="{{user_id}}/{{pipeline_display_name}}",
       pipe_config='remote hop server',
