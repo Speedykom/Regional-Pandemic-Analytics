@@ -99,7 +99,7 @@ class DruidOperator(BaseOperator):
           }
         },
         "dataSchema": {
-          "dataSource": "{{dag_id}}",
+          "dataSource": "{{dag_display_name}}",
           "timestampSpec": timestamp_spec,
           "dimensionsSpec": {
             "dimensions": schema
@@ -168,7 +168,7 @@ with DAG("{{dag_id}}", dag_display_name="{{dag_display_name}}",default_args=defa
 
     # Run Hop pipeline by sending it over HTTP to Hop server
     hop = HopPipelineOperator(
-      task_id="{{pipeline_name_id}}",
+      task_id="{{pipeline_display_name}}",
       task_display_name="{{pipeline_display_name}}",
       pipeline="{{user_id}}/{{pipeline_display_name}}",
       pipe_config='remote hop server',
