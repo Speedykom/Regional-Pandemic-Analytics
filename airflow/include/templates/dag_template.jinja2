@@ -55,7 +55,7 @@ class DruidOperator(BaseOperator):
     self.base_url = "{}/druid/indexer/v1/task".format(druid_coordinator_url)
 
   def execute(self, context: Context):
-    timestamp_spec, schema = read_parquet_schema_for_druid(file = "{{dag_display_name}}.parquet", path = "{{user_id}}")
+    timestamp_spec, schema = read_parquet_schema_for_druid(file = "{{dag_id}}.parquet", path = "{{user_id}}")
     payload = {
       "type": "index_parallel",
       "spec": {
@@ -80,7 +80,7 @@ class DruidOperator(BaseOperator):
             "objects": [
               {
                 "bucket": "parquets",
-                "path": "{{user_id}}/{{dag_display_name}}.parquet"
+                "path": "{{user_id}}/{{dag_id}}.parquet"
               }
             ],
             "properties": {
@@ -99,7 +99,7 @@ class DruidOperator(BaseOperator):
           }
         },
         "dataSchema": {
-          "dataSource": "{{dag_display_name}}",
+          "dataSource": "{{dag_id}}",
           "timestampSpec": timestamp_spec,
           "dimensionsSpec": {
             "dimensions": schema

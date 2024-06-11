@@ -265,7 +265,7 @@ class ProcessView(ViewSet):
                         "date": f"{new_dag_config.date.year}, {new_dag_config.date.month}, {new_dag_config.date.day}",
                         "schedule_interval": f"{new_dag_config.schedule_interval}",
                         "pipeline_display_name": f"{new_dag_config.pipeline_name}.hpl", #task display name
-                        "pipeline_name": f"{pipeline_name_id}", #represents task id
+                        "pipeline_name": f"{pipeline_name_id}.hpl", #represents task id
 
                     }
                 },
