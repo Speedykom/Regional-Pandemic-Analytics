@@ -205,32 +205,7 @@ class PipelineDetailView(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-class PipelineSaveView(APIView):
-    keycloak_scopes = {
-        "POST": "pipeline:add",
-    }
 
-    def post(self, request, name=None):
-        """
-        Endpoint for saving a pipeline as a template
-        """
-        user_id = get_current_user_id(request)
-        try:
-            # save pipeline file as Template in Minio
-            client.copy_object(
-            "pipelines",
-            f"templates/{name}.hpl",
-            CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
-
-            return Response({"status": "success"}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response(
-                {
-                    "status": "error",
-                    "message": "Unable to save the pipeline {} as Template: {}".format(name, e),
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
 class PipelineDownloadView(APIView):
     keycloak_scopes = {
         "GET": "pipeline:read",
@@ -337,7 +312,6 @@ class PipelineDeleteView(APIView):
             "pipelines",
             f"pipelines-deleted/{user_id}/{name}_{datetime.utcnow()}.hpl",
             CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
-
             # delete pipeline file from Minio
             client.remove_object(
                 "pipelines", 
@@ -396,3 +370,62 @@ class PipelineDeleteView(APIView):
                 return {"status": "failed", "message": f"Failed to update process status for {dag_id}"}
         except Exception as e:
             return {"status": "failed", "message": f"Exception occured while updating process status {dag_id}: {str(e)}"}
+
+class TemplateView(APIView):
+    keycloak_scopes = {
+        "GET": "pipeline:read",
+        "POST": "pipeline:add",
+    }
+
+    def get(self, request, query: str = None):
+        """ Return hop templates from minio bucket """
+        user_id = get_current_user_id(request)
+        pipelines_templates = []
+        
+        try:
+            # Function to process template objects
+            def process_templates(templates, prefix):
+                return [
+                    {"name": template.object_name.removeprefix(prefix)}
+                    for template in templates
+                    if template.object_name.endswith('.hpl') and (not query or re.search(query, template.object_name.removeprefix(prefix), re.IGNORECASE))
+                ]
+            
+            # Fetch global templates
+            global_templates = client.list_objects("pipelines", prefix="templates/")
+            pipelines_templates.extend(process_templates(global_templates, "templates/"))
+            
+            # Fetch user-specific templates
+            if user_id:
+                user_templates = client.list_objects('pipelines', prefix=f'templates/{user_id}/')
+                pipelines_templates.extend(process_templates(user_templates, f'templates/{user_id}/'))
+            
+            return Response({'status': 'success', "data": pipelines_templates}, status=200)    
+        except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": f"Unable to fetch templates: {e}",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+    
+    def post(self, request):
+        user_id = get_current_user_id(request)
+        name = request.data.get("name", None)
+        try:
+            # save pipeline file as Template in Minio
+            client.copy_object(
+            "pipelines",
+            f"templates/{user_id}/{name}.hpl",
+            CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
+
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Unable to save the pipeline {} as Template: {}".format(name, e),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )

@@ -434,7 +434,16 @@ class ProcessView(ViewSet):
             return Response({"error": "Datasource ID is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         druid_url = f"{DruidInstance.url}/druid/coordinator/v1/metadata/datasources/{datasource_id}"
-        response = requests.get(druid_url, auth=(DruidInstance.username, DruidInstance.password), verify=False)
+
+        try:
+            response = requests.get(druid_url, auth=(DruidInstance.username, DruidInstance.password), verify=False)
+            response.raise_for_status()
+        except requests.exceptions.ConnectionError:
+            return Response({"error": "Failed to connect to Druid"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except requests.exceptions.Timeout:
+            return Response({"error": "Request to Druid timed out"}, status=status.HTTP_504_GATEWAY_TIMEOUT)
+        except requests.exceptions.RequestException as e:
+            return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         if response.status_code == 200:
             data = response.json()
@@ -444,22 +453,25 @@ class ProcessView(ViewSet):
                 segments_count = len(segments_data)  # Count the number of segments
 
                 # Calculate the total size of all segments
-                total_size = sum(segment['size'] for segment in segments_data)/1000
+                total_size = sum(segment['size'] for segment in segments_data) / 1000
 
                 # Include only the newest segment
-                last_segment_data = segments_data[segments_count-1]
-                last_segment = DruidSegment(
-                    dataSource=last_segment_data["dataSource"],
-                    interval=last_segment_data["interval"],
-                    version=last_segment_data["version"],
-                    loadSpec=last_segment_data["loadSpec"],
-                    dimensions=last_segment_data["dimensions"],
-                    metrics=last_segment_data["metrics"],
-                    shardSpec=last_segment_data["shardSpec"],
-                    binaryVersion=last_segment_data["binaryVersion"],
-                    size=last_segment_data["size"],
-                    identifier=last_segment_data["identifier"]
-                ).to_dict()
+                last_segment_data = segments_data[segments_count - 1]
+                dimensions = last_segment_data.get("dimensions", "")
+                dimensions_list = dimensions.split(",") if dimensions else []
+
+                last_segment = {
+                    "dataSource": last_segment_data["dataSource"],
+                    "interval": last_segment_data["interval"],
+                    "version": last_segment_data["version"],
+                    "loadSpec": last_segment_data["loadSpec"],
+                    "dimensions": dimensions_list,
+                    "metrics": last_segment_data["metrics"],
+                    "shardSpec": last_segment_data["shardSpec"],
+                    "binaryVersion": last_segment_data["binaryVersion"],
+                    "size": last_segment_data["size"],
+                    "identifier": last_segment_data["identifier"]
+                }
 
                 druid_data_source = {
                     "name": datasource_id,
