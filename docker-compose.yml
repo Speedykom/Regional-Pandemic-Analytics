@@ -122,6 +122,9 @@ volumes:
   coordinator_var: {}
   router_var: {}
   mongo-data:
+  grafana-storage: {}
+  loki-data: {}
+
 
 
 services:
@@ -692,3 +695,60 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
+  # ========
+  # Prometheus
+  # ========
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - loki
+
+  # =====
+  #  Loki
+  # =====
+  loki:
+    image: grafana/loki:2.4.1
+    container_name: loki
+    user: root
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki-config.yaml:/etc/loki/local-config.yaml
+      - ./loki-data:/loki
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3100/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # =====
+  #  Promtail
+  # =====
+  promtail:
+    image: grafana/promtail:2.4.1
+    container_name: promtail
+    volumes:
+      - /var/log:/var/log
+      - ./monitoring/promtail-config.yaml:/etc/promtail/config.yml
+    depends_on:
+      - loki
+
+  # =====
+  #  Grafana
+  # =====
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - loki
