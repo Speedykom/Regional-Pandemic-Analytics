@@ -74,11 +74,7 @@ class PipelineListView(APIView):
         )
 
     def post(self, request):
-        """Create a pipeline from a chosen template for a specific user
-        name -- string -- required
-        description -- string -- required
-        template -- string -- required
-        """
+        """Create a pipeline from a chosen template for a specific user"""
         user_id = get_current_user_id(request)
         name = request.data.get("name")
         description = request.data.get("description")
@@ -262,11 +258,6 @@ class PipelineUploadView(APIView):
     }
 
     def post(self, request, format=None):
-        """
-        name -- string -- required
-        description -- string -- required
-        uploadedFile -- file -- required
-        """
         user_id = get_current_user_id(request)
         name = request.data.get("name")
         description = request.data.get("description")
@@ -318,8 +309,6 @@ class PipelineDeleteView(APIView):
     }
 
     def delete(self, request, name=None):
-        """
-        dags -- array of dags -- required """
         # Disable all dags using the pipeline
         dag_ids = request.data.get("dags", [])
         

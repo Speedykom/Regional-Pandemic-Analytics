@@ -27,10 +27,6 @@ from utils.env_configs import (
 
 class LoginAPI(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
-        """
-        username -- string -- required
-        password -- string -- required
-        """ 
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -103,9 +99,6 @@ class KeyCloakLoginAPI(APIView):
         }
     ))
     def post(self, request, *args, **kwargs):
-        """
-        code -- string -- required
-        """ 
         try:
             config = settings.KEYCLOAK_CONFIG
             keycloak = get_keycloak_openid(request)
@@ -138,9 +131,6 @@ class KeyCloakLoginAPI(APIView):
         }
     ))
     def put(self, request, *args, **kwargs):
-        """
-            refresh_token -- string -- required
-        """ 
         refresh_token = request.data.get("refresh_token", None)
         form_data = {
             "client_id": os.getenv("CLIENT_ID"),
@@ -177,11 +167,6 @@ class PasswordAPI(APIView):
         }
     ))
     def post(self, request, *args, **kwargs):
-        """
-        newPassword -- string -- required
-        confirmPasswird -- string -- required
-        token -- string -- required
-        """ 
         newPassword = request.data.get("newPassword", None)
         confirmPassword = request.data.get("confirmPassword", None)
         token = request.data.get("token", None)
@@ -214,11 +199,6 @@ class PasswordAPI(APIView):
         }
     ))
     def put(self, request, *args, **kwargs):
-        """
-        id -- string -- required
-        newPassword -- string -- required
-        confirmPassword -- string -- required
-        """ 
         key_hex = os.getenv("PASSWORD_HEX_KEY")
         key = unhexlify(key_hex)
         iv_hex = os.getenv("PASSWORD_IVHEX")
@@ -261,9 +241,6 @@ class ResetPasswordAPI(APIView):
     permission_classes = [AllowAny, ]
 
     def post(self, request, **kwargs):
-        """
-        email -- string -- required
-        """
         try:
             keycloak_admin = get_keycloak_admin()
             users = keycloak_admin.get_users({
@@ -297,9 +274,6 @@ class ResetPasswordAPI(APIView):
     API endpoint to verify reset password token
     """
     def patch(self, request, *args, **kwargs):
-        """
-        token -- string -- required
-        """
         form_data = {
             "token": request.data.get("token", None),
         }
