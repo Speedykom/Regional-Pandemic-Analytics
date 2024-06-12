@@ -68,17 +68,6 @@ class UserListView(APIView):
         }
     ))
     def post(self, request, *args, **kwargs):
-        """
-        firstName -- string -- required
-        lastName -- string -- required
-        username -- string -- required
-        email -- string -- required
-        enabled -- boolean -- required
-        code -- string -- required
-        phone -- string -- required
-        gender -- string -- required
-        country -- string -- required
-        """
         generate_password = get_random_secret(10)
         form_data = {
             "firstName": request.data.get("firstName", None),
@@ -165,18 +154,8 @@ class UserDetailView(APIView):
         }
     ))
 
+
     def put(self, request, *args, **kwargs):
-        """
-        firstName -- string 
-        lastName -- string 
-        username -- string 
-        email -- string 
-        enabled -- boolean 
-        code -- string 
-        phone -- string 
-        gender -- string 
-        country -- string 
-        """
         user_data = request.data  
 
         try:
@@ -221,9 +200,6 @@ class UserRolesView(APIView):
         }
     ))
     def put(self, request, **kwargs):
-        """
-            roles -- array of roles -- required 
-        """
         try:
             keycloak_admin = get_keycloak_admin()
             roles = request.data.get("roles", [self.roleObject])
@@ -293,9 +269,6 @@ class UserAvatarView(APIView):
 
 
     def post(self, request, **kwargs):
-        """
-        uploadedFile -- file -- required
-        """
         user_id = kwargs['id']
         if not user_id:
             return HttpResponseBadRequest("Bad request: User ID parameter is missing.")

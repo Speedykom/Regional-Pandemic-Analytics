@@ -96,9 +96,6 @@ class EnableEmbed(SupersetAPI):
     }
 
     def post(self, request):
-        """
-        uid -- string -- required
-        """
         uid = request.data.get("uid", None)
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{uid}/embedded"
@@ -192,9 +189,6 @@ class AddFavorite(SupersetAPI):
     }
 
     def post(self, request):
-        """
-        id -- string -- required
-        """
         id = request.data.get("id", None)
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{id}/favorites/"
@@ -225,9 +219,6 @@ class RemoveFavorite(SupersetAPI):
     }
 
     def delete(self, request):
-        """
-        id -- string -- required
-        """
         id = request.data.get("id", None)
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{id}/favorites/"
@@ -257,9 +248,6 @@ class GuestTokenApi(SupersetAPI):
     }
 
     def post(self, request):
-        """
-        id -- string -- required
-        """
         url = f"{os.getenv('SUPERSET_BASE_URL')}/security/guest_token/"
         headers = self.authorize({
             "Content-Type": "application/json",

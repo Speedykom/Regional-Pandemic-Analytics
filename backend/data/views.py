@@ -31,9 +31,6 @@ class DataUploadAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request, *args, **kwargs):
-        """
-        username -- string -- required
-        """
         username = request.data.get('username', None)
 
         if username is None:
