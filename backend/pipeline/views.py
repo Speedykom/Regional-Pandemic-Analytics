@@ -38,7 +38,7 @@ class PipelineListView(APIView):
         self.permitted_characters_regex = re.compile(r'^[a-zA-Z0-9._-]+$')
 
     def get(self, request , query = None):
-        """Return a user created pipelines"""
+        """Endpoint for getting pipelines created by a user"""
         user_id = get_current_user_id(request)
 
         pipelines: list[str] = []
@@ -128,6 +128,9 @@ class PipelineDetailView(APIView):
     file = "../hop/data-orch.list"
 
     def get(self, request, name=None):
+        """
+        Endpoint for getting details of pipeline  
+        """
         user_id = get_current_user_id(request)
         try:
             object = client.stat_object(
@@ -166,6 +169,7 @@ class PipelineDetailView(APIView):
             )
 
     def put(self, request, name=None):
+        """Endpoint for updating pipeline"""
         user_id = get_current_user_id(request)
         # Check if the pipeline is valid
 
@@ -207,6 +211,9 @@ class PipelineSaveView(APIView):
     }
 
     def post(self, request, name=None):
+        """
+        Endpoint for saving a pipeline as a template
+        """
         user_id = get_current_user_id(request)
         try:
             # save pipeline file as Template in Minio
@@ -258,6 +265,9 @@ class PipelineUploadView(APIView):
     }
 
     def post(self, request, format=None):
+        """
+        Endpoint for uploading a pipeline  
+        """
         user_id = get_current_user_id(request)
         name = request.data.get("name")
         description = request.data.get("description")
@@ -309,6 +319,9 @@ class PipelineDeleteView(APIView):
     }
 
     def delete(self, request, name=None):
+        """
+        Endpoint for deleting a pipeline 
+        """
         # Disable all dags using the pipeline
         dag_ids = request.data.get("dags", [])
         
