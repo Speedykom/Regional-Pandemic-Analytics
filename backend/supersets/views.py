@@ -28,6 +28,9 @@ class ListDashboardsAPI(SupersetAPI):
     }
 
     def get(self, request, query=None):
+        """
+        Endpoint for listing superset dashboards 
+        """
         log.debug("Listing Superset dashboards with query %s", query)
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/"
         headers = self.authorize({
@@ -64,6 +67,9 @@ class ListChartsAPI(SupersetAPI):
     }
 
     def get(self, request, query=None):
+        """
+        Endpoint for listing superset charts
+        """
         url = f"{os.getenv('SUPERSET_BASE_URL')}/chart/"
         headers = self.authorize({
             "Content-Type": "application/json",
@@ -96,6 +102,9 @@ class EnableEmbed(SupersetAPI):
     }
 
     def post(self, request):
+        """
+        Endpoint for enabling superset dashboard embed 
+        """
         uid = request.data.get("uid", None)
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{uid}/embedded"
@@ -128,6 +137,9 @@ class GetEmbeddable(SupersetAPI):
     }
 
     def get(self, request, *args, **kwargs):
+        """
+        Endpoint for listing embedable superset dashboard
+        """
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['id']}/embedded"
 
         headers = self.authorize({})
@@ -142,6 +154,9 @@ class GetThumbnail(SupersetAPI):
     }
 
     def get(self, request, *args, **kwargs):
+        """
+        Endpoint for getting dashboard thumbnail 
+        """
         superset_base_url = os.getenv('SUPERSET_BASE_URL')
         dashboardMetaUrl = f"{superset_base_url}/dashboard/{kwargs['id']}"
         headers = self.authorize({})
@@ -170,6 +185,9 @@ class GetFavoriteStatus(SupersetAPI):
     }
 
     def get(self, request, query=None):
+        """
+        Endpoint for getting dashboard favorite status for the current user
+        """
         if query == '[]' or query == None:
             return Response({"result": "No favorite dashboard were provided"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -189,6 +207,9 @@ class AddFavorite(SupersetAPI):
     }
 
     def post(self, request):
+        """
+        Endpoint for adding superset dashboard to favorites 
+        """
         id = request.data.get("id", None)
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{id}/favorites/"
@@ -219,6 +240,9 @@ class RemoveFavorite(SupersetAPI):
     }
 
     def delete(self, request):
+        """
+        Endpoint for removing a superset dashboard from favorites
+        """
         id = request.data.get("id", None)
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{id}/favorites/"
@@ -248,6 +272,9 @@ class GuestTokenApi(SupersetAPI):
     }
 
     def post(self, request):
+        """
+        Endpoint for getting superset guest token 
+        """
         url = f"{os.getenv('SUPERSET_BASE_URL')}/security/guest_token/"
         headers = self.authorize({
             "Content-Type": "application/json",
@@ -283,6 +310,9 @@ class CsrfTokenApi(SupersetAPI):
     ]
 
     def get(self, request):
+        """
+        Endpoint for getting superset CSRF token
+        """
         url = f"{os.getenv('SUPERSET_BASE_URL')}/security/csrf_token/"
 
         try:
