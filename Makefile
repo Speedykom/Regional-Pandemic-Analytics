@@ -1,8 +1,10 @@
 start-prod:
 ifdef service
 	@docker stop $(service) && docker rm $(service)
+	@mkdir -p loki-data && chmod -R 777 loki-data
 	@docker compose --env-file ./.env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d --build --force-recreate $(service)
 else
+	@mkdir -p loki-data && chmod -R 777 loki-data
 	@docker compose --env-file ./.env.prod -f docker-compose.yml -f docker-compose.prod.yml down --remove-orphans
 	@docker compose --env-file ./.env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d --build --force-recreate
 endif
@@ -10,8 +12,10 @@ endif
 start-local:
 ifdef service
 	@docker stop $(service) && docker rm $(service)
+	@mkdir -p loki-data && chmod -R 777 loki-data
 	@docker compose --env-file ./.env.local -f docker-compose.yml -f docker-compose.local.yml up $(service) -d --build --force-recreate $(service)
 else
+	@mkdir -p loki-data && chmod -R 777 loki-data
 	@docker compose --env-file ./.env.local -f docker-compose.yml -f docker-compose.local.yml down --remove-orphans
 	@docker compose --env-file ./.env.local -f docker-compose.yml -f docker-compose.local.yml  up -d --build --force-recreate
 endif
@@ -19,8 +23,10 @@ endif
 start-dev:
 ifdef service
 	@docker stop $(service) && docker rm $(service)
+	@mkdir -p loki-data && chmod -R 777 loki-data
 	@docker compose --env-file ./.env.dev -f docker-compose.yml -f docker-compose.dev.yml up -d --build --force-recreate $(service)
 else
+	@mkdir -p loki-data && chmod -R 777 loki-data
 	@docker compose --env-file ./.env.dev -f docker-compose.yml -f docker-compose.dev.yml down --remove-orphans
 	@docker compose --env-file ./.env.dev -f docker-compose.yml -f docker-compose.dev.yml up -d --build --force-recreate
 endif
