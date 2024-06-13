@@ -25,20 +25,7 @@ jobs:
         working-directory: frontend
       - run: npm run build --if-present
         working-directory: frontend
-      - name: Depcheck
-        uses: dependency-check/Dependency-Check_Action@main
-        id: Depcheck
-        with:
-          project: "RePan"
-          path: "."
-          format: "HTML"
-          out: "reports" # this is the default, no need to specify unless you wish to override it
-          args: >
-            --failOnCVSS 7
-            --enableRetired
-            --nodeAuditSkipDevDependencies
-      - name: Upload Test results
-        uses: actions/upload-artifact@master
-        with:
-          name: Depcheck report
-          path: ${{github.workspace}}/reports
+      - run: npm audit --audit-level moderate
+        name: Audit packages
+        env:
+          CI: true
