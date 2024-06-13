@@ -23,8 +23,11 @@ import logging
 from keycloak import KeycloakOpenID, KeycloakAdmin
 from superset.superset_typing import CacheConfig
 
-log = logging.getLogger(__name__)
-
+logging.basicConfig(
+    filename='/var/log/superset/superset.log',
+    level=logging.INFO,
+    format='%(asctime)s:%(levelname)s:%(message)s'
+)
 # Superset Oauth2 Docs : https://superset.apache.org/docs/installation/configuring-superset/#custom-oauth2-configuration
 # https://flask-appbuilder.readthedocs.io/en/latest/security.html#authentication-oauth
 
