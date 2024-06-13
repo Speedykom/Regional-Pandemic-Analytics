@@ -48,6 +48,7 @@ jobs:
   depchecktest:
     runs-on: ubuntu-latest
     name: depecheck_test
+    needs: [frontend-integration, backend-integration]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
