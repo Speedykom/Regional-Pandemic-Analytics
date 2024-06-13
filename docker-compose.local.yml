@@ -28,6 +28,8 @@ services:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
       - "frontend.igad.local:host-gateway"
+    volumes:
+      - ./superset/logs:/var/log/superset
     command: ["/usr/bin/repan-superset-startup.sh", "--dev"]
 
   # =====
@@ -75,6 +77,7 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend/:/backend
+      - ./backend/logs:/var/log/backend
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
@@ -207,6 +210,8 @@ services:
     volumes:
       - /var/log:/var/log
       - ./monitoring/promtail-config.yaml:/etc/promtail/config.yml
+      - ./superset/logs:/var/log/superset  # Mounting Superset logs
+      - ./backend/logs:/var/log/backend  # Mounting backend logs
 
   # =====
   #  Grafana

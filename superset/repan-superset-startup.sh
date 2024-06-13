@@ -1,5 +1,8 @@
 #!/bin/bash
 
+mkdir -p /var/log/superset
+chmod -R 777 /var/log/superset
+
 superset fab create-admin --username speedykom --firstname Superset --lastname Admin --email admin@superset.com --password speedykom
 superset db upgrade
 superset superset init
