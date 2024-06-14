@@ -27,6 +27,9 @@ from utils.env_configs import (
 
 class LoginAPI(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
+        """
+        Endpoint for login with username and password
+        """
         serializer = self.serializer_class(data=request.data,
                                            context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -46,6 +49,9 @@ class Authorization (APIView):
     API to get details of current logged in user
     """
     def get(self, request, *args, **kwargs):
+        """
+        Endpoint for getting details of the current logged in user 
+        """
         reqToken: str = request.META.get('HTTP_AUTHORIZATION')
         if reqToken is None:
             return Response({'error': 'Authorization header was not provider or invalid'})
@@ -65,6 +71,9 @@ class Logout (APIView):
     API to logout user
     """
     def post(self, request, *args, **kwargs):
+        """
+        Endpoint for loggin out
+        """
         reqToken: str = request.META.get('HTTP_AUTHORIZATION')
 
         if reqToken is None:
@@ -99,6 +108,9 @@ class KeyCloakLoginAPI(APIView):
         }
     ))
     def post(self, request, *args, **kwargs):
+        """
+        Endpoint for authenticating with Keycloak (exchange code for token)
+        """
         try:
             config = settings.KEYCLOAK_CONFIG
             keycloak = get_keycloak_openid(request)
@@ -131,6 +143,9 @@ class KeyCloakLoginAPI(APIView):
         }
     ))
     def put(self, request, *args, **kwargs):
+        """
+        Endpoint for refreshing and updating Keycloak access token
+        """
         refresh_token = request.data.get("refresh_token", None)
         form_data = {
             "client_id": os.getenv("CLIENT_ID"),
@@ -167,6 +182,9 @@ class PasswordAPI(APIView):
         }
     ))
     def post(self, request, *args, **kwargs):
+        """
+        Endpoint for changing password 
+        """
         newPassword = request.data.get("newPassword", None)
         confirmPassword = request.data.get("confirmPassword", None)
         token = request.data.get("token", None)
@@ -199,6 +217,9 @@ class PasswordAPI(APIView):
         }
     ))
     def put(self, request, *args, **kwargs):
+        """
+        Endpoint for changing Keycloak password 
+        """
         key_hex = os.getenv("PASSWORD_HEX_KEY")
         key = unhexlify(key_hex)
         iv_hex = os.getenv("PASSWORD_IVHEX")
@@ -241,6 +262,9 @@ class ResetPasswordAPI(APIView):
     permission_classes = [AllowAny, ]
 
     def post(self, request, **kwargs):
+        """
+        Endpoint for sending email reset password 
+        """
         try:
             keycloak_admin = get_keycloak_admin()
             users = keycloak_admin.get_users({
@@ -274,6 +298,9 @@ class ResetPasswordAPI(APIView):
     API endpoint to verify reset password token
     """
     def patch(self, request, *args, **kwargs):
+        """
+        Endpoint for reset password token verification
+        """
         form_data = {
             "token": request.data.get("token", None),
         }
