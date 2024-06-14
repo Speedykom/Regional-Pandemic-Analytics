@@ -41,7 +41,7 @@ jobs:
             .value.via[0].cvss.score
           ] | 
           @tsv' audit.json) | column -t -s $'\t'
-        name: format output
+        name: Audit results
         working-directory: frontend
 
       - run: npm run pre-commit
@@ -63,8 +63,11 @@ jobs:
       - name: Install backend modules
         run: pip install -r requirements.txt
         working-directory: backend
-      - name: Run audit
+      - name: install pip-audit
         run: pip install pip-audit && (pip-audit || true)
+        working-directory: backend
+      - name: Audit results
+        run: pip-audit || true
         working-directory: backend
       - name: Run migrations
         run: python manage.py migrate
