@@ -38,7 +38,7 @@ class PipelineListView(APIView):
         self.permitted_characters_regex = re.compile(r'^[a-zA-Z0-9._-]+$')
 
     def get(self, request , query = None):
-        """Return a user created pipelines"""
+        """Endpoint for getting pipelines created by a user"""
         user_id = get_current_user_id(request)
 
         pipelines: list[str] = []
@@ -128,6 +128,9 @@ class PipelineDetailView(APIView):
     file = "../hop/data-orch.list"
 
     def get(self, request, name=None):
+        """
+        Endpoint for getting details of pipeline  
+        """
         user_id = get_current_user_id(request)
         try:
             object = client.stat_object(
@@ -166,6 +169,7 @@ class PipelineDetailView(APIView):
             )
 
     def put(self, request, name=None):
+        """Endpoint for updating pipeline"""
         user_id = get_current_user_id(request)
         # Check if the pipeline is valid
 
@@ -201,29 +205,7 @@ class PipelineDetailView(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-class PipelineSaveView(APIView):
-    keycloak_scopes = {
-        "POST": "pipeline:add",
-    }
 
-    def post(self, request, name=None):
-        user_id = get_current_user_id(request)
-        try:
-            # save pipeline file as Template in Minio
-            client.copy_object(
-            "pipelines",
-            f"templates/{name}.hpl",
-            CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
-
-            return Response({"status": "success"}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response(
-                {
-                    "status": "error",
-                    "message": "Unable to save the pipeline {} as Template: {}".format(name, e),
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
 class PipelineDownloadView(APIView):
     keycloak_scopes = {
         "GET": "pipeline:read",
@@ -258,6 +240,9 @@ class PipelineUploadView(APIView):
     }
 
     def post(self, request, format=None):
+        """
+        Endpoint for uploading a pipeline  
+        """
         user_id = get_current_user_id(request)
         name = request.data.get("name")
         description = request.data.get("description")
@@ -309,6 +294,9 @@ class PipelineDeleteView(APIView):
     }
 
     def delete(self, request, name=None):
+        """
+        Endpoint for deleting a pipeline 
+        """
         # Disable all dags using the pipeline
         dag_ids = request.data.get("dags", [])
         
@@ -324,7 +312,6 @@ class PipelineDeleteView(APIView):
             "pipelines",
             f"pipelines-deleted/{user_id}/{name}_{datetime.utcnow()}.hpl",
             CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
-
             # delete pipeline file from Minio
             client.remove_object(
                 "pipelines", 
@@ -383,3 +370,62 @@ class PipelineDeleteView(APIView):
                 return {"status": "failed", "message": f"Failed to update process status for {dag_id}"}
         except Exception as e:
             return {"status": "failed", "message": f"Exception occured while updating process status {dag_id}: {str(e)}"}
+
+class TemplateView(APIView):
+    keycloak_scopes = {
+        "GET": "pipeline:read",
+        "POST": "pipeline:add",
+    }
+
+    def get(self, request, query: str = None):
+        """ Return hop templates from minio bucket """
+        user_id = get_current_user_id(request)
+        pipelines_templates = []
+        
+        try:
+            # Function to process template objects
+            def process_templates(templates, prefix):
+                return [
+                    {"name": template.object_name.removeprefix(prefix)}
+                    for template in templates
+                    if template.object_name.endswith('.hpl') and (not query or re.search(query, template.object_name.removeprefix(prefix), re.IGNORECASE))
+                ]
+            
+            # Fetch global templates
+            global_templates = client.list_objects("pipelines", prefix="templates/")
+            pipelines_templates.extend(process_templates(global_templates, "templates/"))
+            
+            # Fetch user-specific templates
+            if user_id:
+                user_templates = client.list_objects('pipelines', prefix=f'templates/{user_id}/')
+                pipelines_templates.extend(process_templates(user_templates, f'templates/{user_id}/'))
+            
+            return Response({'status': 'success', "data": pipelines_templates}, status=200)    
+        except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": f"Unable to fetch templates: {e}",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+    
+    def post(self, request):
+        user_id = get_current_user_id(request)
+        name = request.data.get("name", None)
+        try:
+            # save pipeline file as Template in Minio
+            client.copy_object(
+            "pipelines",
+            f"templates/{user_id}/{name}.hpl",
+            CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
+
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Unable to save the pipeline {} as Template: {}".format(name, e),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )

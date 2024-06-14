@@ -19,7 +19,7 @@ import { useRouter } from 'next/router';
 import {
   useGetAllPipelinesQuery,
   useDownloadPipelineQuery,
-  useSavePipelineAsTemplateMutation,
+  useUploadTemplateMutation,
 } from '../pipeline';
 import { AddPipeline } from './add';
 import { DeletePipeline } from './delete';
@@ -68,7 +68,7 @@ export const MyPipelines = () => {
 
   const { data, refetch } = useGetAllPipelinesQuery(searchInput);
 
-  const [savePipelineAsTemplate] = useSavePipelineAsTemplateMutation();
+  const [savePipelineAsTemplate] = useUploadTemplateMutation();
 
   const [selectedPipeline, setSelectedPipeline] = useState<string>('');
   const { data: downloadData } = useDownloadPipelineQuery(
@@ -197,6 +197,7 @@ export const MyPipelines = () => {
               </Button>
               <Button
                 onClick={() => saveAsTemplate(item?.name)}
+                disabled={item?.check_status === 'failed'}
                 className="hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500 focus:text-white"
               >
                 {t('savePipelineAsTemplate.saveButton')}

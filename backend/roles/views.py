@@ -14,6 +14,9 @@ class RoleApiView(APIView):
     """_api view to get client roles_
     """
     def get(self, request, *args, **kwargs):
+        """
+        Endpoint for listing to keycloak client role 
+        """
         try:
             keycloak_admin = get_keycloak_admin()
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
@@ -26,6 +29,9 @@ class RoleApiView(APIView):
     API view to update Keycloak client role
     """
     def put(self, request, *args, **kwargs):
+        """
+        Endpoint for updating keycloak client role 
+        """
         form_data = {
             "name": request.data.get("name", None),
             "description": request.data.get("description", None),
