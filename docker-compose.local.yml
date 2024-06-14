@@ -75,6 +75,7 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./backend/:/backend
+      - ./backend/rest_framework_swagger/index.html:/usr/local/lib/python3.9/site-packages/rest_framework_swagger/templates/rest_framework_swagger/index.html
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
