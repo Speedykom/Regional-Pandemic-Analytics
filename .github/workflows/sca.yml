@@ -64,7 +64,7 @@ jobs:
         run: pip install -r requirements.txt
         working-directory: backend
       - name: install pip-audit
-        run: pip install pip-audit && (pip-audit || true)
+        run: pip install pip-audit 
         working-directory: backend
       - name: Audit results
         run: pip-audit || true
