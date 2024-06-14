@@ -41,6 +41,9 @@ jobs:
             .value.via[0].cvss.score
           ] | 
           @tsv' audit.json) | column -t -s $'\t'
+        name: format output
+        working-directory: frontend
+
       - run: npm run pre-commit
         working-directory: frontend
       - run: npm run build --if-present
