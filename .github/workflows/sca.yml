@@ -21,11 +21,26 @@ jobs:
         working-directory: frontend
       - run: npm i --package-lock-only
         working-directory: frontend
-      - run: npm audit --audit-level moderate
+      - run: npm audit --audit-level moderate > audit.json
         working-directory: frontend
         name: Audit packages
         env:
           CI: true
+      - run: | 
+        (echo -e "Key\tName\tSeverity\tIsDirect\tTitle\tURL\tCVSS_Score"; 
+        jq -r '
+        .vulnerabilities | 
+        to_entries[] | 
+        [
+          .key, 
+          .value.name, 
+          .value.severity, 
+          .value.isDirect, 
+          .value.via[0].title, 
+          .value.via[0].url, 
+          .value.via[0].cvss.score
+        ] | 
+        @tsv' audit.json) | column -t -s $'\t'
       - run: npm run pre-commit
         working-directory: frontend
       - run: npm run build --if-present
