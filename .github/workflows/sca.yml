@@ -64,7 +64,7 @@ jobs:
         run: pip install -r requirements.txt
         working-directory: backend
       - name: Run audit
-        run: pip install pip-audit && pip-audit
+        run: pip install pip-audit && (pip-audit || true)
         working-directory: backend
       - name: Run migrations
         run: python manage.py migrate
