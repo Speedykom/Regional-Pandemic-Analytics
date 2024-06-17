@@ -692,3 +692,21 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
+
+  # =====
+  #  HCP Vault
+  # =====
+  vault-server:
+    image: vault:1.13.3
+    container_name: vault-server
+    ports:
+      - "8200:8200"
+    restart: always
+    volumes:
+      - ./vault/logs:/vault/logs
+      - ./vault/file:/vault/file
+      - ./vault/config:/vault/config
+    cap_add:
+      - IPC_LOCK
+    entrypoint: vault server -config=/vault/config/vault.json
+
