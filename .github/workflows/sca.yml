@@ -2,7 +2,7 @@ name: SCA
 
 on:
   schedule:
-    - cron: "*/2 * * * *"
+    - cron: "*/6 * * * *"
   push:
     branches: [Feat/add-owasp-dependency-check]
 
