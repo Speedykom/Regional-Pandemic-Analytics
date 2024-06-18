@@ -46,6 +46,9 @@ class UserListView(APIView):
     }
 
     def get(self, request, *args, **kwargs):
+        """
+        Endpoint for listing all users 
+        """
         try:
             keycloak_admin = get_keycloak_admin()
             users = keycloak_admin.get_users({})
@@ -68,6 +71,9 @@ class UserListView(APIView):
         }
     ))
     def post(self, request, *args, **kwargs):
+        """
+        Endpoint for creating a new user 
+        """
         generate_password = get_random_secret(10)
         form_data = {
             "firstName": request.data.get("firstName", None),
@@ -121,7 +127,7 @@ class UserListView(APIView):
 
 class UserDetailView(APIView):
     """
-    View class for listing, updating and deleting a single post
+    View class for listing, updating and deleting a single user
     """
     keycloak_scopes = {
         'GET': 'user:read',
@@ -130,6 +136,9 @@ class UserDetailView(APIView):
     }
 
     def get(self, request, **kwargs):
+        """
+        Endpoint for getting information about a user 
+        """
         try:
             keycloak_admin = get_keycloak_admin()
             user = keycloak_admin.get_user(kwargs['id'])
@@ -156,6 +165,9 @@ class UserDetailView(APIView):
 
 
     def put(self, request, *args, **kwargs):
+        """
+        Endpoint for updating a user 
+        """
         user_data = request.data  
 
         try:
@@ -175,6 +187,9 @@ class UserDetailView(APIView):
         except Exception as err:
             return Response({'errorMessage': 'Unable to update the user. Error: {}'.format(str(err))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     def delete(self, request, **kwargs):
+        """
+        Endpoint for deleting a user 
+        """
         try:
             keycloak_admin = get_keycloak_admin()
             user_data = {
@@ -219,6 +234,9 @@ class UserRolesView(APIView):
         }
     ))
     def put(self, request, **kwargs):
+        """
+        Endpoint for updating the role of a user
+        """
         try:
             keycloak_admin = get_keycloak_admin()
             roles = request.data.get("roles", [self.roleObject])
@@ -229,6 +247,9 @@ class UserRolesView(APIView):
             return Response({'errorMessage': 'Unable to assign roles to the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request, **kwargs):
+        """
+        Endpoint for listing the roles of a user 
+        """
         try:
             keycloak_admin = get_keycloak_admin()
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
@@ -255,6 +276,9 @@ class UserAvatarView(APIView):
     parser_classes = (MultiPartParser,)
 
     def get(self, request, *args, **kwargs):
+        """
+        Endpoint for getting user avatar 
+        """
         try:
             user_id = kwargs['id']
             if not user_id:
@@ -288,6 +312,9 @@ class UserAvatarView(APIView):
 
 
     def post(self, request, **kwargs):
+        """
+        Endpoint for uploading a user avatar
+        """
         user_id = kwargs['id']
         if not user_id:
             return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
