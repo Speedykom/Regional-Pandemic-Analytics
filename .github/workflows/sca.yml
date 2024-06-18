@@ -1,8 +1,8 @@
 name: SCA
 
 on:
-  push:
-    branches: [Feat/add-owasp-dependency-check]
+  schedule:
+    - cron: "*/2 * * * *"
 
 jobs:
   frontend-integration:
@@ -64,7 +64,7 @@ jobs:
         run: pip install -r requirements.txt
         working-directory: backend
       - name: install pip-audit
-        run: pip install pip-audit 
+        run: pip install pip-audit
         working-directory: backend
       - name: Audit results
         run: pip-audit || true
