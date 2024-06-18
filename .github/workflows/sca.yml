@@ -3,6 +3,8 @@ name: SCA
 on:
   schedule:
     - cron: "*/2 * * * *"
+  push:
+    branches: [Feat/add-owasp-dependency-check]
 
 jobs:
   frontend-integration:
