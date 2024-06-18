@@ -172,8 +172,17 @@ class UserDetailView(APIView):
 
         try:
             keycloak_admin = get_keycloak_admin()
-            keycloak_admin.update_user(kwargs['id'], user_data)
-            
+            user_id = kwargs['id']
+
+            # Check if 'enabled' is in request data to determine enabling user
+            if 'enabled' in user_data:
+                user = keycloak_admin.get_user(user_id)
+                user['enabled'] = user_data['enabled']
+                keycloak_admin.update_user(user_id, user)
+                return Response({'message': 'User enabled successfully'}, status=status.HTTP_200_OK)
+
+            # Otherwise, update user details
+            keycloak_admin.update_user(user_id, user_data)
             return Response({'message': 'User updated successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
             return Response({'errorMessage': 'Unable to update the user. Error: {}'.format(str(err))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -193,7 +202,17 @@ class UserDetailView(APIView):
             return Response({'message': 'User archived successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
             return Response({'errorMessage': 'Unable to archive the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+    def patch(self, request, **kwargs):
+        try:
+            keycloak_admin = get_keycloak_admin()
+            user_data = {
+                'enabled': True
+            }
+            keycloak_admin.update_user(kwargs['id'], user_data)
+            return Response({'message': 'User enabled successfully'}, status=status.HTTP_200_OK)
+        except Exception as err:
+            return Response({'errorMessage': 'Unable to enable the user. Error: {}'.format(str(err))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
 class UserRolesView(APIView):
     """
     API view to assign roles to users
