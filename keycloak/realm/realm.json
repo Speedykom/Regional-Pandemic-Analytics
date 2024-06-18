@@ -31,11 +31,11 @@
   "sslRequired": "external",
   "registrationAllowed": false,
   "registrationEmailAsUsername": false,
-  "rememberMe": false,
+  "rememberMe": true,
   "verifyEmail": false,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
-  "resetPasswordAllowed": false,
+  "resetPasswordAllowed": true,
   "editUsernameAllowed": false,
   "bruteForceProtected": false,
   "permanentLockout": false,
@@ -2658,7 +2658,21 @@
     "xXSSProtection": "1; mode=block",
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
-  "smtpServer": {},
+  "smtpServer": {
+    "replyToDisplayName": "",
+    "starttls": "true",
+    "auth": "true",
+    "envelopeFrom": "",
+    "ssl": "false",
+    "password": "${BACKEND_MAIL_PASSWORD}",
+    "port": "587",
+    "replyTo": "",
+    "host": "smtp.gmail.com",
+    "from": "kom.speedy@gmail.com",
+    "fromDisplayName": "Speedykom",
+    "user": "kom.speedy@gmail.com"
+  },
+  "emailTheme": "repan",
   "loginTheme": "repan",
   "eventsEnabled": false,
   "eventsListeners": ["jboss-logging"],
@@ -2814,8 +2828,9 @@
       }
     ]
   },
-  "internationalizationEnabled": false,
-  "supportedLocales": [],
+  "internationalizationEnabled": true,
+  "supportedLocales": ["en", "fr"],
+  "defaultLocale": "en",
   "authenticationFlows": [
     {
       "id": "a92a4c9f-3561-46a1-832a-2ca454b33220",
