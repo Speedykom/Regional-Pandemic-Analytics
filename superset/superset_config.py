@@ -189,31 +189,35 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
         """
         # for Keycloak
         if provider in ["keycloak", "keycloak_before_17"]:
-            me = self.appbuilder.sm.oauth_remotes[provider].get(
-                f"{SUPERSET_KEYCLOAK_EXTERNAL_URL}/realms/{SUPERSET_KEYCLOAK_APP_REALM}/protocol/openid-connect/userinfo",
-                verify=False
-            )
-            me.raise_for_status()
-            data = me.json()
+            try:
+                me = self.appbuilder.sm.oauth_remotes[provider].get(
+                    f"{SUPERSET_KEYCLOAK_EXTERNAL_URL}/realms/{SUPERSET_KEYCLOAK_APP_REALM}/protocol/openid-connect/userinfo",
+                    verify=False
+                )
+                me.raise_for_status()
+                data = me.json()
 
-            # Configure client
-            keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_INTERNAL_URL,
-                                            client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
-                                            realm_name=SUPERSET_KEYCLOAK_APP_REALM,
-                                            client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET)
+                # Configure client
+                keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_INTERNAL_URL,
+                                                 client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
+                                                 realm_name=SUPERSET_KEYCLOAK_APP_REALM,
+                                                 client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET)
             # Decode token to get the roles
-            KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" + keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
-            options = {"verify_signature": True, "verify_aud": False, "verify_exp": True}
-            full_data = keycloak_openid.decode_token(resp['access_token'], key=KEYCLOAK_PUBLIC_KEY, options=options)
+                KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" + keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
+                options = {"verify_signature": True, "verify_aud": False, "verify_exp": True}
+                full_data = keycloak_openid.decode_token(resp['access_token'], key=KEYCLOAK_PUBLIC_KEY, options=options)
             #logger.debug("Full User info from Keycloak: %s", full_data)
 
-            return {
-                "username": data.get("preferred_username", ""),
-                "first_name": data.get("given_name", ""),
-                "last_name": data.get("family_name", ""),
-                "email": data.get("email", ""),
-                "role_keys": full_data["resource_access"][SUPERSET_KEYCLOAK_CLIENT_ID]["roles"]
-            }
+                return {
+                    "username": data.get("preferred_username", ""),
+                    "first_name": data.get("given_name", ""),
+                    "last_name": data.get("family_name", ""),
+                    "email": data.get("email", ""),
+                    "role_keys": full_data["resource_access"][SUPERSET_KEYCLOAK_CLIENT_ID]["roles"]
+                }
+            except Exception as e:
+                logger.error(f"Error getting OAuth user info: {str(e)}")
+                return {}
         else:
             return {}
 
@@ -231,18 +235,45 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
         # next, try to login using Basic Auth
         access_token = request.headers.get('X-KeycloakToken')
         if access_token:
-            token_info = keycloak_openid.introspect(access_token)
-            logger.info("Keycloak Introspect")
-            if (token_info['active']):
-                user = self.find_user(username=token_info['preferred_username'])
-                if user:
-                    logger.info("Keycloak auth success {}".format(vars(user)))
-                    return user
+            try:
+                token_info = keycloak_openid.introspect(access_token)
+                logger.info("Keycloak Introspect")
+                if token_info['active']:
+                    user = self.find_user(username=token_info['preferred_username'])
+                    if user:
+                        logger.info("Keycloak auth success {}".format(vars(user)))
+                        return user
+                    else:
+                        try:
+                            userinfo = {
+                                "username": token_info.get("preferred_username", ""),
+                                "first_name": token_info.get("given_name", ""),
+                                "last_name": token_info.get("family_name", ""),
+                                "email": token_info.get("email", ""),
+                                "role_keys": token_info["resource_access"][SUPERSET_KEYCLOAK_CLIENT_ID]["roles"]
+                            }
+                            logger.info(f"Creating user with info: {userinfo}")
+                            created_user = self.auth_user_oauth(userinfo)
+                            if created_user:
+                                logger.info(f"User created successfully: {vars(created_user)}")
+                                new_user = self.find_user(username=token_info['preferred_username'])
+                                if new_user:
+                                    logger.info("Created new user: {}".format(vars(new_user)))
+                                    return new_user
+                                else:
+                                    logger.error(f"User creation failed, user not found after creation: {token_info['preferred_username']}")
+                            else:
+                                logger.error(f"User creation failed: {userinfo}")
+                            return None
+                        except Exception as e:
+                            logger.error(f"Error creating user: {str(e)}")
+                            return None
                 else:
-                    raise ValueError(
-                        "Unable to find user")
-            else:
-                raise ValueError("Keycloak Token is invalid")
+                    logger.error("Keycloak Token is invalid")
+                    raise ValueError("Keycloak Token is invalid")
+            except Exception as e:
+                logger.error(f"Error during Keycloak introspection or user lookup: {str(e)}")
+                return None
 
         if feature_flag_manager.is_feature_enabled("EMBEDDED_SUPERSET"):
             return self.get_guest_user_from_request(request)
@@ -257,45 +288,59 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
         api_token = request.headers.get('X-KeycloakToken')
         if api_token:
             # Register user if he did his first sign-in via frontend
-            keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL,
-                                             client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
-                                             realm_name=SUPERSET_KEYCLOAK_APP_REALM,
-                                             client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET,
-                                             verify=False)  # @todo : add env var for local dev
-            KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" + \
-                keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
-            options = {"verify_signature": True,
-                       "verify_aud": False, "verify_exp": True}
-            full_data = keycloak_openid.decode_token(
-                api_token, key=KEYCLOAK_PUBLIC_KEY, options=options)
+            try:
+                keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL,
+                                                 client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
+                                                 realm_name=SUPERSET_KEYCLOAK_APP_REALM,
+                                                 client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET,
+                                                 verify=False)
+                KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" + keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
+                options = {"verify_signature": True,
+                           "verify_aud": False, "verify_exp": True}
+                full_data = keycloak_openid.decode_token(api_token, key=KEYCLOAK_PUBLIC_KEY, options=options)
 
-            user = sm.find_user(username=full_data['preferred_username'])
-            if not user:
-                userinfo = {
-                    "username": full_data.get("preferred_username", ""),
-                    "first_name": full_data.get("given_name", ""),
-                    "last_name": full_data.get("family_name", ""),
-                    "email": full_data.get("email", ""),
-                    "role_keys": full_data["resource_access"][SUPERSET_KEYCLOAK_CLIENT_ID]["roles"]
-                }
-                sm.auth_user_oauth(userinfo)
-                logger.info("Keycloak auth success using API")
+                user = sm.find_user(username=full_data['preferred_username'])
+                if not user:
+                    try:
+                        userinfo = {
+                            "username": full_data.get("preferred_username", ""),
+                            "first_name": full_data.get("given_name", ""),
+                            "last_name": full_data.get("family_name", ""),
+                            "email": full_data.get("email", ""),
+                            "role_keys": full_data["resource_access"][SUPERSET_KEYCLOAK_CLIENT_ID]["roles"]
+                        }
+                        logger.info(f"Creating user in before_request with info: {userinfo}")
+                        created_user = sm.auth_user_oauth(userinfo)
+                        if created_user:
+                            logger.info(f"User created successfully in before_request: {vars(created_user)}")
+                            new_user = sm.find_user(username=full_data['preferred_username'])
+                            if new_user:
+                                logger.info("Created new user in before_request: {}".format(vars(new_user)))
+                            else:
+                                logger.error(f"User creation failed in before_request, user not found after creation: {full_data['preferred_username']}")
+                        else:
+                            logger.error(f"User creation failed in before_request: {userinfo}")
+                    except Exception as e:
+                        logger.error(f"Error creating user in before_request: {str(e)}")
+                else:
+                    logger.info(f"User already exists: {user.username}")
+            except Exception as e:
+                logger.error(f"Error in before_request: {str(e)}")
         elif current_user.is_authenticated and not api_token and session.get('oauth', ""):
             access_token, _ = session.get('oauth', "")
             ts = time.time()
             last_check = session.get('last_sso_check', None)
             # Check if user has active session every 10 sec, else logout
             if access_token and (last_check is None or (ts - last_check) > 10):
-                keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL,
-                                                 client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
-                                                 realm_name=SUPERSET_KEYCLOAK_APP_REALM,
-                                                 client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET,
-                                                 verify=False)  # @todo : add env var for local dev
-                KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" + \
-                    keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
-                options = {"verify_signature": True,
-                           "verify_aud": False, "verify_exp": True}
                 try:
+                    keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL,
+                                                     client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
+                                                     realm_name=SUPERSET_KEYCLOAK_APP_REALM,
+                                                     client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET,
+                                                     verify=False)
+                    KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" + keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
+                    options = {"verify_signature": True,
+                               "verify_aud": False, "verify_exp": True}
                     full_data = keycloak_openid.decode_token(access_token, key=KEYCLOAK_PUBLIC_KEY, options=options)
 
                     keycloak_admin = KeycloakAdmin(
@@ -315,21 +360,50 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
                 except jose.exceptions.ExpiredSignatureError:
                     session.clear()
                     redirect("/login")
+                except Exception as e:
+                    logger.error(f"Error during token refresh: {str(e)}")
+                    session.clear()
+                    redirect("/login")
 
     # The default implementation will simply look for the numeric user ID in `sub`. Override in
     # order to implement a slightly more complex user account lookup logic
     def load_user_jwt(self, _jwt_header, jwt_data):
-        superset_user_name = None
-        for claim in ["sub", "preferred_username"]:
-            remote = jwt_data[claim]
-            if remote in REPAN_JWT_USER_MAPPING:
-                superset_user_name = REPAN_JWT_USER_MAPPING[remote]
-                break
-        if superset_user_name is None:
-            superset_user_name = jwt_data["preferred_username"]
-        user = self.find_user(username = superset_user_name)
-        g.user = user
-        return user
+        try:
+            logger.info(f"Loading user from JWT data: {jwt_data}")
+            superset_user_name = None
+            for claim in ["sub", "preferred_username"]:
+                remote = jwt_data[claim]
+                if remote in REPAN_JWT_USER_MAPPING:
+                    superset_user_name = REPAN_JWT_USER_MAPPING[remote]
+                    break
+            if superset_user_name is None:
+                superset_user_name = jwt_data["preferred_username"]
+            user = self.find_user(username=superset_user_name)
+            if user:
+                g.user = user
+                logger.info(f"Successfully loaded user from JWT: {vars(user)}")
+                return user
+            else:
+                userinfo = {
+                    "username": jwt_data["preferred_username"],
+                    "first_name": jwt_data.get("given_name", ""),
+                    "last_name": jwt_data.get("family_name", ""),
+                    "email": jwt_data.get("email", ""),
+                    "role_keys": jwt_data["resource_access"][SUPERSET_KEYCLOAK_CLIENT_ID]["roles"]
+                }
+                logger.info(f"Creating new user from JWT data: {userinfo}")
+                created_user = self.auth_user_oauth(userinfo)
+                if created_user:
+                    logger.info(f"User created successfully: {vars(created_user)}")
+                    g.user = created_user
+                    return created_user
+                else:
+                    logger.error(f"User creation failed: {userinfo}")
+                    return None
+        except Exception as e:
+            logger.error(f"Error loading user from JWT: {str(e)}")
+            return None
+
 
 # Enable MapBox maps
 MAPBOX_API_KEY = os.getenv('MAPBOX_API_KEY', 'pk.eyJ1IjoiemJpZGktY29uc3VsdGluZyIsImEiOiJBakJHTE5vIn0.nDvakLI1qEhqCfRjhPWDdw')
