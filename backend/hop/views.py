@@ -26,36 +26,6 @@ def get_xml_content(content: str)-> any:
   with open(content) as f:
     contents = f.read()
   return BeautifulSoup(contents, "xml")
-
-class ListHopAPIView(APIView):
-    """
-    This view returns the api response for the hop
-    """
-    permission_classes = [AllowAny]
-
-    def get(self, request, query=None):
-      """ Return hop templates from minio bucket """
-      
-      pipelines_templates:list[str]=[]
-      objects=client.list_objects("pipelines",prefix="templates/")
-      for object in objects:
-        object_name=object.object_name.removeprefix("templates/")
-        if query:
-          if (re.search(query, object_name, re.IGNORECASE)):
-            pipelines_templates.append(
-            {
-              "name": object_name
-            }
-            )
-        else:       
-          pipelines_templates.append(
-              {
-                "name": object_name
-              }
-              )
-          
-    
-      return Response({'status': 'success', "data": pipelines_templates}, status=200)
      
 class GetSingleHopAPIView(APIView):
     """
