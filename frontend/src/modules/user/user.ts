@@ -10,6 +10,9 @@ import {
 interface DisableResponse {
   message: string;
 }
+interface EnableResponse {
+  message: string;
+}
 interface ChangePasswordRequest {
   id: string;
   newPassword: string;
@@ -37,6 +40,17 @@ export const userApi = createApi({
       query: (id) => ({
         url: `account/user/${id}/delete`,
         method: 'DELETE',
+      }),
+      invalidatesTags: (result, error, id) => [{ type: 'User', id }],
+    }),
+    enableUser: builder.mutation<EnableResponse, string>({
+      query: (id) => ({
+        url: `account/user/${id}/update`,
+        method: 'PUT',
+        body: { enabled: true },
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }),
       invalidatesTags: (result, error, id) => [{ type: 'User', id }],
     }),
@@ -123,6 +137,7 @@ export const {
   useGetUsersQuery,
   useGetUserQuery,
   useDisableUserMutation,
+  useEnableUserMutation,
   useAddUserMutation,
   useResetPasswordMutation,
   useModifyUserMutation,

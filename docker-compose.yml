@@ -568,9 +568,12 @@ services:
       - AIRFLOW_KEYCLOAK_CLIENT_ID=${AIRFLOW_KEYCLOAK_CLIENT_ID}
       - AIRFLOW_KEYCLOAK_CLIENT_SECRET=${AIRFLOW_KEYCLOAK_CLIENT_SECRET}
       - NGINX_AIRFLOW_DOMAIN_NAME=${NGINX_AIRFLOW_DOMAIN_NAME}
+      - BACKEND_MAIL_PASSWORD=${BACKEND_MAIL_PASSWORD}
+
     restart: unless-stopped
     volumes:
       - ./keycloak/realm/realm.json:/opt/keycloak/data/import/realm.json
+      - ./keycloak/theme/repan:/opt/keycloak/themes/repan
     depends_on:
       - keycloak-pg
     healthcheck:

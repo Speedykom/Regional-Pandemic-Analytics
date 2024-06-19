@@ -23,6 +23,7 @@ class DataUploadAPIView(APIView):
         }
     ))
     def get(self, request, *args, **kwargs):
+        """Retrieves and returns file uploads associated with a specific username"""
         username = request.query_params.get("username")
 
         data = FileUpload.objects.filter(username=username).order_by("-date_added")
@@ -31,6 +32,7 @@ class DataUploadAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def post(self, request, *args, **kwargs):
+        """Uplaod a file for a user"""
         username = request.data.get('username', None)
 
         if username is None:

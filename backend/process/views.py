@@ -150,6 +150,7 @@ class ProcessView(ViewSet):
         self.permitted_characters_regex = re.compile(r'^[a-zA-Z0-9._-]+$')
 
     def list(self, request):
+        """List process chains"""
         try:
             # Get request params
             query = request.GET.get("query")
@@ -207,6 +208,7 @@ class ProcessView(ViewSet):
             )
 
     def create(self, request):
+        """Create a process chain"""
         try:
             # Create DagDTO object
             # Object contains config that will be passed to the dag factory to create new dag from templates
@@ -276,6 +278,7 @@ class ProcessView(ViewSet):
 
     # Dag Pipeline
     def retrieve(self, request, dag_id=None):
+        """Get process pipeline"""
         route = f"{AirflowInstance.url}/dags/{dag_id}/tasks"
         airflow_response = requests.get(
             route,
@@ -294,6 +297,7 @@ class ProcessView(ViewSet):
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
     def update(self, request, dag_id=None):
+        """update process chain pipeline"""
         old_pipeline = request.data["old_pipeline"]
         new_pipeline = request.data["new_pipeline"]
 
@@ -314,6 +318,9 @@ class ProcessView(ViewSet):
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
     def partial_update(self, request, dag_id=None):
+        """
+        Endpoint to enable, disable process chain
+        """
         route = f"{AirflowInstance.url}/dags/{dag_id}"
 
         airflow_response = requests.get(
@@ -422,6 +429,7 @@ class ProcessView(ViewSet):
         }, status=status.HTTP_200_OK)
 
     def get_datasource_info(self, request, datasource_id=None):
+        """Get data source information """
         if datasource_id is None:
             return Response({"error": "Datasource ID is required"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -496,6 +504,7 @@ class ProcessRunView(ViewSet):
     }
 
     def list(self, request, dag_id=None):
+        """Listing the dag-runs of a specific dag""" 
         dag_runs = []
 
         route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns"
@@ -520,6 +529,7 @@ class ProcessRunView(ViewSet):
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
     def create(self, request, dag_id=None):
+        """Endpoint to create a dag-run: run the dag"""
         route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns"
         airflow_response = requests.post(
             route,
