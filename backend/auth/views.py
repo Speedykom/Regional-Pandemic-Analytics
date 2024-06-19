@@ -25,26 +25,39 @@ from binascii import unhexlify
 from utils.env_configs import (
     BASE_URL, APP_SECRET_KEY, APP_REALM, REST_REDIRECT_URI)
 
+# Set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('/var/log/backend/backend.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
 class LoginAPI(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         """
         Endpoint for login with username and password
         """
-        serializer = self.serializer_class(data=request.data,
-                                           context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({
-            'token': token.key,
-            'user_id': user.pk,
-            'email': user.email
-        })
+        logger.info("Login attempt with data: %s", request.data)
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        try:
+            serializer.is_valid(raise_exception=True)
+            user = serializer.validated_data['user']
+            token, created = Token.objects.get_or_create(user=user)
+            logger.info("Login successful for user: %s", user.username)
+            return Response({
+                'token': token.key,
+                'user_id': user.pk,
+                'email': user.email
+            })
+        except Exception as e:
+            logger.error("Login failed: %s", str(e))
+            return Response({'error': 'Login failed'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class Authorization (APIView):
+class Authorization(APIView):
     permission_classes = [AllowAny]
-     
     """
     API to get details of current logged in user
     """
@@ -54,29 +67,39 @@ class Authorization (APIView):
         """
         reqToken: str = request.META.get('HTTP_AUTHORIZATION')
         if reqToken is None:
-            return Response({'error': 'Authorization header was not provider or invalid'})
+            logger.warning("Authorization header was not provided or invalid.")
+            return Response({'error': 'Authorization header was not provided or invalid'}, status=status.HTTP_400_BAD_REQUEST)
         
         access_token = reqToken.replace("Bearer ", "")
         keycloak_openid = get_keycloak_openid(request)
-        token_info = keycloak_openid.introspect(access_token)
-        if (not token_info['active']):
-            return Response({'error': 'Authorization token is invalid or expired'}, status=status.HTTP_401_UNAUTHORIZED)
-        
-        return Response({'success': True}, status=status.HTTP_200_OK)
+        try:
+            token_info = keycloak_openid.introspect(access_token)
+            if not token_info['active']:
+                logger.warning("Authorization token is invalid or expired.")
+                return Response({'error': 'Authorization token is invalid or expired'}, status=status.HTTP_401_UNAUTHORIZED)
+            
+            logger.info("Authorization token is valid.")
+            return Response({'success': True}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error("Authorization check failed: %s", str(e))
+            return Response({'error': 'Authorization check failed'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     
-class Logout (APIView):
+class Logout(APIView):
     permission_classes = [AllowAny]
-     
+
     """
     API to logout user
     """
     def post(self, request, *args, **kwargs):
         """
-        Endpoint for loggin out
+        Endpoint for logging out
         """
+        logger.info("Logout attempt")
         reqToken: str = request.META.get('HTTP_AUTHORIZATION')
 
         if reqToken is None:
+            logger.warning("Refresh token was not set in authorization header")
             return Response({'error': 'Refresh token was not set in authorization header'}, status=status.HTTP_401_UNAUTHORIZED)
         
         serialToken = reqToken.replace("Bearer ", "")
@@ -87,17 +110,17 @@ class Logout (APIView):
             "refresh_token": serialToken
         }
 
-        response = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/logout",
-                            data=form_data)
+        response = requests.post(f"{BASE_URL}/realms/{APP_REALM}/protocol/openid-connect/logout", data=form_data)
 
         if not response.ok:
+            logger.error("Logout failed: %s", response.json())
             return Response(response.json(), status=response.status_code)
         
-        return Response({'message': 'Logout was successful', 'success': True}, status=status.HTTP_200_OK)    
+        logger.info("Logout was successful")
+        return Response({'message': 'Logout was successful', 'success': True}, status=status.HTTP_200_OK)
 
 class KeyCloakLoginAPI(APIView):
     permission_classes = [AllowAny]
-    
     """
     API for authenticating with Keycloak (exchange code for token)
     """
@@ -111,6 +134,7 @@ class KeyCloakLoginAPI(APIView):
         """
         Endpoint for authenticating with Keycloak (exchange code for token)
         """
+        logger.info("Keycloak login attempt with code: %s", request.data.get("code", None))
         try:
             config = settings.KEYCLOAK_CONFIG
             keycloak = get_keycloak_openid(request)
@@ -128,10 +152,13 @@ class KeyCloakLoginAPI(APIView):
                 keycloak.authorization.load_config(client_authz_settings)
                 user_permissions = keycloak.get_permissions(credentials['access_token'])
                 credentials["permissions"] = map(lambda p: {'name': p.name, 'scopes': p.scopes}, user_permissions)
+                logger.info("Keycloak login successful for code: %s", request.data.get("code", None))
                 return Response(credentials, status=status.HTTP_200_OK)
 
+            logger.warning("Keycloak login failed for code: %s", request.data.get("code", None))
             return Response({"result": "Login Failed"}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
+            logger.error("Keycloak login error: %s", str(e))
             return Response({"result": "Login Failed"}, status=status.HTTP_401_UNAUTHORIZED)
 
     """API to refresh and update keycloak access token
@@ -146,6 +173,7 @@ class KeyCloakLoginAPI(APIView):
         """
         Endpoint for refreshing and updating Keycloak access token
         """
+        logger.info("Token refresh attempt with refresh_token: %s", request.data.get("refresh_token", None))
         refresh_token = request.data.get("refresh_token", None)
         form_data = {
             "client_id": os.getenv("CLIENT_ID"),
@@ -160,8 +188,10 @@ class KeyCloakLoginAPI(APIView):
         if res.status_code == 200:
 
             data = res.json()
+            logger.info("Token refresh successful")
             return Response(data, status=status.HTTP_200_OK)
 
+        logger.error("Token refresh failed: %s", res.json())
         return Response({"result": "Failed to get access token."}, status=status.HTTP_400_BAD_REQUEST)
 
         
@@ -193,15 +223,19 @@ class PasswordAPI(APIView):
         user_id = get_current_user_id(request)
 
         if not newPassword or newPassword != confirmPassword:
+            logger.warning("Invalid password change attempt for user ID: %s", user_id)
             return Response({'errorMessage': 'Invalid password'}, status=status.HTTP_400_BAD_REQUEST)
         elif decode['id'] != user_id:
+            logger.warning("Invalid reset password token for user ID: %s", user_id)
             return Response({'errorMessage': 'Invalid reset password token'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             keycloak_admin = get_keycloak_admin()
             keycloak_admin.set_user_password(user_id=user_id, password=newPassword, temporary=False)
+            logger.info("Password created successfully for user ID: %s", user_id)
             return Response({'message': 'Password created successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error("Unable to create user password for user ID: %s, Error: %s", user_id, str(err))
             return Response({'errorMessage': 'Unable to create user password'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         
@@ -244,16 +278,17 @@ class PasswordAPI(APIView):
             confirm_password = decrypt_password(encrypted_confirm_password)
 
             if new_password != confirm_password:
+                logger.warning("Passwords do not match for user ID: %s", request.data.get("id", None))
                 return JsonResponse({'errorMessage': 'Passwords do not match'}, status=status.HTTP_400_BAD_REQUEST)
 
             user_id = request.data.get("id", None)
             keycloak_admin = get_keycloak_admin()
             keycloak_admin.set_user_password(user_id=user_id, password=new_password, temporary=False)
-
+            logger.info("Password updated successfully for user ID: %s", user_id)
             return JsonResponse({'message': 'Password updated successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error("Unable to decrypt or update user password for user ID: %s, Error: %s", request.data.get("id", None), str(err))
             return JsonResponse({'errorMessage': 'Unable to decrypt or update user password', 'details': str(err)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
 
 class ResetPasswordAPI(APIView):
     """
@@ -272,9 +307,11 @@ class ResetPasswordAPI(APIView):
             })
 
             if len(users) == 0:
+                logger.warning("Account not found for email: %s", request.data.get("email", None))
                 return Response({'errorMessage': 'Account not found'}, status=status.HTTP_404_NOT_FOUND)
             
             user = users[0]
+            logger.info("User found for email: %s", user["email"])
 
             payload = {
                 "id": user["id"],
@@ -289,9 +326,11 @@ class ResetPasswordAPI(APIView):
             redirectUri = f"{REST_REDIRECT_URI}?tok={token}"
 
             SendMail("IGAD Reset Password", payload, redirectUri)
+            logger.info("Reset password link sent to email: %s", user["email"])
 
             return Response({'message': 'Reset password link has been sent to your email'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error("Unable to reset the user password. Error: %s", str(err))
             return Response({'errorMessage': 'Unable to reset the user password'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     """
@@ -308,8 +347,11 @@ class ResetPasswordAPI(APIView):
         try:
             decode = jwt.decode(
                 form_data["token"], APP_SECRET_KEY, algorithms=['HS256'])
+            logger.info("Reset password token verified for user ID: %s", decode["id"])
             return Response(decode, status=status.HTTP_200_OK)
         except jwt.ExpiredSignatureError:
+            logger.warning("Reset password token expired")
             return Response({'errorMessage': 'Reset password token expired'}, status=status.HTTP_401_UNAUTHORIZED)
         except jwt.InvalidTokenError:
+            logger.warning("Token provided is invalid")
             return Response({'errorMessage': 'Token provided is invalid'}, status=status.HTTP_401_UNAUTHORIZED)
