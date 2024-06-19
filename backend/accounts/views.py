@@ -31,10 +31,18 @@ from utils.keycloak_auth import get_keycloak_admin
 from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponseServerError, HttpResponseNotFound
 
+# Set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('/var/log/backend/backend.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 def homepage():
+    logger.info('Homepage accessed')
     return HttpResponse('<h2 style="text-align:center">Welcome to IGAD API Page</h2>')
-
 
 class UserListView(APIView):
     """
@@ -52,8 +60,10 @@ class UserListView(APIView):
         try:
             keycloak_admin = get_keycloak_admin()
             users = keycloak_admin.get_users({})
+            logger.info('Listed users successfully')
             return Response(users, status=status.HTTP_200_OK)
-        except:
+        except Exception as e:
+            logger.error(f'Error retrieving users: {str(e)}')
             return Response({'errorMessage': 'Unable to retrieve users.'}, status=status.HTTP_400_BAD_REQUEST)
 
     @swagger_auto_schema(request_body=openapi.Schema(
@@ -121,8 +131,10 @@ class UserListView(APIView):
                 "password": form_data['credentials'][0]['value']
             }
 
+            logger.info(f'User created successfully: {user}')
             return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_201_CREATED)
         except Exception as err:
+            logger.error(f'Error creating user: {str(err)}')
             return Response({'errorMessage': 'Unable to create a new user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserDetailView(APIView):
@@ -145,8 +157,10 @@ class UserDetailView(APIView):
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
             roles = keycloak_admin.get_client_roles_of_user(user_id=kwargs['id'], client_id=client_id)
             user["roles"] = roles
+            logger.info(f'Retrieved user information: {user}')
             return Response(user, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error(f'Error retrieving user: {str(err)}')
             return Response({'errorMessage': 'Unable to retrieve the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @swagger_auto_schema(request_body=openapi.Schema(
@@ -179,12 +193,15 @@ class UserDetailView(APIView):
                 user = keycloak_admin.get_user(user_id)
                 user['enabled'] = user_data['enabled']
                 keycloak_admin.update_user(user_id, user)
+                logger.info(f'User enabled successfully: {user_id}')
                 return Response({'message': 'User enabled successfully'}, status=status.HTTP_200_OK)
 
             # Otherwise, update user details
             keycloak_admin.update_user(user_id, user_data)
+            logger.info(f'User updated successfully: {user_id}')
             return Response({'message': 'User updated successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error(f'Error updating user: {str(err)}')
             return Response({'errorMessage': 'Unable to update the user. Error: {}'.format(str(err))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     def delete(self, request, **kwargs):
         """
@@ -199,8 +216,10 @@ class UserDetailView(APIView):
                 'enabled': False
             }
             keycloak_admin.update_user(kwargs['id'], user_data)
+            logger.info(f'User archived successfully: {kwargs["id"]}')
             return Response({'message': 'User archived successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error(f'Error archiving user: {str(err)}')
             return Response({'errorMessage': 'Unable to archive the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     def patch(self, request, **kwargs):
         try:
@@ -209,10 +228,12 @@ class UserDetailView(APIView):
                 'enabled': True
             }
             keycloak_admin.update_user(kwargs['id'], user_data)
+            logger.info(f'User enabled successfully: {kwargs["id"]}')
             return Response({'message': 'User enabled successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error(f'Error enabling user: {str(err)}')
             return Response({'errorMessage': 'Unable to enable the user. Error: {}'.format(str(err))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
 class UserRolesView(APIView):
     """
     API view to assign roles to users
@@ -242,8 +263,10 @@ class UserRolesView(APIView):
             roles = request.data.get("roles", [self.roleObject])
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
             keycloak_admin.assign_client_role(client_id=client_id, user_id=kwargs['id'], roles=roles)
+            logger.info(f'Assigned roles to user {kwargs["id"]}: {roles}')
             return Response({'message': 'Roles has been assigned successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error(f'Error assigning roles to user {kwargs["id"]}: {str(err)}')
             return Response({'errorMessage': 'Unable to assign roles to the user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request, **kwargs):
@@ -254,8 +277,10 @@ class UserRolesView(APIView):
             keycloak_admin = get_keycloak_admin()
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
             roles = keycloak_admin.get_client_roles_of_user(user_id=kwargs['id'], client_id=client_id)
+            logger.info(f'Retrieved roles for user {kwargs["id"]}: {roles}')
             return Response(roles, status=status.HTTP_200_OK)
         except Exception as err:
+            logger.error(f'Error retrieving roles for user {kwargs["id"]}: {str(err)}')
             return Response({'errorMessage': 'Unable to retrieve the user roles'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -282,6 +307,7 @@ class UserAvatarView(APIView):
         try:
             user_id = kwargs['id']
             if not user_id:
+                logger.warning("User ID is missing.")
                 return HttpResponseBadRequest("User ID is missing.")
 
             bucket_name = 'avatars'
@@ -290,6 +316,7 @@ class UserAvatarView(APIView):
 
             first_object = next(objects, None)
             if not first_object:
+                logger.info(f"Avatar not found for user {user_id}.")
                 return HttpResponseNotFound("Avatar not found.")
 
             object_name = first_object.object_name
@@ -304,9 +331,10 @@ class UserAvatarView(APIView):
 
             response = StreamingHttpResponse(file_data, content_type=content_type)
             response["Content-Disposition"] = f'inline; filename="{object_name}"'
+            logger.info(f"Avatar retrieved for user {user_id}.")
             return response
         except Exception as err:
-            logging.error(f"Error retrieving avatar: {err}")
+            logger.error(f"Error retrieving avatar for user {user_id}: {err}")
             return HttpResponseServerError(f"Error: {err}")
 
 
@@ -317,10 +345,12 @@ class UserAvatarView(APIView):
         """
         user_id = kwargs['id']
         if not user_id:
+            logger.warning("Bad request: User ID parameter is missing.")
             return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
 
         uploaded_file = request.FILES.get("uploadedFile")
         if not uploaded_file:
+            logger.warning("No file uploaded for user {user_id}.")
             return HttpResponseBadRequest("No file uploaded.")
 
         try:
@@ -354,7 +384,8 @@ class UserAvatarView(APIView):
             cache_key = f'user_avatar_{user_id}'
             cache.delete(cache_key)
 
+            logger.info(f"Avatar uploaded successfully for user {user_id}.")
             return Response({'message': 'Avatar uploaded successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
-            logging.error(f"Unable to update the user avatar: {str(err)}")
+            logger.error(f"Unable to update the user avatar for user {user_id}: {str(err)}")
             return Response({'errorMessage': f'Unable to update the user avatar: {str(err)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
