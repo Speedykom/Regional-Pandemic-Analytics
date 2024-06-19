@@ -1,0 +1,12 @@
+name: Test CI-CD
+
+on:
+  push:
+    branches: [refactor/rm-cicd-redundancy]
+
+jobs:
+  call-frontend-integration:
+    uses: ./.github/workflows/frontend-integration.yml
+
+  call-backend-integration:
+    uses: ./.github/workflows/backend-integration.yml
