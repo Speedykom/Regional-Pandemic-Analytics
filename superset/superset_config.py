@@ -23,11 +23,18 @@ import logging
 from keycloak import KeycloakOpenID, KeycloakAdmin
 from superset.superset_typing import CacheConfig
 
-logging.basicConfig(
-    filename='/var/log/superset/superset.log',
-    level=logging.INFO,
-    format='%(asctime)s:%(levelname)s:%(message)s'
-)
+# Set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('/var/log/superset/superset.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+# Ensure this logger captures action logs
+logging.getLogger('superset.security').addHandler(handler)
+logging.getLogger('superset.views.core').addHandler(handler)
+
 # Superset Oauth2 Docs : https://superset.apache.org/docs/installation/configuring-superset/#custom-oauth2-configuration
 # https://flask-appbuilder.readthedocs.io/en/latest/security.html#authentication-oauth
 
@@ -105,15 +112,14 @@ REPAN_JWT_USER_MAPPING = dict(
         )
 )
 
-logger = logging.getLogger(__name__)
 
 class CustomAuthOAuthView(AuthOAuthView):
     @expose("/oauth-authorized/<provider>")
     def oauth_authorized(self, provider: str) -> WerkzeugResponse:
-        log.debug("Authorized init")
+        logger.debug("Authorized init")
         if provider not in self.appbuilder.sm.oauth_remotes:
             flash("Provider not supported.", "warning")
-            log.warning("OAuth authorized got an unknown provider %s", provider)
+            logger.warning("OAuth authorized got an unknown provider %s", provider)
             return redirect(self.appbuilder.get_url_for_login)
         try:
             resp = self.appbuilder.sm.oauth_remotes[provider].authorize_access_token(claims_options={
@@ -126,22 +132,22 @@ class CustomAuthOAuthView(AuthOAuthView):
                     }
                 })
         except Exception as e:
-            log.error("Error authorizing OAuth access token: {0}".format(e))
+            logger.error("Error authorizing OAuth access token: {0}".format(e))
             flash("The request to sign in was denied.", "error")
             return redirect(self.appbuilder.get_url_for_login)
         if resp is None:
             flash("You denied the request to sign in.", "warning")
             return redirect(self.appbuilder.get_url_for_login)
-        # log.debug("OAUTH Authorized resp: {0}".format(resp))
+        logger.debug("OAUTH Authorized resp: {0}".format(resp))
         # Retrieves specific user info from the provider
         try:
             self.appbuilder.sm.set_oauth_session(provider, resp)
             userinfo = self.appbuilder.sm.oauth_user_info(provider, resp)
         except Exception as e:
-            log.error("Error returning OAuth user info: {0}".format(e))
+            logger.error("Error returning OAuth user info: {0}".format(e))
             user = None
         else:
-            # log.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
+            logger.debug("User info retrieved from {0}: {1}".format(provider, userinfo))
             # User email is not whitelisted
             if provider in self.appbuilder.sm.oauth_whitelists:
                 whitelist = self.appbuilder.sm.oauth_whitelists[provider]
@@ -154,7 +160,7 @@ class CustomAuthOAuthView(AuthOAuthView):
                     flash("You are not authorized.", "warning")
                     return redirect(self.appbuilder.get_url_for_login)
             else:
-                log.debug("No whitelist for OAuth provider")
+                logger.debug("No whitelist for OAuth provider")
             user = self.appbuilder.sm.auth_user_oauth(userinfo)
 
         if user is None:
@@ -209,7 +215,7 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
                 KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" + keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
                 options = {"verify_signature": True, "verify_aud": False, "verify_exp": True}
                 full_data = keycloak_openid.decode_token(resp['access_token'], key=KEYCLOAK_PUBLIC_KEY, options=options)
-            #logger.debug("Full User info from Keycloak: %s", full_data)
+                logger.debug("Full User info from Keycloak: %s", full_data)
 
                 return {
                     "username": data.get("preferred_username", ""),
