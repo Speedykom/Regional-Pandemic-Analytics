@@ -24,6 +24,7 @@ from base64 import b64decode
 from binascii import unhexlify
 from utils.env_configs import (
     BASE_URL, APP_SECRET_KEY, APP_REALM, REST_REDIRECT_URI)
+import logging
 
 # Set up logging
 logger = logging.getLogger(__name__)
