@@ -11,6 +11,16 @@ from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
 from rest_framework.permissions import AllowAny
 from django.utils.datastructures import MultiValueDictKeyError
+import logging
+
+# Set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('/var/log/backend/backend.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 def get_file_by_name(filename: str)-> any:
   """Looks for a file by it name and return the found item"""
@@ -39,8 +49,10 @@ class GetSingleHopAPIView(APIView):
       if result:
         bs_content = get_xml_content(result)
         bs_data = bs_content.find("info")
+        logger.info("Retrieved file: %s", filename)
         return HttpResponse(bs_data.prettify(), content_type="text/xml")
       else:
+        logger.error("No match found for filename: %s", filename)
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
 
     def post(self, request, filename):
@@ -56,13 +68,15 @@ class GetSingleHopAPIView(APIView):
           bs_data = bs_content.new_tag(key)
           bs_data.string = value
           bsc_data.append(bs_data) # append the new tag to the tree
-        
+
         # find the info tag content and return as the response
         bsc_data = bs_content.find('info')
+        logger.info("Added new tag to file: %s", filename)
         return HttpResponse(bsc_data.prettify(), content_type="text/xml")
       else:
+        logger.error("No match found for filename: %s", filename)
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
-    
+      
     def patch(self, request, filename):
       """Receive a request and update the file based on the request given"""
       result = get_file_by_name(filename)
@@ -78,13 +92,15 @@ class GetSingleHopAPIView(APIView):
           # convert the files to a string and write to the file
           contents = "".join(str(item) for item in bs_content.contents)
           f.write(contents)
-        
+
         # find the info tag content and return as the response
         bsc_data = bs_content.find('info')
+        logger.info("Updated file: %s", filename)
         return HttpResponse(bsc_data.prettify(), content_type="text/xml")
       else:
+        logger.error("No match found for filename: %s", filename)
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
-      
+
     def delete(self, request, filename):
       """Receive a request and delete a tag (s) based on the request given"""
       result = get_file_by_name(filename)
@@ -98,8 +114,10 @@ class GetSingleHopAPIView(APIView):
 
         # find the info tag content and return as the response
         bsc_data = bs_content.find('info')
+        logger.info("Deleted tags from file: %s", filename)
         return HttpResponse(bsc_data.prettify(), content_type="text/xml")
       else:
+        logger.error("No match found for filename: %s", filename)
         return Response({'status': 'error', "message": "No match found! No filename match: {}".format(filename)}, status=404)
       
 class NewHopAPIView(APIView):
@@ -122,26 +140,31 @@ class NewHopAPIView(APIView):
 
       # validate the file extension
       if extensionError:
+        logger.error("File extension validation failed for file: %s", file_obj.name)
         return Response({'status': 'error', "message": extensionError}, status=500)
       
       # check that a filename is passed
       if(len(filename) != 0):
         # check if the filename does exist and throw error otherwise; save the file as the name passed
         if get_file_by_name(filename):
+          logger.error("Filename already exists: %s", filename)
           return Response({'status': 'error', "message": '{} already exists'.format(filename)}, status=409)
         else:
           # replace the file storage from filestorage to minio
           # upload_file_to_minio("hop-bucket", file_obj)
+          logger.info("File uploaded successfully: %s", filename)
           return Response({'status': 'success', "message": "template file uploaded successfully"}, status=200)
       else:
         # check if the filename does exist and throw error otherwise; save the file as it is
         if get_file_by_name(file_obj.name):
+          logger.error("Filename already exists: %s", file_obj.name)
           return Response({'status': 'error', "message": '{} already exists'.format(file_obj.name)}, status=409)
         else:
           # replace the file storage from filestorage to minio
           # upload_file_to_minio("hop-bucket", file_obj)
+          logger.info("File uploaded successfully: %s", file_obj.name)
           return Response({'status': 'success', "message": "template file uploaded successfully"}, status=200)
     except MultiValueDictKeyError:
+      logger.error("No file provided in the request")
       return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
-         
     
