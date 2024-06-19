@@ -2,7 +2,7 @@
   "id": "c89b3c58-aefb-4429-972b-feccb6a77750",
   "realm": "regional-pandemic-analytics",
   "displayName": "Regional Pandemic Analytics System",
-  "displayNameHtml": "",
+  "displayNameHtml": "<div style=\"font-family: 'Inter', sans-serif; color: #31713b; padding: 10px; border-radius: 5px; text-align: center;\">Regional Pandemic Analytics Tool</div>",
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
@@ -31,11 +31,11 @@
   "sslRequired": "external",
   "registrationAllowed": false,
   "registrationEmailAsUsername": false,
-  "rememberMe": false,
+  "rememberMe": true,
   "verifyEmail": false,
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
-  "resetPasswordAllowed": false,
+  "resetPasswordAllowed": true,
   "editUsernameAllowed": false,
   "bruteForceProtected": false,
   "permanentLockout": false,
@@ -2658,7 +2658,22 @@
     "xXSSProtection": "1; mode=block",
     "strictTransportSecurity": "max-age=31536000; includeSubDomains"
   },
-  "smtpServer": {},
+  "smtpServer": {
+    "replyToDisplayName": "",
+    "starttls": "true",
+    "auth": "true",
+    "envelopeFrom": "",
+    "ssl": "false",
+    "password": "${BACKEND_MAIL_PASSWORD}",
+    "port": "587",
+    "replyTo": "",
+    "host": "smtp.gmail.com",
+    "from": "kom.speedy@gmail.com",
+    "fromDisplayName": "Speedykom",
+    "user": "kom.speedy@gmail.com"
+  },
+  "emailTheme": "repan",
+  "loginTheme": "repan",
   "eventsEnabled": false,
   "eventsListeners": ["jboss-logging"],
   "enabledEventTypes": [],
@@ -2813,8 +2828,9 @@
       }
     ]
   },
-  "internationalizationEnabled": false,
-  "supportedLocales": [],
+  "internationalizationEnabled": true,
+  "supportedLocales": ["en", "fr"],
+  "defaultLocale": "en",
   "authenticationFlows": [
     {
       "id": "a92a4c9f-3561-46a1-832a-2ca454b33220",
