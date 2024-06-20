@@ -12,6 +12,16 @@ from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
 from .validator import check_pipeline_validity
 from urllib.parse import quote, unquote
+import logging
+
+# Set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('/var/log/backend/backend.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")
@@ -69,6 +79,7 @@ class PipelineListView(APIView):
                 }
             )
 
+        logger.info(f"User {user_id} retrieved pipelines successfully")
         return Response(
             {"status": "success", "data": pipelines}, status=status.HTTP_200_OK
         )
@@ -80,6 +91,7 @@ class PipelineListView(APIView):
         description = request.data.get("description")
         template = request.data.get("template")
         if not self.permitted_characters_regex.search(name):
+            logger.error(f"Invalid characters in pipeline name: {name}")
             return Response(
                 {"status": "Fail", "message": "Pipeline name contains unpermitted characters"},
                 status=status.HTTP_400_BAD_REQUEST
@@ -91,6 +103,7 @@ class PipelineListView(APIView):
             )
             client_response.close()
             client_response.release_conn()
+            logger.warning(f"Pipeline already exists: {name}")
             return Response(
                 {
                     "status": "Fail",
@@ -98,25 +111,37 @@ class PipelineListView(APIView):
                 },
                 status=409,
             )
-        except:
+        except Exception as err:
+            logger.info(f"Pipeline does not exist, proceeding with creation: {name}")
+            try:
             # Create new pipeline by:
             #   1. copying the template,
             #   2. renaming it to another index in the same bukcket
             #   3. adding metadata: description + date of creation
-            client_result = client.copy_object(
-                "pipelines",
-                f"pipelines-created/{user_id}/{name}.hpl",
-                CopySource("pipelines", f"templates/{template}"),
-                metadata={
-                    "description": f"{quote(description.encode('utf-8'))}",
-                    "created": f"{datetime.utcnow()}",
-                    "check_status": "success", #check status should be always success when creating a new pipeline, as our provided templates are correct
-                    "check_text": "ValidPipeline", 
-                },
-                metadata_directive=REPLACE,
-            )
+                client_result = client.copy_object(
+                    "pipelines",
+                    f"pipelines-created/{user_id}/{name}.hpl",
+                    CopySource("pipelines", f"templates/{template}"),
+                    metadata={
+                        "description": f"{quote(description.encode('utf-8'))}",
+                        "created": f"{datetime.utcnow()}",
+                        "check_status": "success", #check status should be always success when creating a new pipeline, as our provided templates are correct
+                        "check_text": "ValidPipeline", 
+                    },
+                    metadata_directive=REPLACE,
+                )
+                logger.info(f"Pipeline created successfully: {name}")
+                return Response({"status": "success"}, status=status.HTTP_200_OK)
+            except Exception as err:
+                logger.error(f"Error creating pipeline: {str(err)}")
+                return Response(
+                    {
+                        "status": "Fail",
+                        "message": f"Error creating pipeline: {str(err)}",
+                    },
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
 
-            return Response({"status": "success"}, status=status.HTTP_200_OK)
 
 class PipelineDetailView(APIView):
     keycloak_scopes = {
@@ -148,6 +173,7 @@ class PipelineDetailView(APIView):
             payload = {"names": ["file:///files/{}.hpl".format(name)]}
             edit_hop = EditAccessProcess(file=self.file)
             edit_hop.request_edit(json.dumps(payload))
+            logger.info(f"Pipeline details fetched successfully for: {name}")
             return Response(
                 {
                     "name": name,
@@ -157,7 +183,8 @@ class PipelineDetailView(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
-        except:
+        except Exception as err:
+            logger.error(f"Error fetching pipeline details for {name}: {str(err)}")
             return Response(
                 {
                     "status": "error",
@@ -196,8 +223,10 @@ class PipelineDetailView(APIView):
             # Remove pipeline file from Minio volume
             os.remove(f"/hop/pipelines/{name}.hpl")
 
+            logger.info(f"Pipeline updated successfully for: {name}")
             return Response({"status": "success"}, status=status.HTTP_200_OK)
-        except:
+        except Exception as err:
+            logger.error(f"Error updating pipeline {name}: {str(err)}")
             return Response(
                 {
                     "status": "error",
@@ -222,8 +251,10 @@ class PipelineDownloadView(APIView):
             response = Response(content_type='text/xml')
             response["Content-Disposition"] = f'attachment; filename="{name}.hpl'
             response.data = client_response.data
+            logger.info(f"Pipeline {name} downloaded successfully for user {user_id}")
             return response
         except Exception as e:
+            logger.error(f"Failed to download pipeline {name} for user {user_id}: {str(e)}")
             return Response(
                 {"status": "Fail", "message": f"Failed to download pipeline {name}: {str(e)}"},
                 status=status.HTTP_404_NOT_FOUND,
@@ -248,6 +279,7 @@ class PipelineUploadView(APIView):
         description = request.data.get("description")
         uploaded_file = request.FILES.get("uploadedFile")
         if not self.permitted_characters_regex.search(name):
+            logger.warning(f"Pipeline name {name} contains unpermitted characters for user {user_id}")
             return Response(
                 {"status": "Fail", "message": "Pipeline name contains unpermitted characters"},
                 status=status.HTTP_400_BAD_REQUEST
@@ -264,6 +296,7 @@ class PipelineUploadView(APIView):
                 )
                 client_response.close()
                 client_response.release_conn()
+                logger.warning(f"File already exists with the name {name}.hpl for user {user_id}")
                 return Response(
                     {
                     "status": "Fail",
@@ -271,23 +304,32 @@ class PipelineUploadView(APIView):
                     },
                     status=409,
                 )
-            except:
+            except Exception as e:
                 # Upload new pipeline
-                valid_pipeline, check_text = check_pipeline_validity(name)
-                with open(f"/hop/pipelines/{name}.hpl", 'rb') as f:
-                    client_result = client.put_object(
-                    bucket_name='pipelines',
-                    object_name=f"pipelines-created/{user_id}/{name}.hpl",
-                    data=f,
-                    length=os.path.getsize(f.name),
-                    metadata={
-                        "description": f"{quote(description.encode('utf-8'))}",
-                        "created": f"{datetime.utcnow()}",
-                        "check_status": "success" if valid_pipeline else "failed",
-                        "check_text": check_text,
-                    },
+                try:
+                    valid_pipeline, check_text = check_pipeline_validity(name)
+                    with open(f"/hop/pipelines/{name}.hpl", 'rb') as f:
+                        client_result = client.put_object(
+                        bucket_name='pipelines',
+                        object_name=f"pipelines-created/{user_id}/{name}.hpl",
+                        data=f,
+                        length=os.path.getsize(f.name),
+                        metadata={
+                            "description": f"{quote(description.encode('utf-8'))}",
+                            "created": f"{datetime.utcnow()}",
+                            "check_status": "success" if valid_pipeline else "failed",
+                            "check_text": check_text,
+                        },
+                        )
+                    logger.info(f"Pipeline {name} uploaded successfully for user {user_id}")
+                    return Response({"status": "success"}, status=status.HTTP_200_OK)
+                except Exception as err:
+                    logger.error(f"Failed to upload pipeline {name} for user {user_id}: {str(err)}")
+                    return Response(
+                        {"status": "Fail", "message": f"Failed to upload pipeline {name}: {str(err)}"},
+                        status=status.HTTP_500_INTERNAL_SERVER_ERROR,
                     )
-                return Response({"status": "success"}, status=status.HTTP_200_OK)
+
 class PipelineDeleteView(APIView):
     keycloak_scopes = {
         "DELETE": "pipeline:delete",
@@ -302,6 +344,7 @@ class PipelineDeleteView(APIView):
         
         result = self._deactivate_processes(dag_ids)
         if result["status"] == "failed":    
+            logger.error(f"Failed to deactivate processes for pipeline {name}: {result['message']}")
             return Response({"status": "failed", "message": result["message"] }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
   
         # Back up and then delete the pipeline
@@ -316,9 +359,10 @@ class PipelineDeleteView(APIView):
             client.remove_object(
                 "pipelines", 
                 f"pipelines-created/{user_id}/{name}.hpl")
-
+            logger.info(f"Pipeline {name} deleted successfully for user {user_id}")
             return Response({"status": "success"}, status=status.HTTP_200_OK)
-        except:
+        except Exception as e:
+            logger.error(f"Unable to delete the pipeline {name} for user {user_id}: {str(e)}")
             return Response(
                 {
                     "status": "error",
@@ -348,6 +392,7 @@ class PipelineDeleteView(APIView):
                 for dag_id in deactivated_processes:
                     reactivation_result = self._set_process_status(dag_id, False)
                     messages.append(reactivation_result["message"])
+                logger.error(f"One or more process deactivation failed for pipeline: {dag_ids}")
                 return {"status": "failed", 
                     "message": "One or more process deactivation failed.",
                     "errors": messages}
@@ -365,10 +410,13 @@ class PipelineDeleteView(APIView):
             )
         
             if airflow_toggle_response.ok:
+                logger.info(f"Process status for {dag_id} set to {'deactivated' if is_deactivated else 'activated'}")
                 return {"status": "success"}
             else:
+                logger.error(f"Failed to update process status for {dag_id}")
                 return {"status": "failed", "message": f"Failed to update process status for {dag_id}"}
         except Exception as e:
+            logger.error(f"Exception occurred while updating process status {dag_id}: {str(e)}")
             return {"status": "failed", "message": f"Exception occured while updating process status {dag_id}: {str(e)}"}
 
 class TemplateView(APIView):
@@ -400,8 +448,10 @@ class TemplateView(APIView):
                 user_templates = client.list_objects('pipelines', prefix=f'templates/{user_id}/')
                 pipelines_templates.extend(process_templates(user_templates, f'templates/{user_id}/'))
             
+            logger.info(f"Templates fetched successfully for user {user_id}")
             return Response({'status': 'success', "data": pipelines_templates}, status=200)    
         except Exception as e:
+            logger.error(f"Unable to fetch templates for user {user_id}: {str(e)}")
             return Response(
                 {
                     "status": "error",
@@ -420,8 +470,10 @@ class TemplateView(APIView):
             f"templates/{user_id}/{name}.hpl",
             CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
 
+            logger.info(f"Pipeline {name} saved as template for user {user_id}")
             return Response({"status": "success"}, status=status.HTTP_200_OK)
         except Exception as e:
+            logger.error(f"Unable to save the pipeline {name} as Template for user {user_id}: {str(e)}")
             return Response(
                 {
                     "status": "error",
