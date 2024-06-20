@@ -25,6 +25,14 @@ scrape_configs:
           job: backend
           __path__: /var/log/backend/*.log
 
+  - job_name: airflow
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: airflow
+          __path__: /var/log/airflow/**/*.log
+
   - job_name: system
     static_configs:
       - targets:
