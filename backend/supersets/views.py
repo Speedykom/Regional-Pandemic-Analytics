@@ -9,13 +9,25 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from keycloak import KeycloakPostError
 from core.keycloak_impersonation import get_auth_token
-log = logging.getLogger("SupersetAPI")
+
+# Set up logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('/var/log/backend/backend.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 class SupersetAPI(APIView):
     def authorize(self, headers):
-        token = get_auth_token()
-        headers['Authorization'] = f"Bearer {token['access_token']}"
-        log.debug("Added authorization header to Superset request")
+        try:
+            token = get_auth_token()
+            headers['Authorization'] = f"Bearer {token['access_token']}"
+            logger.debug("Added authorization header to Superset request")
+        except Exception as e:
+            logger.error("Failed to authorize Superset request: %s", str(e))
+            raise
         return headers
 
 class ListDashboardsAPI(SupersetAPI):
@@ -31,30 +43,37 @@ class ListDashboardsAPI(SupersetAPI):
         """
         Endpoint for listing superset dashboards 
         """
-        log.debug("Listing Superset dashboards with query %s", query)
+        logger.debug("Listing Superset dashboards with query %s", query)
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/"
-        headers = self.authorize({
-            "Content-Type": "application/json",
-        })
-        if query:
-            params = {
-                "q": '{"filters": [{"col": "dashboard_title", "opr": "ct", "value": "'+query+'"}]}'
-            }
-            superset_response = requests.get(url=url, headers=headers, params=params)
-        else:
-            params = {}
-            superset_response = requests.get(url=url, headers=headers, params=params)
+        try:
+            headers = self.authorize({
+                "Content-Type": "application/json",
+            })
+            if query:
+                params = {
+                    "q": '{"filters": [{"col": "dashboard_title", "opr": "ct", "value": "'+query+'"}]}'
+                }
+                superset_response = requests.get(url=url, headers=headers, params=params)
+            else:
+                params = {}
+                superset_response = requests.get(url=url, headers=headers, params=params)
 
-        if superset_response.status_code != 200:
-            log.error("Listing of Superset dashboards failed with code %d: %s", superset_response.status_code, superset_response.text)
+            if superset_response.status_code != 200:
+                logger.error("Listing of Superset dashboards failed with code %d: %s", superset_response.status_code, superset_response.text)
+                return Response(
+                    {"errorMessage": superset_response.text},
+                    status=superset_response.status_code,
+                )
+
+            result = superset_response.json()
+            logger.debug("Successfully listed %d dashboards from Superset", result["count"])
+            return Response(result, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error("Exception occurred while listing Superset dashboards: %s", str(e))
             return Response(
-                {"errorMessage": superset_response.text},
-                status=superset_response.status_code,
+                {"errorMessage": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-        result = superset_response.json()
-        log.debug("Successfully listed %d dashboards from Superset", result["count"])
-        return Response(result, status=status.HTTP_200_OK)
 
 
 class ListChartsAPI(SupersetAPI):
@@ -70,26 +89,36 @@ class ListChartsAPI(SupersetAPI):
         """
         Endpoint for listing superset charts
         """
+        logger.debug("Listing Superset charts with query %s", query)
         url = f"{os.getenv('SUPERSET_BASE_URL')}/chart/"
-        headers = self.authorize({
-            "Content-Type": "application/json",
-        })
+        try:
+            headers = self.authorize({
+                "Content-Type": "application/json",
+            })
 
-        if query:
-            params = {
-                "q": '{"filters": [{"col": "slice_name", "opr": "ct", "value": "'+query+'"}], "columns": ["slice_url", "slice_name", "viz_type", "datasource_name_text", "created_by", "created_on_delta_humanized", "changed_by"], "page_size": 1000000}'
-            }
-            response = requests.get(url=url, headers=headers, params=params)
-        else:
-            response = requests.get(url=url, headers=headers)
+            if query:
+                params = {
+                    "q": '{"filters": [{"col": "slice_name", "opr": "ct", "value": "'+query+'"}], "columns": ["slice_url", "slice_name", "viz_type", "datasource_name_text", "created_by", "created_on_delta_humanized", "changed_by"], "page_size": 1000000}'
+                }
+                response = requests.get(url=url, headers=headers, params=params)
+            else:
+                response = requests.get(url=url, headers=headers)
 
 
-        if response.status_code != 200:
+            if response.status_code != 200:
+                logger.error("Listing of Superset charts failed with code %d: %s", response.status_code, response.text)
+                return Response(
+                    {"errorMessage": response.json()}, status=response.status_code
+                )
+
+            logger.debug("Successfully listed charts from Superset")
+            return Response(response.json(), status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error("Exception occurred while listing Superset charts: %s", str(e))
             return Response(
-                {"errorMessage": response.json()}, status=response.status_code
+                {"errorMessage": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-        return Response(response.json(), status=status.HTTP_200_OK)
 
 
 class EnableEmbed(SupersetAPI):
@@ -106,25 +135,35 @@ class EnableEmbed(SupersetAPI):
         Endpoint for enabling superset dashboard embed 
         """
         uid = request.data.get("uid", None)
+        logger.debug("Enabling embed for Superset dashboard with UID %s", uid)
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{uid}/embedded"
 
-        headers = self.authorize({
-            "Content-Type": "application/json",
-        })
+        try:
+            headers = self.authorize({
+                "Content-Type": "application/json",
+            })
 
-        response = requests.post(
-            url,
-            json={"allowed_domains": [os.getenv("SUPERSET_ALLOWED_DOMAINS")]},
-            headers=headers,
-        )
-
-        if response.status_code != 200:
-            return Response(
-                {"errorMessage": response.json()}, status=response.status_code
+            response = requests.post(
+                url,
+                json={"allowed_domains": [os.getenv("SUPERSET_ALLOWED_DOMAINS")]},
+                headers=headers,
             )
 
-        return Response(response.json(), status=status.HTTP_200_OK)  # result.uuid
+            if response.status_code != 200:
+                logger.error("Enabling embed for Superset dashboard failed with code %d: %s", response.status_code, response.text)
+                return Response(
+                    {"errorMessage": response.json()}, status=response.status_code
+                )
+
+            logger.debug("Successfully enabled embed for Superset dashboard")
+            return Response(response.json(), status=status.HTTP_200_OK)  # result.uuid
+        except Exception as e:
+            logger.error("Exception occurred while enabling embed for Superset dashboard: %s", str(e))
+            return Response(
+                {"errorMessage": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class GetEmbeddable(SupersetAPI):
@@ -140,13 +179,24 @@ class GetEmbeddable(SupersetAPI):
         """
         Endpoint for listing embedable superset dashboard
         """
+        logger.debug("Fetching embeddable Superset dashboard with ID %s", kwargs['id'])
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{kwargs['id']}/embedded"
 
-        headers = self.authorize({})
+        try:
+            headers = self.authorize({})
 
-        response = requests.get(url, headers=headers)
+            response = requests.get(url, headers=headers)
 
-        return Response(response.json(), status=response.status_code)  # result.uuid
+            if response.status_code != 200:
+                logger.error("Failed to fetch embeddable Superset dashboard with code %d: %s", response.status_code, response.text)
+
+            return Response(response.json(), status=response.status_code)  # result.uuid
+        except Exception as e:
+            logger.error("Exception occurred while fetching embeddable Superset dashboard: %s", str(e))
+            return Response(
+                {"errorMessage": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 class GetThumbnail(SupersetAPI):
     keycloak_scopes = {
@@ -157,23 +207,37 @@ class GetThumbnail(SupersetAPI):
         """
         Endpoint for getting dashboard thumbnail 
         """
-        superset_base_url = os.getenv('SUPERSET_BASE_URL')
-        dashboardMetaUrl = f"{superset_base_url}/dashboard/{kwargs['id']}"
-        headers = self.authorize({})
-        metaDataResponse = requests.get(dashboardMetaUrl, headers=headers)
-        if metaDataResponse.ok:
-            thumbnail_url = metaDataResponse.json()['result']['thumbnail_url']
-        if thumbnail_url == None:
-            logging.error("Failed to identify thumbnail URL (status code %d)", metaDataResponse.status_code)
-            return Response({ "errorMessage": "Dashboard not found or no thumbnail available" }, status=metaDataResponse.status_code)
+        logger.debug("Fetching thumbnail for Superset dashboard with ID %s", kwargs['id'])
+        try:
+            superset_base_url = os.getenv('SUPERSET_BASE_URL')
+            dashboardMetaUrl = f"{superset_base_url}/dashboard/{kwargs['id']}"
+            headers = self.authorize({})
+            metaDataResponse = requests.get(dashboardMetaUrl, headers=headers)
 
-        superset_root_url = re.search(r"^(.*?)(?:/api/v\d+)?$", superset_base_url).group(1)
-        thumbnail_response = requests.get(f"{superset_root_url}{thumbnail_url}", headers=headers, stream=True)
-        if not thumbnail_response.ok:
-            logging.error("Failed to read thumbnail (status code %d)", thumbnail_response.status_code)
-            return Response({ "errorMessage": "Failed to read thumbnail from Superset" }, status=thumbnail_response.status_code)
+            if metaDataResponse.ok:
+                thumbnail_url = metaDataResponse.json()['result']['thumbnail_url']
+            else:
+                logger.error("Failed to fetch dashboard metadata with code %d: %s", metaDataResponse.status_code, metaDataResponse.text)
+                return Response({"errorMessage": "Dashboard not found or no thumbnail available"}, status=metaDataResponse.status_code)
 
-        return StreamingHttpResponse(thumbnail_response.iter_content(chunk_size=None), status=thumbnail_response.status_code, content_type=thumbnail_response.headers.get('Content-Type'))
+            if not thumbnail_url:
+                logger.error("Thumbnail URL is None")
+                return Response({"errorMessage": "Dashboard not found or no thumbnail available"}, status=metaDataResponse.status_code)
+
+            superset_root_url = re.search(r"^(.*?)(?:/api/v\d+)?$", superset_base_url).group(1)
+            thumbnail_response = requests.get(f"{superset_root_url}{thumbnail_url}", headers=headers, stream=True)
+
+            if not thumbnail_response.ok:
+                logger.error("Failed to read thumbnail with code %d: %s", thumbnail_response.status_code, thumbnail_response.text)
+                return Response({ "errorMessage": "Failed to read thumbnail from Superset" }, status=thumbnail_response.status_code)
+
+            return StreamingHttpResponse(thumbnail_response.iter_content(chunk_size=None), status=thumbnail_response.status_code, content_type=thumbnail_response.headers.get('Content-Type'))
+        except Exception as e:
+            logger.error("Exception occurred while fetching thumbnail: %s", str(e))
+            return Response(
+                {"errorMessage": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 class GetFavoriteStatus(SupersetAPI):
     """
@@ -188,14 +252,27 @@ class GetFavoriteStatus(SupersetAPI):
         """
         Endpoint for getting dashboard favorite status for the current user
         """
+        logger.debug("Fetching favorite status for Superset dashboards with query %s", query)
         if query == '[]' or query == None:
             return Response({"result": "No favorite dashboard were provided"}, status=status.HTTP_400_BAD_REQUEST)
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/favorite_status/?q={query}"
-        headers = self.authorize({})
 
-        response = requests.get(url, headers=headers)
-        return Response(response.json(), status=response.status_code)  # result.uuid
+        try:
+            headers = self.authorize({})
+
+            response = requests.get(url, headers=headers)
+
+            if response.status_code != 200:
+                logger.error("Failed to fetch favorite status with code %d: %s", response.status_code, response.text)
+
+            return Response(response.json(), status=response.status_code)  # result.uuid
+        except Exception as e:
+            logger.error("Exception occurred while fetching favorite status: %s", str(e))
+            return Response(
+                {"errorMessage": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 class AddFavorite(SupersetAPI):
     """
@@ -210,6 +287,7 @@ class AddFavorite(SupersetAPI):
         """
         Endpoint for adding superset dashboard to favorites 
         """
+        logger.debug("Adding Superset dashboard to favorites with ID %s", request.data.get("id"))
         id = request.data.get("id", None)
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{id}/favorites/"
@@ -217,18 +295,27 @@ class AddFavorite(SupersetAPI):
             "Content-Type": "application/json",
         })
 
-        response = requests.post(
-            url,
-            json={},
-            headers=headers,
-        )
-
-        if response.status_code != 200:
-            return Response(
-                {"errorMessage": response.json()}, status=response.status_code
+        try:
+            response = requests.post(
+                url,
+                json={},
+                headers=headers,
             )
 
-        return Response(response.json(), status=status.HTTP_200_OK)
+            if response.status_code != 200:
+                logger.error("Failed to add dashboard to favorites with code %d: %s", response.status_code, response.text)
+                return Response(
+                    {"errorMessage": response.json()}, status=response.status_code
+                )
+
+            logger.debug("Successfully added dashboard to favorites")
+            return Response(response.json(), status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error("Exception occurred while adding dashboard to favorites: %s", str(e))
+            return Response(
+                {"errorMessage": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 class RemoveFavorite(SupersetAPI):
     """
@@ -243,6 +330,7 @@ class RemoveFavorite(SupersetAPI):
         """
         Endpoint for removing a superset dashboard from favorites
         """
+        logger.debug("Removing Superset dashboard from favorites with ID %s", request.data.get("id"))
         id = request.data.get("id", None)
 
         url = f"{os.getenv('SUPERSET_BASE_URL')}/dashboard/{id}/favorites/"
@@ -250,17 +338,27 @@ class RemoveFavorite(SupersetAPI):
             "Content-Type": "application/json",
         })
 
-        response = requests.delete(
-            url,
-            json={},
-            headers=headers,
-        )
-        if response.status_code != 200:
-            return Response(
-                {"errorMessage": response.json()}, status=response.status_code
+        try:
+            response = requests.delete(
+                url,
+                json={},
+                headers=headers,
             )
 
-        return Response(response.json(), status=status.HTTP_200_OK)
+            if response.status_code != 200:
+                logger.error("Failed to remove dashboard from favorites with code %d: %s", response.status_code, response.text)
+                return Response(
+                    {"errorMessage": response.json()}, status=response.status_code
+                )
+
+            logger.debug("Successfully removed dashboard from favorites")
+            return Response(response.json(), status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error("Exception occurred while removing dashboard from favorites: %s", str(e))
+            return Response(
+                {"errorMessage": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 class GuestTokenApi(SupersetAPI):
     """
@@ -275,6 +373,7 @@ class GuestTokenApi(SupersetAPI):
         """
         Endpoint for getting superset guest token 
         """
+        logger.debug("Requesting Superset guest token for dashboard ID %s", request.data.get("id"))
         url = f"{os.getenv('SUPERSET_BASE_URL')}/security/guest_token/"
         headers = self.authorize({
             "Content-Type": "application/json",
@@ -290,14 +389,23 @@ class GuestTokenApi(SupersetAPI):
             "rls": [],
         }
 
-        response = requests.post(url, json=payload, headers=headers)
+        try:
+            response = requests.post(url, json=payload, headers=headers)
 
-        if response.status_code != 200:
+            if response.status_code != 200:
+                logger.error("Failed to get Superset guest token with code %d: %s", response.status_code, response.text)
+                return Response(
+                    {"errorMessage": response.json()}, status=response.status_code
+                )
+
+            logger.debug("Successfully obtained Superset guest token")
+            return Response(response.json(), status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error("Exception occurred while obtaining Superset guest token: %s", str(e))
             return Response(
-                {"errorMessage": response.json()}, status=response.status_code
+                {"errorMessage": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-        return Response(response.json(), status=status.HTTP_200_OK)
 
 
 class CsrfTokenApi(SupersetAPI):
@@ -313,11 +421,13 @@ class CsrfTokenApi(SupersetAPI):
         """
         Endpoint for getting superset CSRF token
         """
+        logger.debug("Requesting Superset CSRF token")
         url = f"{os.getenv('SUPERSET_BASE_URL')}/security/csrf_token/"
 
         try:
             auth_token = get_auth_token()
         except KeycloakPostError as err:
+            logger.error("Failed to get auth token: %s", err.error_message)
             return {
                 "status": err.response_code,
                 "message": err.error_message
@@ -327,11 +437,20 @@ class CsrfTokenApi(SupersetAPI):
             "Authorization": f"Bearer {auth_token['access_token']}",
         }
 
-        response = requests.get(url=url, headers=headers)
+        try:
+            response = requests.get(url=url, headers=headers)
 
-        if response.status_code != 200:
+            if response.status_code != 200:
+                logger.error("Failed to get CSRF token with code %d: %s", response.status_code, response.text)
+                return Response(
+                    {"errorMessage": response.json()}, status=response.status_code
+                )
+
+            logger.debug("Successfully obtained CSRF token")
+            return Response({"data": response.json()}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error("Exception occurred while obtaining CSRF token: %s", str(e))
             return Response(
-                {"errorMessage": response.json()}, status=response.status_code
+                {"errorMessage": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-        return Response({"data": response.json()}, status=status.HTTP_200_OK)
