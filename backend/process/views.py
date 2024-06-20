@@ -2,12 +2,20 @@ from datetime import datetime, date
 import requests
 import os
 import re
+import logging
 from rest_framework.viewsets import ViewSet
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from typing import Tuple, Union
 from utils.keycloak_auth import get_current_user_id, get_current_user_name
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('/var/log/backend/backend.log')
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")
@@ -152,6 +160,7 @@ class ProcessView(ViewSet):
     def list(self, request):
         """List process chains"""
         try:
+            logger.info("Listing process chains.")
             # Get request params
             query = request.GET.get("query")
             taskId = request.GET.get("taskId")
@@ -189,19 +198,23 @@ class ProcessView(ViewSet):
                                     # Only return dags having the specified task
                                     continue
                             else:
+                                logger.error("Error while filtering dags by task ID.")
                                 return Response(
                                     {"status": "failed", "message": "Internal Server Error"},
                                     status=airflow_dag_tasks_response.status_code,
                                 )
                         augmentedDag = self._augment_dag(dag)
                         processes.append(augmentedDag)
+                logger.info("Successfully listed process chains.")
                 return Response({"dags": processes}, status=status.HTTP_200_OK)
             else:
+                logger.error("Error while listing dags from Airflow.")
                 return Response(
                     {"status": "failed", "message": "Internal Server Error"},
                     status=airflow_dags_response.status_code,
                 )
-        except:
+        except Exception as e:
+            logger.error(f"Internal Server Error: {e}")
             return Response(
                 {"status": "failed", "message": "Internal Server Error"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -210,6 +223,7 @@ class ProcessView(ViewSet):
     def create(self, request):
         """Create a process chain"""
         try:
+            logger.info("Creating a new process chain.")
             # Create DagDTO object
             # Object contains config that will be passed to the dag factory to create new dag from templates
             new_dag_config = DagDTO(
@@ -222,11 +236,13 @@ class ProcessView(ViewSet):
                 date=datetime.fromisoformat(request.data["date"]),
             )
             if not self.permitted_characters_regex.search(new_dag_config.dag_id):
+                logger.warning("DAG ID contains unpermitted characters.")
                 return Response(
                     {"status": "failed", "message": "DAG ID contains unpermitted characters"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             if not self.permitted_characters_regex.search(new_dag_config.pipeline_name):
+                logger.warning("Pipeline name contains unpermitted characters.")
                 return Response(
                     {"status": "failed", "message": "Pipeline name contains unpermitted characters"},
                     status=status.HTTP_400_BAD_REQUEST
@@ -240,6 +256,7 @@ class ProcessView(ViewSet):
             )
 
             if airflow_response.ok:
+                logger.info("Process chain already exists.")
                 return Response(
                     {"message": "process chain already created"},
                     status=status.HTTP_409_CONFLICT,
@@ -264,13 +281,16 @@ class ProcessView(ViewSet):
             )
 
             if airflow_response.ok:
+                logger.info("Process chain created successfully.")
                 return Response({"status": "success"}, status=status.HTTP_201_CREATED)
             else:
+                logger.error("Error while creating process chain in Airflow.")
                 return Response(
                     {"status": "failed", "message": "Internal Server Error"},
                     status=airflow_response.status_code,
                 )
-        except:
+        except Exception as e:
+            logger.error(f"Internal Server Error: {e}")
             return Response(
                 {"status": "failed", "message": "Internal Server Error"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -280,21 +300,26 @@ class ProcessView(ViewSet):
     def retrieve(self, request, dag_id=None):
         """Get process pipeline"""
         route = f"{AirflowInstance.url}/dags/{dag_id}/tasks"
-        airflow_response = requests.get(
-            route,
-            auth=(AirflowInstance.username, AirflowInstance.password),
-        )
+        try:
+            airflow_response = requests.get(
+                route,
+                auth=(AirflowInstance.username, AirflowInstance.password),
+            )
 
-        if airflow_response.ok:
-            airflow_json = airflow_response.json()["tasks"]
-            for task in airflow_json:
-                if task["operator_name"] == "HopPipelineOperator":
-                    return Response(
-                        {"pipeline": task["task_id"]},
-                        status=status.HTTP_200_OK,
-                    )
-        else:
-            return Response({"status": "failed"}, status=airflow_response.status_code)
+            if airflow_response.ok:
+                airflow_json = airflow_response.json()["tasks"]
+                for task in airflow_json:
+                    if task["operator_name"] == "HopPipelineOperator":
+                        return Response(
+                            {"pipeline": task["task_id"]},
+                            status=status.HTTP_200_OK,
+                        )
+            else:
+                logger.error(f"Failed to retrieve tasks for DAG {dag_id}: {airflow_response.status_code}")
+                return Response({"status": "failed"}, status=airflow_response.status_code)
+        except Exception as e:
+            logger.error(f"Exception while retrieving tasks for DAG {dag_id}: {str(e)}")
+            return Response({"status": "failed", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def update(self, request, dag_id=None):
         """update process chain pipeline"""
@@ -302,19 +327,24 @@ class ProcessView(ViewSet):
         new_pipeline = request.data["new_pipeline"]
 
         airflow_internal_url = AirflowInstance.url.removesuffix("/api/v1")
-        airflow_response = requests.put(
-            f"{airflow_internal_url}/factory",
-            auth=(AirflowInstance.username, AirflowInstance.password),
-            json={
-                "old_pipeline": f"{old_pipeline}",
-                "new_pipeline": f"{new_pipeline}",
-                "dag": f"{dag_id}",
-            },
-        )
+        try:
+            airflow_response = requests.put(
+                f"{airflow_internal_url}/factory",
+                auth=(AirflowInstance.username, AirflowInstance.password),
+                json={
+                    "old_pipeline": f"{old_pipeline}",
+                    "new_pipeline": f"{new_pipeline}",
+                    "dag": f"{dag_id}",
+                },
+            )
 
-        if airflow_response.ok:
-            return Response({"status": "success"}, status=status.HTTP_201_CREATED)
-        else:
+            if airflow_response.ok:
+                return Response({"status": "success"}, status=status.HTTP_201_CREATED)
+            else:
+                logger.error(f"Failed to update DAG {dag_id} from {old_pipeline} to {new_pipeline}: {airflow_response.status_code}")
+                return Response({"status": "failed"}, status=airflow_response.status_code)
+        except Exception as e:
+            logger.error(f"Exception while updating DAG {dag_id} from {old_pipeline} to {new_pipeline}: {str(e)}")
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
     def partial_update(self, request, dag_id=None):
@@ -323,101 +353,120 @@ class ProcessView(ViewSet):
         """
         route = f"{AirflowInstance.url}/dags/{dag_id}"
 
-        airflow_response = requests.get(
-            route, auth=(AirflowInstance.username, AirflowInstance.password)
-        )
-        is_paused = airflow_response.json()["is_paused"]
+        try:
+            airflow_response = requests.get(
+                route, auth=(AirflowInstance.username, AirflowInstance.password)
+            )
+            is_paused = airflow_response.json()["is_paused"]
 
-        airflow_response = requests.patch(
-            route,
-            auth=(AirflowInstance.username, AirflowInstance.password),
-            json={"is_paused": not is_paused},
-        )
+            airflow_response = requests.patch(
+                route,
+                auth=(AirflowInstance.username, AirflowInstance.password),
+                json={"is_paused": not is_paused},
+            )
 
-        if airflow_response.ok:
-            return Response({"status": "success"})
-        else:
-            return Response({"status": "failed"}, status=airflow_response.status_code)
-        
+            if airflow_response.ok:
+                return Response({"status": "success"})
+            else:
+                logger.error(f"Failed to toggle pause state for DAG {dag_id}: {airflow_response.status_code}")
+                return Response({"status": "failed"}, status=airflow_response.status_code)
+        except Exception as e:
+            logger.error(f"Exception while toggling pause state for DAG {dag_id}: {str(e)}")
+            return Response({"status": "failed", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     def _augment_dag(self, dag):
-        airflow_start_date_response = requests.get(
-                            f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
-                            auth=(AirflowInstance.username, AirflowInstance.password),
-                        )
-        dataset_info_success, dataset_info = self._get_dataset_info_internal(dag['dag_id'])
-        augmentedDag= Dag(
-                                dag["dag_id"],
-                                dag["dag_id"],
-                                dag["dag_id"],
-                                airflow_start_date_response.json()["start_date"],
-                                dag["schedule_interval"]["value"],
-                                dag["is_paused"],
-                                dag["description"],
-                                dag["last_parsed_time"],
-                                dag["next_dagrun"],
-                                dataset_info_success,
-                                dataset_info[0] if dataset_info != None else None,
-                                dataset_info[1] if dataset_info != None else None
-                            ).__dict__
-            
-        return augmentedDag
-    
+        try:
+            airflow_start_date_response = requests.get(
+                                f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
+                                auth=(AirflowInstance.username, AirflowInstance.password),
+                            )
+            dataset_info_success, dataset_info = self._get_dataset_info_internal(dag['dag_id'])
+            augmentedDag= Dag(
+                                    dag["dag_id"],
+                                    dag["dag_id"],
+                                    dag["dag_id"],
+                                    airflow_start_date_response.json()["start_date"],
+                                    dag["schedule_interval"]["value"],
+                                    dag["is_paused"],
+                                    dag["description"],
+                                    dag["last_parsed_time"],
+                                    dag["next_dagrun"],
+                                    dataset_info_success,
+                                    dataset_info[0] if dataset_info != None else None,
+                                    dataset_info[1] if dataset_info != None else None
+                                ).__dict__
+                
+            return augmentedDag
+        except Exception as e:
+            logger.error(f"Exception while augmenting DAG {dag['dag_id']}: {str(e)}")
+            return None
+
     def _dag_has_task(self, dag, taskId):
         result = False
         route = f"{AirflowInstance.url}/dags/{dag['dag_id']}/tasks"
-        airflow_dag_tasks_response = requests.get(
-                        route,
-                        auth=(AirflowInstance.username, AirflowInstance.password),
-                    )
-        if airflow_dag_tasks_response.ok:
-            airflow_json = airflow_dag_tasks_response.json()["tasks"]
-            for task in airflow_json:
-                if (task["operator_name"] == "HopPipelineOperator") and (task["task_id"] == f"{taskId}.hpl"):
-                    result=True
+        try:
+            airflow_dag_tasks_response = requests.get(
+                            route,
+                            auth=(AirflowInstance.username, AirflowInstance.password),
+                        )
+            if airflow_dag_tasks_response.ok:
+                airflow_json = airflow_dag_tasks_response.json()["tasks"]
+                for task in airflow_json:
+                    if (task["operator_name"] == "HopPipelineOperator") and (task["task_id"] == f"{taskId}.hpl"):
+                        result=True
+            else:
+                logger.error(f"Failed to retrieve tasks for DAG {dag['dag_id']}: {airflow_dag_tasks_response.status_code}")
+        except Exception as e:
+            logger.error(f"Exception while retrieving tasks for DAG {dag['dag_id']}: {str(e)}")
+            return None, result
         return airflow_dag_tasks_response,result
 
     def _get_dataset_info_internal(self, dag_id) -> Tuple[bool, Union[Tuple[int, str], None]]:
         route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns"
+        try:
+            get_runs_response = requests.get(
+                route, auth=(AirflowInstance.username, AirflowInstance.password)
+            )
 
-        get_runs_response = requests.get(
-            route, auth=(AirflowInstance.username, AirflowInstance.password)
-        )
+            if not get_runs_response.ok:
+                logger.error(f"Failed to get DAG runs for {dag_id}: {get_runs_response.status_code}")
+                return [False, None]
+            successful_runs = sorted(
+                [dag for dag in get_runs_response.json()["dag_runs"] if dag["state"] == "success"],
+                key=lambda r: r["end_date"],
+                reverse=True
+            )
 
-        if not get_runs_response.ok:
-            return [False, None]
-        successful_runs = sorted(
-            [dag for dag in get_runs_response.json()["dag_runs"] if dag["state"] == "success"],
-            key=lambda r: r["end_date"],
-            reverse=True
-        )
+            if len(successful_runs) == 0:
+                return [True, None]
+            last_run_id = successful_runs[0]["dag_run_id"]
+            get_dataset_id_route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns/{last_run_id}/taskInstances/link_dataset_to_superset/xcomEntries/superset_dataset_id"
+            get_dataset_id_response = requests.get(
+                get_dataset_id_route,
+                auth=(AirflowInstance.username, AirflowInstance.password)
+            )
+            get_dataset_url_route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns/{last_run_id}/taskInstances/link_dataset_to_superset/xcomEntries/superset_dataset_url"
+            get_dataset_url_response = requests.get(
+                get_dataset_url_route,
+                auth=(AirflowInstance.username, AirflowInstance.password)
+            )
 
-        if len(successful_runs) == 0:
-            return [True, None]
-        last_run_id = successful_runs[0]["dag_run_id"]
-        get_dataset_id_route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns/{last_run_id}/taskInstances/link_dataset_to_superset/xcomEntries/superset_dataset_id"
-        get_dataset_id_response = requests.get(
-            get_dataset_id_route,
-            auth=(AirflowInstance.username, AirflowInstance.password)
-        )
-        get_dataset_url_route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns/{last_run_id}/taskInstances/link_dataset_to_superset/xcomEntries/superset_dataset_url"
-        get_dataset_url_response = requests.get(
-            get_dataset_url_route,
-            auth=(AirflowInstance.username, AirflowInstance.password)
-        )
+            if not (get_dataset_id_response.ok and get_dataset_url_response.ok):
+                return [False, None]
 
-        if not (get_dataset_id_response.ok and get_dataset_url_response.ok):
-            return [False, None]
+            dataset_id = int(get_dataset_id_response.json()["value"])
+            dataset_url = get_dataset_url_response.json()["value"]
 
-        dataset_id = int(get_dataset_id_response.json()["value"])
-        dataset_url = get_dataset_url_response.json()["value"]
-
-        return [
-            True,
-            [
-                dataset_id,
-                f"{SupersetUrl}{dataset_url}"
+            return [
+                True,
+                [
+                    dataset_id,
+                    f"{SupersetUrl}{dataset_url}"
+                ]
             ]
-        ]
+        except Exception as e:
+            logger.error(f"Exception while getting dataset info for DAG {dag_id}: {str(e)}")
+            return [False, None]
 
     def get_dataset_info(self, request, dag_id) -> Response:
         success, dataset = self._get_dataset_info_internal(dag_id)
@@ -439,10 +488,13 @@ class ProcessView(ViewSet):
             response = requests.get(druid_url, auth=(DruidInstance.username, DruidInstance.password), verify=False)
             response.raise_for_status()
         except requests.exceptions.ConnectionError:
+            logger.error("Failed to connect to Druid")
             return Response({"error": "Failed to connect to Druid"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         except requests.exceptions.Timeout:
+            logger.error("Request to Druid timed out")
             return Response({"error": "Request to Druid timed out"}, status=status.HTTP_504_GATEWAY_TIMEOUT)
         except requests.exceptions.RequestException as e:
+            logger.error(f"An error occurred: {str(e)}")
             return Response({"error": f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         if response.status_code == 200:
@@ -485,6 +537,7 @@ class ProcessView(ViewSet):
             else:
                 return Response({"error": "No segments found for the given datasource ID"}, status=status.HTTP_404_NOT_FOUND)
         else:
+            logger.error(f"Failed to retrieve data from Druid for datasource ID {datasource_id}: {response.status_code}")
             return Response({"error": "Failed to retrieve data from Druid"}, status=response.status_code)
 
 class ProcessRunView(ViewSet):
@@ -508,62 +561,76 @@ class ProcessRunView(ViewSet):
         dag_runs = []
 
         route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns"
-        airflow_response = requests.get(
-            route,
-            auth=(AirflowInstance.username, AirflowInstance.password),
-            params={"limit": 5, "order_by": "-execution_date"},
-        )
+        try:
+            airflow_response = requests.get(
+                route,
+                auth=(AirflowInstance.username, AirflowInstance.password),
+                params={"limit": 5, "order_by": "-execution_date"},
+            )
 
-        airflow_json = airflow_response.json()["dag_runs"]
-        if airflow_response.ok:
-            for dag_run in airflow_json:
-                dag_runs.append(
-                    DagRun(
-                        dag_id=dag_run["dag_id"],
-                        dag_run_id=dag_run["dag_run_id"],
-                        state=dag_run["state"],
-                    ).__dict__
-                )
-            return Response({"dag_runs": dag_runs}, status=status.HTTP_200_OK)
-        else:
-            return Response({"status": "failed"}, status=airflow_response.status_code)
+            airflow_json = airflow_response.json()["dag_runs"]
+            if airflow_response.ok:
+                for dag_run in airflow_json:
+                    dag_runs.append(
+                        DagRun(
+                            dag_id=dag_run["dag_id"],
+                            dag_run_id=dag_run["dag_run_id"],
+                            state=dag_run["state"],
+                        ).__dict__
+                    )
+                return Response({"dag_runs": dag_runs}, status=status.HTTP_200_OK)
+            else:
+                logger.error(f"Failed to list dag-runs for DAG {dag_id}: {airflow_response.status_code}")
+                return Response({"status": "failed"}, status=airflow_response.status_code)
+        except Exception as e:
+            logger.error(f"Exception while listing dag-runs for DAG {dag_id}: {str(e)}")
+            return Response({"status": "failed", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def create(self, request, dag_id=None):
         """Endpoint to create a dag-run: run the dag"""
         route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns"
-        airflow_response = requests.post(
-            route,
-            auth=(AirflowInstance.username, AirflowInstance.password),
-            json={},
-        )
+        try:
+            airflow_response = requests.post(
+                route,
+                auth=(AirflowInstance.username, AirflowInstance.password),
+                json={},
+            )
 
-        if airflow_response.ok:
-            return Response({"status": "success"}, status=status.HTTP_201_CREATED)
-        else:
-            return Response({"status": "failed"}, status=airflow_response.status_code)
+            if airflow_response.ok:
+                return Response({"status": "success"}, status=status.HTTP_201_CREATED)
+            else:
+                logger.error(f"Failed to create dag-run for DAG {dag_id}: {airflow_response.status_code}")
+                return Response({"status": "failed"}, status=airflow_response.status_code)
+        except Exception as e:
+            logger.error(f"Exception while creating dag-run for DAG {dag_id}: {str(e)}")
+            return Response({"status": "failed", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def retrieve(self, request, dag_id=None, dag_run_id=None):
         route = (
             f"{AirflowInstance.url}/dags/{dag_id}/dagRuns/{dag_run_id}/taskInstances"
         )
-        airflow_response = requests.get(
-            route,
-            auth=(AirflowInstance.username, AirflowInstance.password),
-        )
+        try:
+            airflow_response = requests.get(
+                route,
+                auth=(AirflowInstance.username, AirflowInstance.password),
+            )
 
-        if airflow_response.ok:
-            airflow_json = airflow_response.json()["task_instances"]
-            tasks = []
-            for task in airflow_json:
-                tasks.append(
-                    {
-                        "task_id": task["task_id"],
-                        "state": task["state"],
-                        "start_date": task["start_date"],
-                    }
-                )
+            if airflow_response.ok:
+                airflow_json = airflow_response.json()["task_instances"]
+                tasks = []
+                for task in airflow_json:
+                    tasks.append(
+                        {
+                            "task_id": task["task_id"],
+                            "state": task["state"],
+                            "start_date": task["start_date"],
+                        }
+                    )
 
-            return Response({"tasks": tasks}, status=status.HTTP_200_OK)
-        else:
-            return Response({"status": "failed"}, status=airflow_response.status_code)
-     
+                return Response({"tasks": tasks}, status=status.HTTP_200_OK)
+            else:
+                logger.error(f"Failed to retrieve task instances for DAG {dag_id} run {dag_run_id}: {airflow_response.status_code}")
+                return Response({"status": "failed"}, status=airflow_response.status_code)
+        except Exception as e:
+            logger.error(f"Exception while retrieving task instances for DAG {dag_id} run {dag_run_id}: {str(e)}")
+            return Response({"status": "failed", "message": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
