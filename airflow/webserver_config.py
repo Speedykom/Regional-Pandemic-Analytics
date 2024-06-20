@@ -16,7 +16,16 @@ from keycloak import KeycloakOpenID, KeycloakAdmin
 import jose
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+
+# Set up logging
 log = logging.getLogger(__name__)
+log.setLevel(logging.INFO)
+handler = logging.FileHandler('/opt/airflow/logs/airflow.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
+handler.setFormatter(formatter)
+log.addHandler(handler)
+
 
 PROVIDER_NAME = os.getenv("PROVIDER_NAME")
 
@@ -175,7 +184,7 @@ class CustomSecurityManager(AirflowSecurityManager):
             full_data = keycloak_openid.decode_token(
                 resp["access_token"], key=KEYCLOAK_PUBLIC_KEY, options=options
             )
-            # logger.debug("Full User info from Keycloak: %s", full_data)
+            log.debug("Full User info from Keycloak: %s", full_data)
 
             return {
                 "username": data.get("preferred_username", ""),

@@ -96,6 +96,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
+    volumes:
+      - ./airflow/logs:/opt/airflow/logs
     deploy:
       resources:
         limits:
@@ -213,6 +215,8 @@ services:
       - ./monitoring/promtail-config.yaml:/etc/promtail/config.yml
       - ./superset/logs:/var/log/superset  # Mounting Superset logs
       - ./backend/logs:/var/log/backend  # Mounting backend logs
+      - ./airflow/logs:/var/log/airflow  # Mounting Airflow logs
+
 
   # =====
   #  Grafana
