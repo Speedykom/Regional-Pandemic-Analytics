@@ -30,6 +30,9 @@ To run the cluster, on local environment:
 4. run `make start-local` to start the cluster
 5. open keycloak interface and add a new user
 
+# .env files
+1. run `./env.sh` to generate .env files
+
 ## Domain Names
 
 ### Local domains
