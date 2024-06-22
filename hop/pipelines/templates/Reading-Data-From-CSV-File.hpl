@@ -21,10 +21,10 @@
   </info>
   <notepads>
     <notepad>
-      <note>Please open this transform and ensure that the 
+      <note>Please open this transform and ensure that the
 selected file path is valid
 
-Please fill up in addition  the delimited field and the 
+Please fill up in addition  the delimited field and the
 fields you want to read out from the csv file</note>
       <xloc>48</xloc>
       <yloc>320</yloc>
@@ -45,7 +45,7 @@ fields you want to read out from the csv file</note>
       <bordercolorblue>90</bordercolorblue>
     </notepad>
     <notepad>
-      <note>Use these helper transformation if you have a 
+      <note>Use these helper transformation if you have a
 date format different than MMM/dd/yyyy</note>
       <xloc>240</xloc>
       <yloc>80</yloc>
@@ -66,7 +66,7 @@ date format different than MMM/dd/yyyy</note>
       <bordercolorblue>250</bordercolorblue>
     </notepad>
     <notepad>
-      <note>Use the remove nulls transform if you want to clean up your data 
+      <note>Use the remove nulls transform if you want to clean up your data
 and remove nulls from a specific column
 An example of removing nulls from the Date column is provided</note>
       <xloc>624</xloc>
@@ -88,8 +88,8 @@ An example of removing nulls from the Date column is provided</note>
       <bordercolorblue>90</bordercolorblue>
     </notepad>
     <notepad>
-      <note>Use this transform to sort data ascending or descending. 
-This transform is mandatory when trying to merge join 
+      <note>Use this transform to sort data ascending or descending.
+This transform is mandatory when trying to merge join
 different data from different sources</note>
       <xloc>608</xloc>
       <yloc>304</yloc>
@@ -113,10 +113,10 @@ different data from different sources</note>
       <note>This is a mandatory transform! Please do not remove.
 Only add the fields you want to process.
 
-See the example fields provided for you when 
+See the example fields provided for you when
 click on edit transform
 
-Target fields don't accept white spaces or 
+Target fields don't accept white spaces or
 specefic characters</note>
       <xloc>1120</xloc>
       <yloc>304</yloc>
@@ -289,7 +289,7 @@ specefic characters</note>
         <target_field>NewCases</target_field>
       </field>
     </fields>
-    <filename_base>ftp://${minio_ftp}/parquets/${user_id}/${dag_id}</filename_base>
+    <filename_base>ftp://${minio_ftp}/parquets/${user_id}/${dag_display_name}</filename_base>
     <filename_create_parent_folders>Y</filename_create_parent_folders>
     <filename_datetime_format>yyyyMMdd-HHmmss</filename_datetime_format>
     <filename_ext>parquet</filename_ext>
