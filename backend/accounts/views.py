@@ -322,12 +322,7 @@ class UserAvatarView(APIView):
         uploaded_file = request.FILES.get("uploadedFile")
 
         cd = pyclamd.ClamdNetworkSocket(host="clamav", port=3310)
-        
-        
-        print(uploaded_file.read())
-
         scan_result = cd.scan_stream(uploaded_file.read())
-        #print(scan_result)
         if scan_result is not None:
             logging.error(f"Malicious File Upload in Avatar : {scan_result}")
             return Response({'errorMessage': f'Malicious File Upload: {scan_result}'}, status=status.HTTP_400_BAD_REQUEST)
