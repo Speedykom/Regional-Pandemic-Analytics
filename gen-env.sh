@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set Vault address and token
-chmod +x ./env.sh
+chmod +x ./gen-env.sh
 rm -f .env.dev .env.prod .env.local
 export VAULT_ADDR='http://127.0.0.1:8200'
 
@@ -10,14 +10,19 @@ echo "Reading existing unseal keys and root token..."
 VAULT_SECRETS=$(cat ./vault/vault_secret.json)
 
 UNSEAL_KEYS=$(echo "$VAULT_SECRETS" | jq -r '.keys_base64[]')
+echo $UNSEAL_KEYS
 
 ROOT_TOKEN=$(echo "$VAULT_SECRETS" | jq -r '.root_token')
 
 # Unseal Vault
 echo "Unsealing Vault..."
 COUNTER=0
+for KEY in $UNSEAL_KEYS; do
+    echo $KEY
+done
 
 for KEY in $UNSEAL_KEYS; do
+    echo $KEY
     if [ $COUNTER -lt 4 ]; then
         docker exec -it vault-server sh -c "vault operator unseal '$KEY'"
         ((COUNTER++))
