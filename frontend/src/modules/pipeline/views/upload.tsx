@@ -27,7 +27,7 @@ export const UploadPipeline = ({
   const [uploadPipeline, { isLoading }] = useUploadPipelineMutation();
   const { t } = useTranslation();
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
-  const permittedCharactersRegex = /^[a-zA-Z0-9._-]+$/;
+  const permittedCharactersRegex = /^[^\s!@#$%^&*()+=[\]{}\\|;:'",<>/?]*$/;
 
   const onFinish = (value: any) => {
     const file = acceptedFiles[0];
