@@ -1,5 +1,6 @@
 export interface DagForm {
   name: string;
+  id: string;
   pipeline: string;
   schedule_interval: string;
   description: string;
@@ -8,6 +9,7 @@ export interface DagForm {
 export interface DagDetails {
   name: string;
   dag_id: string;
+  dag_display_name: string;
   data_source_name: string;
   start_date: any;
   schedule_interval: string;
