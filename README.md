@@ -9,9 +9,13 @@ RePan's advanced data analysis algorithms enable decision-makers to identify tre
 RePan's user-friendly interface enables decision-makers to access high-level insights and also view detailed and granular data for each country. This level of granularity empowers decision-makers to make informed decisions that are specific to the situation in each country.
 RePan is a game-changer, providing decision-makers with a reliable and efficient way to monitor and manage the pandemic situation at a regional level while still allowing for a granular view of the data within each country.
 
+# .env files
+1. run `make start-vault` to start vault server
+2. run `./gen-env.sh` to generate .env files
+
 # Makefile
 
-The Makefile contains alias for basic commands
+The Makefile contains alias for basic commands, these commands need .env files generated before
 
 - `make start-local` to start the cluster locally
 - `make start-local service=nginx` to restart a specific service (in this example nginx)
@@ -30,8 +34,6 @@ To run the cluster, on local environment:
 4. run `make start-local` to start the cluster
 5. open keycloak interface and add a new user
 
-# .env files
-1. run `./env.sh` to generate .env files
 
 ## Domain Names
 
