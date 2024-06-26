@@ -10,6 +10,7 @@ import { ChevronRightIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 import Stepper from './Stepper';
 import { useTranslation } from 'react-i18next';
+import punycode from 'punycode';
 
 import { PipelineList } from '@/modules/pipeline/interface';
 interface ProcessCardProps {
@@ -34,6 +35,7 @@ export default function ProcessCard({
   const [open, setOpen] = useState(false);
 
   const dateProcess = new Date(process.start_date);
+  const processName = punycode.toUnicode(process.dag_id);
 
   return (
     <>
@@ -57,7 +59,7 @@ export default function ProcessCard({
                       {t('addProcess.name')}
                     </div>
                     <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                      {process.name}
+                      {processName}
                     </Badge>
                   </div>
                   <div>
@@ -154,7 +156,7 @@ export default function ProcessCard({
               <AccordionBody>
                 <div className="flex flex-col space-y-2 pt-2 px-10 pb-1">
                   <Stepper
-                    pipeline={data.pipeline}
+                    pipeline={punycode.toUnicode(data.pipeline)}
                     pipelineList={pipelineList}
                     dagId={process.dag_id}
                     refetch={refetch}

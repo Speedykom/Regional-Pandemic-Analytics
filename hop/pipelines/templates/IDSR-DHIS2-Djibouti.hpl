@@ -128,10 +128,10 @@ You can map your OrganisationUnits and DataElements here.</note>
       <note>This is a mandatory transform! Please do not remove.
 Only add the fields you want to process.
 
-See the example fields provided for you when 
+See the example fields provided for you when
 click on edit transform
 
-Target fields don't accept white spaces or 
+Target fields don't accept white spaces or
 specefic characters</note>
       <width>333</width>
     </notepad>
@@ -388,7 +388,7 @@ specefic characters</note>
         <target_field>OrgUnitLevel2Name</target_field>
       </field>
     </fields>
-    <filename_base>ftp://${minio_ftp}/parquets/${user_id}/${dag_id}</filename_base>
+    <filename_base>ftp://${minio_ftp}/parquets/${user_id}/${dag_display_name}</filename_base>
     <filename_create_parent_folders>Y</filename_create_parent_folders>
     <filename_datetime_format>yyyyMMdd-HHmmss</filename_datetime_format>
     <filename_ext>parquet</filename_ext>
