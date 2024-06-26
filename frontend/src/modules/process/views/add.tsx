@@ -1,4 +1,4 @@
-import React from 'react'; // Added useState import
+import React from 'react';
 import Drawer from '@/common/components/common/Drawer';
 import { schedule_intervals } from '@/common/utils/processs';
 import {
@@ -15,6 +15,7 @@ import { PipelineList } from '@/modules/pipeline/interface';
 import { QueryActionCreatorResult } from '@reduxjs/toolkit/dist/query/core/buildInitiate';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
+import punycode from 'punycode';
 
 interface AddProcessProps {
   pipelineList: PipelineList;
@@ -39,7 +40,7 @@ export const AddProcess = ({
   const { t } = useTranslation();
 
   const [createProcess] = useCreateProcessMutation();
-  const permittedCharactersRegex = /^[a-zA-Z0-9._-]+$/;
+  const permittedCharactersRegex = /^[^\s!@#$%^&*()+=[\]{}\\|;:'",<>/?]*$/;
 
   const footer = (
     <div className="space-x-2 p-2">
@@ -47,9 +48,15 @@ export const AddProcess = ({
         className="bg-prim text-white border-0 hover:bg-prim-hover"
         disabled={!!errors.processName}
         onClick={handleSubmit((values) => {
+          if (!permittedCharactersRegex.test(values.processName)) {
+            toast.error(t('addProcess.invalidProcessName'));
+            return;
+          }
           values.date.setHours(12, 0, 0);
+          const encodedId = punycode.toASCII(values.processName);
           createProcess({
             name: values.processName,
+            id: encodedId,
             pipeline: values.pipelineTemplate,
             // sending date without seconds because the backend is python3.9
             // and it can not handle seconds in isoString
@@ -111,7 +118,6 @@ export const AddProcess = ({
               placeholder={t('addProcess.processChainLabel')}
             />
           </div>
-
           <div>
             <label>{t('addProcess.pipelineTemplateLabel')}</label>
             <Controller

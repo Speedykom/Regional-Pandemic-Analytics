@@ -35,7 +35,7 @@ class PipelineListView(APIView):
     }
 
     def __init__(self):
-        self.permitted_characters_regex = re.compile(r'^[a-zA-Z0-9._-]+$')
+        self.permitted_characters_regex = re.compile(r'^[^\s!@#$%^&*()+=[\]{}\\|;:\'",<>/?]*$')
 
     def get(self, request , query = None):
         """Endpoint for getting pipelines created by a user"""
@@ -111,7 +111,7 @@ class PipelineListView(APIView):
                     "description": f"{quote(description.encode('utf-8'))}",
                     "created": f"{datetime.utcnow()}",
                     "check_status": "success", #check status should be always success when creating a new pipeline, as our provided templates are correct
-                    "check_text": "ValidPipeline", 
+                    "check_text": "ValidPipeline",
                 },
                 metadata_directive=REPLACE,
             )
@@ -299,11 +299,11 @@ class PipelineDeleteView(APIView):
         """
         # Disable all dags using the pipeline
         dag_ids = request.data.get("dags", [])
-        
+
         result = self._deactivate_processes(dag_ids)
-        if result["status"] == "failed":    
+        if result["status"] == "failed":
             return Response({"status": "failed", "message": result["message"] }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-  
+
         # Back up and then delete the pipeline
         user_id = get_current_user_id(request)
         try:
@@ -314,7 +314,7 @@ class PipelineDeleteView(APIView):
             CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
             # delete pipeline file from Minio
             client.remove_object(
-                "pipelines", 
+                "pipelines",
                 f"pipelines-created/{user_id}/{name}.hpl")
 
             return Response({"status": "success"}, status=status.HTTP_200_OK)
@@ -340,7 +340,7 @@ class PipelineDeleteView(APIView):
                     messages.append(result["message"])
                 else:
                     deactivated_processes.append(dag_id)
-    
+
             if all_successful:
                 return {"status": "success"}
             else:
@@ -348,7 +348,7 @@ class PipelineDeleteView(APIView):
                 for dag_id in deactivated_processes:
                     reactivation_result = self._set_process_status(dag_id, False)
                     messages.append(reactivation_result["message"])
-                return {"status": "failed", 
+                return {"status": "failed",
                     "message": "One or more process deactivation failed.",
                     "errors": messages}
         return {"status": "success"}
@@ -363,7 +363,7 @@ class PipelineDeleteView(APIView):
                 auth=(AirflowInstance.username, AirflowInstance.password),
                 json={"is_paused": is_deactivated},
             )
-        
+
             if airflow_toggle_response.ok:
                 return {"status": "success"}
             else:
