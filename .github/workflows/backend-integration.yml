@@ -1,0 +1,26 @@
+name: Backend Integration
+
+on:
+  workflow_call:
+
+jobs:
+  backend-integration:
+    runs-on: devserver
+    name: Backend Integration
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+          architecture: "x64"
+          working-directory: backend
+          cache: "pip"
+      - name: Install backend modules
+        run: pip install -r requirements.txt
+        working-directory: backend
+      - name: Run migrations
+        run: python manage.py migrate
+        working-directory: backend
+      - name: Run tests
+        run: python manage.py test
+        working-directory: backend
