@@ -26,4 +26,7 @@ jobs:
           script: |
             cd Regional-Pandemic-Analytics/
             git pull
+            make start-vault
+            chmod +x ./gen-env.sh
+            ./gen-env.sh
             make start-prod
