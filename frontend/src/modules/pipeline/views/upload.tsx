@@ -27,7 +27,7 @@ export const UploadPipeline = ({
   const [uploadPipeline, { isLoading }] = useUploadPipelineMutation();
   const { t } = useTranslation();
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
-  const permittedCharactersRegex = /^[a-zA-Z0-9._-]+$/;
+  const permittedCharactersRegex = /^[^\s!@#$%^&*()+=[\]{}\\|;:'",<>/?]*$/;
 
   const onFinish = (value: any) => {
     const file = acceptedFiles[0];
@@ -124,10 +124,13 @@ export const UploadPipeline = ({
             </label>
             <TextInput
               {...register('description', {
-                required: true,
+                required: {
+                  value: true,
+                  message: t('descRequired'),
+                },
               })}
               error={!!errors.description}
-              errorMessage={errors.description ? t('descRequired') : ''}
+              errorMessage={errors?.description?.message?.toString()}
               type="text"
               className="w-full h-12"
               placeholder={t('enterDesc')}
