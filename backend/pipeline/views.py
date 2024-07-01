@@ -129,7 +129,7 @@ class PipelineDetailView(APIView):
 
     def get(self, request, name=None):
         """
-        Endpoint for getting details of pipeline  
+        Endpoint for getting details of pipeline
         """
         user_id = get_current_user_id(request)
         try:
@@ -238,10 +238,12 @@ class PipelineUploadView(APIView):
         "POST": "pipeline:add",
         "GET": "pipeline:read",
     }
+    def __init__(self):
+        self.permitted_characters_regex = re.compile(r'^[^\s!@#$%^&*()+=[\]{}\\|;:\'",<>/?]*$')
 
     def post(self, request, format=None):
         """
-        Endpoint for uploading a pipeline  
+        Endpoint for uploading a pipeline
         """
         user_id = get_current_user_id(request)
         name = request.data.get("name")
@@ -295,7 +297,7 @@ class PipelineDeleteView(APIView):
 
     def delete(self, request, name=None):
         """
-        Endpoint for deleting a pipeline 
+        Endpoint for deleting a pipeline
         """
         # Disable all dags using the pipeline
         dag_ids = request.data.get("dags", [])
@@ -381,7 +383,7 @@ class TemplateView(APIView):
         """ Return hop templates from minio bucket """
         user_id = get_current_user_id(request)
         pipelines_templates = []
-        
+
         try:
             # Function to process template objects
             def process_templates(templates, prefix):
@@ -390,17 +392,17 @@ class TemplateView(APIView):
                     for template in templates
                     if template.object_name.endswith('.hpl') and (not query or re.search(query, template.object_name.removeprefix(prefix), re.IGNORECASE))
                 ]
-            
+
             # Fetch global templates
             global_templates = client.list_objects("pipelines", prefix="templates/")
             pipelines_templates.extend(process_templates(global_templates, "templates/"))
-            
+
             # Fetch user-specific templates
             if user_id:
                 user_templates = client.list_objects('pipelines', prefix=f'templates/{user_id}/')
                 pipelines_templates.extend(process_templates(user_templates, f'templates/{user_id}/'))
-            
-            return Response({'status': 'success', "data": pipelines_templates}, status=200)    
+
+            return Response({'status': 'success', "data": pipelines_templates}, status=200)
         except Exception as e:
             return Response(
                 {
@@ -409,7 +411,7 @@ class TemplateView(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-    
+
     def post(self, request):
         user_id = get_current_user_id(request)
         name = request.data.get("name", None)
