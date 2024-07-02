@@ -30,7 +30,4 @@ superset/import/failed/
 .env.dev
 .env.prod
 .env.local
-# /vault/data/logical/*/_casesensitivity
-# /vault/data/core/cluster/_feature-flags
-/vault/data/
 
