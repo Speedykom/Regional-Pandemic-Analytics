@@ -12,6 +12,7 @@ from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
 from .validator import check_pipeline_validity
 from urllib.parse import quote, unquote
+import pyclamd
 
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")
@@ -249,6 +250,15 @@ class PipelineUploadView(APIView):
         name = request.data.get("name")
         description = request.data.get("description")
         uploaded_file = request.FILES.get("uploadedFile")
+
+        cd = pyclamd.ClamdNetworkSocket(host="clamav", port=3310)
+        scan_result = cd.scan_stream(uploaded_file.read())
+        if scan_result is not None:
+            logging.error(f"Malicious File Upload in Avatar : {scan_result}")
+            return Response({'errorMessage': f'Malicious File Upload: {scan_result}'}, status=status.HTTP_400_BAD_REQUEST)
+        # seeking to 0 in the uploaded_file because scan_stream does not release the pointer 
+        uploaded_file.seek(0)
+
         if not self.permitted_characters_regex.search(name):
             return Response(
                 {"status": "Fail", "message": "Pipeline name contains unpermitted characters"},
