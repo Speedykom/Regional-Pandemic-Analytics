@@ -1,0 +1,25 @@
+name: Frontend Integration
+
+on:
+  workflow_call:
+    
+jobs:
+  frontend-integration:
+    runs-on: devserver
+    name: Frontend Integration
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "18.x"
+          working-directory: frontend
+          cache-dependency-path: frontend/package-lock.json
+          cache: "npm"
+      - run: npm install
+        working-directory: frontend
+      - run: npm run pre-commit
+        working-directory: frontend
+      - run: npm run build --if-present
+        working-directory: frontend
+
