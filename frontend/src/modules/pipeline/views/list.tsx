@@ -11,7 +11,7 @@ import {
 } from '@tremor/react';
 import { useTranslation } from 'react-i18next';
 import MediaQuery from 'react-responsive';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePermission } from '@/common/hooks/use-permission';
 import { useModal } from '@/common/hooks/use-modal';
 import { useRouter } from 'next/router';
@@ -71,12 +71,32 @@ export const MyPipelines = () => {
   const [savePipelineAsTemplate] = useUploadTemplateMutation();
 
   const [selectedPipeline, setSelectedPipeline] = useState<string>('');
-  const { data: downloadData } = useDownloadPipelineQuery(
+  const { data: downloadData, error: downloadError } = useDownloadPipelineQuery(
     selectedPipeline || skipToken,
     {
       refetchOnMountOrArgChange: true,
     }
   );
+
+  useEffect(() => {
+    if (downloadData) {
+      const blob = new Blob([downloadData], {
+        type: 'application/octet-stream',
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${selectedPipeline}.hpl`;
+
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } else if (downloadError) {
+      toast.error(t('pipelineDownloadFailed'), { position: 'top-right' });
+    }
+  }, [downloadData, downloadError, selectedPipeline]);
 
   const showConfirmModal = () =>
     showModal({
@@ -239,25 +259,8 @@ export const MyPipelines = () => {
     });
   };
 
-  const downloadPipeline = async (name: string) => {
-    try {
-      setSelectedPipeline(name);
-      const blob = new Blob([downloadData], {
-        type: 'text/xml',
-      });
-      const link = document.createElement('a');
-      var url = URL.createObjectURL(blob);
-      link.href = url;
-      link.download = `${name}.hpl`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      // Release the URL object to free resources
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      // Handle any errors that may occur during the download
-      toast.error('Failed to download pipeline', { position: 'top-right' });
-    }
+  const downloadPipeline = (name: string) => {
+    setSelectedPipeline(name);
   };
   return (
     <div className="">
