@@ -54,6 +54,7 @@ const frTranslation = {
   myPipelines: 'Mes pipelines',
   addPipelineMessage: 'Veuillez saisir un nom de pipeline',
   pipelineSpaceMessage: "Le nom du pipeline ne peut pas contenir d'espaces",
+  pipelineDownloadFailed: 'Échec du téléchargement du pipeline',
   enterName: 'Entrer le nom',
   template: 'modèle',
   descPlaceholder: 'Entrer une description',

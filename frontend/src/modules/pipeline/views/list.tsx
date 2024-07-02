@@ -94,7 +94,7 @@ export const MyPipelines = () => {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     } else if (downloadError) {
-      toast.error('Failed to download pipeline', { position: 'top-right' });
+      toast.error(t('pipelineDownloadFailed'), { position: 'top-right' });
     }
   }, [downloadData, downloadError, selectedPipeline]);
 
