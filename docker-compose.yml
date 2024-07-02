@@ -497,6 +497,19 @@ services:
       interval: 30s
       timeout: 30s
       retries: 5
+  # =======
+  # Airflow upgrade: DB migration service
+  # =======
+
+  #airflow-db-migrate:
+  #  <<: *airflow
+  #  depends_on:
+  #    airflow-pg:
+  #      condition: service_healthy
+  #  container_name: airflow-db-migrate
+  #  restart: always
+  #  entrypoint: /bin/bash
+  #  command: -c "sleep 60 && airflow db upgrade"
 
   # =======
   # keycloak
@@ -677,7 +690,23 @@ services:
       timeout: 30s
       retries: 3
 
-  clamav:
-    image: mkodockx/docker-clamav:alpine
+  # =====
+  #  HCP Vault
+  # =====
+  vault-server:
+    image: vault:1.8.2
+    container_name: vault-server
     ports:
-      - "3310:3310"
+      - "8200:8200"
+    restart: always
+    volumes:
+      - ./vault/config:/vault/config:rw
+      - ./vault/policies:/vault/policies:rw
+      - ./vault/data:/vault/data:rw
+      - ./vault/logs:/vault/logs:rw
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+      - VAULT_API_ADDR=http://127.0.0.1:8200
+    cap_add:
+      - IPC_LOCK
+    entrypoint: vault server -config=/vault/config/vault.json

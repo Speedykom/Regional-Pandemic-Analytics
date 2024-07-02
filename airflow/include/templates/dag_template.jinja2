@@ -45,7 +45,7 @@ druid_router_url = Variable.get('druid_router_url')
 def download_pipeline_minio():
     task_logger.debug('Beginning download of pipeline from MinIO…')
     client = Minio(minio_url, access_key=minio_access_key , secret_key=minio_secret_key, secure=False)
-    client.fget_object("pipelines","pipelines-created/{{user_id}}/{{pipeline_name}}","/hop/config/projects/default/{{user_id}}/{{pipeline_name}}")
+    client.fget_object("pipelines","pipelines-created/{{user_id}}/{{pipeline_display_name}}","/hop/config/projects/default/{{user_id}}/{{pipeline_display_name}}")
     task_logger.info('Download of pipeline from MinIO completed')
 
 # Ingest to druid
@@ -99,7 +99,7 @@ class DruidOperator(BaseOperator):
           }
         },
         "dataSchema": {
-          "dataSource": "{{dag_id}}",
+          "dataSource": "{{dag_display_name}}",
           "timestampSpec": timestamp_spec,
           "dimensionsSpec": {
             "dimensions": schema
@@ -145,7 +145,7 @@ class SupersetOperator(BaseOperator):
   def execute(self, context: Context):
     client = SupersetClient(base_url = superset_base_url)
     db_id = self.prepare_db(client)
-    dataset_id, explore_url = client.create_or_update_dataset(name = '{{dag_id}}', db_name = db_id)
+    dataset_id, explore_url = client.create_or_update_dataset(name = '{{dag_display_name}}', db_name = db_id)
     self.xcom_push(context, 'superset_dataset_id', dataset_id)
     self.xcom_push(context, 'superset_dataset_url', explore_url)
 
@@ -156,7 +156,7 @@ class SupersetOperator(BaseOperator):
     return db_id
 
 
-with DAG("{{dag_id}}", default_args=default_args,start_date=datetime({{date}}), schedule_interval="{{schedule_interval}}", description="{{description}}", catchup=False, is_paused_upon_creation=False) as dag:
+with DAG("{{dag_id}}", dag_display_name="{{dag_display_name}}",default_args=default_args,start_date=datetime({{date}}), schedule_interval="{{schedule_interval}}", description="{{description}}", catchup=False, is_paused_upon_creation=False) as dag:
 
     task_logger.debug('Setting up components of DAG')
 
@@ -168,8 +168,9 @@ with DAG("{{dag_id}}", default_args=default_args,start_date=datetime({{date}}), 
 
     # Run Hop pipeline by sending it over HTTP to Hop server
     hop = HopPipelineOperator(
-      task_id="{{pipeline_name}}",
-      pipeline="{{user_id}}/{{pipeline_name}}",
+      task_id="{{pipeline_display_name}}",
+      task_display_name="{{pipeline_display_name}}",
+      pipeline="{{user_id}}/{{pipeline_display_name}}",
       pipe_config='remote hop server',
       project_name='default',
       log_level='Basic',
