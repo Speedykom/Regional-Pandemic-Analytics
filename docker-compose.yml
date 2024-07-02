@@ -718,8 +718,8 @@ services:
       - ./vault/data:/vault/data:rw
       - ./vault/logs:/vault/logs:rw
     environment:
-      - VAULT_ADDR=http://127.0.0.1:8200
-      - VAULT_API_ADDR=http://127.0.0.1:8200
+      - VAULT_ADDR=${NGINX_VAULT_DOMAIN_NAME}
+      - VAULT_API_ADDR=${NGINX_VAULT_DOMAIN_NAME}
     cap_add:
       - IPC_LOCK
     entrypoint: vault server -config=/vault/config/vault.json
