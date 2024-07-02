@@ -60,6 +60,7 @@ const enTranslation = {
   addPipeline: 'Add Pipeline',
   addPipelineMessage: 'Please enter a pipeline name',
   pipelineSpaceMessage: 'Pipeline name cannot contain whitespaces',
+  pipelineDownloadFailed: 'Failed to download the pipeline',
   enterName: 'Enter Name',
   template: 'Template',
   descPlaceholder: 'Enter Description',
