@@ -12,6 +12,7 @@ from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
 from .validator import check_pipeline_validity
 from urllib.parse import quote, unquote
+from minio import Minio
 import pyclamd
 
 class AirflowInstance:
@@ -219,10 +220,12 @@ class PipelineDownloadView(APIView):
             # Check if the pipeline exists
             client_response = client.get_object("pipelines", f"pipelines-created/{user_id}/{name}.hpl")
 
+            # Read the data from the response
+            data = client_response.read()
+
             # Set response headers for file download
-            response = Response(content_type='text/xml')
-            response["Content-Disposition"] = f'attachment; filename="{name}.hpl'
-            response.data = client_response.data
+            response = Response(data, content_type='application/octet-stream')
+            response["Content-Disposition"] = f'attachment; filename="{name}.hpl"'
             return response
         except Exception as e:
             return Response(
