@@ -41,7 +41,6 @@ export default function ProcessChainList() {
     )
       return null;
     var processChainToShowLength = 0;
-    console.log(processChainList);
     if (showDisabled) {
       processChainToShowLength = processChainList?.dags?.length;
     } else {
@@ -56,7 +55,6 @@ export default function ProcessChainList() {
       currentPage * defaultPageSize,
       processChainToShowLength
     );
-    console.log(processChainList.dags);
     return (
       <div className="flex justify-end items-center mt-4">
         <div className="mr-4">
