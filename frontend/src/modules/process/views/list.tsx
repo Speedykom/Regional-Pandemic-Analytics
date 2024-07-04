@@ -40,21 +40,28 @@ export default function ProcessChainList() {
       processChainList?.dags?.length == 0
     )
       return null;
+    var processChainToShowLength = 0;
+    console.log(processChainList);
+    if (showDisabled) {
+      processChainToShowLength = processChainList?.dags?.length;
+    } else {
+      processChainToShowLength = processChainList.dags.filter(
+        (dag) => dag.status === false
+      ).length;
+    }
 
-    const totalPages = Math.ceil(
-      processChainList?.dags?.length / defaultPageSize
-    );
+    const totalPages = Math.ceil(processChainToShowLength / defaultPageSize);
     const startItem = (currentPage - 1) * defaultPageSize + 1;
     const endItem = Math.min(
       currentPage * defaultPageSize,
-      processChainList?.dags?.length
+      processChainToShowLength
     );
-
+    console.log(processChainList.dags);
     return (
       <div className="flex justify-end items-center mt-4">
         <div className="mr-4">
           {t('showing')} {startItem} – {endItem} {t('of')}{' '}
-          {processChainList.dags?.length}
+          {processChainToShowLength}
         </div>
         <div className="flex">
           <Button
