@@ -1902,6 +1902,17 @@
               "scopes": "[\"data:read\",\"data:add\"]",
               "applyPolicies": "[\"admin-policy\"]"
             }
+          },
+          {
+            "id": "809f97d8-5f4b-4b99-ba43-650dc8dc1991",
+            "name": "Account Management",
+            "description": "This permission allows users to manage their own accounts.",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "scopes": "[\"user:update\"]"
+            }
           }
         ],
         "scopes": [
