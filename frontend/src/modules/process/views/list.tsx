@@ -41,20 +41,26 @@ export default function ProcessChainList() {
     )
       return null;
 
-    const totalPages = Math.ceil(
-      processChainList?.dags?.length / defaultPageSize
-    );
+    var processChainToShowLength = 0;
+    if (showDisabled) {
+      processChainToShowLength = processChainList?.dags?.length;
+    } else {
+      processChainToShowLength = processChainList.dags.filter(
+        (dag) => dag.status == false
+      ).length;
+    }
+
+    const totalPages = Math.ceil(processChainToShowLength / defaultPageSize);
     const startItem = (currentPage - 1) * defaultPageSize + 1;
     const endItem = Math.min(
       currentPage * defaultPageSize,
-      processChainList?.dags?.length
+      processChainToShowLength
     );
-
     return (
       <div className="flex justify-end items-center mt-4">
         <div className="mr-4">
           {t('showing')} {startItem} – {endItem} {t('of')}{' '}
-          {processChainList.dags?.length}
+          {processChainToShowLength}
         </div>
         <div className="flex">
           <Button
@@ -79,8 +85,16 @@ export default function ProcessChainList() {
   };
 
   const renderProcessChainData = (processChainList: DagDetails[]) => {
+    var processChainToShow = null;
+    if (!showDisabled) {
+      processChainToShow = processChainList.filter(
+        (dag) => dag.status == false
+      );
+    } else {
+      processChainToShow = processChainList;
+    }
     if (!defaultPageSize && !!pipelineList) {
-      return processChainList.map((process) => {
+      return processChainToShow.map((process) => {
         return (
           <ProcessCard
             key={process.dag_id}
@@ -95,7 +109,7 @@ export default function ProcessChainList() {
     const startIndex = (currentPage - 1) * defaultPageSize;
     const endIndex = startIndex + defaultPageSize;
     if (!!pipelineList) {
-      return processChainList?.slice(startIndex, endIndex).map((process) => {
+      return processChainToShow?.slice(startIndex, endIndex).map((process) => {
         return (
           <ProcessCard
             key={process.dag_id}
