@@ -40,12 +40,13 @@ export default function ProcessChainList() {
       processChainList?.dags?.length == 0
     )
       return null;
+
     var processChainToShowLength = 0;
     if (showDisabled) {
       processChainToShowLength = processChainList?.dags?.length;
     } else {
       processChainToShowLength = processChainList.dags.filter(
-        (dag) => dag.status === false
+        (dag) => dag.status == false
       ).length;
     }
 
@@ -84,8 +85,16 @@ export default function ProcessChainList() {
   };
 
   const renderProcessChainData = (processChainList: DagDetails[]) => {
+    var processChainToShow = null;
+    if (!showDisabled) {
+      processChainToShow = processChainList.filter(
+        (dag) => dag.status == false
+      );
+    } else {
+      processChainToShow = processChainList;
+    }
     if (!defaultPageSize && !!pipelineList) {
-      return processChainList.map((process) => {
+      return processChainToShow.map((process) => {
         return (
           <ProcessCard
             key={process.dag_id}
@@ -100,7 +109,7 @@ export default function ProcessChainList() {
     const startIndex = (currentPage - 1) * defaultPageSize;
     const endIndex = startIndex + defaultPageSize;
     if (!!pipelineList) {
-      return processChainList?.slice(startIndex, endIndex).map((process) => {
+      return processChainToShow?.slice(startIndex, endIndex).map((process) => {
         return (
           <ProcessCard
             key={process.dag_id}
