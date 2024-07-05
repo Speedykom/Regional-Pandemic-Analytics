@@ -174,7 +174,7 @@ with DAG("{{dag_id}}", dag_display_name="{{dag_display_name}}",default_args=defa
       pipe_config='remote hop server',
       project_name='default',
       log_level='Basic',
-      params={'user_id':'{{user_id}}','minio_ftp':f'{minio_ftp}','dag_id':'{{dag_id}}'}
+      hop_params={'user_id':'{{user_id}}','minio_ftp':f'{minio_ftp}','dag_id':'{{dag_id}}','dag_display_name':'{{dag_display_name}}'}
     )
 
     # Run Druid ingestion
