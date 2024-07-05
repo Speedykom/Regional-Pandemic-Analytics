@@ -13,7 +13,7 @@ export interface DagDetails {
   data_source_name: string;
   start_date: any;
   schedule_interval: string;
-  status: string;
+  status: boolean;
   description: string;
   last_parsed_time: string;
   next_dagrun: string;
