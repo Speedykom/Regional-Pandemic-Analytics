@@ -27,7 +27,4 @@ certbot/conf/archive/*
 certbot/conf/options-ssl-nginx.conf
 certbot/conf/ssl-dhparams.pem
 superset/import/failed/
-.env.dev
-.env.prod
-.env.local
 
