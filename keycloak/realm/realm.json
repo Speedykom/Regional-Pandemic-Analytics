@@ -81,6 +81,22 @@
         "attributes": {}
       },
       {
+        "id": "48ffed22-78a6-4c9b-82e8-e80e5de635ec",
+        "name": "user_role",
+        "description": "",
+        "composite": true,
+        "composites": {
+          "client": {
+            "superset": ["superset_admin"],
+            "airflow": ["airflow_admin"],
+            "repan-staging": ["user"]
+          }
+        },
+        "clientRole": false,
+        "containerId": "c89b3c58-aefb-4429-972b-feccb6a77750",
+        "attributes": {}
+      },
+      {
         "id": "3f14f73e-3e22-47b5-ab96-56ad5c48ba2b",
         "name": "Administrator",
         "description": "",
@@ -486,6 +502,14 @@
         {
           "id": "b7791a30-678c-40f8-95a9-377ed61f9b6c",
           "name": "uma_protection",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "124138ae-d2f7-4d57-803c-4d239ba05e12",
+          "attributes": {}
+        },
+        {
+          "id": "4754a7bf-78c7-4330-9d53-613b6cf56364",
+          "name": "user",
           "composite": false,
           "clientRole": true,
           "containerId": "124138ae-d2f7-4d57-803c-4d239ba05e12",
