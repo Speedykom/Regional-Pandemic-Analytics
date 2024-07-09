@@ -1904,14 +1904,15 @@
             }
           },
           {
-            "id": "809f97d8-5f4b-4b99-ba43-650dc8dc1991",
+            "id": "a500847f-f5a9-45d0-aedc-29f1dca4d586",
             "name": "Account Management",
             "description": "This permission allows users to manage their own accounts.",
             "type": "scope",
             "logic": "POSITIVE",
             "decisionStrategy": "UNANIMOUS",
             "config": {
-              "scopes": "[\"user:update\"]"
+              "scopes": "[\"user:update\",\"user:read\"]",
+              "applyPolicies": "[\"user_policy\"]"
             }
           }
         ],
