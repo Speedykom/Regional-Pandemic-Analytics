@@ -257,7 +257,7 @@ class PipelineUploadView(APIView):
         cd = pyclamd.ClamdNetworkSocket(host="clamav", port=3310)
         scan_result = cd.scan_stream(uploaded_file.read())
         if scan_result is not None:
-            logging.error(f"Malicious File Upload in Avatar : {scan_result}")
+            logging.error(f"Malicious Pipeline uploaded : {scan_result}")
             return Response({'errorMessage': f'Malicious File Upload: {scan_result}'}, status=status.HTTP_400_BAD_REQUEST)
         # seeking to 0 in the uploaded_file because scan_stream does not release the pointer 
         uploaded_file.seek(0)
