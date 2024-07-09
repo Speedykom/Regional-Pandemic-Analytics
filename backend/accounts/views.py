@@ -238,19 +238,6 @@ class UserDetailView(APIView):
         except Exception as err:
             return Response({'errorMessage': 'Unable to enable the user. Error: {}'.format(str(err))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def has_admin_role(self, request):
-        """
-        Check if the current user has admin rights
-        """
-        try:
-            keycloak_admin = get_keycloak_admin()
-            user_id = get_current_user_id(request)
-            client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
-            roles = keycloak_admin.get_client_roles_of_user(user_id=user_id, client_id=client_id)
-            admin_roles = ['administrator']  
-            return any(role['name'] in admin_roles for role in roles)
-        except Exception as err:
-            return False
 class UserRolesView(APIView):
     """
     API view to assign roles to users
