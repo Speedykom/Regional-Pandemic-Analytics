@@ -35,6 +35,20 @@ from django.http import HttpResponseBadRequest, HttpResponseServerError, HttpRes
 def homepage():
     return HttpResponse('<h2 style="text-align:center">Welcome to IGAD API Page</h2>')
 
+def has_admin_role(request):
+    """
+    Check if the current user has admin rights
+    """
+    try:
+        keycloak_admin = get_keycloak_admin()
+        user_id = get_current_user_id(request)
+        client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
+        roles = keycloak_admin.get_client_roles_of_user(user_id=user_id, client_id=client_id)
+        admin_roles = ['Administrator']
+        return any(role['name'] in admin_roles for role in roles)
+    except Exception as err:
+        return False
+
 
 class UserListView(APIView):
     """
@@ -49,6 +63,9 @@ class UserListView(APIView):
         """
         Endpoint for listing all users 
         """
+        if not has_admin_role(request):
+            return Response({'errorMessage': 'You do not have permission to view this resource.'}, status=status.HTTP_403_FORBIDDEN)
+        
         try:
             keycloak_admin = get_keycloak_admin()
             users = keycloak_admin.get_users({})
