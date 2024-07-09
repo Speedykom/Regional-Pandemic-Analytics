@@ -30,6 +30,7 @@ from utils.generators import get_random_secret
 from utils.keycloak_auth import get_keycloak_admin
 from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponseServerError, HttpResponseNotFound
+from utils.keycloak_auth import get_current_user_id, get_keycloak_admin
 
 
 def homepage():
@@ -43,9 +44,12 @@ def has_admin_role(request):
         keycloak_admin = get_keycloak_admin()
         user_id = get_current_user_id(request)
         client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
-        roles = keycloak_admin.get_client_roles_of_user(user_id=user_id, client_id=client_id)
+        client_roles = keycloak_admin.get_client_roles_of_user(user_id=user_id, client_id=client_id)
+        realm_roles = keycloak_admin.get_realm_roles_of_user(user_id=user_id)
+        all_roles = client_roles + realm_roles
         admin_roles = ['Administrator']
-        return any(role['name'] in admin_roles for role in roles)
+        has_role = any(role['name'] in admin_roles for role in all_roles)
+        return has_role
     except Exception as err:
         return False
 
