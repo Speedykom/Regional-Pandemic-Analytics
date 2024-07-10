@@ -18,7 +18,8 @@ import logging
 import requests
 from core.keycloak_impersonation import get_auth_token
 from django.http import StreamingHttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseServerError
-
+import smtplib
+from email.mime.text import MIMEText
 
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -92,7 +93,7 @@ class UserListView(APIView):
                 {
                     "type": "password",
                     "value": generate_password,
-                    "temporary": False
+                    "temporary": True
                 }
             ]
         }
@@ -120,7 +121,33 @@ class UserListView(APIView):
                 "role": role,
                 "password": form_data['credentials'][0]['value']
             }
+            #send an email to the user to ask him to change the password
+            subject = "Action Required - New account in RePan"
+            body = f'''
+Dear {user["firstName"].title()},
+           
+Your account has been successfully created. Here are your login details:
+Username: {user["username"]}
+Password: {user["password"]}
+For security reasons, we require you to change your password upon your first login. Please follow the link below to sign in and update your password: https://frontend.igad.local/
+If you have any questions or need assistance, feel free to contact our support team.
 
+Thank you for choosing RePan!
+
+Best regards,
+'''
+            sender = os.getenv("MAIL_USER")
+            recipients = [f"{user['email']}"]
+            password = os.getenv("MAIL_PASSWORD")
+
+
+            msg = MIMEText(body)
+            msg['Subject'] = subject
+            msg['From'] = sender
+            msg['To'] = ', '.join(recipients)
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
+                smtp_server.login(sender, password)
+                smtp_server.sendmail(sender, recipients, msg.as_string())
             return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_201_CREATED)
         except Exception as err:
             return Response({'errorMessage': 'Unable to create a new user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
