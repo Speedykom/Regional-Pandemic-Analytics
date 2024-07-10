@@ -18,7 +18,7 @@ import logging
 import requests
 from core.keycloak_impersonation import get_auth_token
 from django.http import StreamingHttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseServerError
-
+import pyclamd
 
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -320,9 +320,17 @@ class UserAvatarView(APIView):
             return HttpResponseBadRequest("Bad request: User ID parameter is missing.")
 
         uploaded_file = request.FILES.get("uploadedFile")
+
+        cd = pyclamd.ClamdNetworkSocket(host="clamav", port=3310)
+        scan_result = cd.scan_stream(uploaded_file.read())
+        if scan_result is not None:
+            logging.error(f"Malicious File Upload in Avatar : {scan_result}")
+            return Response({'errorMessage': f'Malicious File Upload: {scan_result}'}, status=status.HTTP_400_BAD_REQUEST)
+        # seeking to 0 in the uploaded_file because scan_stream does not release the pointer 
+        uploaded_file.seek(0)
+
         if not uploaded_file:
             return HttpResponseBadRequest("No file uploaded.")
-
         try:
             keycloak_admin = get_keycloak_admin()
             # Fetch the current user data to preserve existing attributes
