@@ -27,7 +27,7 @@ import { usePermission } from '@/common/hooks/use-permission';
 import { useTranslation } from 'react-i18next';
 
 export const AddUser = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [enabled, setEnabled] = useState<boolean>(false);
   const [emailVerified, setVerify] = useState<boolean>(false);
@@ -47,6 +47,7 @@ export const AddUser = () => {
   const onSubmit = async (user: SerialUser) => {
     user.enabled = enabled;
     user.emailVerified = emailVerified;
+    user.currentLanguage = i18n.language;
     if (!user.country) {
       setCountryValid(false);
     } else if (!user.role) {
