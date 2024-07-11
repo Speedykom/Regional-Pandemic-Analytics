@@ -13,10 +13,9 @@ def check_pipeline_validity(name):
     root = ET.fromstring(xml_data)
     for transform in root.iter("transform"):
         parquet_output_rule = ParquetFileOutputRule(transform)
-        valid_pipeline, check_text = parquet_output_rule.is_valid()
-        print("##########################")
-        print(valid_pipeline, check_text)
-        print("##########################")
+        # Ensure to run the validation only for ParquetFileOutput transforms
+        if(parquet_output_rule.is_parquet_transform()):
+            valid_pipeline, check_text = parquet_output_rule.is_valid()
         # New rules can be added here to check for other types of transforms
         ############################################
     return valid_pipeline, check_text
