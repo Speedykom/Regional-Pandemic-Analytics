@@ -49,7 +49,10 @@ export default function ProcessCard({
     <>
       {(showDisabled || !process.status) && (
         <div className="mb-2">
-          <Accordion defaultOpen={true}>
+          <Accordion defaultOpen={true} onClick={() => {
+            setOpen(!open);
+            }}
+          >
             <Disclosure.Button
               disabled={true}
               as="div"
