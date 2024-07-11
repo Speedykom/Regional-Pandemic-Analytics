@@ -76,6 +76,7 @@ class UserListView(APIView):
         Endpoint for creating a new user 
         """
         generate_password = get_random_secret(10)
+        #current_language = request.data.get("currentLanguage", None)[0]
         form_data = {
             "firstName": request.data.get("firstName", None),
             "lastName": request.data.get("lastName", None),
@@ -97,7 +98,6 @@ class UserListView(APIView):
                 }
             ]
         }
-
         try:
             keycloak_admin = get_keycloak_admin()
 
@@ -124,24 +124,28 @@ class UserListView(APIView):
             #send an email to the user to ask him to change the password
             subject = "Action Required - New account in RePan"
             body = f'''
-Dear {user["firstName"].title()},
-           
-Your account has been successfully created. Here are your login details:
-Username: {user["username"]}
-Password: {user["password"]}
-For security reasons, we require you to change your password upon your first login. Please follow the link below to sign in and update your password: https://frontend.igad.local/
-If you have any questions or need assistance, feel free to contact our support team.
+<p>Dear {user["firstName"].title()},</p>
 
-Thank you for choosing RePan!
+    <p>Your account has been successfully created. Here are your login details:</p>
+    <p>Username: {user["username"]}<br>
+    Password: {user["password"]}</p>
 
-Best regards,
+    <p>For security reasons, we require you to change your password upon your first login. Please follow the link below to sign in and update your password.</p>
+    <p><a href="https://frontend.igad.local/">Click here</a> to sign in and update your password.</p>
+
+    <p>If you have any questions or need assistance, feel free to contact our support team.</p>
+
+    <p>Thank you for choosing RePan!</p>
+
+    <p>Best regards,<br>
+    Speedykom</p>
 '''
             sender = os.getenv("MAIL_USER")
             recipients = [f"{user['email']}"]
             password = os.getenv("MAIL_PASSWORD")
 
 
-            msg = MIMEText(body)
+            msg = MIMEText(body, 'html')
             msg['Subject'] = subject
             msg['From'] = sender
             msg['To'] = ', '.join(recipients)
