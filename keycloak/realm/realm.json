@@ -89,7 +89,7 @@
           "client": {
             "superset": ["superset_admin"],
             "airflow": ["airflow_admin"],
-            "repan-staging": ["user"]
+            "${BACKEND_CLIENT_ID}": ["user"]
           }
         },
         "clientRole": false,
@@ -1861,7 +1861,7 @@
             "logic": "POSITIVE",
             "decisionStrategy": "UNANIMOUS",
             "config": {
-              "roles": "[{\"id\":\"repan-staging/user\",\"required\":false}]"
+              "roles": "[{\"id\":\"${BACKEND_CLIENT_ID}/user\",\"required\":false}]"
             }
           },
           {
