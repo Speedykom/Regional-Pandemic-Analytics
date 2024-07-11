@@ -20,6 +20,7 @@ from core.keycloak_impersonation import get_auth_token
 from django.http import StreamingHttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseServerError
 import smtplib
 from email.mime.text import MIMEText
+from jinja2 import Template
 
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -76,7 +77,8 @@ class UserListView(APIView):
         Endpoint for creating a new user 
         """
         generate_password = get_random_secret(10)
-        #current_language = request.data.get("currentLanguage", None)[0]
+        current_language = request.data.get("currentLanguage", None)
+
         form_data = {
             "firstName": request.data.get("firstName", None),
             "lastName": request.data.get("lastName", None),
@@ -122,28 +124,19 @@ class UserListView(APIView):
                 "password": form_data['credentials'][0]['value']
             }
             #send an email to the user to ask him to change the password
-            subject = "Action Required - New account in RePan"
-            body = f'''
-<p>Dear {user["firstName"].title()},</p>
+            if current_language.upper() == 'EN':
+                subject = "Action Required - New account in RePan"
+            elif current_language.upper() == 'FR':
+                subject = "Action requise - Nouveau compte dans RePan"
+             
+            template_file_name = f"new_account_{current_language.upper()}.jinja.html"    
 
-    <p>Your account has been successfully created. Here are your login details:</p>
-    <p>Username: {user["username"]}<br>
-    Password: {user["password"]}</p>
-
-    <p>For security reasons, we require you to change your password upon your first login. Please follow the link below to sign in and update your password.</p>
-    <p><a href="https://frontend.igad.local/">Click here</a> to sign in and update your password.</p>
-
-    <p>If you have any questions or need assistance, feel free to contact our support team.</p>
-
-    <p>Thank you for choosing RePan!</p>
-
-    <p>Best regards,<br>
-    Speedykom</p>
-'''
+            with open("email_templates/" + template_file_name) as f:
+                body = Template(f.read()).render(name=user["firstName"], username=user["username"], password=user["password"])
+            
             sender = os.getenv("MAIL_USER")
             recipients = [f"{user['email']}"]
             password = os.getenv("MAIL_PASSWORD")
-
 
             msg = MIMEText(body, 'html')
             msg['Subject'] = subject

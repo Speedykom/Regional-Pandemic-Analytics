@@ -46,6 +46,7 @@ export interface SerialUser {
     id: string;
     name: string;
   };
+  currentLanguage: string;
 }
 
 export interface UserResponse {
