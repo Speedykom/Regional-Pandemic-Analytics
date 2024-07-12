@@ -123,7 +123,6 @@ volumes:
   router_var: {}
   mongo-data:
 
-
 services:
   # ========
   # Minio
@@ -145,13 +144,7 @@ services:
       - MINIO_IDENTITY_OPENID_SCOPES=${MINIO_IDENTITY_OPENID_SCOPES}
       - MINIO_IDENTITY_OPENID_REDIRECT_URI=${MINIO_IDENTITY_OPENID_REDIRECT_URI}
     healthcheck:
-      test:
-        [
-          "CMD",
-          "curl",
-          "-f",
-          "http://localhost:9000/minio/health/live"
-        ]
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -164,7 +157,7 @@ services:
   minio-mc:
     image: minio/mc
     container_name: minio-mc
-    entrypoint: [ "/bin/sh", "-c" ]
+    entrypoint: ["/bin/sh", "-c"]
     command:
       - |
         chmod +x /tmp/setup.sh
@@ -229,7 +222,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
         ]
       interval: 10s
       timeout: 3s
@@ -425,7 +418,7 @@ services:
     shm_size: 2g
     depends_on:
       - superset
-    command: 'celery --app=superset.tasks.celery_app:app worker --pool=prefork --max-tasks-per-child=128 -O fair'
+    command: "celery --app=superset.tasks.celery_app:app worker --pool=prefork --max-tasks-per-child=128 -O fair"
 
   # =====
   #  Hop
@@ -473,7 +466,7 @@ services:
     volumes:
       - airflow_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "airflow" ]
+      test: ["CMD", "pg_isready", "-U", "airflow"]
       interval: 5s
       retries: 5
 
@@ -582,13 +575,7 @@ services:
       - keycloak-pg
     healthcheck:
       test:
-        [
-          "CMD",
-          "curl",
-          "--head",
-          "-fsS",
-          "http://localhost:8080/health/ready"
-        ]
+        ["CMD", "curl", "--head", "-fsS", "http://localhost:8080/health/ready"]
       interval: 60s
       timeout: 10s
       retries: 10
@@ -702,3 +689,8 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
+
+  clamav:
+    image: mkodockx/docker-clamav:alpine
+    ports:
+      - "3310:3310"
