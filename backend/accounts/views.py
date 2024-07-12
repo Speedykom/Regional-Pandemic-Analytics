@@ -131,9 +131,9 @@ class UserListView(APIView):
                 subject = "Action requise - Nouveau compte dans RePan"
              
             template_file_name = f"new_account_{current_language.upper()}.jinja.html"    
-
+            frontend_url = os.getenv("KEYCLOAK_REDIRECT_URI")
             with open("email_templates/" + template_file_name) as f:
-                body = Template(f.read()).render(name=user["firstName"], username=user["username"], password=user["password"])
+                body = Template(f.read()).render(name=user["firstName"], username=user["username"], password=user["password"], frontend_url=frontend_url)
             
             sender = os.getenv("MAIL_USER")
             recipients = [f"{user['email']}"]
