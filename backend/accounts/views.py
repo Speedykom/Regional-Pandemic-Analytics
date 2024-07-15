@@ -111,7 +111,7 @@ class UserListView(APIView):
             user_id = keycloak_admin.get_user_id(form_data["username"])
             role = request.data.get("role", {})
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
-            keycloak_admin.assign_client_role(client_id=client_id, user_id=user_id, roles=[role])
+            keycloak_admin.assign_realm_roles(user_id=user_id, roles=[role])
 
             user = {
                 "id": user_id,
