@@ -71,6 +71,18 @@ class SupersetClient:
             create_result = create_response.json()
             return create_result["id"]
 
+    def get_user_ids(self, username: str) -> Union[int, None]:
+        user_query = urllib.parse.urlencode({"q": JSONEncoder().encode({"columns": ["id"], "filters": [{"col": "username", "opr": "eq", "value": username}]})})
+        get_user_url = urllib.parse.urljoin(self._base_url, "/api/v1/user/?{}".format(user_query))
+        user_response = requests.get(url=get_user_url, headers=self.authorize({}))
+        if user_response.status_code >= 400:
+            raise RuntimeError("Unable to retrieve user information from Superset")
+        user_result = user_response.json()
+        if user_result["count"] > 0:
+            return user_result["result"][0]["id"]
+        else:
+            return None
+
     def find_dataset(self, name: str, db_name: Union[str, int]) -> Union[Tuple[int, str], None]:
         db_id = self.get_db_ids(db_name)
         if db_id is None:
@@ -87,15 +99,26 @@ class SupersetClient:
 
         ] if dataset_result["count"] > 0 else None
 
-    def create_dataset(self, name: str, db_name: Union[str, int]) -> Tuple[int, str]:
+    def create_dataset(self, name: str, db_name: Union[str, int], owner_username: str) -> Tuple[int, str]:
         logger.debug("Creating new dataset %s in database %s", name, db_name)
         db_id = self.get_db_ids(db_name)
         if db_id is None:
             logger.error("DB %s does not exist in Superset", db_name)
             raise RuntimeError("DB {} does not exist in Superset".format(db_name))
+        
+        owner_id = self.get_user_ids(owner_username)
+        if owner_id is None:
+            logger.error("User %s does not exist in Superset", owner_username)
+            raise RuntimeError("User {} does not exist in Superset".format(owner_username))
+
         create_dataset_url = urllib.parse.urljoin(self._base_url, "/api/v1/dataset/")
-        create_dataset_body = { "database": db_id, "table_name": name, "schema": "druid" }
-        create_response = requests.post(url = create_dataset_url, headers = self.authorize({}, True), json = create_dataset_body)
+        create_dataset_body = {
+            "database": db_id,
+            "table_name": name,
+            "schema": "druid",
+            "owners": [owner_id]
+        }
+        create_response = requests.post(url=create_dataset_url, headers=self.authorize({}, True), json=create_dataset_body)
         if create_response.status_code >= 400:
             logger.error("Failed to create dataset %s in database %s with status %d and message: %s", name, db_name, create_response.status_code, create_response.text)
             raise RuntimeError("Failed to create Superset dataset {}".format(name))
@@ -119,10 +142,10 @@ class SupersetClient:
             raise RuntimeError("Failed to update dataset {}".format(name))
         logger.info("Dataset %s in database %s updated", name, db_name)
 
-    def create_or_update_dataset(self, name: str, db_name: Union[str, int]) -> Tuple[int, str]:
+    def create_or_update_dataset(self, name: str, db_name: Union[str, int], owner_username: str) -> Tuple[int, str]:
         found = self.find_dataset(name, db_name)
         if found is None:
-            return self.create_dataset(name, db_name)
+            return self.create_dataset(name, db_name, owner_username)
         else:
             dataset_id, explore_url = found
             self.update_dataset(dataset_id, db_name)
