@@ -16,7 +16,9 @@ import {
   useEnableDashboardMutation,
   useGenerateGuestTokenMutation,
 } from '../superset';
+
 import { embedDashboard } from '@superset-ui/embedded-sdk';
+
 import { useTranslation } from 'react-i18next';
 
 type EmbeddedDashboardProps = {
@@ -89,11 +91,7 @@ const EmbeddedDashboard: React.FC<EmbeddedDashboardProps> = ({
   return (
     <TabPanel>
       {selectedDashboard && (
-        <div
-          ref={ref}
-          className="h-screen embed-iframe-container"
-          style={{ height: '100%', width: '100%' }}
-        />
+        <div ref={ref} className="h-screen embed-iframe-container" />
       )}
     </TabPanel>
   );
