@@ -21,13 +21,13 @@ export default function Home() {
   const { t } = useTranslation();
   const { hasPermission } = usePermission();
 
-  const { data } = useGetDashboardsQuery('');
+  const { data: data, isLoading: isLoadingDashboards } =
+    useGetDashboardsQuery('');
   const dashboardIds = data?.result
     .map((d: any) => Number(d?.id))
     .filter((id: any) => !Number.isNaN(id));
-  const { data: favoriteStatus } = useGetFavoriteDashboardsQuery(
-    dashboardIds ?? skipToken
-  );
+  const { data: favoriteStatus, isLoading: isLoadingFavorites } =
+    useGetFavoriteDashboardsQuery(dashboardIds ?? skipToken);
 
   const favoriteDashboardIds = favoriteStatus?.result
     .filter((favorite: FavoriteDashboardResult) => favorite?.value)
@@ -41,6 +41,10 @@ export default function Home() {
           ),
         }
       : data ?? {};
+
+  if (isLoadingDashboards || isLoadingFavorites) {
+    return <div>Loading...</div>;
+  }
 
   if (!hasPermission('dashboard:read')) {
     return <Unauthorized />;
