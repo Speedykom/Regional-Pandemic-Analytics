@@ -37,11 +37,15 @@ export default function ProcessCard({
   const dateProcess = new Date(process.start_date);
   const processName = punycode.toUnicode(process.dag_id);
 
-  const handleRunProcess = () => {
+  const handleRunProcess = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     runProcessById(process.dag_id);
   };
 
-  const handleToggleProcessStatus = () => {
+  const handleToggleProcessStatus = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.stopPropagation();
     toggleProcessStatus(process.dag_id);
   };
 
