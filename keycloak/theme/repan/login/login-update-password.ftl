@@ -10,7 +10,7 @@
 
             <div class="${properties.kcFormGroupClass!}">
                 <div class="${properties.kcLabelWrapperClass!}">
-                    <label for="password-new" class="${properties.kcLabelClass!}">${msg("passwordNew")}</label>
+                    <label for="password-new" style="color: black; font-size: 16px;" class="${properties.kcLabelClass!}">${msg("passwordNew")}</label>
                 </div>
                 <div class="${properties.kcInputWrapperClass!}">
                     <input type="password" id="password-new" name="password-new" class="${properties.kcInputClass!}"
@@ -28,9 +28,10 @@
 
             <div class="${properties.kcFormGroupClass!}">
                 <div class="${properties.kcLabelWrapperClass!}">
-                    <label for="password-confirm" class="${properties.kcLabelClass!}">${msg("passwordConfirm")}</label>
+                    <label for="password-confirm" style="color: black; font-size: 16px;" class="${properties.kcLabelClass!}">${msg("passwordConfirm")}</label>
                 </div>
                 <div class="${properties.kcInputWrapperClass!}">
+                    
                     <input type="password" id="password-confirm" name="password-confirm"
                            class="${properties.kcInputClass!}"
                            autocomplete="new-password"
