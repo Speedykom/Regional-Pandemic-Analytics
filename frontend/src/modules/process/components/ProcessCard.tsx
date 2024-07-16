@@ -78,16 +78,16 @@ export default function ProcessCard({
                       {process.schedule_interval === '@once'
                         ? t('schedule_intervals.once')
                         : process.schedule_interval === '@hourly'
-                          ? t('schedule_intervals.hourly')
-                          : process.schedule_interval === '@daily'
-                            ? t('schedule_intervals.daily')
-                            : process.schedule_interval === '@weekly'
-                              ? t('schedule_intervals.weekly')
-                              : process.schedule_interval === '@monthly'
-                                ? t('schedule_intervals.monthly')
-                                : process.schedule_interval === '@yearly'
-                                  ? t('schedule_intervals.yearly')
-                                  : 'Default case'}
+                        ? t('schedule_intervals.hourly')
+                        : process.schedule_interval === '@daily'
+                        ? t('schedule_intervals.daily')
+                        : process.schedule_interval === '@weekly'
+                        ? t('schedule_intervals.weekly')
+                        : process.schedule_interval === '@monthly'
+                        ? t('schedule_intervals.monthly')
+                        : process.schedule_interval === '@yearly'
+                        ? t('schedule_intervals.yearly')
+                        : 'Default case'}
                     </Badge>
                   </div>
                   <div>
