@@ -37,6 +37,18 @@ export default function ProcessCard({
   const dateProcess = new Date(process.start_date);
   const processName = punycode.toUnicode(process.dag_id);
 
+  const handleRunProcess = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    runProcessById(process.dag_id);
+  };
+
+  const handleToggleProcessStatus = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.stopPropagation();
+    toggleProcessStatus(process.dag_id);
+  };
+
   return (
     <>
       {(showDisabled || !process.status) && (
@@ -67,21 +79,19 @@ export default function ProcessCard({
                       {t('addProcess.scheduleIntervalLabel')}
                     </div>
                     <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                      {process.schedule_interval === '@once' ? (
-                        t('schedule_intervals.once')
-                      ) : process.schedule_interval === '@hourly' ? (
-                        t('schedule_intervals.hourly')
-                      ) : process.schedule_interval === '@daily' ? (
-                        t('schedule_intervals.daily')
-                      ) : process.schedule_interval === '@weekly' ? (
-                        t('schedule_intervals.weekly')
-                      ) : process.schedule_interval === '@monthly' ? (
-                        t('schedule_intervals.monthly')
-                      ) : process.schedule_interval === '@yearly' ? (
-                        t('schedule_intervals.yearly')
-                      ) : (
-                        <div>Default case</div>
-                      )}
+                      {process.schedule_interval === '@once'
+                        ? t('schedule_intervals.once')
+                        : process.schedule_interval === '@hourly'
+                        ? t('schedule_intervals.hourly')
+                        : process.schedule_interval === '@daily'
+                        ? t('schedule_intervals.daily')
+                        : process.schedule_interval === '@weekly'
+                        ? t('schedule_intervals.weekly')
+                        : process.schedule_interval === '@monthly'
+                        ? t('schedule_intervals.monthly')
+                        : process.schedule_interval === '@yearly'
+                        ? t('schedule_intervals.yearly')
+                        : 'Default case'}
                     </Badge>
                   </div>
                   <div>
@@ -110,11 +120,9 @@ export default function ProcessCard({
                           ? true
                           : false
                       }
-                      onClick={() => {
-                        runProcessById(process.dag_id);
-                      }}
+                      onClick={handleRunProcess}
                     >
-                      {t('addProcess.run')}{' '}
+                      {t('addProcess.run')}
                     </Button>
                   )}
 
@@ -122,21 +130,17 @@ export default function ProcessCard({
                     <Button
                       variant="secondary"
                       color="red"
-                      onClick={() => {
-                        toggleProcessStatus(process.dag_id);
-                      }}
+                      onClick={handleToggleProcessStatus}
                     >
-                      {t('addProcess.enable')}{' '}
+                      {t('addProcess.enable')}
                     </Button>
                   ) : (
                     <Button
                       variant="secondary"
                       color="red"
-                      onClick={() => {
-                        toggleProcessStatus(process.dag_id);
-                      }}
+                      onClick={handleToggleProcessStatus}
                     >
-                      {t('addProcess.disable')}{' '}
+                      {t('addProcess.disable')}
                     </Button>
                   )}
                 </div>
