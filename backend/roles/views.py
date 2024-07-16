@@ -19,9 +19,8 @@ class RoleApiView(APIView):
         """
         try:
             keycloak_admin = get_keycloak_admin()
-            client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
-            client_roles = keycloak_admin.get_client_roles(client_id=client_id)
-            return Response(client_roles, status=status.HTTP_200_OK)
+            realm_roles = keycloak_admin.get_realm_roles()
+            return Response(realm_roles, status=status.HTTP_200_OK)
         except Exception as err:
             return Response({'errorMessage': 'Unable to retrieve the roles'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
