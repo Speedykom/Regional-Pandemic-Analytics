@@ -19,6 +19,9 @@ import requests
 from core.keycloak_impersonation import get_auth_token
 from django.http import StreamingHttpResponse, HttpResponseBadRequest, HttpResponseNotFound, HttpResponseServerError
 import pyclamd
+import smtplib
+from email.mime.text import MIMEText
+from jinja2 import Template
 
 
 from django.utils.datastructures import MultiValueDictKeyError
@@ -75,6 +78,8 @@ class UserListView(APIView):
         Endpoint for creating a new user 
         """
         generate_password = get_random_secret(10)
+        current_language = request.data.get("currentLanguage", None)
+
         form_data = {
             "firstName": request.data.get("firstName", None),
             "lastName": request.data.get("lastName", None),
@@ -92,11 +97,10 @@ class UserListView(APIView):
                 {
                     "type": "password",
                     "value": generate_password,
-                    "temporary": False
+                    "temporary": True
                 }
             ]
         }
-
         try:
             keycloak_admin = get_keycloak_admin()
 
@@ -107,7 +111,7 @@ class UserListView(APIView):
             user_id = keycloak_admin.get_user_id(form_data["username"])
             role = request.data.get("role", {})
             client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
-            keycloak_admin.assign_client_role(client_id=client_id, user_id=user_id, roles=[role])
+            keycloak_admin.assign_realm_roles(user_id=user_id, roles=[role])
 
             user = {
                 "id": user_id,
@@ -120,7 +124,28 @@ class UserListView(APIView):
                 "role": role,
                 "password": form_data['credentials'][0]['value']
             }
+            #send an email to the user to ask him to change the password
+            if current_language.upper() == 'EN':
+                subject = "Action Required - New account in RePan"
+            elif current_language.upper() == 'FR':
+                subject = "Action requise - Nouveau compte dans RePan"
+             
+            template_file_name = f"new_account_{current_language.upper()}.jinja.html"    
+            frontend_url = os.getenv("KEYCLOAK_REDIRECT_URI")
+            with open("email_templates/" + template_file_name) as f:
+                body = Template(f.read()).render(name=user["firstName"], username=user["username"], password=user["password"], frontend_url=frontend_url)
+            
+            sender = os.getenv("MAIL_USER")
+            recipients = [f"{user['email']}"]
+            password = os.getenv("MAIL_PASSWORD")
 
+            msg = MIMEText(body, 'html')
+            msg['Subject'] = subject
+            msg['From'] = sender
+            msg['To'] = ', '.join(recipients)
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp_server:
+                smtp_server.login(sender, password)
+                smtp_server.sendmail(sender, recipients, msg.as_string())
             return Response({'message': 'User created successfully', 'user': user}, status=status.HTTP_201_CREATED)
         except Exception as err:
             return Response({'errorMessage': 'Unable to create a new user'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

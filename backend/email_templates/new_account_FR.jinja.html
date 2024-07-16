@@ -1,0 +1,24 @@
+<p>Cher {{ name.title() }},</p>
+
+<p>Votre compte a été créé avec succès. Voici vos détails de connexion :</p>
+<p>
+  Nom d'utilisateur : {{ username }}<br />
+  Mot de passe : {{ password }}
+</p>
+
+<p>
+  Pour des raisons de sécurité, nous vous demandons de changer votre mot de
+  passe lors de votre première connexion. Veuillez suivre le lien ci-dessous
+  pour vous connecter et mettre à jour votre mot de passe.
+</p>
+<p>
+  <a href="{{ frontend_url }}">Cliquez ici</a> pour vous connecter et mettre à
+  jour votre mot de passe.
+</p>
+
+<p>
+  Si vous avez des questions ou avez besoin d'aide, n'hésitez pas à contacter
+  notre équipe de support.
+</p>
+
+<p>Merci d'avoir choisi RePan !</p>
