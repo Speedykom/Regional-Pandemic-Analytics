@@ -133,3 +133,14 @@ class SupersetClient:
             dataset_id, explore_url = found
             self.update_dataset(dataset_id, db_name)
             return [dataset_id, explore_url]
+
+    def get_current_user_id(self) -> int:
+        """Fetch the current user ID."""
+        get_user_url = urllib.parse.urljoin(self._base_url, "/api/v1/me/")
+        user_response = requests.get(url=get_user_url, headers=self.authorize({}))
+
+        if user_response.status_code >= 400:
+            raise RuntimeError("Unable to retrieve current user ID from Superset")
+        
+        user_result = user_response.json()
+        return user_result["result"]["id"]
