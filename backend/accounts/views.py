@@ -300,7 +300,7 @@ class UserAvatarView(APIView):
     """
     keycloak_scopes = {
         'GET': 'user:read',
-        'POST': 'user:add'
+        'POST': 'user:update'
     }
     parser_classes = (MultiPartParser,)
 
