@@ -18,12 +18,9 @@ export const UserDetails = () => {
   const { t } = useTranslation();
   const currentUser = useSelector(selectCurrentUser);
 
-  const { data: userProfileImage } = useGetUserAvatarQuery(
-    currentUser?.id ?? '',
-    {
-      skip: !currentUser?.id,
-    }
-  );
+  const { data: userProfileImage } = useGetUserAvatarQuery(data?.id ?? '', {
+    skip: !currentUser?.id,
+  });
 
   return (
     <section className="py-1 bg-blueGray-50">
