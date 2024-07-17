@@ -140,7 +140,7 @@ class SupersetClient:
         user_response = requests.get(url=get_user_url, headers=self.authorize({}))
 
         if user_response.status_code >= 400:
-            raise RuntimeError("Unable to retrieve current user ID from Superset")
+            raise RuntimeError(f"Unable to retrieve current user ID from Superset. Status code: {user_response.status_code}, Response: {user_response.text}")
         
         user_result = user_response.json()
         return user_result["result"]["id"]
