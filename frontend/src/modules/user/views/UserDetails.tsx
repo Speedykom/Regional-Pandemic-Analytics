@@ -7,8 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useGetUserAvatarQuery, useGetUserQuery } from '@/modules/user/user';
 import { useRouter } from 'next/router';
-import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '@/modules/auth/auth';
+
 import { useTranslation } from 'react-i18next';
 
 export const UserDetails = () => {
@@ -16,14 +15,10 @@ export const UserDetails = () => {
   const { id } = router.query;
   const { data } = useGetUserQuery(String(id));
   const { t } = useTranslation();
-  const currentUser = useSelector(selectCurrentUser);
 
-  const { data: userProfileImage } = useGetUserAvatarQuery(
-    currentUser?.id ?? '',
-    {
-      skip: !currentUser?.id,
-    }
-  );
+  const { data: userProfileImage } = useGetUserAvatarQuery(data?.id ?? '', {
+    skip: !data?.id,
+  });
 
   return (
     <section className="py-1 bg-blueGray-50">
