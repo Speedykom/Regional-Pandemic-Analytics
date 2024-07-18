@@ -147,12 +147,12 @@ class SupersetOperator(BaseOperator):
     db_id = self.prepare_db(client)
 
     # Fetch the current user ID
-    owner_id = client.get_current_user_id()
+    superset_user_id = client.get_current_user_id('{{owner}}')
 
     dataset_id, explore_url = client.create_or_update_dataset(
             name='{{dag_display_name}}', 
             db_name=db_id,
-            owner_id=owner_id
+            owner_id=superset_user_id
         )
     self.xcom_push(context, 'superset_dataset_id', dataset_id)
     self.xcom_push(context, 'superset_dataset_url', explore_url)
