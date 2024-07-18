@@ -88,7 +88,7 @@ class SupersetClient:
         ] if dataset_result["count"] > 0 else None
 
     def create_dataset(self, name: str, db_name: Union[str, int], owner_id: int) -> Tuple[int, str]:
-        logger.debug("Creating new dataset %s in database %s", name, db_name)
+        logger.debug("Creating new dataset %s in database %s with owner_id %s", name, db_name, owner_id)
         db_id = self.get_db_ids(db_name)
         if db_id is None:
             logger.error("DB %s does not exist in Superset", db_name)
@@ -103,7 +103,7 @@ class SupersetClient:
         }
         create_response = requests.post(url=create_dataset_url, headers=self.authorize({}, True), json=create_dataset_body)
         if create_response.status_code >= 400:
-            logger.error("Failed to create dataset %s in database %s with status %d and message: %s", name, db_name, create_response.status_code, create_response.text)
+            logger.error("Failed to create dataset %s in database %s with status %d and message: %s and owner: %s", name, db_name, create_response.status_code, create_response.text, owner_id)
             raise RuntimeError("Failed to create Superset dataset {}".format(name))
         logger.info("Dataset %s in database %s successfully created", name, db_name)
         return self.find_dataset(name, db_name)
@@ -134,13 +134,24 @@ class SupersetClient:
             self.update_dataset(dataset_id, db_name)
             return [dataset_id, explore_url]
 
-    def get_current_user_id(self) -> int:
+    def get_current_user_id(self, owner: str) -> int:
         """Fetch the current user ID."""
-        get_user_url = urllib.parse.urljoin(self._base_url, "/api/v1/me/")
-        user_response = requests.get(url=get_user_url, headers=self.authorize({}))
-
-        if user_response.status_code >= 400:
-            raise RuntimeError(f"Unable to retrieve current user ID from Superset. Status code: {user_response.status_code}, Response: {user_response.text}")
+        query = urllib.parse.urlencode({ "q": JSONEncoder().encode({ "columns": ["user.username", "user_id"] }) })
+        # This is just a workaround to find the superset user_id which is different as the keycloak user_id
+        # The log api is missued to return the superset user_id belonding to the keycloak username
+        # Therefore this needs to be changed or solved in a cleaner way
+        # The only superset api returning the user that makes the call, needs that the user is logged in to the system
+        # which is not possible in our case and enforcing user login programmatically will increase the complexity
+        get_log_url = urllib.parse.urljoin(self._base_url, "/api/v1/log/?{}".format(query))
+        log_response = requests.get(url=get_log_url, headers=self.authorize({}))
+        if log_response.status_code >= 400:
+            raise RuntimeError(f"Unable to retrieve current user ID from Superset. Status code: {log_response.status_code}, Response: {log_response.text}")
         
-        user_result = user_response.json()
-        return user_result["result"]["id"]
+        log_response_json = log_response.json()
+        log_result = log_response_json["result"]
+        first_user_id = 1
+        for entry in log_result:
+            if entry['user']['username'] == owner:
+                first_user_id = entry['user_id']
+                break
+        return first_user_id
