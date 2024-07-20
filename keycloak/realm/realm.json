@@ -364,25 +364,6 @@
           "attributes": {}
         }
       ],
-      "openhim": [
-        {
-          "id": "78c52e75-8a57-4d02-8968-2c285c83c571",
-          "name": "admin",
-          "description": "",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "c35185cc-18a4-4aef-9d95-a307b7201785",
-          "attributes": {}
-        },
-        {
-          "id": "266de1a1-8ad9-48f2-bc2e-063232559d05",
-          "name": "uma_protection",
-          "composite": false,
-          "clientRole": true,
-          "containerId": "c35185cc-18a4-4aef-9d95-a307b7201785",
-          "attributes": {}
-        }
-      ],
       "security-admin-console": [],
       "airflow": [
         {
@@ -2047,62 +2028,6 @@
         "oauth2.device.authorization.grant.enabled": "false",
         "backchannel.logout.revoke.offline.tokens": "false",
         "frontchannel.logout.url": "${SUPERSET_ROOT_URL}/backchannel-logout/"
-      },
-      "authenticationFlowBindingOverrides": {},
-      "fullScopeAllowed": true,
-      "nodeReRegistrationTimeout": -1,
-      "defaultClientScopes": [
-        "web-origins",
-        "acr",
-        "roles",
-        "profile",
-        "email"
-      ],
-      "optionalClientScopes": [
-        "address",
-        "phone",
-        "offline_access",
-        "microprofile-jwt"
-      ],
-      "access": {
-        "view": true,
-        "configure": true,
-        "manage": true
-      }
-    },
-    {
-      "clientId": "${OPENHIM_KEYCLOAK_CLIENT_ID}",
-      "name": "openhim",
-      "description": "",
-      "rootUrl": "",
-      "adminUrl": "",
-      "baseUrl": "",
-      "surrogateAuthRequired": false,
-      "enabled": true,
-      "alwaysDisplayInConsole": false,
-      "clientAuthenticatorType": "client-secret",
-      "secret": "${OPENHIM_KEYCLOAK_SECRET}",
-      "redirectUris": ["${OPENHIM_KEYCLOAK_ROOT_URL}/*"],
-      "webOrigins": [""],
-      "notBefore": 0,
-      "bearerOnly": false,
-      "consentRequired": false,
-      "standardFlowEnabled": true,
-      "implicitFlowEnabled": false,
-      "directAccessGrantsEnabled": true,
-      "serviceAccountsEnabled": false,
-      "publicClient": false,
-      "frontchannelLogout": true,
-      "protocol": "openid-connect",
-      "attributes": {
-        "oidc.ciba.grant.enabled": "false",
-        "client.secret.creation.time": "1674028783",
-        "backchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "",
-        "display.on.consent.screen": "false",
-        "oauth2.device.authorization.grant.enabled": "false",
-        "backchannel.logout.revoke.offline.tokens": "false",
-        "frontchannel.logout.url": ""
       },
       "authenticationFlowBindingOverrides": {},
       "fullScopeAllowed": true,
