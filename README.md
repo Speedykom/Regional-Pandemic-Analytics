@@ -30,7 +30,6 @@ To run the cluster, on local environment:
 4. run `make start-local` to start the cluster
 5. open keycloak interface and add a new user
 
-
 ## Domain Names
 
 ### Local domains
@@ -43,8 +42,6 @@ To run the cluster, on local environment:
 - [coordinator.igad.local](https://coordinator.igad.local "coordinator.igad.local") for druid coordinator
 - [console.minio.igad.local](https://minio.igad.local "minio.igad.local") for minio web console
 - [minio.igad.local](https://minio.igad.local "minio.igad.local") for minio API
-- [console.openhim.igad.local](https://console.openhim.igad.local "console.openhim.igad.local") for openhim web console
-- [openhim.igad.local](https://openhim.igad.local "openhim.igad.local") for openhim API
 
 ### Dev Server domains
 

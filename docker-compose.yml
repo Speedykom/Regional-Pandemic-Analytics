@@ -121,7 +121,6 @@ volumes:
   broker_var: {}
   coordinator_var: {}
   router_var: {}
-  mongo-data:
 
 services:
   # ========
@@ -144,7 +143,13 @@ services:
       - MINIO_IDENTITY_OPENID_SCOPES=${MINIO_IDENTITY_OPENID_SCOPES}
       - MINIO_IDENTITY_OPENID_REDIRECT_URI=${MINIO_IDENTITY_OPENID_REDIRECT_URI}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:9000/minio/health/live"
+        ]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -157,7 +162,7 @@ services:
   minio-mc:
     image: minio/mc
     container_name: minio-mc
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: [ "/bin/sh", "-c" ]
     command:
       - |
         chmod +x /tmp/setup.sh
@@ -222,7 +227,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'"
         ]
       interval: 10s
       timeout: 3s
@@ -466,7 +471,7 @@ services:
     volumes:
       - airflow_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "airflow"]
+      test: [ "CMD", "pg_isready", "-U", "airflow" ]
       interval: 5s
       retries: 5
 
@@ -493,7 +498,13 @@ services:
     restart: always
     command: webserver
     healthcheck:
-      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      test:
+        [
+          "CMD",
+          "curl",
+          "--fail",
+          "http://localhost:8080/health"
+        ]
       interval: 30s
       timeout: 30s
       retries: 5
@@ -555,9 +566,6 @@ services:
       - SUPERSET_ROOT_URL=${SUPERSET_ROOT_URL}
       - SUPERSET_KEYCLOAK_CLIENT_ID=${SUPERSET_KEYCLOAK_CLIENT_ID}
       - SUPERSET_KEYCLOAK_CLIENT_SECRET=${SUPERSET_KEYCLOAK_CLIENT_SECRET}
-      - OPENHIM_KEYCLOAK_CLIENT_ID=${OPENHIM_KEYCLOAK_CLIENT_ID}
-      - OPENHIM_KEYCLOAK_ROOT_URL=${OPENHIM_KEYCLOAK_ROOT_URL}
-      - OPENHIM_KEYCLOAK_SECRET=${OPENHIM_KEYCLOAK_SECRET}
       - MINIO_KEYCLOAK_ROOT_URL=${MINIO_KEYCLOAK_ROOT_URL}
       - MINIO_KEYCLOAK_CLIENT_ID=${MINIO_IDENTITY_OPENID_CLIENT_ID}
       - MINIO_KEYCLOAK_SECRET=${MINIO_IDENTITY_OPENID_CLIENT_SECRET}
@@ -575,7 +583,13 @@ services:
       - keycloak-pg
     healthcheck:
       test:
-        ["CMD", "curl", "--head", "-fsS", "http://localhost:8080/health/ready"]
+        [
+          "CMD",
+          "curl",
+          "--head",
+          "-fsS",
+          "http://localhost:8080/health/ready"
+        ]
       interval: 60s
       timeout: 10s
       retries: 10
@@ -593,8 +607,6 @@ services:
       - NGINX_ENV=${NGINX_ENV}
       - NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx/conf.d/
       - NGINX_FRONTEND_DOMAIN_NAME=${NGINX_FRONTEND_DOMAIN_NAME}
-      - NGINX_OPENHIM_DOMAIN_NAME=${NGINX_OPENHIM_DOMAIN_NAME}
-      - NGINX_CONSOLE_OPENHIM_DOMAIN_NAME=${NGINX_CONSOLE_OPENHIM_DOMAIN_NAME}
       - NGINX_BACKEND_DOMAIN_NAME=${NGINX_BACKEND_DOMAIN_NAME}
       - NGINX_KEYCLOAK_DOMAIN_NAME=${NGINX_KEYCLOAK_DOMAIN_NAME}
       - NGINX_MINIO_DOMAIN_NAME=${NGINX_MINIO_DOMAIN_NAME}
@@ -611,8 +623,6 @@ services:
       - NGINX_UPSTREAM_KEYCLOAK=${NGINX_UPSTREAM_KEYCLOAK}
       - NGINX_UPSTREAM_MINIO=${NGINX_UPSTREAM_MINIO}
       - NGINX_UPSTREAM_SUPERSET=${NGINX_UPSTREAM_SUPERSET}
-      - NGINX_UPSTREAM_OPENHIM=${NGINX_UPSTREAM_OPENHIM}
-      - NGINX_UPSTREAM_CONSOLE_OPENHIM=${NGINX_UPSTREAM_CONSOLE_OPENHIM}
       - NGINX_UPSTREAM_HOP=${NGINX_UPSTREAM_HOP}
       - NGINX_UPSTREAM_DRUID=${NGINX_UPSTREAM_DRUID}
       - NGINX_UPSTREAM_DRUID_COORDINATOR=${NGINX_UPSTREAM_DRUID_COORDINATOR}
@@ -626,69 +636,12 @@ services:
       - airflow-webserver
       - backend
       - storage
-      - openhim-console
       - coordinator
       - router
       - hop
       - frontend
       - keycloak
-      - openhim-core
       - superset
-
-  # =====
-  #  OpenHIM
-  # =====
-
-  mongo-db:
-    container_name: mongo-db
-    image: mongo:4.0
-    volumes:
-      - "mongo-data:/data/db"
-    restart: unless-stopped
-
-  openhim-core:
-    container_name: openhim-core
-    image: jembi/openhim-core:latest
-    restart: unless-stopped
-    environment:
-      - mongo_url=mongodb://mongo-db/openhim-development
-      - mongo_atnaUrl=mongodb://mongo-db/openhim-development
-      - api_authenticationTypes=["token", "basic", "openid", "local"]
-      - authentication_enableCustomTokenAuthentication=true
-      - api_openid_url=${OPENHIM_KEYCLOAK_FRONTEND_URL}/realms/${OPENHIM_KEYCLOAK_REALM_NAME}
-      - api_openid_callbackUrl=${OPENHIM_KEYCLOAK_ROOT_URL}
-      - api_openid_clientId=${OPENHIM_KEYCLOAK_CLIENT_ID}
-      - api_openid_clientSecret=${OPENHIM_KEYCLOAK_SECRET}
-      - NODE_TLS_REJECT_UNAUTHORIZED=0
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-      - "keycloak.igad.local:host-gateway"
-    depends_on:
-      - mongo-db
-    healthcheck:
-      test: "curl -sSk https://openhim-core:8080/heartbeat || exit 1"
-      interval: 30s
-      timeout: 30s
-      retries: 3
-
-  openhim-console:
-    container_name: openhim-console
-    image: jembi/openhim-console:latest
-    environment:
-      - KC_OPENHIM_SSO_ENABLED=true
-      - KC_OPENHIM_CLIENT_ID=${OPENHIM_KEYCLOAK_CLIENT_ID}
-      - KC_REALM_NAME=${OPENHIM_KEYCLOAK_REALM_NAME}
-      - KC_FRONTEND_URL=${OPENHIM_KEYCLOAK_FRONTEND_URL}
-      - OPENHIM_CORE_MEDIATOR_HOSTNAME=${OPENHIM_CORE_MEDIATOR_HOSTNAME}
-      - OPENHIM_MEDIATOR_API_PORT=${OPENHIM_MEDIATOR_API_PORT}
-    depends_on:
-      - openhim-core
-    restart: unless-stopped
-    healthcheck:
-      test: "curl -sS http://openhim-console || exit 1"
-      interval: 30s
-      timeout: 30s
-      retries: 3
 
   clamav:
     image: mkodockx/docker-clamav:alpine
