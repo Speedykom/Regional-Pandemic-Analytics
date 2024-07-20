@@ -25,9 +25,6 @@ else
 	@docker compose --env-file ./.env.dev -f docker-compose.yml -f docker-compose.dev.yml up -d --build --force-recreate
 endif
 
-start-vault:
-	@docker compose -f docker-compose.yml up -d vault-server
-
 destroy-prod:
 	@docker compose --env-file ./.env.prod -f docker-compose.yml -f docker-compose.prod.yml down -v
 

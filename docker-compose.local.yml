@@ -28,7 +28,7 @@ services:
       - "host.docker.internal:host-gateway"
       - "keycloak.igad.local:host-gateway"
       - "frontend.igad.local:host-gateway"
-    command: ["/usr/bin/repan-superset-startup.sh", "--dev"]
+    command: [ "/usr/bin/repan-superset-startup.sh", "--dev" ]
 
   # =====
   #  Hop
@@ -139,28 +139,6 @@ services:
         limits:
           memory: 30M
   superset_db:
-    deploy:
-      resources:
-        limits:
-          memory: 200M
-
-  # =====
-  #  OpenHIM
-  # =====
-
-  mongo-db:
-    deploy:
-      resources:
-        limits:
-          memory: 200M
-
-  openhim-core:
-    deploy:
-      resources:
-        limits:
-          memory: 300M
-
-  openhim-console:
     deploy:
       resources:
         limits:
