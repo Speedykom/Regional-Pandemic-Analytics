@@ -55,9 +55,9 @@ export function ListDashboardCard({
       decorationColor="emerald"
       onClick={() => embedDashboard(Number(data?.id))}
     >
-      <div className="mb-5 h-72">
+      <div className="mb-5 h-72 flex justify-center items-center overflow-hidden">
         <img
-          className="object-contain h-full"
+          className="object-cover w-full h-full"
           src={thumbnailUrl ?? '/dashboard-card-fallback.svg'}
           alt="icon"
         />
