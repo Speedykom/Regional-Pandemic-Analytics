@@ -46,7 +46,7 @@ export const MenuData = [
     items: [
       {
         title: 'processChains',
-        href: 'process-chains',
+        href: '/process-chains',
         icon: BiGitPullRequest,
         scope: 'process:read',
       },
