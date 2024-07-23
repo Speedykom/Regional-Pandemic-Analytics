@@ -81,6 +81,22 @@
         "attributes": {}
       },
       {
+        "id": "48ffed22-78a6-4c9b-82e8-e80e5de635ec",
+        "name": "Digital_Health_Officer",
+        "description": "",
+        "composite": true,
+        "composites": {
+          "client": {
+            "superset": ["superset_admin"],
+            "airflow": ["airflow_admin"],
+            "${BACKEND_CLIENT_ID}": ["user"]
+          }
+        },
+        "clientRole": false,
+        "containerId": "c89b3c58-aefb-4429-972b-feccb6a77750",
+        "attributes": {}
+      },
+      {
         "id": "3f14f73e-3e22-47b5-ab96-56ad5c48ba2b",
         "name": "Administrator",
         "description": "",
@@ -486,6 +502,14 @@
         {
           "id": "b7791a30-678c-40f8-95a9-377ed61f9b6c",
           "name": "uma_protection",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "124138ae-d2f7-4d57-803c-4d239ba05e12",
+          "attributes": {}
+        },
+        {
+          "id": "4754a7bf-78c7-4330-9d53-613b6cf56364",
+          "name": "user",
           "composite": false,
           "clientRole": true,
           "containerId": "124138ae-d2f7-4d57-803c-4d239ba05e12",
@@ -1830,6 +1854,17 @@
             }
           },
           {
+            "id": "4b407557-b108-427a-955e-ed10360b3470",
+            "name": "user_policy",
+            "description": "",
+            "type": "role",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "roles": "[{\"id\":\"${BACKEND_CLIENT_ID}/user\",\"required\":false}]"
+            }
+          },
+          {
             "id": "840bf064-b47c-4e81-8157-58382c8f6478",
             "name": "Users Management",
             "description": "",
@@ -1851,7 +1886,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "defaultResourceType": "",
-              "applyPolicies": "[\"admin-policy\"]",
+              "applyPolicies": "[\"user_policy\",\"admin-policy\"]",
               "scopes": "[\"dashboard:read\"]"
             }
           },
@@ -1864,7 +1899,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"chart:read\"]",
-              "applyPolicies": "[\"admin-policy\"]"
+              "applyPolicies": "[\"user_policy\",\"admin-policy\"]"
             }
           },
           {
@@ -1876,7 +1911,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"process:delete\",\"process:run\",\"process:add\",\"process:update\",\"process:read\"]",
-              "applyPolicies": "[\"admin-policy\"]"
+              "applyPolicies": "[\"user_policy\",\"admin-policy\"]"
             }
           },
           {
@@ -1888,7 +1923,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"pipeline:read\",\"pipeline:update\",\"pipeline:add\",\"pipeline:delete\"]",
-              "applyPolicies": "[\"admin-policy\"]"
+              "applyPolicies": "[\"user_policy\",\"admin-policy\"]"
             }
           },
           {
@@ -1900,7 +1935,19 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"data:read\",\"data:add\"]",
-              "applyPolicies": "[\"admin-policy\"]"
+              "applyPolicies": "[\"user_policy\",\"admin-policy\"]"
+            }
+          },
+          {
+            "id": "a500847f-f5a9-45d0-aedc-29f1dca4d586",
+            "name": "Account Management",
+            "description": "This permission allows users to manage their own accounts.",
+            "type": "scope",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "scopes": "[\"user:update\",\"user:read\"]",
+              "applyPolicies": "[\"user_policy\"]"
             }
           }
         ],
