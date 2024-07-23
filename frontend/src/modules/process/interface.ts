@@ -20,6 +20,7 @@ export interface DagDetails {
   next_dagrun_create_after: string;
   dataset_id: number;
   dataset_url: string;
+  latest_dag_run_status?: string | null;
 }
 
 export interface DagRun {
