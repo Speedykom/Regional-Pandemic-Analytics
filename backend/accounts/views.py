@@ -33,10 +33,28 @@ from utils.generators import get_random_secret
 from utils.keycloak_auth import get_keycloak_admin
 from django.conf import settings
 from django.http import HttpResponseBadRequest, HttpResponseServerError, HttpResponseNotFound
+from utils.keycloak_auth import get_current_user_id, get_keycloak_admin
 
 
 def homepage():
     return HttpResponse('<h2 style="text-align:center">Welcome to IGAD API Page</h2>')
+
+def has_admin_role(request):
+    """
+    Check if the current user has admin rights
+    """
+    try:
+        keycloak_admin = get_keycloak_admin()
+        user_id = get_current_user_id(request)
+        client_id = keycloak_admin.get_client_id(settings.KEYCLOAK_CONFIG['KEYCLOAK_CLIENT_ID'])
+        client_roles = keycloak_admin.get_client_roles_of_user(user_id=user_id, client_id=client_id)
+        realm_roles = keycloak_admin.get_realm_roles_of_user(user_id=user_id)
+        all_roles = client_roles + realm_roles
+        admin_roles = ['Administrator']
+        has_role = any(role['name'] in admin_roles for role in all_roles)
+        return has_role
+    except Exception as err:
+        return False
 
 
 class UserListView(APIView):
@@ -52,6 +70,9 @@ class UserListView(APIView):
         """
         Endpoint for listing all users 
         """
+        if not has_admin_role(request):
+            return Response({'errorMessage': 'You do not have permission to view this resource.'}, status=status.HTTP_403_FORBIDDEN)
+        
         try:
             keycloak_admin = get_keycloak_admin()
             users = keycloak_admin.get_users({})
@@ -193,22 +214,30 @@ class UserDetailView(APIView):
         """
         Endpoint for updating a user 
         """
-        user_data = request.data  
+        user_data = request.data
+        current_user_id = get_current_user_id(request)
+        user_id = kwargs['id']
 
         try:
             keycloak_admin = get_keycloak_admin()
-            user_id = kwargs['id']
 
+            # Admin specific actions
             # Check if 'enabled' is in request data to determine enabling user
             if 'enabled' in user_data:
-                user = keycloak_admin.get_user(user_id)
-                user['enabled'] = user_data['enabled']
-                keycloak_admin.update_user(user_id, user)
-                return Response({'message': 'User enabled successfully'}, status=status.HTTP_200_OK)
+                if self.has_admin_role(request):
+                    user = keycloak_admin.get_user(user_id)
+                    user['enabled'] = user_data['enabled']
+                    keycloak_admin.update_user(user_id, user)
+                    return Response({'message': 'User enabled successfully'}, status=status.HTTP_200_OK)
+                else:
+                    return Response({'errorMessage': 'You do not have permission to enable/disable this user.'}, status=status.HTTP_403_FORBIDDEN)
 
-            # Otherwise, update user details
-            keycloak_admin.update_user(user_id, user_data)
-            return Response({'message': 'User updated successfully'}, status=status.HTTP_200_OK)
+            # Normal user actions, update user details
+            if current_user_id == user_id:
+                keycloak_admin.update_user(user_id, user_data)
+                return Response({'message': 'User updated successfully'}, status=status.HTTP_200_OK)
+            else:
+                return Response({'errorMessage': 'You do not have permission to update this user.'}, status=status.HTTP_403_FORBIDDEN)
         except Exception as err:
             return Response({'errorMessage': 'Unable to update the user. Error: {}'.format(str(err))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     def delete(self, request, **kwargs):
@@ -237,7 +266,7 @@ class UserDetailView(APIView):
             return Response({'message': 'User enabled successfully'}, status=status.HTTP_200_OK)
         except Exception as err:
             return Response({'errorMessage': 'Unable to enable the user. Error: {}'.format(str(err))}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
 class UserRolesView(APIView):
     """
     API view to assign roles to users
@@ -296,7 +325,7 @@ class UserAvatarView(APIView):
     """
     keycloak_scopes = {
         'GET': 'user:read',
-        'POST': 'user:add'
+        'POST': 'user:update'
     }
     parser_classes = (MultiPartParser,)
 
