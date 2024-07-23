@@ -198,7 +198,12 @@ class ProcessView(ViewSet):
                                     {"status": "failed", "message": "Internal Server Error"},
                                     status=airflow_dag_tasks_response.status_code,
                                 )
+
+                        # Get the latest dagRun status
+                        latest_dag_run_status = self._get_latest_dag_run_status(dag["dag_id"])
+
                         augmentedDag = self._augment_dag(dag)
+                        augmentedDag["latest_dag_run_status"] = latest_dag_run_status
                         processes.append(augmentedDag)
                 return Response({"dags": processes}, status=status.HTTP_200_OK)
             else:
@@ -497,6 +502,24 @@ class ProcessView(ViewSet):
                 return Response({"error": "No segments found for the given datasource ID"}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response({"error": "Failed to retrieve data from Druid"}, status=response.status_code)
+
+    def _get_latest_dag_run_status(self, dag_id):
+        route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns"
+        airflow_response = requests.get(
+            route,
+            auth=(AirflowInstance.username, AirflowInstance.password),
+        )
+
+        if not airflow_response.ok:
+            return None
+
+        dag_runs = airflow_response.json().get("dag_runs", [])
+        if not dag_runs:
+            return None
+
+        # Sort dagRuns by execution date
+        dag_runs = sorted(dag_runs, key=lambda x: x['execution_date'], reverse=True)
+        return dag_runs[0].get('state') if dag_runs else None
 
 class ProcessRunView(ViewSet):
     """
