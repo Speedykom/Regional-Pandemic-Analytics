@@ -214,7 +214,7 @@ const frTranslation = {
     success: 'Succès',
     unknown: 'Inconnu',
     running: 'En cours',
-    latestDagRunStatus: 'Statut de la dernière exécution du Dag',
+    latestDagRunStatus: 'Statut de la dernière exécution de la chaîne de Processus',
   },
   schedule_intervals: {
     once: '@une fois',
