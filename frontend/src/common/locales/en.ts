@@ -220,7 +220,7 @@ const enTranslation = {
     success: 'Success',
     unknown: 'Unknown',
     running: 'running',
-    latestDagRunStatus: 'Latest Process Chain Run Status',
+    latestDagRunStatus: 'Execution State',
   },
   schedule_intervals: {
     once: '@once',
