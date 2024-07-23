@@ -17,12 +17,14 @@ interface ProcessCardProps {
   process: DagDetails;
   pipelineList: PipelineList;
   showDisabled: boolean;
+  latest_dag_run_status: string | null;
 }
 
 export default function ProcessCard({
   process,
   pipelineList,
   showDisabled,
+  latest_dag_run_status,
 }: ProcessCardProps) {
   const { t } = useTranslation();
 
@@ -139,6 +141,32 @@ export default function ProcessCard({
                       {t('addProcess.disable')}{' '}
                     </Button>
                   )}
+                  <div className="flex space-x-10 ml-3">
+                    <div>
+                      <div className="mb-2 text-xs font-bold">
+                        {t('addProcess.latestDagRunStatus')}
+                      </div>
+                      {latest_dag_run_status ? (
+                        <Badge
+                          className={`rounded-full p-1 px-3 ${
+                            latest_dag_run_status === 'failed'
+                              ? 'bg-red-100 text-red-500'
+                              : latest_dag_run_status === 'success'
+                              ? 'bg-green-100 text-green-500'
+                              : 'bg-gray-100 text-gray-500'
+                          }`}
+                        >
+                          <span>
+                            {t(`addProcess.${latest_dag_run_status}`)}
+                          </span>
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-gray-100 text-gray-500 rounded-full p-1 px-3">
+                          <span>{t('addProcess.unknown')}</span>
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
               <div>
