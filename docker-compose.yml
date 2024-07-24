@@ -533,6 +533,7 @@ services:
     command:
       - start-dev
       - --import-realm
+      - --override true
       - --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true
       - -Dkeycloak.profile.feature.token_exchange=enabled
       - -Dkeycloak.profile.feature.account_api=enabled
