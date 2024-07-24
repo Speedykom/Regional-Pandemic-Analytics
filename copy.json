@@ -92,6 +92,21 @@
         "containerId" : "c89b3c58-aefb-4429-972b-feccb6a77750",
         "attributes" : { }
       }, {
+        "id": "48ffed22-78a6-4c9b-82e8-e80e5de635ec",
+        "name": "Digital_Health_Officer",
+        "description": "",
+        "composite": true,
+        "composites": {
+          "client": {
+            "superset": ["superset_admin"],
+            "airflow": ["airflow_admin"],
+            "${BACKEND_CLIENT_ID}": ["user"]
+          }
+        },
+        "clientRole": false,
+        "containerId": "c89b3c58-aefb-4429-972b-feccb6a77750",
+        "attributes": {}
+      },{
         "id" : "21dc896f-9e09-4aaa-a045-47ae2c8eef1c",
         "name" : "digital-health-expert",
         "description" : "",
