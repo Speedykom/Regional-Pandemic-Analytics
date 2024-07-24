@@ -210,6 +210,11 @@ const frTranslation = {
     note: "Remarque: La date de début est le jour où les chaînes de processus de planification commencent. Il n'est pas possible d'exécuter manuellement une chaîne de processus dont la date de début est proche.",
     selectDate: 'Choisir une date',
     descriptionPlaceholder: 'Ajouter une description',
+    failed: 'Échoué',
+    success: 'Succès',
+    unknown: 'Inconnu',
+    running: 'En cours',
+    latestDagRunStatus: "Etat d'exécution",
   },
   schedule_intervals: {
     once: '@une fois',

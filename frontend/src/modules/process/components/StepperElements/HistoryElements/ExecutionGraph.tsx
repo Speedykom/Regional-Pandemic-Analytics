@@ -1,6 +1,6 @@
 import { useGetProcessHistoryTasksbyIdQuery } from '@/modules/process/process';
 import { Button, Card } from '@tremor/react';
-import { BiLoaderAlt, BiCheck } from 'react-icons/bi';
+import { BiLoaderAlt, BiCheck, BiError } from 'react-icons/bi';
 import { IconContext } from 'react-icons';
 import { DagRunTask } from '@/modules/process/interface';
 import { ArrowLongRightIcon, ArrowPathIcon } from '@heroicons/react/24/solid';
@@ -22,19 +22,25 @@ function Graph({ tasks }: GraphProps) {
     return dateA.getTime() - dateB.getTime();
   });
   const tasksJSX = tasks.map((element: DagRunTask) => {
+    let color: 'green' | 'blue' | 'red' = 'blue';
+    let icon = (
+      <IconContext.Provider value={{ className: 'animate-spin' }}>
+        <BiLoaderAlt />
+      </IconContext.Provider>
+    );
+
+    if (element.state === 'success') {
+      color = 'green';
+      icon = <BiCheck />;
+    } else if (element.state === 'failed') {
+      color = 'red';
+      icon = <BiError />;
+    }
+
     return (
-      <Button
-        color={element.state === 'success' ? 'green' : 'blue'}
-        key={element.task_id}
-      >
+      <Button color={color} key={element.task_id}>
         <div className="flex space-x-1">
-          {element.state === 'success' ? (
-            <BiCheck />
-          ) : (
-            <IconContext.Provider value={{ className: 'animate-spin' }}>
-              <BiLoaderAlt />
-            </IconContext.Provider>
-          )}
+          {icon}
           <span>{element.task_id}</span>
         </div>
       </Button>

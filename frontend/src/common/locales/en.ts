@@ -216,6 +216,11 @@ const enTranslation = {
     note: 'Note: Start Date is the day when scheduling process chains begin. It is not possible to manually run a process chain that has an upcoming start date.',
     selectDate: 'Select Date',
     descriptionPlaceholder: 'Add description',
+    failed: 'Failed',
+    success: 'Success',
+    unknown: 'Unknown',
+    running: 'running',
+    latestDagRunStatus: 'Execution State',
   },
   schedule_intervals: {
     once: '@once',
