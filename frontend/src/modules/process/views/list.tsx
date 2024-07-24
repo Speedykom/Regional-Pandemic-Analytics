@@ -101,6 +101,7 @@ export default function ProcessChainList() {
             process={process}
             pipelineList={pipelineList}
             showDisabled={showDisabled}
+            latest_dag_run_status={process.latest_dag_run_status || null}
           />
         );
       });
@@ -116,6 +117,7 @@ export default function ProcessChainList() {
             process={process}
             pipelineList={pipelineList}
             showDisabled={showDisabled}
+            latest_dag_run_status={process.latest_dag_run_status || null}
           />
         );
       });
