@@ -45,11 +45,11 @@ To run the cluster, on local environment:
 
 ### Dev Server domains
 
-- [analytics2.igad-health.eu](https://analytics2.igad-health.eu) for Superset
-- [coordinator2.igad-health.eu](https://coordinator2.igad-health.eu) for Druid API
-- [db2.igad-health.eu](https://db2.igad-health.eu) for Druid
-- [auth2.igad-health.eu](https://auth2.igad-health.eu) for Keycloak
-- [orchestration2.igad-health.eu](https://orchestration2.igad-health.eu) for Airflow
-- [cache2.igad-health.eu](https://cache2.igad-health.eu) for Minio
-- [data2.igad-health.eu](https://data2.igad-health.eu) for Backend
-- [home2.igad-health.eu](https://home2.igad-health.eu) for Frontend
+- [analytics2.repan.info](https://analytics2.repan.info) for Superset
+- [coordinator2.repan.info](https://coordinator2.repan.info) for Druid API
+- [db2.repan.info](https://db2.repan.info) for Druid
+- [auth2.repan.info](https://auth2.repan.info) for Keycloak
+- [orchestration2.repan.info](https://orchestration2.repan.info) for Airflow
+- [cache2.repan.info](https://cache2.repan.info) for Minio
+- [data2.repan.info](https://data2.repan.info) for Backend
+- [home2.repan.info](https://home2.repan.info) for Frontend
