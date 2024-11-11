@@ -1,6 +1,6 @@
 IGAD BACKEND was built from the ground-up with a Django and Django Rest Framework this makes it easy for developers and sysadmins to automate and consume the APIS.
 
-These docs describes how to use the [IGAD Account](https://data2.igad-health.eu) API. We hope you enjoy these docs, and please don't hesitate to file an issue if you see anything missing.
+These docs describes how to use the [IGAD Account](https://data2.repan.info) API. We hope you enjoy these docs, and please don't hesitate to file an issue if you see anything missing.
 
 ## User Management
 
@@ -11,7 +11,7 @@ The user management is done with the combination of two (2) platforms
 
 ### Endpoints:
 
-Base URL: https://data2.igad-health.eu/api
+Base URL: https://data2.repan.info/api
 
 Create User:
 
