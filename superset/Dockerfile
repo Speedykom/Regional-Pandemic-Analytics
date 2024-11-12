@@ -1,6 +1,6 @@
 FROM apache/superset:3.0.2
 
-RUN pip --no-cache-dir install Authlib  python-keycloak 'apache-superset[druid]' 'apache-superset[excel]' 'apache-superset[postgres]' 'apache-superset[prophet]' 'apache-superset[thumbnails]'
+RUN pip --no-cache-dir install Authlib  python-keycloak==3.12.0 python-jose 'apache-superset[druid]' 'apache-superset[excel]' 'apache-superset[postgres]' 'apache-superset[prophet]' 'apache-superset[thumbnails]'
 
 USER root
 RUN apt update \
