@@ -104,6 +104,7 @@ x-superset-common: &superset
   volumes:
     - ./superset/superset_config.py:/app/pythonpath/superset_config.py
     - ./superset/import:/app/import
+    - ./repan-superset-startup.sh:/usr/bin/repan-superset-startup.sh
   depends_on:
     - superset_db
     - superset_cache
@@ -512,7 +513,7 @@ services:
   # Airflow upgrade: DB migration service
   # =======
 
-  #airflow-db-migrate:
+  # airflow-db-migrate:
   #  <<: *airflow
   #  depends_on:
   #    airflow-pg:
