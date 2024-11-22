@@ -6,7 +6,7 @@ def check_pipeline_validity(name):
     valid_pipeline = False
     check_text = "ValidationFailed"
     # Read the .hpl file
-    with open(f"/hop/pipelines/{name}.hpl", "r") as file:
+    with open(f"/hop/pipelines/user_data/{name}.hpl", "r") as file:
         xml_data = file.read()
 
     # Parse the XML data

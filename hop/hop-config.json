@@ -301,39 +301,21 @@
   },
   "projectsConfig": {
     "enabled": true,
-    "projectMandatory": true,
-    "environmentMandatory": true,
-    "defaultProject": "igad",
-    "defaultEnvironment": "prod",
+    "projectMandatory": false,
+    "environmentMandatory": false,
+    "defaultProject": "default",
+    "defaultEnvironment": "null",
     "standardParentProject": "default",
     "standardProjectsFolder": "/files/",
     "defaultProjectConfigFile": "project-config.json",
     "projectConfigurations": [
       {
-        "projectName": "igad",
-        "projectHome": "/files/",
+        "projectName": "default",
+        "projectHome": "/files/user_data",
         "configFilename": "project-config.json"
       }
     ],
-    "lifecycleEnvironments": [
-      {
-        "name": "prod",
-        "purpose": "Production",
-        "projectName": "igad",
-        "configurationFiles": [
-          "/files/prod-config.json"
-        ]
-      },
-      {
-        "name": "dev",
-        "purpose": "Development",
-        "projectName": "igad",
-        "openingLastEnvironmentAtStartup" : true,
-        "configurationFiles": [
-          "/files/dev-config.json"
-        ]
-      }
-    ],
+    "lifecycleEnvironments": [],
     "projectLifecycles": []
   },
   "explorer-perspective": {

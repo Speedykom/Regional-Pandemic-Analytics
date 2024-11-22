@@ -143,13 +143,14 @@ class PipelineDetailView(APIView):
             client.fget_object(
                 "pipelines",
                 f"pipelines-created/{user_id}/{name}.hpl",
-                f"/hop/pipelines/{name}.hpl",
+                f"/hop/pipelines/user_data/{name}.hpl",
             )
 
             # Automatically open file in visual editor when HopUI opens
-            payload = {"names": ["file:///files/{}.hpl".format(name)]}
+            payload = {"names": ["file:///files/user_data/{}.hpl".format(name)]}
             edit_hop = EditAccessProcess(file=self.file)
             edit_hop.request_edit(json.dumps(payload))
+
             return Response(
                 {
                     "name": name,
@@ -185,7 +186,7 @@ class PipelineDetailView(APIView):
             client.fput_object(
                 "pipelines",
                 f"pipelines-created/{user_id}/{name}.hpl",
-                f"/hop/pipelines/{name}.hpl",
+                f"/hop/pipelines/user_data/{name}.hpl",
                 metadata={
                     "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                     "updated": f"{datetime.utcnow()}",
@@ -196,7 +197,7 @@ class PipelineDetailView(APIView):
             )
 
             # Remove pipeline file from Minio volume
-            os.remove(f"/hop/pipelines/{name}.hpl")
+            os.remove(f"/hop/pipelines/user_data/{name}.hpl")
 
             return Response({"status": "success"}, status=status.HTTP_200_OK)
         except:
@@ -269,7 +270,7 @@ class PipelineUploadView(APIView):
             )
         if uploaded_file:
             # To check if file is valid we first have to have it saved on the local file system
-            with open(f"/hop/pipelines/{name}.hpl", 'wb') as f:
+            with open(f"/hop/pipelines/user_data/{name}.hpl", 'wb') as f:
                 for chunk in uploaded_file.chunks():
                     f.write(chunk)
             try:
@@ -289,7 +290,7 @@ class PipelineUploadView(APIView):
             except:
                 # Upload new pipeline
                 valid_pipeline, check_text = check_pipeline_validity(name)
-                with open(f"/hop/pipelines/{name}.hpl", 'rb') as f:
+                with open(f"/hop/pipelines/user_data/{name}.hpl", 'rb') as f:
                     client_result = client.put_object(
                     bucket_name='pipelines',
                     object_name=f"pipelines-created/{user_id}/{name}.hpl",
