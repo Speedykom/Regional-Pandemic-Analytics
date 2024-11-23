@@ -39,7 +39,7 @@ else
 fi
 
 #Our services
-service_table="frontend backend airflow druid keycloak minio console.minio guest.superset superset"
+service_table="frontend backend airflow druid keycloak minio console.minio guest.superset superset coordinator"
 #Geneate certificates for each service
 for service in $service_table; do
     commonname=$service
