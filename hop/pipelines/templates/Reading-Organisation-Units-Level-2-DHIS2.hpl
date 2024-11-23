@@ -364,21 +364,25 @@ password: district</note>
     <fields>
       <field>
         <name>orgUnitsLevel2Id</name>
+        <rename/>
       </field>
       <field>
         <name>orgUnitsLevel2DisplayName</name>
+        <rename/>
       </field>
       <field>
         <name>orgUnitsLevel2Geometry</name>
+        <rename/>
       </field>
       <field>
         <name>orgUnitsLevel1DisplayName</name>
+        <rename/>
       </field>
       <select_unspecified>N</select_unspecified>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>928</xloc>
+      <xloc>976</xloc>
       <yloc>288</yloc>
     </GUI>
   </transform>
