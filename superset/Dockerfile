@@ -1,4 +1,4 @@
-FROM apache/superset:3.1.0
+FROM apache/superset:3.0.1
 
 RUN pip --no-cache-dir install Authlib  python-keycloak==3.12.0 python-jose 'apache-superset[druid]' 'apache-superset[excel]' 'apache-superset[postgres]' 'apache-superset[prophet]' 'apache-superset[thumbnails]'
 
