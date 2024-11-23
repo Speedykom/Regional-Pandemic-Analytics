@@ -325,8 +325,6 @@ class PipelineUploadExternalFilesView(APIView):
         uploaded_file = request.FILES.get("uploadedFile")
 
         file_extension = os.path.splitext(uploaded_file.name)[1]
-        print('####################################')
-        print(f"File extension: {file_extension}")
         if not file_extension:
             return Response(
                 {"status": "Fail", "message": "Uploaded file does not have a valid extension"},
@@ -357,9 +355,7 @@ class PipelineUploadExternalFilesView(APIView):
             with open(local_save_path, "wb") as local_file:
                 for chunk in uploaded_file.chunks():
                     local_file.write(chunk)
-            print(f"File successfully saved locally at {local_save_path}")
 
-            # Upload the file to MinIO
             object_name = f"pipelines-created/{user_id}/{name}{file_extension}"
             client.put_object(
                 bucket_name="pipelines",
@@ -371,8 +367,6 @@ class PipelineUploadExternalFilesView(APIView):
                     "created": f"{datetime.utcnow()}"
                 },
             )
-            print(f"File successfully uploaded to MinIO as {object_name}")
-
             return Response({"status": "success"}, status=status.HTTP_200_OK)
         except Exception as e:
             logging.error(f"Error uploading file: {str(e)}")
