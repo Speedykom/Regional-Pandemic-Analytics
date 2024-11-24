@@ -147,9 +147,9 @@ class UserListView(APIView):
             }
             #send an email to the user to ask him to change the password
             if current_language.upper() == 'EN':
-                subject = "Action Required - New account in RePan"
+                subject = "Action Required - New account in d-OHP"
             elif current_language.upper() == 'FR':
-                subject = "Action requise - Nouveau compte dans RePan"
+                subject = "Action requise - Nouveau compte dans d-OHP"
              
             template_file_name = f"new_account_{current_language.upper()}.jinja.html"    
             frontend_url = os.getenv("KEYCLOAK_REDIRECT_URI")
