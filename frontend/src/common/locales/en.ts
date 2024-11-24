@@ -53,6 +53,7 @@ const enTranslation = {
   description: 'Description',
   createPipeline: 'Create Pipeline',
   uploadPipeline: 'Upload Pipeline',
+  uploadExternalFiles: 'Upload External Files',
   pipelineCheckSuccessful: 'Pipeline check successful',
   pipelineCheckFailed: 'Pipeline check failed',
   addPipelineNote: 'Note: select a template and press continue',
@@ -83,6 +84,8 @@ const enTranslation = {
   ValidPipeline: 'Pipeline is valid',
   pipelineInvalidName:
     'Invalid characters. Pipeline Name must consist exclusively of alphanumeric characters, dashes, dots and underscores.',
+  fileInvalidName:
+    'Invalid characters. File Name must consist exclusively of alphanumeric characters, dashes, dots and underscores.',
   view: 'View',
   delete: 'Delete',
   processChain: 'Process Chain',
@@ -93,16 +96,21 @@ const enTranslation = {
   searchForPipelines: 'Search for pipelines...',
   searchForTemplate: 'Search for template...',
   pipelineCreatedSuccessfully: 'Pipeline created successfully',
+  fileUploadedSuccessfully: 'File added successfully',
   unverified: 'Unverified',
   verified: 'Verified',
   pipelineName: 'Pipeline Name*',
+  fileName: 'File Name*',
   pipelineNameRequired: 'Pipeline name is required',
+  fileNameRequired: 'File name is required',
   pipelineNamePatter: 'Pipeline name cannot contain whitespaces',
   enterPipelineName: 'Enter pipeline name',
+  enterFileName: 'Enter file name',
   descRequired: 'Pipeline description is required',
   enterDesc: 'Enter pipeline description',
   fileUploadDesc:
     "Drag 'n' drop .hpl pipeline file here, or click to select a file",
+  externalFileUploadDesc: "Drag 'n' drop or click to select a file",
   upload: 'Upload',
   selectedFiles: 'Selected Files',
 

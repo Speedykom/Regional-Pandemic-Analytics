@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pipeline>
   <info>
-    <name>IDSR-DHIS2-Djibouti</name>
+    <name>Multiple-IDSRs-DHIS2</name>
     <name_sync_with_filename>Y</name_sync_with_filename>
     <description/>
     <extended_description/>
@@ -135,6 +135,28 @@ Target fields don't accept white spaces or
 specefic characters</note>
       <width>333</width>
     </notepad>
+    <notepad>
+      <backgroundcolorblue>5</backgroundcolorblue>
+      <backgroundcolorgreen>246</backgroundcolorgreen>
+      <backgroundcolorred>248</backgroundcolorred>
+      <bordercolorblue>90</bordercolorblue>
+      <bordercolorgreen>58</bordercolorgreen>
+      <bordercolorred>14</bordercolorred>
+      <fontbold>N</fontbold>
+      <fontcolorblue>0</fontcolorblue>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorred>0</fontcolorred>
+      <fontitalic>N</fontitalic>
+      <fontname>.AppleSystemUIFont</fontname>
+      <fontsize>13</fontsize>
+      <height>58</height>
+      <xloc>112</xloc>
+      <yloc>256</yloc>
+      <note>A dhis2 test server is used here
+username: admin
+password: district</note>
+      <width>201</width>
+    </notepad>
   </notepads>
   <order>
     <hop>
@@ -194,11 +216,11 @@ specefic characters</note>
     </hop>
     <hop>
       <from>REST client different IDSRs </from>
-      <to>Read CHoléra Data as Json</to>
+      <to>Read Cholera Malaria Measles Plague Yellow Fever Data as Json</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Read CHoléra Data as Json</from>
+      <from>Read Cholera Malaria Measles Plague Yellow Fever Data as Json</from>
       <to>Select only displayName and id</to>
       <enabled>Y</enabled>
     </hop>
@@ -261,25 +283,37 @@ specefic characters</note>
     </partitioning>
     <fields>
       <field>
+        <currency/>
+        <decimal/>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>api</name>
-        <nullif>https://snis-dhis2.gouv.dj/dhis/api/analytics.json?dimension=dx:RhlKhKSjruc;XaHFwL7mE0P;ziigozNncky;QKmgup86Fye;zH33POZBq9t;KbWOF8aWNHm;LEyhGw04iN7;cFRqZPwplAk;HaQRMqefbN5;hmuXTG3mQKe;Dv0xyJMozKl;yhfrXJNdDFi;zvpgxEXKljt;j55jky66ItB;h4NG6IkQ7I0;rBu7GPDyqW3;M8PDtnxruzA;AVgqKbYOaee;wU7klQNrC2Q;yWA1yjgVfsW;HdMxagiCWKX;X5HRzv4wfX4;psq6XvS0xKN;b96XnB5lkFm;MPj6ZPQsvLZ;r4t8g5jzkcw;ihia3sxq9BP;F5rIMT3tYaB&amp;dimension=pe:LAST_12_MONTHS&amp;dimension=ou:LEVEL-2&amp;displayProperty=SHORTNAME</nullif>
+        <nullif>https://play.im.dhis2.org/stable-2-41-2/api/analytics.json?dimension=dx:UsSUX0cpKsH;vq2qO3eTrNi;YazgqXbizv1;HS9zqaBdOQ4;noIzB569hTM&amp;dimension=pe:LAST_12_MONTHS&amp;dimension=ou:LEVEL-2&amp;displayProperty=SHORTNAME</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
       </field>
       <field>
+        <currency/>
+        <decimal/>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>diseases</name>
-        <nullif>https://snis-dhis2.gouv.dj/dhis/api/dataElements.json?filter=name:like:Paludisme&amp;filter=name:like:Rougeole&amp;filter=name:like:M%C3%A9ningite&amp;filter=name:like:Dengue&amp;filter=name:like:Diarr&amp;filter=name:like:grippal&amp;filter=name:like:Gale&amp;rootJunction=OR&amp;paging=false</nullif>
+        <nullif>https://play.im.dhis2.org/stable-2-41-2/api/dataElements.json?filter=name:like:IDSR%20Cholera&amp;filter=name:like:IDSR%20Malaria&amp;filter=name:like:IDSR%20Measles&amp;filter=name:like:IDSR%20Plague&amp;filter=name:like:IDSR%20Yellow%20fever&amp;rootJunction=OR&amp;paging=false</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
       </field>
       <field>
+        <currency/>
+        <decimal/>
+        <format/>
+        <group/>
         <length>-1</length>
         <name>orgunits</name>
-        <nullif>https://snis-dhis2.gouv.dj/dhis/api/organisationUnits.json?level=2&amp;fields=id,name,geometry,parent[id,name]&amp;paging=false</nullif>
+        <nullif>https://play.im.dhis2.org/stable-2-41-2/api/organisationUnits.json?level=2&amp;fields=id,name,geometry,parent[id,name]&amp;paging=false</nullif>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
         <type>String</type>
@@ -425,8 +459,10 @@ specefic characters</note>
     <methodFieldName/>
     <urlField>api</urlField>
     <bodyField/>
-    <httpLogin>igadregio</httpLogin>
-    <httpPassword>Encrypted 2be98c68f2be3c3d6f84dfb2689caf6fa</httpPassword>
+    <httpLogin>admin</httpLogin>
+    <readTimeout/>
+    <connectionTimeout/>
+    <httpPassword>Encrypted 2be98afc86aa7f2e4af10bd64cc9bacce</httpPassword>
     <proxyHost/>
     <proxyPort/>
     <preemptive>N</preemptive>
@@ -470,8 +506,10 @@ specefic characters</note>
     <methodFieldName/>
     <urlField>orgunits</urlField>
     <bodyField/>
-    <httpLogin>igadregio</httpLogin>
-    <httpPassword>Encrypted 2be98c68f2be3c3d6f84dfb2689caf6fa</httpPassword>
+    <httpLogin>admin</httpLogin>
+    <readTimeout/>
+    <connectionTimeout/>
+    <httpPassword>Encrypted 2be98afc86aa7f2e4af10bd64cc9bacce</httpPassword>
     <proxyHost/>
     <proxyPort/>
     <preemptive>N</preemptive>
@@ -515,8 +553,10 @@ specefic characters</note>
     <methodFieldName/>
     <urlField>diseases</urlField>
     <bodyField/>
-    <httpLogin>igadregio</httpLogin>
-    <httpPassword>Encrypted 2be98c68f2be3c3d6f84dfb2689caf6fa</httpPassword>
+    <httpLogin>admin</httpLogin>
+    <readTimeout/>
+    <connectionTimeout/>
+    <httpPassword>Encrypted 2be98afc86aa7f2e4af10bd64cc9bacce</httpPassword>
     <proxyHost/>
     <proxyPort/>
     <preemptive>N</preemptive>
@@ -542,7 +582,7 @@ specefic characters</note>
     </GUI>
   </transform>
   <transform>
-    <name>Read CHoléra Data as Json</name>
+    <name>Read Cholera Malaria Measles Plague Yellow Fever Data as Json</name>
     <type>JsonInput</type>
     <description/>
     <distribute>N</distribute>
@@ -612,7 +652,7 @@ specefic characters</note>
     <sizeFieldName/>
     <attributes/>
     <GUI>
-      <xloc>272</xloc>
+      <xloc>448</xloc>
       <yloc>640</yloc>
     </GUI>
   </transform>
@@ -870,7 +910,7 @@ specefic characters</note>
     </fields>
     <attributes/>
     <GUI>
-      <xloc>496</xloc>
+      <xloc>944</xloc>
       <yloc>640</yloc>
     </GUI>
   </transform>
@@ -1090,23 +1130,20 @@ specefic characters</note>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <directory>${java.io.tmpdir}</directory>
-    <prefix>out</prefix>
-    <sort_size>1000000</sort_size>
-    <free_memory/>
     <compress>N</compress>
-    <compress_variable/>
-    <unique_rows>N</unique_rows>
+    <directory>${java.io.tmpdir}</directory>
     <fields>
       <field>
-        <name>id</name>
         <ascending>N</ascending>
         <case_sensitive>N</case_sensitive>
         <collator_enabled>N</collator_enabled>
         <collator_strength>0</collator_strength>
+        <name>id</name>
         <presorted>N</presorted>
       </field>
     </fields>
+    <sort_size>1000000</sort_size>
+    <unique_rows>N</unique_rows>
     <attributes/>
     <GUI>
       <xloc>1232</xloc>
@@ -1124,23 +1161,20 @@ specefic characters</note>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <directory>${java.io.tmpdir}</directory>
-    <prefix>out</prefix>
-    <sort_size>1000000</sort_size>
-    <free_memory/>
     <compress>N</compress>
-    <compress_variable/>
-    <unique_rows>N</unique_rows>
+    <directory>${java.io.tmpdir}</directory>
     <fields>
       <field>
-        <name>disease</name>
         <ascending>N</ascending>
         <case_sensitive>N</case_sensitive>
         <collator_enabled>N</collator_enabled>
         <collator_strength>0</collator_strength>
+        <name>disease</name>
         <presorted>N</presorted>
       </field>
     </fields>
+    <sort_size>1000000</sort_size>
+    <unique_rows>N</unique_rows>
     <attributes/>
     <GUI>
       <xloc>1168</xloc>
@@ -1158,23 +1192,20 @@ specefic characters</note>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <directory>${java.io.tmpdir}</directory>
-    <prefix>out</prefix>
-    <sort_size>1000000</sort_size>
-    <free_memory/>
     <compress>N</compress>
-    <compress_variable/>
-    <unique_rows>N</unique_rows>
+    <directory>${java.io.tmpdir}</directory>
     <fields>
       <field>
-        <name>orgUnitsLevel2Id</name>
         <ascending>N</ascending>
         <case_sensitive>N</case_sensitive>
         <collator_enabled>N</collator_enabled>
         <collator_strength>0</collator_strength>
+        <name>orgUnitsLevel2Id</name>
         <presorted>N</presorted>
       </field>
     </fields>
+    <sort_size>1000000</sort_size>
+    <unique_rows>N</unique_rows>
     <attributes/>
     <GUI>
       <xloc>1040</xloc>
@@ -1192,23 +1223,20 @@ specefic characters</note>
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <directory>${java.io.tmpdir}</directory>
-    <prefix>out</prefix>
-    <sort_size>1000000</sort_size>
-    <free_memory/>
     <compress>N</compress>
-    <compress_variable/>
-    <unique_rows>N</unique_rows>
+    <directory>${java.io.tmpdir}</directory>
     <fields>
       <field>
-        <name>City</name>
         <ascending>N</ascending>
         <case_sensitive>N</case_sensitive>
         <collator_enabled>N</collator_enabled>
         <collator_strength>0</collator_strength>
+        <name>City</name>
         <presorted>N</presorted>
       </field>
     </fields>
+    <sort_size>1000000</sort_size>
+    <unique_rows>N</unique_rows>
     <attributes/>
     <GUI>
       <xloc>1600</xloc>

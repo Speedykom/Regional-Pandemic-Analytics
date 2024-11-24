@@ -2,8 +2,8 @@
   "LocaleDefault": "en_US",
   "projectsConfig": {
     "enabled": true,
-    "projectMandatory": true,
-    "defaultEnvironment": "prod",
+    "projectMandatory": false,
+    "defaultEnvironment": "null",
     "defaultProject": "default",
     "standardParentProject": "default",
     "projectConfigurations": [
@@ -13,66 +13,8 @@
         "configFilename": "project-config.json"
       }
     ],
-    "lifecycleEnvironments": [
-      {
-        "name": "prod",
-        "purpose": "Production",
-        "projectName": "default",
-        "configurationFiles": []
-      }
-    ],
+    "lifecycleEnvironments": [],
     "projectLifecycles": []
   },
-  "variables": [
-    {
-      "name": "fhir_pipeline_source",
-      "value": "/files/fhir",
-      "description": ""
-    },
-    {
-      "name": "fhir_output_source",
-      "value": "/opt/hop/config/projects/default/fhir",
-      "description": ""
-    },
-    {
-      "name": "pipeline_source",
-      "value": "/files",
-      "description": ""
-    },
-    {
-      "name": "output_source",
-      "value": "/opt/hop/config/projects/default",
-      "description": ""
-    },
-    {
-      "name": "covid_output_source",
-      "value": "/opt/hop/config/projects/default/covid",
-      "description": ""
-    },
-    {
-      "name": "ebola_output_source",
-      "value": "/opt/hop/config/projects/default/ebola",
-      "description": ""
-    },
-    {
-      "name": "monkeypox_output_source",
-      "value": "/opt/hop/config/projects/default/monkeypox",
-      "description": ""
-    },
-    {
-      "name": "dengue_fever_output_source",
-      "value": "/opt/hop/config/projects/default/dengue-fever",
-      "description": ""
-    },
-    {
-      "name": "djibouti_username",
-      "value": "igadregio",
-      "description": ""
-    },
-    {
-      "name": "djibouti_password",
-      "value": "Encrypted 2be98c68f2be3c3d6f84dfb2689caf6fa",
-      "description": ""
-    }
-  ]
+  "variables": []
 }
