@@ -24,7 +24,7 @@ export default function LoginForm() {
                       <div className="text-center">
                         <Image
                           className="mx-auto w-72"
-                          src="/images/igad_logo.jpg"
+                          src="/d-OHP-logo.png"
                           alt="logo"
                           width={500}
                           height={200}
