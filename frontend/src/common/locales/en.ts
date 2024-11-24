@@ -108,8 +108,6 @@ const enTranslation = {
   searchForTemplate: 'Search for template...',
   pipelineCreatedSuccessfully: 'Pipeline created successfully',
   fileUploadedSuccessfully: 'File added successfully',
-  unverified: 'Unverified',
-  verified: 'Verified',
   pipelineName: 'Pipeline Name*',
   fileName: 'File Name*',
   pipelineNameRequired: 'Pipeline name is required',
