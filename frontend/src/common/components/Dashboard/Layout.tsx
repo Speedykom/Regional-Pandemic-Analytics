@@ -28,7 +28,7 @@ export default function Layout({ children }: LayoutProps) {
         <div className={`mt-16`}>
           {!isTabletOrMobile && <SideBar isOpen={isOpen} />}
           <Drawer
-            title="RePAN"
+            title="d-OHP"
             placement="left"
             isOpen={showMobileNav}
             onClose={() => setShowMobileNav(false)}
