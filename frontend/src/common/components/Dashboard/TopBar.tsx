@@ -71,7 +71,7 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
             onClick={() => setIsOpen(!isOpen)}
           />
         )}
-        <p className="text-xl">Regional Pandemic Analytics</p>
+        <p className="text-xl">Digital One Health Platform</p>
       </div>
       <div className="flex pr-4 md:pr-16 items-center">
         <LanguageSelector />

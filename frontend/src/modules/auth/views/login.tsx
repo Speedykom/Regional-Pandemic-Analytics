@@ -23,8 +23,8 @@ export default function LoginForm() {
                     <div className="md:p-12 md:mx-6">
                       <div className="text-center">
                         <Image
-                          className="mx-auto w-72"
-                          src="/images/igad_logo.jpg"
+                          className="mx-auto w-72 py-4"
+                          src="/d-OHP-logo.png"
                           alt="logo"
                           width={500}
                           height={200}

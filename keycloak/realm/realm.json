@@ -1,8 +1,8 @@
 {
   "id": "c89b3c58-aefb-4429-972b-feccb6a77750",
   "realm": "regional-pandemic-analytics",
-  "displayName": "Regional Pandemic Analytics System",
-  "displayNameHtml": "<div style=\"font-family: 'Inter', sans-serif; color: #31713b; padding: 10px; border-radius: 5px; text-align: center;\">Regional Pandemic Analytics Tool</div>",
+  "displayName": "Digital One Health Platform",
+  "displayNameHtml": "<div style=\"font-family: 'Inter', sans-serif; color: #31713b; padding: 10px; border-radius: 5px; text-align: center;\">d-OHP (digital-One Health Platform)</div>",
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,

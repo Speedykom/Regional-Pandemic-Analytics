@@ -41,7 +41,7 @@ const Footer: React.FC = () => {
             </ul>
           </div>
           <div className="text-xs text-gray-500">
-            &copy; {currentYear} IGAD. {t('footer.allRightsReserved')}
+            &copy; {currentYear} MinSante. {t('footer.allRightsReserved')}
           </div>
         </div>
       </div>
