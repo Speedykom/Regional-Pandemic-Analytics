@@ -4,7 +4,7 @@ const enTranslation = {
     KeycloakSignIn: 'Sign-In with KeyCloak',
     WelcomeMessage: 'Welcome back!',
     WelcomeText:
-      'Simply login to access the IGAD regional pandemic analytics tool to collect, analyze, and report granular and aggregated data from multiple sources for informed decision-making.',
+      'Simply login to access the d-OHP (digital-One Health Platform) to collect, analyze, and report granular and aggregated data from multiple sources for informed decision-making.',
   },
   supersetcharts: {
     secondago: '1 second ago',
