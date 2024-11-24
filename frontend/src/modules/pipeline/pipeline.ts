@@ -43,6 +43,14 @@ export const pipelineApi = createApi({
       }),
       invalidatesTags: ['pipelines'],
     }),
+    uploadExternalFiles: builder.mutation<any, FormData>({
+      query: (formData) => ({
+        url: '/pipeline/upload-external-files/',
+        method: 'POST',
+        body: formData,
+      }),
+      invalidatesTags: ['pipelines'],
+    }),
     updatePipeline: builder.mutation<
       { status: string; message?: string },
       string
@@ -91,6 +99,7 @@ export const {
   useDownloadPipelineQuery,
   useCreatePipelineMutation,
   useUploadPipelineMutation,
+  useUploadExternalFilesMutation,
   useUpdatePipelineMutation,
   useGetAllTemplatesQuery,
   useUploadTemplateMutation,

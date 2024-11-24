@@ -77,11 +77,14 @@ const frTranslation = {
   description: 'Description',
   createPipeline: 'Créer un pipeline',
   uploadPipeline: 'Charger un pipeline',
+  uploadExternalFiles: 'Charger des fichiers externes',
   pipelineCheckSuccessful: 'Vérification du pipeline réussie',
   pipelineCheckFailed: 'Échec de la vérification du pipeline',
   addPipeline: 'Ajouter un Pipeline',
   pipelineInvalidName:
     'Caractères invalides. Le nom du pipeline doit être composé exclusivement de caractères alphanumériques, de tirets, de points et de tirets bas.',
+  fileInvalidName:
+    'Caractères invalides. Le nom du fichier doit être composé exclusivement de caractères alphanumériques, de tirets, de points et de tirets bas.',
   view: 'Voir',
   delete: 'Supprimer',
   addPipelineNote: 'Remarque : sélectionnez un modèle et appuyez sur Continuer',
@@ -94,17 +97,23 @@ const frTranslation = {
   ShowDisabledProcessChain: 'Afficher les chaînes de processus inactives',
   searchForProcesscChains: 'Rechercher des chaînes de processus..',
   pipelineName: 'Nom du pipeline*',
+  fileName: 'Nom du fichier*',
   pipelineNameRequired: 'Le nom du pipeline est requis',
+  fileNameRequired: 'Le nom du fichier est requis',
   pipelineNamePatter: "Le nom du pipeline ne peut pas contenir d'espaces",
   enterPipelineName: 'Saisir le nom du pipeline',
+  enterFileName: 'Saisir le nom du fichier',
   descRequired: 'La description est requise',
   enterDesc: 'Saisir la description',
   fileUploadDesc:
     'Faites glisser et déposez le fichier de pipeline .hpl ici, ou cliquez pour sélectionner un fichier',
+  externalFileUploadDesc:
+    'Faites glisser et déposez, ou cliquez pour sélectionner un fichier',
   upload: 'Charger',
   selectedFiles: 'Fichiers sélctionnés',
   searchForTemplate: 'Rechercher un modèle...',
   pipelineCreatedSuccessfully: 'Pipeline créé avec succès',
+  fileAddedSuccessfully: 'Fichier ajouté avec succès',
 
   supersetCharts: 'Graphiques Superset',
   chartListCreatedOnSuperset:

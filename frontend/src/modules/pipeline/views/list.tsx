@@ -27,12 +27,14 @@ import { UploadPipeline } from './upload';
 import { TemplateModal } from './template-modal';
 import {
   ArrowDownTrayIcon,
+  ArrowUpTrayIcon,
   TrashIcon,
   XCircleIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 import { skipToken } from '@reduxjs/toolkit/query/react';
+import { UploadExternalFiles } from './upload-external-files';
 
 export const MyPipelines = () => {
   const router = useRouter();
@@ -41,6 +43,8 @@ export const MyPipelines = () => {
   const [template, setTemplate] = useState<any>();
   const [drawer, setDrawer] = useState<boolean>(false);
   const [uploadDrawer, setUploadDrawer] = useState<boolean>(false);
+  const [externalFileUploadDrawer, setExternalFilesUploadDrawer] =
+    useState<boolean>(false);
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const defaultPageSize = 5;
@@ -61,6 +65,9 @@ export const MyPipelines = () => {
 
   const uploadClose = () => {
     setUploadDrawer(false);
+  };
+  const uploadExternalFilesClose = () => {
+    setExternalFilesUploadDrawer(false);
   };
   const { showModal, hideModal } = useModal();
 
@@ -124,6 +131,10 @@ export const MyPipelines = () => {
 
   const showUploadModal = () => {
     setUploadDrawer(true);
+  };
+
+  const showExternalFilesUploadModal = () => {
+    setExternalFilesUploadDrawer(true);
   };
   const renderPagination = () => {
     if (!defaultPageSize || !data?.data || data?.data?.length == 0) return null;
@@ -231,6 +242,14 @@ export const MyPipelines = () => {
                 variant="shadow"
               />
               <Icon
+                onClick={showExternalFilesUploadModal}
+                size="lg"
+                icon={ArrowUpTrayIcon}
+                tooltip={t('uploadExternalFiles')}
+                className="cursor-pointer"
+                variant="shadow"
+              />
+              <Icon
                 onClick={() => showPipelineDeleteConfirmModal(item?.name)}
                 size="lg"
                 icon={TrashIcon}
@@ -325,6 +344,12 @@ export const MyPipelines = () => {
         state={uploadDrawer}
         template={template}
         onClose={uploadClose}
+        refetch={refetch}
+      />
+      <UploadExternalFiles
+        state={externalFileUploadDrawer}
+        template={template}
+        onClose={uploadExternalFilesClose}
         refetch={refetch}
       />
     </div>

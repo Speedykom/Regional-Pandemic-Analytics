@@ -11,7 +11,6 @@ RUN apt-get install gettext-base
 COPY watchFiles.sh /usr/local/tomcat/watchFiles.sh
 RUN chmod +x /usr/local/tomcat/watchFiles.sh
 
-#ADD hop-cpython-1.5.tar.gz /usr/local/tomcat/plugins/transforms
 COPY hop-config.json /usr/local/tomcat/webapps/ROOT/config/hop-config.json
 
 COPY keycloak/lib/*.jar /usr/local/tomcat/lib/
