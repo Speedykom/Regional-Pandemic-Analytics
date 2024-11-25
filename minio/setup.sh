@@ -22,8 +22,6 @@ mc alias set minio-remote $MINIO_MC_REMOTE_SERVER_URL $MINIO_ROOT_USER $MINIO_RO
 # create minio buckets 
 create_bucket "minio-remote" "pipelines"
 create_bucket "minio-remote" "parquets"
-create_bucket "minio-remote" "repan-bucket"
 create_bucket "minio-remote" "avatars"
-create_bucket "minio-remote" "external-files"
 
 mc mirror  /tmp/templates/ minio-remote/pipelines/templates
