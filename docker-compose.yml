@@ -448,7 +448,6 @@ services:
       HOP_SERVER_HOSTNAME: 0.0.0.0
     volumes:
       - ./hop/pipelines:/files
-      - ./hop/pipelines/external_files:/files/external_files
     # =======
     # Airflow
     # =======
