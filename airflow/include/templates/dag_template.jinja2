@@ -52,7 +52,7 @@ def download_pipeline_minio():
     try:
         with open("/hop/config/projects/default/{{user_id}}/{{pipeline_display_name}}", 'r+') as file:
             content = file.read()
-            updated_content = content.replace("${PROJECT_HOME}", "ftp://${minio_ftp}/pipelines")
+            updated_content = content.replace("${PROJECT_HOME}", "/files/")
             file.seek(0)
             file.write(updated_content)
             file.truncate()
