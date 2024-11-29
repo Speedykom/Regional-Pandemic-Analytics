@@ -15,16 +15,20 @@ server {
 server {
 	listen 443 ssl;
 	server_name $NGINX_FRONTEND_DOMAIN_NAME;
-	
+
 	ssl_certificate /etc/letsencrypt/live/$NGINX_FRONTEND_DOMAIN_NAME/fullchain.pem;
 	ssl_certificate_key /etc/letsencrypt/live/$NGINX_FRONTEND_DOMAIN_NAME/privkey.pem;
-	
+	client_max_body_size 100M;
+
+
 	#include /etc/letsencrypt/options-ssl-nginx.conf;
 	#ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
 	location / {
 		proxy_pass http://$NGINX_UPSTREAM_FRONTEND:3000/;
 		error_log /var/log/front_end_errors.log;
+		client_max_body_size 100M;
+
 	}
 
 	location /_next/webpack-hmr {
@@ -32,15 +36,18 @@ server {
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
+		client_max_body_size 100M;
+
     }
 
 	location /hop/ {
 		proxy_set_header Host                    $host;
     	proxy_set_header X-Real-IP               $remote_addr;
     	proxy_set_header X-Scheme                $scheme;
-		proxy_set_header X-Forwarded-For $proxy_protocol_addr; # To forward the original client's IP address 
+		proxy_set_header X-Forwarded-For $proxy_protocol_addr; # To forward the original client's IP address
     	proxy_set_header X-Forwarded-Proto $scheme; # to forward the  original protocol (HTTP or HTTPS)
 		proxy_pass http://$NGINX_UPSTREAM_HOP:8080/;
 		error_log /var/log/hop_errors.log;
+		client_max_body_size 100M;
 	}
 }
