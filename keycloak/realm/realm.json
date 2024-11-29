@@ -1,7 +1,7 @@
 {
   "id": "c89b3c58-aefb-4429-972b-feccb6a77750",
   "realm": "regional-pandemic-analytics",
-  "displayName": "Digital One Health Platform",
+  "displayName": "Cameroon One Health Information System",
   "displayNameHtml": "<div style=\"font-family: 'Inter', sans-serif; color: #31713b; padding: 10px; border-radius: 5px; text-align: center;\">d-OHP (digital-One Health Platform)</div>",
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
@@ -87,15 +87,9 @@
         "composite": true,
         "composites": {
           "client": {
-            "superset": [
-              "superset_admin"
-            ],
-            "airflow": [
-              "airflow_admin"
-            ],
-            "${BACKEND_CLIENT_ID}": [
-              "me_expert_role"
-            ]
+            "superset": ["superset_admin"],
+            "airflow": ["airflow_admin"],
+            "${BACKEND_CLIENT_ID}": ["me_expert_role"]
           }
         },
         "clientRole": false,
@@ -109,16 +103,9 @@
         "composite": true,
         "composites": {
           "client": {
-            "superset": [
-              "superset_admin"
-            ],
-            "airflow": [
-              "airflow_admin"
-            ],
-            "${BACKEND_CLIENT_ID}": [
-              "dho_role",
-              "admin"
-            ]
+            "superset": ["superset_admin"],
+            "airflow": ["airflow_admin"],
+            "${BACKEND_CLIENT_ID}": ["dho_role", "admin"]
           }
         },
         "clientRole": false,
@@ -132,18 +119,10 @@
         "composite": true,
         "composites": {
           "client": {
-            "realm-management": [
-              "realm-admin"
-            ],
-            "superset": [
-              "superset_admin"
-            ],
-            "airflow": [
-              "airflow_admin"
-            ],
-            "${BACKEND_CLIENT_ID}": [
-              "admin"
-            ]
+            "realm-management": ["realm-admin"],
+            "superset": ["superset_admin"],
+            "airflow": ["airflow_admin"],
+            "${BACKEND_CLIENT_ID}": ["admin"]
           }
         },
         "clientRole": false,
