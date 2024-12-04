@@ -425,7 +425,7 @@ services:
       - ./hop/pipelines:/files
       - ./hop/pipelines/external_files:/files/external_files
       - ./storage:/home
-      - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
+      - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/default/data-orch.list
       - ./hop/keycloak/index.jsp:/usr/local/tomcat/webapps/ROOT/index.jsp
       - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
     environment:
