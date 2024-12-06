@@ -378,6 +378,8 @@ const enTranslation = {
     confirmationPlaceholder: 'Type...',
   },
   download: 'Download',
+  createDashboardBtn: 'Create New Dashboard',
+  createChartBtn: 'Create New Chart',
 };
 
 export default enTranslation;
