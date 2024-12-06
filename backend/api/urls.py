@@ -4,7 +4,7 @@ from django.urls import re_path, path, include
 from data.views import DataUploadAPIView
 from accounts import views
 
-from hop.views import GetSingleHopAPIView, NewHopAPIView
+from hop.views import GetSingleHopAPIView, NewHopAPIView, NewHopInstancesView
 
 from auth import views as auth_view
 from roles import views as role_view
@@ -74,5 +74,6 @@ urlpatterns = [
     # ---------------------- Hop Endpoints ------------------------------------------
     # endpoint for uploading data
     path("hop/new/", NewHopAPIView.as_view()),
+    path("hop/instance/new/", NewHopInstancesView.as_view()),
     path("hop/<str:filename>/", GetSingleHopAPIView.as_view()),
 ]

@@ -1,5 +1,6 @@
 import os
 import re
+import time
 from typing import List
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -11,6 +12,7 @@ from django.http import HttpResponse
 from django.core.files.storage import FileSystemStorage
 from rest_framework.permissions import AllowAny
 from django.utils.datastructures import MultiValueDictKeyError
+import docker
 
 def get_file_by_name(filename: str)-> any:
   """Looks for a file by it name and return the found item"""
@@ -144,4 +146,78 @@ class NewHopAPIView(APIView):
     except MultiValueDictKeyError:
       return Response({'status': 'error', "message": "Please provide a file to upload"}, status=500)
          
+class NewHopInstancesView(APIView):
+  def start_docker_container(self, user_id, service_name, image, volumes, environment, user="0:1000"):
+      """Starts a new Docker container for the given user."""
+      client = docker.DockerClient(base_url='unix://var/run/docker.sock')
+      container = client.containers.run(
+          image,
+          volumes=volumes,
+          environment=environment,
+          name=f"{service_name}_{user_id}",
+          user=user,
+          detach=True
+      )
+      return container.id
+
+  def stop_docker_container(container_id):
+    """Stops and removes a Docker container."""
+    client = docker.from_env()
+    try:
+        container = client.containers.get(container_id)
+        container.stop()
+        container.remove()
+    except docker.errors.NotFound:
+        print(f"Container {container_id} not found.")
+
+  def post(self, request):
+    """Receive a request to create a new hop and hop-server instance"""
     
+    user_id = request.data['user_id']
+    base_path = os.getenv("PROJECT_BASE_PATH")
+    
+    hop_volumes = {
+        f"/data/{user_id}": {"bind": "/hop/projects", "mode": "rw"},
+        f"{base_path}/hop/pipelines": {"bind": "/files", "mode": "rw"},
+        f"{base_path}/hop/pipelines/external_files": {"bind": "/files/external_files", "mode": "rw"},
+        f"{base_path}/storage": {"bind": "/home", "mode": "rw"},
+        f"{base_path}/hop/data-orch.list": {"bind": "/usr/local/tomcat/webapps/ROOT/audit/default/data-orch.list", "mode": "rw"},
+        f"{base_path}/hop/keycloak/index.jsp": {"bind": "/usr/local/tomcat/webapps/ROOT/index.jsp", "mode": "rw"},
+        f"{base_path}/hop/keycloak/server.xml": {"bind": "/usr/local/tomcat/conf/server.xml", "mode": "rw"}
+    }
+    hop_environment = {
+        "HOP_KEYCLOAK_SELF_SIGNED_SSL": os.getenv("HOP_KEYCLOAK_SELF_SIGNED_SSL"),
+        "HOP_KEYCLOAK_CLIENT_ID": os.getenv("HOP_KEYCLOAK_CLIENT_ID"),
+        "HOP_KEYCLOAK_CLIENT_SECRET": os.getenv("HOP_KEYCLOAK_CLIENT_SECRET"),
+        "HOP_KEYCLOAK_REALM": os.getenv("HOP_KEYCLOAK_REALM"),
+        "HOP_KEYCLOAK_SERVER_URL": os.getenv("HOP_KEYCLOAK_SERVER_URL"),
+        "HOP_KEYCLOAK_SSL_REQUIRED": os.getenv("HOP_KEYCLOAK_SSL_REQUIRED"),
+        "HOP_KEYCLOAK_CONFIDENTIAL_PORT": os.getenv("HOP_KEYCLOAK_CONFIDENTIAL_PORT"),
+        "HOP_KEYCLOAK_DISABLE_SSL_VERIFICATION": os.getenv("HOP_KEYCLOAK_DISABLE_SSL_VERIFICATION")
+    }
+    
+    hop_container_id = self.start_docker_container(user_id, "hop", "custom-hop:latest", hop_volumes, hop_environment)
+
+    hop_server_volumes = {
+        f"{base_path}/hop/pipelines": {"bind": "/files", "mode": "rw"}
+    }
+    hop_server_environment = {
+        "HOP_SERVER_USER": os.getenv("HOP_SERVER_USER"),
+        "HOP_SERVER_PASS": os.getenv("HOP_SERVER_PASS"),
+        "HOP_SERVER_PORT": 8080,
+        "HOP_SERVER_HOSTNAME": "0.0.0.0"
+    }
+    
+    hop_server_container_id = self.start_docker_container(user_id, "hop-server", "apache/hop:2.7.0", hop_server_volumes, hop_server_environment)
+
+    # After 10 minutes, stop the containers
+    time.sleep(600)
+    self.stop_docker_container(hop_container_id)
+
+    return Response({
+        'status': 'success', 
+        "message": "Hop and Hop-server instances created successfully", 
+        "hop_container_id": hop_container_id,
+        "hop_server_container_id": hop_server_container_id
+    }, status=200)
+
