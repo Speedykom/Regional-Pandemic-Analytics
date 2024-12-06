@@ -35,7 +35,7 @@ import {
 import { toast } from 'react-toastify';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 import { UploadExternalFiles } from './upload-external-files';
-import { Tooltip } from 'react-tooltip'
+import { Tooltip } from 'react-tooltip';
 import 'react-tooltip/dist/react-tooltip.css';
 
 export const MyPipelines = () => {
@@ -188,7 +188,7 @@ export const MyPipelines = () => {
               size="lg"
               icon={CheckCircleIcon}
               color="green"
-              className='green-icon'
+              className="green-icon"
             />
             <Tooltip anchorSelect=".green-icon" place="top">
               {t(item.check_text)}
@@ -202,7 +202,7 @@ export const MyPipelines = () => {
               size="lg"
               icon={XCircleIcon}
               color="red"
-              className='red-icon'
+              className="red-icon"
             />
             <Tooltip anchorSelect=".red-icon" place="top">
               {t(item.check_text)}
