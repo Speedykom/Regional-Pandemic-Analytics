@@ -13,6 +13,7 @@ import Link from 'next/link';
 import MediaQuery from 'react-responsive';
 import { useGetChartsQuery } from '../superset';
 import { useTranslation } from 'react-i18next';
+import getConfig from 'next/config';
 
 type ChartItem = {
   slice_url?: string;
@@ -35,6 +36,7 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
   const { data } = useGetChartsQuery(searchInput);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  const { publicRuntimeConfig } = getConfig();
 
   let filteredCharts: any = { result: [] };
 
@@ -78,11 +80,24 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
 
   return (
     <div>
-      <nav className="mb-5">
-        <h2 className="text-3xl">
-          {filterByDagId ? t('processChainCharts') : t('supersetCharts')}
-        </h2>
-      </nav>
+      <div className="flex flex-row justify-between">
+        <nav className="mb-5">
+          <h2 className="text-3xl">
+            {filterByDagId ? t('processChainCharts') : t('supersetCharts')}
+          </h2>
+        </nav>
+        <Button
+          className="bg-prim hover:bg-prim-hover border-0 h-10"
+          onClick={() => {
+            window.open(
+              `${publicRuntimeConfig.NEXT_PUBLIC_SUPERSET_URL}/chart/list`,
+              '_blank'
+            );
+          }}
+        >
+          {t('createChartBtn')}
+        </Button>
+      </div>
       <input
         type="text"
         placeholder={t('searchForCharts')}
