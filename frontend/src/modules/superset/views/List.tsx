@@ -2,6 +2,8 @@ import { useTranslation } from 'react-i18next';
 import { useGetDashboardsQuery } from '../superset';
 import { useState } from 'react';
 import { ListDashboardCard } from './list/ListDashboardCard';
+import { Button } from '@tremor/react';
+import getConfig from 'next/config';
 
 export const DashboardList = () => {
   const { t } = useTranslation();
@@ -10,16 +12,31 @@ export const DashboardList = () => {
 
   let { data } = useGetDashboardsQuery(searchInput);
 
+  const { publicRuntimeConfig } = getConfig();
+
   return (
     <div className="">
-      <nav className="mb-5">
-        <div>
-          <h2 className="text-3xl">{t('supersetDashboards')}</h2>
-          <p className="mt-2 text-gray-600">
-            {t('dashboardListCreatedOnSuperset')}
-          </p>
-        </div>
-      </nav>
+      <div className="flex flex-row justify-between items-center">
+        <nav className="mb-5">
+          <div>
+            <h2 className="text-3xl">{t('supersetDashboards')}</h2>
+            <p className="mt-2 text-gray-600">
+              {t('dashboardListCreatedOnSuperset')}
+            </p>
+          </div>
+        </nav>
+        <Button
+          className="bg-prim hover:bg-prim-hover border-0 h-10"
+          onClick={() => {
+            window.open(
+              `${publicRuntimeConfig.NEXT_PUBLIC_SUPERSET_URL}/dashboard/list`,
+              '_blank'
+            );
+          }}
+        >
+          {t('createDashboardBtn')}
+        </Button>
+      </div>
       <input
         type="text"
         placeholder={t('searchForDashboard')}
