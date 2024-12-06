@@ -14,6 +14,8 @@ from requests.auth import HTTPBasicAuth
 from superset.superset_client import SupersetClient
 import urllib.parse
 from typing import Dict, Any
+import xml.etree.ElementTree as ET
+
 
 task_logger = logging.getLogger('airflow.task')
 
@@ -41,6 +43,20 @@ druid_auth = HTTPBasicAuth('admin', druid_admin_password)
 druid_coordinator_url = Variable.get('druid_coordinator_url')
 druid_router_url = Variable.get('druid_router_url')
 
+# This is a mandatory transformation to replace the parquet filename entered by the user with the correct one that can be processed by airflow
+def update_parquet_filename_in_content(xml_content, new_filename):
+    root = ET.fromstring(xml_content)
+    
+    for transform in root.findall("transform"):
+        transform_type = transform.find("type")
+        if transform_type is not None and transform_type.text == "ParquetFileOutput":
+            filename_base = transform.find("filename_base")
+            if filename_base is not None:
+                filename_base.text = new_filename
+    
+    updated_content = ET.tostring(root, encoding="unicode")
+    return updated_content
+
 # Download pipeline from minio bucket
 def download_pipeline_minio():
     task_logger.debug('Beginning download of pipeline from MinIO…')
@@ -53,6 +69,8 @@ def download_pipeline_minio():
         with open("/hop/config/projects/default/{{user_id}}/{{pipeline_display_name}}", 'r+') as file:
             content = file.read()
             updated_content = content.replace("${PROJECT_HOME}", "/files/")
+            # This is a mandatory transformation to replace the parquet filename entered by the user with the correct one that can be processed by airflow
+            updated_content = update_parquet_filename_in_content(updated_content, "ftp://${minio_ftp}/parquets/${user_id}/${dag_display_name}")
             file.seek(0)
             file.write(updated_content)
             file.truncate()

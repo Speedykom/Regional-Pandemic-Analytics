@@ -324,7 +324,7 @@ specefic characters</note>
         <target_field>NewCases</target_field>
       </field>
     </fields>
-    <filename_base>ftp://${minio_ftp}/parquets/${user_id}/${dag_display_name}</filename_base>
+    <filename_base>filename</filename_base>
     <filename_create_parent_folders>Y</filename_create_parent_folders>
     <filename_datetime_format>yyyyMMdd-HHmmss</filename_datetime_format>
     <filename_ext>parquet</filename_ext>
