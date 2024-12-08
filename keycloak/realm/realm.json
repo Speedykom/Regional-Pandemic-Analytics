@@ -497,6 +497,22 @@
       "account-console": [],
       "${BACKEND_CLIENT_ID}": [
         {
+          "id": "f4f3058f-b50d-4d41-b4bb-f2045fbb25c4",
+          "name": "me_expert_role",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "124138ae-d2f7-4d57-803c-4d239ba05e12",
+          "attributes": {}
+        },
+        {
+          "id": "7a8eeba1-7f0d-47bc-9632-636d79265701",
+          "name": "dho_role",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "124138ae-d2f7-4d57-803c-4d239ba05e12",
+          "attributes": {}
+        },
+        {
           "id": "8708cdc4-fb05-4bb2-ae34-91717dec6133",
           "name": "admin",
           "composite": false,

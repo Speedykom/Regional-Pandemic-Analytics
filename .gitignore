@@ -29,3 +29,4 @@ certbot/conf/ssl-dhparams.pem
 superset/import/failed/
 
 .env.*
+backend/.env
