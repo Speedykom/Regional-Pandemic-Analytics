@@ -168,7 +168,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://data2.repan.info",
+    "https://data2.igad-health.eu",
 ]
 
 # Excempt list - URL paths that doesn't need Keycloak Authorization
