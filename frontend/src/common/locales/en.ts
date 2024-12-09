@@ -82,6 +82,10 @@ const enTranslation = {
   showing: 'Showing',
   of: 'of',
   // Pipeline validation check
+  pipelineUpdateSuccess: 'Pipeline updated successfully',
+  pipelineUpdateError: 'Unable to update pipeline',
+  pipelineCancelSuccess: 'Pipeline update canceled successfully',
+  pipelineCancelError: 'Unable to cancel pipeline update',
   MissingParquetTransform: 'One Parquet transform should be available',
   InvalidFilenameBase: 'Parquet File Output: Filename base cannot be empty',
   InvalidFilenameExtension:
