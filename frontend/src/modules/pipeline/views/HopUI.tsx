@@ -26,7 +26,7 @@ export const HopUI = ({ name }: HopUIProps) => {
       const response = await updatePipeline(name);
       if ('data' in response && response.data.status === 'success') {
         await navigateToPipelines();
-        toast.success('Pipeline updated successfully', {
+        toast.success(t('pipelineUpdateSuccess'), {
           position: 'top-right',
         });
         return;
@@ -38,7 +38,7 @@ export const HopUI = ({ name }: HopUIProps) => {
       /* eslint-disable no-console */
       console.error('Failed to update pipeline', e);
       await navigateToPipelines();
-      toast.error('Unable to update pipeline', { position: 'top-right' });
+      toast.error(t('pipelineUpdateError'), { position: 'top-right' });
     }
   };
 
@@ -47,7 +47,7 @@ export const HopUI = ({ name }: HopUIProps) => {
       const response = await cancelPipeline(name);
       if ('data' in response && response.data.status === 'success') {
         await navigateToPipelines();
-        toast.success('Pipeline canceled successfully', {
+        toast.success(t('pipelineCancelSuccess'), {
           position: 'top-right',
         });
         return;
@@ -55,7 +55,7 @@ export const HopUI = ({ name }: HopUIProps) => {
       throw new Error('API failed to cancel pipeline');
     } catch (e) {
       await navigateToPipelines();
-      toast.error('Unable to cancel pipeline', { position: 'top-right' });
+      toast.error(t('pipelineCancelError'), { position: 'top-right' });
     }
   };
 

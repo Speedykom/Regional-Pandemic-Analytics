@@ -189,9 +189,12 @@ export const AddProcess = ({
                     placeholder={t('addProcess.scheduleIntervalPlaceholder')}
                   >
                     {schedule_intervals.map((interval) => {
+                      const translatedInterval = t(
+                        `schedule_intervals.${interval}`
+                      );
                       return (
                         <SearchSelectItem key={interval} value={interval}>
-                          {interval}
+                          {translatedInterval}
                         </SearchSelectItem>
                       );
                     })}
