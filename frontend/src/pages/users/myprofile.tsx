@@ -332,11 +332,11 @@ export const ProfileSettings = () => {
               <p>
                 {data?.emailVerified ? (
                   <Badge color="indigo" icon={CheckIcon}>
-                    Enable
+                    {t('verified')}
                   </Badge>
                 ) : (
                   <Badge color="red" icon={XMarkIcon}>
-                    Disabled
+                    {t('unverified')}
                   </Badge>
                 )}
               </p>
