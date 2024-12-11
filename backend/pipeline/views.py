@@ -16,6 +16,8 @@ from minio import Minio
 import pyclamd
 import time
 import logging
+from datetime import datetime, timedelta
+
 
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")
@@ -154,37 +156,13 @@ class PipelineDetailView(APIView):
         Endpoint for getting details of pipeline
         """
         user_id = get_current_user_id(request)
-        local_file_path = f"/hop/pipelines/{name}.hpl"
         try:
-            object = client.stat_object(
-                "pipelines", f"pipelines-created/{user_id}/{name}.hpl"
-            )
-
-            # Download file from Minio to be available for HopUI
-            client.fget_object(
-                "pipelines",
-                f"pipelines-created/{user_id}/{name}.hpl",
-                local_file_path,
-            )
-            
-            timeout = 10
-            interval = 1
-            elapsed_time = 0
-
-            while elapsed_time < timeout:
-                if os.path.exists(local_file_path):
-                    break
-                time.sleep(interval)
-                elapsed_time += interval
-
-            if not os.path.exists(local_file_path):
-                logging.error(f"File {name}.hpl not available after {timeout} seconds.")
-                return Response(
-                    {"status": "error", "message": f"Pipeline file {name}.hpl not available."},
-                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                )
             # Automatically open file in visual editor when HopUI opens
-            payload = {"names": [f"file:///files/{name}.hpl"]}
+            #file_url = f"http://storage:9000/pipelines/pipelines-created/{user_id}/{name}.hpl"
+
+            url = client.get_presigned_url("GET","pipelines",f"pipelines-created/{user_id}/{name}.hpl", expires=timedelta(hours=2))
+            print(url)
+            payload = {"names": [url]}
 
             edit_hop = EditAccessProcess(file=self.file)
             edit_hop.request_edit(payload)
