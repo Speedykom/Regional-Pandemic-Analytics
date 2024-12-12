@@ -158,9 +158,9 @@ class PipelineDetailView(APIView):
         user_id = get_current_user_id(request)
         try:
             # Automatically open file in visual editor when HopUI opens
-            #file_url = f"http://storage:9000/pipelines/pipelines-created/{user_id}/{name}.hpl"
+            url = f"http://storage:9000/pipelines/pipelines-created/{user_id}/{name}.hpl"
 
-            url = client.get_presigned_url("GET","pipelines",f"pipelines-created/{user_id}/{name}.hpl", expires=timedelta(hours=2))
+            # url = client.get_presigned_url("GET","pipelines",f"pipelines-created/{user_id}/{name}.hpl", expires=timedelta(hours=2))
             print(url)
             payload = {"names": [url]}
 
