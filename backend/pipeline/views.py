@@ -78,17 +78,13 @@ class PipelineListView(APIView):
                         pipelines.append(
                             {
                                 "name": object_name,
-                                "description": unquote(object.metadata["X-Amz-Meta-Description"]),
-                                "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
-                                "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
+                                
                             })
                 else:
                     pipelines.append(
                     {
                         "name": object_name,
-                        "description": unquote(object.metadata["X-Amz-Meta-Description"]),
-                        "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
-                        "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
+                   
                     }
                 )
 
@@ -158,8 +154,12 @@ class PipelineDetailView(APIView):
         user_id = get_current_user_id(request)
         try:
             # Automatically open file in visual editor when HopUI opens
-            url = f"http://storage:9000/pipelines/pipelines-created/{user_id}/{name}.hpl"
-
+            minio_access_key=os.getenv("MINIO_ACCESS_KEY")
+            minio_secret_key=os.getenv("MINIO_SECRET_KEY")
+            minio_host = os.getenv("MINIO_HOST")
+            # url = f"http://storage:9000/pipelines/pipelines-created/{user_id}/{name}.hpl"
+            minio_ftp = f"{minio_access_key}:{minio_secret_key}@{minio_host}"
+            url = f"ftp://{minio_ftp}/pipelines/pipelines-created/{user_id}/{name}.hpl"
             # url = client.get_presigned_url("GET","pipelines",f"pipelines-created/{user_id}/{name}.hpl", expires=timedelta(hours=2))
             print(url)
             payload = {"names": [url]}
@@ -169,9 +169,7 @@ class PipelineDetailView(APIView):
             return Response(
                 {
                     "name": name,
-                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
-                    "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
-                    "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
+                  
                 },
                 status=status.HTTP_200_OK,
             )
@@ -203,9 +201,7 @@ class PipelineDetailView(APIView):
                 f"pipelines-created/{user_id}/{name}.hpl",
                 f"/hop/pipelines/{name}.hpl",
                 metadata={
-                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                     "updated": f"{datetime.utcnow()}",
-                    "created": object.metadata["X-Amz-Meta-Created"],
                     "check_status": "success" if valid_pipeline else "failed",
                     "check_text": check_text,
                 },
