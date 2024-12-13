@@ -78,13 +78,18 @@ class PipelineListView(APIView):
                         pipelines.append(
                             {
                                 "name": object_name,
+                                "description": unquote(object.metadata["X-Amz-Meta-Description"]),
+                                "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
+                                "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                                 
                             })
                 else:
                     pipelines.append(
                     {
                         "name": object_name,
-                   
+                        "description": unquote(object.metadata["X-Amz-Meta-Description"]),
+                        "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
+                        "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                     }
                 )
 
@@ -169,7 +174,9 @@ class PipelineDetailView(APIView):
             return Response(
                 {
                     "name": name,
-                  
+                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
+                    "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
+                    "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
                 },
                 status=status.HTTP_200_OK,
             )
@@ -201,7 +208,9 @@ class PipelineDetailView(APIView):
                 f"pipelines-created/{user_id}/{name}.hpl",
                 f"/hop/pipelines/{name}.hpl",
                 metadata={
+                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
                     "updated": f"{datetime.utcnow()}",
+                    "created": object.metadata["X-Amz-Meta-Created"],
                     "check_status": "success" if valid_pipeline else "failed",
                     "check_text": check_text,
                 },
