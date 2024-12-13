@@ -18,6 +18,25 @@ import time
 import logging
 from datetime import datetime, timedelta
 
+def list_events(user_id):
+        """Fetch events related to pipelines for a specific user."""
+        # events = []
+        try:
+            with client.listen_bucket_notification(
+                "pipelines", 
+                prefix=f"pipelines-created/{user_id}/",
+                events=["s3:ObjectCreated:*", "s3:ObjectRemoved:*"],
+            ) as events:
+                for event in events:
+                    print(event)
+                    # events.append({
+                    #     "name": event.object_name.removeprefix(f"pipelines-created/{user_id}/"),
+                    #     "timestamp": event.metadata.get("X-Amz-Meta-Timestamp", "N/A"),
+                    #     # "description": unquote(event.metadata.get("X-Amz-Meta-Description", "No description available")),
+                    # })
+        except Exception as e:
+            logging.error(f"Failed to list events: {e}")
+        return events
 
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")
@@ -62,7 +81,6 @@ class PipelineListView(APIView):
     def get(self, request , query = None):
         """Endpoint for getting pipelines created by a user"""
         user_id = get_current_user_id(request)
-
         pipelines: list[str] = []
 
         objects = client.list_objects(
@@ -162,15 +180,14 @@ class PipelineDetailView(APIView):
             minio_access_key=os.getenv("MINIO_ACCESS_KEY")
             minio_secret_key=os.getenv("MINIO_SECRET_KEY")
             minio_host = os.getenv("MINIO_HOST")
-            # url = f"http://storage:9000/pipelines/pipelines-created/{user_id}/{name}.hpl"
             minio_ftp = f"{minio_access_key}:{minio_secret_key}@{minio_host}"
             url = f"ftp://{minio_ftp}/pipelines/pipelines-created/{user_id}/{name}.hpl"
-            # url = client.get_presigned_url("GET","pipelines",f"pipelines-created/{user_id}/{name}.hpl", expires=timedelta(hours=2))
             print(url)
             payload = {"names": [url]}
 
             edit_hop = EditAccessProcess(file=self.file)
             edit_hop.request_edit(payload)
+            list_events(user_id)
             return Response(
                 {
                     "name": name,
