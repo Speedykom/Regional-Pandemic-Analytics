@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from utils.minio import client
-from minio.commonconfig import CopySource, REPLACE
+from minio.commonconfig import CopySource, REPLACE, Tags
 from datetime import datetime
 from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
@@ -91,23 +91,25 @@ class PipelineListView(APIView):
                 object_name = object.object_name.removeprefix(
                             f"pipelines-created/{user_id}/"
                         ).removesuffix(".hpl")
+                tags = client.get_object_tags(bucket_name="pipelines", object_name=object.object_name)
+                if tags is None :
+                    tags = {}
                 if query:
                     if (re.search(query, object_name, re.IGNORECASE)):
                         pipelines.append(
                             {
                                 "name": object_name,
-                                "description": unquote(object.metadata["X-Amz-Meta-Description"]),
-                                "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
-                                "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
-                                
+                                "description": tags.get("description", ""),
+                                "check_status": tags.get("check_status", ""),
+                                "check_text": tags.get("check_text", ""),    
                             })
                 else:
                     pipelines.append(
                     {
                         "name": object_name,
-                        "description": unquote(object.metadata["X-Amz-Meta-Description"]),
-                        "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
-                        "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
+                        "description": tags.get("description", ""),
+                        "check_status": tags.get("check_status", ""),
+                        "check_text": tags.get("check_text", ""),
                     }
                 )
 
@@ -144,17 +146,17 @@ class PipelineListView(APIView):
             # Create new pipeline by:
             #   1. copying the template,
             #   2. renaming it to another index in the same bukcket
-            #   3. adding metadata: description + date of creation
+            #   3. adding tags: description + date of creation
+            tags = Tags(for_object=True)
+            tags["description"] = f"{quote(description.encode('utf-8'))}"
+            tags["created"] = f"{datetime.utcnow()}"
+            tags["check_status"] = "success"
+            tags["check_text"] = "ValidPipeline"
             client_result = client.copy_object(
                 "pipelines",
                 f"pipelines-created/{user_id}/{name}.hpl",
                 CopySource("pipelines", f"templates/{template}"),
-                metadata={
-                    "description": f"{quote(description.encode('utf-8'))}",
-                    "created": f"{datetime.utcnow()}",
-                    "check_status": "success", #check status should be always success when creating a new pipeline, as our provided templates are correct
-                    "check_text": "ValidPipeline",
-                },
+                tags=tags,
                 metadata_directive=REPLACE,
             )
 
@@ -180,20 +182,25 @@ class PipelineDetailView(APIView):
             minio_access_key=os.getenv("MINIO_ACCESS_KEY")
             minio_secret_key=os.getenv("MINIO_SECRET_KEY")
             minio_host = os.getenv("MINIO_HOST")
+            tags = client.get_object_tags(bucket_name="pipelines", object_name=f"pipelines-created/{user_id}/{name}.hpl")
+            if tags is None :
+                tags = {}
+            # url = f"http://storage:9000/pipelines/pipelines-created/{user_id}/{name}.hpl"
             minio_ftp = f"{minio_access_key}:{minio_secret_key}@{minio_host}"
             url = f"ftp://{minio_ftp}/pipelines/pipelines-created/{user_id}/{name}.hpl"
+            # url = client.get_presigned_url("GET","pipelines",f"pipelines-created/{user_id}/{name}.hpl", expires=timedelta(hours=2))
             print(url)
             payload = {"names": [url]}
 
             edit_hop = EditAccessProcess(file=self.file)
-            edit_hop.request_edit(payload)
+            edit_hop.request_edit(payload)         
             list_events(user_id)
             return Response(
                 {
                     "name": name,
-                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
-                    "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
-                    "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
+                    "description": tags.get("description", ""),
+                    "check_status": tags.get("check_status", ""),
+                    "check_text": tags.get("check_text", ""),
                 },
                 status=status.HTTP_200_OK,
             )
@@ -220,17 +227,14 @@ class PipelineDetailView(APIView):
                 "pipelines", f"pipelines-created/{user_id}/{name}.hpl"
             )
             # Update pipeline file in Minio
+            tags = client.get_object_tags(bucket_name="pipelines", object_name=object.object_name)
+            tags["updated"] = f"{datetime.utcnow()}"
+            tags["check_status"] = "success" if valid_pipeline else "failed"
             client.fput_object(
                 "pipelines",
                 f"pipelines-created/{user_id}/{name}.hpl",
                 f"/hop/pipelines/{name}.hpl",
-                metadata={
-                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
-                    "updated": f"{datetime.utcnow()}",
-                    "created": object.metadata["X-Amz-Meta-Created"],
-                    "check_status": "success" if valid_pipeline else "failed",
-                    "check_text": check_text,
-                },
+                tags=tags
             )
 
             # Remove pipeline file from Minio volume
@@ -344,18 +348,18 @@ class PipelineUploadView(APIView):
             except:
                 # Upload new pipeline
                 valid_pipeline, check_text = check_pipeline_validity(name)
+                tags = Tags(for_object=True)
+                tags["desciprtion"] = f"{quote(description.encode('utf-8'))}"
+                tags["created"] = f"{datetime.utcnow()}"
+                tags["check_status"] = "success" if valid_pipeline else "failed"
+                tags["check_text"] = check_text
                 with open(f"/hop/pipelines/{name}.hpl", 'rb') as f:
                     client_result = client.put_object(
                     bucket_name='pipelines',
                     object_name=f"pipelines-created/{user_id}/{name}.hpl",
                     data=f,
                     length=os.path.getsize(f.name),
-                    metadata={
-                        "description": f"{quote(description.encode('utf-8'))}",
-                        "created": f"{datetime.utcnow()}",
-                        "check_status": "success" if valid_pipeline else "failed",
-                        "check_text": check_text,
-                    },
+                    tags=tags
                     )
                 return Response({"status": "success"}, status=status.HTTP_200_OK)
 
@@ -409,17 +413,18 @@ class PipelineUploadExternalFilesView(APIView):
             with open(local_save_path, "wb") as local_file:
                 for chunk in uploaded_file.chunks():
                     local_file.write(chunk)
-
+            tags = Tags(for_object=True)
+            tags["desciprtion"] = f"{quote(description.encode('utf-8'))}"
+            tags["created"] = f"{datetime.utcnow()}"
+           
             object_name = f"external_files/{name}{file_extension}"
             client.put_object(
                 bucket_name="pipelines",
                 object_name=object_name,
                 data=open(local_save_path, "rb"),
                 length=os.path.getsize(local_save_path),
-                metadata={
-                    "description": f"{quote(description.encode('utf-8'))}",
-                    "created": f"{datetime.utcnow()}"
-                },
+                
+                tags=tags
             )
             return Response({"status": "success"}, status=status.HTTP_200_OK)
         except Exception as e:
