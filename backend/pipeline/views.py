@@ -216,39 +216,22 @@ class PipelineDetailView(APIView):
             )
 
     def put(self, request, name=None):
-        """Endpoint for updating pipeline"""
         user_id = get_current_user_id(request)
-        # Check if the pipeline is valid
-
-        # Usage:
-        valid_pipeline, check_text = check_pipeline_validity(name)
-        try:
-            object = client.stat_object(
-                "pipelines", f"pipelines-created/{user_id}/{name}.hpl"
-            )
-            # Update pipeline file in Minio
-            tags = client.get_object_tags(bucket_name="pipelines", object_name=object.object_name)
-            tags["updated"] = f"{datetime.utcnow()}"
-            tags["check_status"] = "success" if valid_pipeline else "failed"
-            client.fput_object(
-                "pipelines",
-                f"pipelines-created/{user_id}/{name}.hpl",
-                f"/hop/pipelines/{name}.hpl",
-                tags=tags
-            )
-
-            # Remove pipeline file from Minio volume
-            os.remove(f"/hop/pipelines/{name}.hpl")
-
-            return Response({"status": "success"}, status=status.HTTP_200_OK)
-        except:
-            return Response(
+        name = request.data.get("name")
+        valid_pipeline, check_text = check_pipeline_validity(name, user_id)
+        tags = Tags(for_object=True)
+        tags["description"] = request.data.get("description")
+        tags["created"] = request.data.get("created")
+        tags["check_status"] = "success" if valid_pipeline else "failed"
+        tags["check_text"] = check_text
+        client.set_object_tags("pipelines",f"pipelines-created/{user_id}/{name}.hpl", tags)            
+        return Response(
                 {
-                    "status": "error",
-                    "message": "Unable to update the pipeline {}".format(name),
+                    "status": "success",
                 },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                status=status.HTTP_200_OK,
             )
+
     def delete(self, request, name=None):
         """
         Endpoint for deleting a pipeline from local file system after downloading it from Minio
