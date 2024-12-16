@@ -66,11 +66,16 @@ export const AddProcess = ({
           } as DagForm)
             .unwrap()
             .then(() => {
-              // WARNING !!!
-              // The only reason why we're using setTimeout
-              // is because Airflow takes time to rescan the dags directory
-              // NEED TO BE CHANGED !!!
-              setTimeout(refetch, 1000);
+              const intervalId = setInterval(() => {
+                refetch().then((response: any) => {
+                  const createdProcess = response.data?.dags.find(
+                    (dag: any) => dag.dag_id === encodedId
+                  );
+                  if (createdProcess) {
+                    clearInterval(intervalId);
+                  }
+                });
+              }, 500);
               toast.success(t('addProcess.successMessage'));
               closePanel();
             })
