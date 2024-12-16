@@ -86,12 +86,12 @@ export default function DataSourceSelection({
                 // NEED TO BE CHANGED !!!
                 setTimeout(() => {
                   refetch();
-                  toast.success('Pipeline is updated !');
+                  toast.success(t('pipelineUpdateSuccess'));
                   setNewPipeline('');
                 }, 3000);
               })
               .catch(() => {
-                toast.error('An error has occured');
+                toast.error(t('errorOccurred'));
               });
           }}
         >
