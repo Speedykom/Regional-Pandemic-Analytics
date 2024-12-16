@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import TemplateView, PipelineDeleteView, PipelineUploadView, PipelineUploadExternalFilesView, PipelineDownloadView, PipelineListView, PipelineDetailView, PipelineTagView
+from .views import TemplateView, PipelineDeleteView, PipelineUploadView, PipelineUploadExternalFilesView, PipelineDownloadView, PipelineListView, PipelineDetailView
 
 urlpatterns = [
     path("", PipelineListView.as_view()),
