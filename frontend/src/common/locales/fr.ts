@@ -56,7 +56,8 @@ const frTranslation = {
   emailVerified: 'E-mail vérifié',
   status: 'Statut',
   viewDetails: 'Voir les détails',
-  UserDeniedAccessText: "Cet utilisateur se verra restreindre l'accès, continuer ?",
+  UserDeniedAccessText:
+    "Cet utilisateur se verra restreindre l'accès, continuer ?",
   disableUser: "Désactiver l'utilisateur",
   deleteUserConfirmation:
     "Cet utilisateur se verra refuser l'accès, continuer ?",
