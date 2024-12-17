@@ -52,14 +52,15 @@ export const pipelineApi = createApi({
       invalidatesTags: ['pipelines'],
     }),
     updatePipeline: builder.mutation<
-      { status: string; message?: string },
-      string
+      { status: string; message?: string }, // Response type
+      { name: string; created: string; description: string } // Argument type (parameters)
     >({
-      query: (name) => ({
-        url: `/pipeline/${name}`,
-        method: 'PUT',
+      query: ({ name, created, description }) => ({
+        url: `/pipeline/tags`, // API endpoint
+        method: 'PUT', // HTTP method
+        body: { name, created, description }, // Body parameters
       }),
-      invalidatesTags: ['pipelines'],
+      invalidatesTags: ['pipelines'], // Invalidates cache for 'pipelines'
     }),
     cancelPipeline: builder.mutation<
       { status: string; message?: string },

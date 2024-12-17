@@ -18,25 +18,6 @@ import time
 import logging
 from datetime import datetime, timedelta
 
-def list_events(user_id):
-        """Fetch events related to pipelines for a specific user."""
-        # events = []
-        try:
-            with client.listen_bucket_notification(
-                "pipelines", 
-                prefix=f"pipelines-created/{user_id}/",
-                events=["s3:ObjectCreated:*", "s3:ObjectRemoved:*"],
-            ) as events:
-                for event in events:
-                    print(event)
-                    # events.append({
-                    #     "name": event.object_name.removeprefix(f"pipelines-created/{user_id}/"),
-                    #     "timestamp": event.metadata.get("X-Amz-Meta-Timestamp", "N/A"),
-                    #     # "description": unquote(event.metadata.get("X-Amz-Meta-Description", "No description available")),
-                    # })
-        except Exception as e:
-            logging.error(f"Failed to list events: {e}")
-        return events
 
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")
@@ -194,13 +175,13 @@ class PipelineDetailView(APIView):
 
             edit_hop = EditAccessProcess(file=self.file)
             edit_hop.request_edit(payload)         
-            list_events(user_id)
             return Response(
                 {
                     "name": name,
                     "description": tags.get("description", ""),
                     "check_status": tags.get("check_status", ""),
                     "check_text": tags.get("check_text", ""),
+                    "created": tags.get("created", "")
                 },
                 status=status.HTTP_200_OK,
             )

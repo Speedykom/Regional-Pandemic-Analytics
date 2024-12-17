@@ -23,7 +23,11 @@ export const HopUI = ({ name }: HopUIProps) => {
 
   const savePipeline = async () => {
     try {
-      const response = await updatePipeline(name);
+      const response = await updatePipeline({
+        name: data.name,
+        created: data.created,
+        description: data.description,
+      });
       if ('data' in response && response.data.status === 'success') {
         await navigateToPipelines();
         toast.success('Pipeline updated successfully', {
@@ -84,7 +88,7 @@ export const HopUI = ({ name }: HopUIProps) => {
             onClick={savePipeline}
             className="bg-prim hover:bg-prim-hover border-0 mx-1"
           >
-            {t('save')}
+            {t('validate_pipeline')}
           </Button>
         </div>
       </nav>
