@@ -27,7 +27,7 @@ export const UploadPipeline = ({
   } = useForm({ mode: 'onChange' });
   const [uploadPipeline, { isLoading }] = useUploadPipelineMutation();
   const { t } = useTranslation();
-  const [acceptedFiles, setAcceptedFiles] = useState([]);
+  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
   const { getRootProps, getInputProps } = useDropzone({
     onDrop: (files) => setAcceptedFiles(files),
   });
