@@ -35,7 +35,7 @@ export default function DataSourceSelection({
   return (
     <div className="flex flex-col space-y-3">
       <div className="flex justify-center">
-        <Table className="flex justify-center overflow-visible w-1/2">
+        <Table className="flex justify-center overflow-visible w-full">
           <TableRow className="">
             <TableHeaderCell>
               {t('dataSourceSelection.pipelineUsed')}
