@@ -127,7 +127,7 @@ const frTranslation = {
   externalFileUploadDesc:
     'Faites glisser et déposez, ou cliquez pour sélectionner un fichier',
   upload: 'Charger',
-  selectedFile: 'Fichier sélectionné',
+  selectedFiles: 'Fichier sélectionné',
   searchForTemplate: 'Rechercher un modèle...',
   pipelineCreatedSuccessfully: 'Pipeline créé avec succès',
   fileAddedSuccessfully: 'Fichier ajouté avec succès',

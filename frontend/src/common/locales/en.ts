@@ -130,7 +130,7 @@ const enTranslation = {
     "Drag 'n' drop .hpl pipeline file here, or click to select a file",
   externalFileUploadDesc: "Drag 'n' drop or click to select a file",
   upload: 'Upload',
-  selectedFiles: 'Selected Files',
+  selectedFiles: 'Selected File',
 
   supersetCharts: 'Superset Charts',
   chartListCreatedOnSuperset: 'Chart list created on Apache Superset.',

@@ -1,6 +1,7 @@
 import Drawer from '@/common/components/common/Drawer';
 import { Button, TextInput } from '@tremor/react';
 import { useDropzone } from 'react-dropzone';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { useUploadPipelineMutation } from '../pipeline';
@@ -26,7 +27,10 @@ export const UploadPipeline = ({
   } = useForm({ mode: 'onChange' });
   const [uploadPipeline, { isLoading }] = useUploadPipelineMutation();
   const { t } = useTranslation();
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
+  const [acceptedFiles, setAcceptedFiles] = useState([]);
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: (files) => setAcceptedFiles(files),
+  });
   const permittedCharactersRegex = /^[^\s!@#$%^&*()+=[\]{}\\|;:'",<>/?]*$/;
 
   const onFinish = (value: any) => {
@@ -54,6 +58,7 @@ export const UploadPipeline = ({
 
   const cancel = () => {
     reset();
+    setAcceptedFiles([]);
     onClose();
   };
 
@@ -151,7 +156,7 @@ export const UploadPipeline = ({
                       <div
                         {...getRootProps({
                           className:
-                            'dropzone border-dashed border-2 border-gray-300 p-4 rounded-md',
+                            `dropzone border-dashed border-2 border-gray-300 p-4 rounded-md ${acceptedFiles.length === 0 ? 'bg-gray-100' : 'bg-white'}`,
                         })}
                       >
                         <input {...getInputProps()} />
@@ -160,7 +165,7 @@ export const UploadPipeline = ({
                       {acceptedFiles.length === 1 && (
                         <div>
                           <h4 className="text-lg font-semibold">
-                            {t('selectedFile')}:
+                            {t('selectedFiles')}:
                           </h4>
                           {acceptedFiles.map((file) => (
                             <p key={file.name} className="mt-2">

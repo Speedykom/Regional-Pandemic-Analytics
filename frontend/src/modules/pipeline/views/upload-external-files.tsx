@@ -151,7 +151,7 @@ export const UploadExternalFiles = ({
                       <div
                         {...getRootProps({
                           className:
-                            'dropzone border-dashed border-2 border-gray-300 p-4 rounded-md',
+                            `dropzone border-dashed border-2 border-gray-300 p-4 rounded-md ${acceptedFiles.length === 0 ? 'bg-gray-100' : 'bg-white'}`,
                         })}
                       >
                         <input {...getInputProps()} />
@@ -160,7 +160,7 @@ export const UploadExternalFiles = ({
                       {acceptedFiles.length === 1 && (
                         <div>
                           <h4 className="text-lg font-semibold">
-                            {t('selectedFile')}:
+                            {t('selectedFiles')}:
                           </h4>
                           {acceptedFiles.map((file) => (
                             <p key={file.name} className="mt-2">
