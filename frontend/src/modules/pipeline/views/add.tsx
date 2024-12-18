@@ -87,7 +87,7 @@ export const AddPipeline = ({
               className="block text-blueGray-600 text-xs font-bold mb-2"
               htmlFor="descriptiond"
             >
-              {t('name')}*
+              {t('name')} *
             </label>
             <TextInput
               {...register('name', {
@@ -112,7 +112,7 @@ export const AddPipeline = ({
               className="block text-blueGray-600 text-xs font-bold mb-2"
               htmlFor="path"
             >
-              {t('template')}*
+              {t('template')} *
             </label>
             <TextInput
               disabled
@@ -125,7 +125,7 @@ export const AddPipeline = ({
               className="block text-blueGray-600 text-xs font-bold mb-2"
               htmlFor="descriptiond"
             >
-              Description*
+              {t('description')} *
             </label>
             <TextInput
               {...register('description', {

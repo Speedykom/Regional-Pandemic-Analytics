@@ -120,7 +120,7 @@ export const UploadExternalFiles = ({
               className="block text-blueGray-600 text-xs font-bold mb-2"
               htmlFor="descriptiond"
             >
-              Description*
+              {t('description')} *
             </label>
             <TextInput
               {...register('description', {
@@ -137,6 +137,12 @@ export const UploadExternalFiles = ({
             />
           </div>
           <div className="relative w-full mb-3">
+            <label
+              className="block text-blueGray-600 text-xs font-bold mb-2"
+              htmlFor="descriptiond"
+            >
+              {t('uploadFile')}
+            </label>
             <div>
               <div className="mt-3 text-center sm:mt-5">
                 <div className="mt-2">
@@ -144,8 +150,12 @@ export const UploadExternalFiles = ({
                     <section className="container">
                       <div
                         {...getRootProps({
-                          className:
-                            'dropzone border-dashed border-2 border-gray-300 p-4 rounded-md',
+                          className: `dropzone border-dashed border-2 border-gray-300 p-4 rounded-md 
+                          ${
+                            acceptedFiles.length === 0
+                              ? 'bg-gray-100'
+                              : 'bg-white'
+                          }`,
                         })}
                       >
                         <input {...getInputProps()} />
