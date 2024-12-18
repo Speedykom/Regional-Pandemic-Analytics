@@ -150,7 +150,12 @@ export const UploadExternalFiles = ({
                     <section className="container">
                       <div
                         {...getRootProps({
-                          className: `dropzone border-dashed border-2 border-gray-300 p-4 rounded-md ${acceptedFiles.length === 0 ? 'bg-gray-100' : 'bg-white'}`,
+                          className: `dropzone border-dashed border-2 border-gray-300 p-4 rounded-md 
+                          ${
+                            acceptedFiles.length === 0
+                              ? 'bg-gray-100'
+                              : 'bg-white'
+                          }`,
                         })}
                       >
                         <input {...getInputProps()} />
