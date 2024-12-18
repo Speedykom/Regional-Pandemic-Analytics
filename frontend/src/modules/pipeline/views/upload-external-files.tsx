@@ -120,7 +120,7 @@ export const UploadExternalFiles = ({
               className="block text-blueGray-600 text-xs font-bold mb-2"
               htmlFor="descriptiond"
             >
-              Description*
+              {t('description')} *
             </label>
             <TextInput
               {...register('description', {
@@ -137,6 +137,12 @@ export const UploadExternalFiles = ({
             />
           </div>
           <div className="relative w-full mb-3">
+            <label
+              className="block text-blueGray-600 text-xs font-bold mb-2"
+              htmlFor="descriptiond"
+            >
+              {t('uploadFile')}
+            </label>
             <div>
               <div className="mt-3 text-center sm:mt-5">
                 <div className="mt-2">
@@ -154,7 +160,7 @@ export const UploadExternalFiles = ({
                       {acceptedFiles.length === 1 && (
                         <div>
                           <h4 className="text-lg font-semibold">
-                            {t('selectedFiles')}:
+                            {t('selectedFile')}:
                           </h4>
                           {acceptedFiles.map((file) => (
                             <p key={file.name} className="mt-2">

@@ -125,6 +125,7 @@ const enTranslation = {
   enterFileName: 'Enter file name',
   descRequired: 'Pipeline description is required',
   enterDesc: 'Enter pipeline description',
+  uploadFile: 'Upload File *',
   fileUploadDesc:
     "Drag 'n' drop .hpl pipeline file here, or click to select a file",
   externalFileUploadDesc: "Drag 'n' drop or click to select a file",

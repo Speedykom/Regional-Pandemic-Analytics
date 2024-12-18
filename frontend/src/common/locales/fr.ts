@@ -121,12 +121,13 @@ const frTranslation = {
   enterFileName: 'Saisir le nom du fichier',
   descRequired: 'La description est requise',
   enterDesc: 'Saisir la description',
+  uploadFile: 'Upload File *',
   fileUploadDesc:
     'Faites glisser et déposez le fichier de pipeline .hpl ici, ou cliquez pour sélectionner un fichier',
   externalFileUploadDesc:
     'Faites glisser et déposez, ou cliquez pour sélectionner un fichier',
   upload: 'Charger',
-  selectedFiles: 'Fichiers sélectionnés',
+  selectedFile: 'Fichier sélectionné',
   searchForTemplate: 'Rechercher un modèle...',
   pipelineCreatedSuccessfully: 'Pipeline créé avec succès',
   fileAddedSuccessfully: 'Fichier ajouté avec succès',
