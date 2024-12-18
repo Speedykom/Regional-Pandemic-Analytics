@@ -24,7 +24,7 @@ export default function Layout({ children }: LayoutProps) {
         setIsOpen={setShowMobileNav}
         isTabletOrMobile={isTabletOrMobile}
       />
-      <main className="flex">
+      <main className="flex min-h-screen">
         <div className={`mt-16`}>
           {!isTabletOrMobile && <SideBar isOpen={isOpen} />}
           <Drawer
@@ -48,7 +48,7 @@ export default function Layout({ children }: LayoutProps) {
           </Drawer>
         </div>
         <div className={`w-full pt-16 transition-all duration-[400ms]`}>
-          <div className="bg-gray-100 h-screen">
+          <div className="bg-gray-100">
             <div className="mx-3 md:mx-16 py-10">{children}</div>
           </div>
         </div>
