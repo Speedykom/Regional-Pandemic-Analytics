@@ -24,9 +24,9 @@ export const HopUI = ({ name }: HopUIProps) => {
   const savePipeline = async () => {
     try {
       const response = await updatePipeline({
-        name: data.name,
-        created: data.created,
-        description: data.description,
+        name: data?.name ?? 'Pipeline Name',
+        created: data?.created ?? 'Creation Time',
+        description: data?.description ?? 'Description',
       });
       if ('data' in response && response.data.status === 'success') {
         await navigateToPipelines();
