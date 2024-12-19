@@ -35,7 +35,7 @@ export default function DataSourceSelection({
   return (
     <div className="flex flex-col space-y-3">
       <div className="flex justify-center">
-        <Table className="flex justify-center overflow-visible w-1/2">
+        <Table className="flex justify-center overflow-visible w-full">
           <TableRow className="">
             <TableHeaderCell>
               {t('dataSourceSelection.pipelineUsed')}
@@ -86,12 +86,12 @@ export default function DataSourceSelection({
                 // NEED TO BE CHANGED !!!
                 setTimeout(() => {
                   refetch();
-                  toast.success('Pipeline is updated !');
+                  toast.success(t('pipelineUpdateSuccess'));
                   setNewPipeline('');
                 }, 3000);
               })
               .catch(() => {
-                toast.error('An error has occured');
+                toast.error(t('errorOccurred'));
               });
           }}
         >
