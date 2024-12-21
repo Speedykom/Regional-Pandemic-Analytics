@@ -40,7 +40,7 @@ export default function Home() {
             favoriteDashboardIds.includes(Number(dashboard.id))
           ),
         }
-      : data ?? {};
+      : (data ?? {});
 
   if (isLoadingDashboards || isLoadingFavorites) {
     return <div>Loading...</div>;

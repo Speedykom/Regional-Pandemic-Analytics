@@ -78,7 +78,7 @@ const enTranslation = {
   descPlaceholder: 'Enter Description',
   descMessage: 'Please enter your description',
   submit: 'Submit',
-
+  validate_pipeline: 'Validate Pipeline',
   showing: 'Showing',
   of: 'of',
   // Pipeline validation check
