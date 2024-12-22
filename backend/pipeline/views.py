@@ -213,24 +213,6 @@ class PipelineDetailView(APIView):
                 status=status.HTTP_200_OK,
             )
 
-    def delete(self, request, name=None):
-        """
-        Endpoint for deleting a pipeline from local file system after downloading it from Minio
-        """
-        if not name:
-            return Response({"status": "fail", "message": "Pipeline name is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        local_file_path = f"/hop/pipelines/{name}.hpl"
-
-        if os.path.exists(local_file_path):
-            try:
-                os.remove(local_file_path)
-                return Response({"status": "success", "message": f"Pipeline {name} deleted successfully."}, status=status.HTTP_200_OK)
-            except Exception as e:
-                return Response({"status": "error", "message": f"Error deleting file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        else:
-            return Response({"status": "fail", "message": f"Pipeline file {name}.hpl not found."}, status=status.HTTP_404_NOT_FOUND)
-       
 class PipelineDownloadView(APIView):
     keycloak_scopes = {
         "GET": "pipeline:read",
