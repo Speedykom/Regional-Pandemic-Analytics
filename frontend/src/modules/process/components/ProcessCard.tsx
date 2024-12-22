@@ -84,16 +84,16 @@ export default function ProcessCard({
                       {process.schedule_interval === '@once'
                         ? t('schedule_intervals.once')
                         : process.schedule_interval === '@hourly'
-                          ? t('schedule_intervals.hourly')
-                          : process.schedule_interval === '@daily'
-                            ? t('schedule_intervals.daily')
-                            : process.schedule_interval === '@weekly'
-                              ? t('schedule_intervals.weekly')
-                              : process.schedule_interval === '@monthly'
-                                ? t('schedule_intervals.monthly')
-                                : process.schedule_interval === '@yearly'
-                                  ? t('schedule_intervals.yearly')
-                                  : 'Default case'}
+                        ? t('schedule_intervals.hourly')
+                        : process.schedule_interval === '@daily'
+                        ? t('schedule_intervals.daily')
+                        : process.schedule_interval === '@weekly'
+                        ? t('schedule_intervals.weekly')
+                        : process.schedule_interval === '@monthly'
+                        ? t('schedule_intervals.monthly')
+                        : process.schedule_interval === '@yearly'
+                        ? t('schedule_intervals.yearly')
+                        : 'Default case'}
                     </Badge>
                   </div>
                   <div>
@@ -120,8 +120,8 @@ export default function ProcessCard({
                           latest_dag_run_status === 'failed'
                             ? 'bg-red-100 text-red-500'
                             : latest_dag_run_status === 'success'
-                              ? 'bg-green-100 text-green-500'
-                              : 'bg-gray-100 text-gray-500'
+                            ? 'bg-green-100 text-green-500'
+                            : 'bg-gray-100 text-gray-500'
                         }`}
                       >
                         <span>{t(`addProcess.${latest_dag_run_status}`)}</span>
