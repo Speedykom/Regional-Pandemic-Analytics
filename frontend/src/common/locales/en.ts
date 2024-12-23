@@ -136,6 +136,8 @@ const enTranslation = {
   chartListCreatedOnSuperset: 'Chart list created on Apache Superset.',
   chartTitle: 'Chart Title',
   processChainCharts: 'Process Chain Charts',
+  noChartsForDagId: 'No Charts Created For This Process Chain',
+  noChartsAvailable: 'No Charts Available',
   visualizationType: 'Visualization Type',
   dataset: 'Dataset',
   createdBy: 'Created By',
