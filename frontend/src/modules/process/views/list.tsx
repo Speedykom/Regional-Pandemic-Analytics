@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Button } from '@tremor/react';
+import {
+  Button,
+  Card,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+} from '@tremor/react';
 import { Loader } from '@/common/components/Loader';
 import { usePermission } from '@/common/hooks/use-permission';
 import { useGetProcessQuery } from '../process';
@@ -9,6 +18,9 @@ import { AddProcess } from './add';
 import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
 import { useTranslation } from 'react-i18next';
 import { Switch } from '@tremor/react';
+import { FaPlay } from 'react-icons/fa6';
+import { AiOutlinePieChart, AiOutlineStop } from 'react-icons/ai';
+import { TbReportSearch } from 'react-icons/tb';
 
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();
@@ -84,6 +96,7 @@ export default function ProcessChainList() {
     );
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const renderProcessChainData = (processChainList: DagDetails[]) => {
     var processChainToShow = null;
     if (!showDisabled) {
@@ -123,7 +136,6 @@ export default function ProcessChainList() {
       });
     }
   };
-
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -174,10 +186,92 @@ export default function ProcessChainList() {
           </div>
         )}
         {isSuccess && pipelineList && (
-          <div>
-            {renderProcessChainData(data?.dags)}
-            {renderPagination(data)}
-          </div>
+          <>
+            <Card className="p-0 rounded-md">
+              <Table className="rounded-md">
+                <TableHead className="bg-[#F9FAFB] border-[1px] border-[#E4E7EC]">
+                  <TableHeaderCell className="text-[#475467]">
+                    Process Chain Name
+                  </TableHeaderCell>
+                  <TableHeaderCell className="text-[#475467]">
+                    Data Pipeline
+                  </TableHeaderCell>
+                  <TableHeaderCell className="text-[#475467]">
+                    Periodicity
+                  </TableHeaderCell>
+                  <TableHeaderCell className="text-[#475467]">
+                    Process Status
+                  </TableHeaderCell>
+                  <TableHeaderCell className="text-[#475467]">
+                    Execution State
+                  </TableHeaderCell>
+                  <TableHeaderCell className="w-1/4 border-[#E4E7EC] border-l-[1px] text-[#475467]">
+                    Actions
+                  </TableHeaderCell>
+                </TableHead>
+                <TableBody>
+                  {data?.dags.map((e, k) => (
+                    <TableRow key={k} className="border-[1px] border-[#E4E7EC]">
+                      <TableCell className="text-black">{e?.name}</TableCell>
+                      <TableCell className="text-blue-700 underline font-normal">
+                        {e?.data_source_name}
+                      </TableCell>
+                      <TableCell>{e?.schedule_interval}</TableCell>
+                      <TableCell className="my-auto">
+                        {e?.status ? (
+                          <>
+                            <span className="text-2xl text-green-700">•</span>{' '}
+                            <span className="!font-medium">Active</span>
+                          </>
+                        ) : (
+                          <>
+                            <span className="text-2xl text-red-700">•</span>{' '}
+                            <span className="!font-medium">Disabled</span>
+                          </>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {e.dataset_success ? (
+                          <Button className="bg-transparent py-3 hover:bg-transparent text-green-700 border-green-700 hover:border-green-700">
+                            Success
+                          </Button>
+                        ) : (
+                          <Button className="bg-transparent py-3 hover:bg-transparent text-red-700 border-red-700 hover:border-red-700">
+                            Failed
+                          </Button>
+                        )}
+                      </TableCell>
+                      <TableCell className="border-[#E4E7EC] border-l-[1px]">
+                        <div className="flex flex-row gap-x-2">
+                          <FaPlay
+                            size="40"
+                            color="#15803d"
+                            className="p-2 rounded-md border-[1.8px] border-green-700"
+                          />
+                          <AiOutlineStop
+                            size="40"
+                            color="#b91c1c"
+                            className="p-2 rounded-md border-[1.8px] border-red-700"
+                          />
+                          <AiOutlinePieChart
+                            size="40"
+                            color="black"
+                            className="p-2 rounded-md border-[1.8px] border-black"
+                          />
+                          <TbReportSearch
+                            size="40"
+                            color="black"
+                            className="p-2 rounded-md border-[1.8px] border-black"
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="py-1">{renderPagination(data)}</div>
+            </Card>
+          </>
         )}
       </div>
       {addComponent && isSuccessPipeline && (
