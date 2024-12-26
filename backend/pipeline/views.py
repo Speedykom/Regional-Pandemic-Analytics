@@ -59,45 +59,63 @@ class PipelineListView(APIView):
     def __init__(self):
         self.permitted_characters_regex = re.compile(r'^[^\s!@#$%^&*()+=[\]{}\\|;:\'",<>/?]*$')
 
-    def get(self, request , query = None):
+    def get(self, request, query=None):
         """Endpoint for getting pipelines created by a user"""
+
         user_id = get_current_user_id(request)
+
         pipelines: list[str] = []
 
-        objects = client.list_objects(
-            "pipelines", prefix=f"pipelines-created/{user_id}/", include_user_meta=True
-        )
-        for object in objects:
-            if object.object_name.endswith(".hpl"):
-                object_name = object.object_name.removeprefix(
-                            f"pipelines-created/{user_id}/"
-                        ).removesuffix(".hpl")
-                tags = client.get_object_tags(bucket_name="pipelines", object_name=object.object_name)
-                if tags is None :
-                    tags = {}
+        try:
+            objects = client.list_objects(
+                "pipelines", prefix=f"pipelines-created/{user_id}/", include_user_meta=True
+            )
+            objects = list(objects)
+        except Exception as e:
+            return Response(
+                {"status": "error", "message": f"Failed to retrieve pipelines. Details: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        for obj in objects:
+            if obj.object_name.endswith(".hpl"):
+                try:
+                    object_name = obj.object_name.removeprefix(
+                        f"pipelines-created/{user_id}/"
+                    ).removesuffix(".hpl")
+
+                    tags = client.get_object_tags(bucket_name="pipelines", object_name=obj.object_name)
+
+                    if tags is None:
+                        tags = {}
+
+                except Exception as e:
+                    continue
+
                 if query:
-                    if (re.search(query, object_name, re.IGNORECASE)):
+                    if re.search(query, object_name, re.IGNORECASE):
                         pipelines.append(
                             {
                                 "name": object_name,
                                 "description": tags.get("description", ""),
                                 "check_status": tags.get("check_status", ""),
-                                "check_text": tags.get("check_text", ""),    
-                            })
+                                "check_text": tags.get("check_text", ""),
+                            }
+                        )
                 else:
                     pipelines.append(
-                    {
-                        "name": object_name,
-                        "description": tags.get("description", ""),
-                        "check_status": tags.get("check_status", ""),
-                        "check_text": tags.get("check_text", ""),
-                    }
-                )
+                        {
+                            "name": object_name,
+                            "description": tags.get("description", ""),
+                            "check_status": tags.get("check_status", ""),
+                            "check_text": tags.get("check_text", ""),
+                        }
+                    )
 
         return Response(
             {"status": "success", "data": pipelines}, status=status.HTTP_200_OK
         )
-
+        
     def post(self, request):
         """Create a pipeline from a chosen template for a specific user"""
         user_id = get_current_user_id(request)
