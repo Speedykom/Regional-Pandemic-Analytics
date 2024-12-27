@@ -1,9 +1,24 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { Card, Tab, TabGroup, TabList } from '@tremor/react';
+import {
+  Button,
+  Card,
+  Tab,
+  TabGroup,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  TabList,
+} from '@tremor/react';
 import { Fragment, useState } from 'react';
 import { GoVerified } from 'react-icons/go';
 import { IoMdCloseCircleOutline } from 'react-icons/io';
 import { TfiReload } from 'react-icons/tfi';
+import { IoSearch } from 'react-icons/io5';
+import { useTranslation } from 'react-i18next';
+import { AiOutlinePieChart } from 'react-icons/ai';
 
 export default function ProcessChainDialog() {
   let [isOpen, setIsOpen] = useState<boolean>(true);
@@ -217,5 +232,116 @@ function DetailsTab() {
 }
 
 function RelatedChartsTab() {
-  return <></>;
+  const { t } = useTranslation();
+  const tableData = [
+    {
+      chartTitle: 'Residus',
+      visualizationType: 'echarts_area',
+      dataset: 'druid.ChaineResidus',
+      createdBy: '1 day ago',
+      createdOn: '',
+      modifiedBy: '',
+      lastModified: '1 day ago',
+    },
+    {
+      chartTitle: 'Residus',
+      visualizationType: 'echarts_area',
+      dataset: 'druid.ChaineResidus',
+      createdBy: '1 day ago',
+      createdOn: '',
+      modifiedBy: '',
+      lastModified: '1 day ago',
+    },
+  ];
+
+  return (
+    <>
+      <div>
+        <div className="mt-2">
+          <div className="flex items-center rounded-md bg-white pl-3 outline outline-1 -outline-offset-1 outline-gray-300 has-[input:focus-within]:outline has-[input:focus-within]:outline-2 has-[input:focus-within]:-outline-offset-2 has-[input:focus-within]:outline-indigo-600">
+            <IoSearch />
+            <input
+              id="search"
+              name="search"
+              type="text"
+              placeholder="Search for charts..."
+              className="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6"
+            />
+          </div>
+        </div>
+        <Card className="p-0 my-1">
+          <Table>
+            <TableHead className="bg-[#F9FAFB]">
+              <TableRow>
+                <TableHeaderCell className="text-[#475467] font-semibold">
+                  Chart Title
+                </TableHeaderCell>
+                <TableHeaderCell className="text-[#475467] font-semibold">
+                  Visualization Type
+                </TableHeaderCell>
+                <TableHeaderCell className="text-[#475467] font-semibold">
+                  Dataset
+                </TableHeaderCell>
+                <TableHeaderCell className="text-[#475467] font-semibold">
+                  Created By
+                </TableHeaderCell>
+                <TableHeaderCell className="text-[#475467] font-semibold">
+                  Created On
+                </TableHeaderCell>
+                <TableHeaderCell className="text-[#475467] font-semibold">
+                  Modified By
+                </TableHeaderCell>
+                <TableHeaderCell className="text-[#475467] font-semibold">
+                  Last Modified
+                </TableHeaderCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {tableData.map((row, index) => (
+                <TableRow key={index}>
+                  <TableCell className="text-black underline">
+                    {row.chartTitle}
+                  </TableCell>
+                  <TableCell className="text-black">
+                    {row.visualizationType}
+                  </TableCell>
+                  <TableCell className="text-black">{row.dataset}</TableCell>
+                  <TableCell className="text-black">{row.createdBy}</TableCell>
+                  <TableCell className="text-black">{row.createdOn}</TableCell>
+                  <TableCell className="text-black">{row.modifiedBy}</TableCell>
+                  <TableCell className="text-black">
+                    {row.lastModified}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </Card>
+        <div className="flex justify-end items-center mt-4">
+          <Button
+            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
+            size="xs"
+            disabled={true}
+          >
+            ← {t('prev')}
+          </Button>
+          <Button
+            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none cursor-pointer"
+            size="xs"
+            disabled={true}
+          >
+            {t('next')} →
+          </Button>
+        </div>
+        <div className="flex justify-end items-center mt-2">
+          <Button className="text-white py-2 px-4 rounded">
+            <span className="tremor-Button-text text-sm whitespace-nowrap flex items-center gap-2">
+              <AiOutlinePieChart size={20} />
+              <span>Add a Chart</span>
+            </span>
+          </Button>
+        </div>
+      </div>
+    </>
+  );
 }
