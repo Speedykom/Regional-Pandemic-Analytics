@@ -12,7 +12,7 @@ import {
   TableRow,
   TabList,
 } from '@tremor/react';
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import { GoVerified } from 'react-icons/go';
 import { IoMdCloseCircleOutline } from 'react-icons/io';
 import { TfiReload } from 'react-icons/tfi';
@@ -20,10 +20,17 @@ import { IoSearch } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 import { AiOutlinePieChart } from 'react-icons/ai';
 
-export default function ProcessChainDialog() {
-  let [isOpen, setIsOpen] = useState<boolean>(true);
-  const [tab, setTab] = useState<string>('1');
-
+export default function ProcessChainDialog({
+  isOpen,
+  setIsOpen,
+  tab,
+  setTab,
+}: {
+  isOpen: boolean;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  tab: number;
+  setTab: React.Dispatch<React.SetStateAction<number>>;
+}) {
   function closeModal() {
     setIsOpen(false);
   }
@@ -56,31 +63,35 @@ export default function ProcessChainDialog() {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-7xl transform overflow-hidden rounded-md bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <h1 className="text-4xl text-center my-6 text-[#4B4B4B] font-semibold">
+                  <h1 className="text-4xl text-center my-4 text-[#4B4B4B] font-semibold">
                     Process Chain: covid-dag-id{' '}
                   </h1>
                   <TabGroup>
                     <TabList variant="solid">
                       <Tab
-                        value="1"
-                        onClick={() => setTab('1')}
-                        className="p-1"
+                        value={1}
+                        onClick={() => {
+                          setTab(1);
+                        }}
+                        className={`p-1 ${tab === 1 ? '' : ''}`}
                       >
                         <p className="text-black text-base px-4">
                           Orchestration
                         </p>
                       </Tab>
                       <Tab
-                        value="2"
-                        onClick={() => setTab('2')}
-                        className="p-1"
+                        value={2}
+                        onClick={() => setTab(2)}
+                        className={`p-1 ${tab === 2 ? '' : ''}`}
                       >
                         <p className="text-black text-base px-4">Details</p>
                       </Tab>
                       <Tab
-                        value="3"
-                        onClick={() => setTab('3')}
-                        className="p-1"
+                        value={3}
+                        onClick={() => {
+                          setTab(3);
+                        }}
+                        className={`p-1 ${tab === 3 ? '' : ''}`}
                       >
                         <p className="text-black text-base px-4">
                           Related Charts
@@ -89,11 +100,11 @@ export default function ProcessChainDialog() {
                     </TabList>
                   </TabGroup>
                   <>
-                    {tab === '1' ? (
+                    {tab == 1 ? (
                       <OrchestrationTab />
-                    ) : tab === '2' ? (
+                    ) : tab == 2 ? (
                       <DetailsTab />
-                    ) : tab === '3' ? (
+                    ) : tab == 3 ? (
                       <RelatedChartsTab />
                     ) : null}
                   </>
@@ -123,10 +134,10 @@ function OrchestrationTab() {
 
   return (
     <div>
-      <div className="text-[#4B4B4B] mt-3 mb-7 text-xl font-medium">
+      <div className="text-[#4B4B4B]  text-xl font-medium py-2">
         Last Executions
       </div>
-      <div className="flex flex-row gap-x-4 mb-10">
+      <div className="flex flex-row gap-x-4">
         <div className="flex flex-col gap-y-2">
           {executions.map((execution, index) => (
             <div
@@ -134,14 +145,14 @@ function OrchestrationTab() {
               className={`${
                 execution.verified
                   ? 'bg-[#00764B] text-white px-2 py-3 w-56 flex flex-row gap-x-2 rounded-md'
-                  : 'bg-white text-[#00764B] px-2 py-3 w-56 flex flex-row gap-x-2 rounded-md'
+                  : 'bg-white text-[#4B4B4B] px-2 py-3 w-56 flex flex-row gap-x-2 rounded-md shadow-md'
               }`}
             >
               <p>{execution.date}</p>
               {execution.verified ? (
                 <GoVerified size={20} />
               ) : (
-                <IoMdCloseCircleOutline size={20} />
+                <IoMdCloseCircleOutline color="red" size={20} />
               )}
             </div>
           ))}

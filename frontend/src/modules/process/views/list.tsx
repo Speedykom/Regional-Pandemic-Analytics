@@ -21,6 +21,7 @@ import { Switch } from '@tremor/react';
 import { FaPlay } from 'react-icons/fa6';
 import { AiOutlinePieChart, AiOutlineStop } from 'react-icons/ai';
 import { TbReportSearch } from 'react-icons/tb';
+import ProcessChainDialog from './dialog';
 
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();
@@ -69,30 +70,32 @@ export default function ProcessChainList() {
       processChainToShowLength
     );
     return (
-      <div className="flex justify-end items-center mt-4">
-        <div className="mr-4">
-          {t('showing')} {startItem} – {endItem} {t('of')}{' '}
-          {processChainToShowLength}
+      <>
+        <div className="flex justify-end items-center mt-4">
+          <div className="mr-4">
+            {t('showing')} {startItem} – {endItem} {t('of')}{' '}
+            {processChainToShowLength}
+          </div>
+          <div className="flex">
+            <Button
+              className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
+              size="xs"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+            >
+              &larr; {t('prev')}
+            </Button>
+            <Button
+              className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer"
+              size="xs"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              {t('next')} &rarr;
+            </Button>
+          </div>
         </div>
-        <div className="flex">
-          <Button
-            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
-            size="xs"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(currentPage - 1)}
-          >
-            &larr; {t('prev')}
-          </Button>
-          <Button
-            className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer"
-            size="xs"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(currentPage + 1)}
-          >
-            {t('next')} &rarr;
-          </Button>
-        </div>
-      </div>
+      </>
     );
   };
 
@@ -136,8 +139,16 @@ export default function ProcessChainList() {
       });
     }
   };
+  const [tab, setTab] = useState<number>(1);
+  const [isOpen, setIsOpen] = useState<boolean>(true);
   return (
     <div>
+      <ProcessChainDialog
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        tab={tab}
+        setTab={setTab}
+      />
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl">{t('processChain')}</h2>
@@ -256,12 +267,20 @@ export default function ProcessChainList() {
                           <AiOutlinePieChart
                             size="40"
                             color="black"
-                            className="p-2 rounded-md border-[1.8px] border-black"
+                            className="p-2 rounded-md border-[1.8px] border-black cursor-pointer"
+                            onClick={() => {
+                              setIsOpen(true);
+                              setTab(3);
+                            }}
                           />
                           <TbReportSearch
+                            onClick={() => {
+                              setTab(1);
+                              setIsOpen(true);
+                            }}
                             size="40"
                             color="black"
-                            className="p-2 rounded-md border-[1.8px] border-black"
+                            className="p-2 rounded-md border-[1.8px] border-black cursor-pointer"
                           />
                         </div>
                       </TableCell>
