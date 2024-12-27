@@ -182,7 +182,38 @@ function OrchestrationTab() {
 }
 
 function DetailsTab() {
-  return <></>;
+  const data = [
+    { label: 'Name', value: 'covid-dag-id' },
+    { label: 'Created at', value: '2024-12-13T19:43:00.152Z' },
+    { label: 'Segment Count', value: '12' },
+    {
+      label: 'Dimensions',
+      value:
+        'Name, Cases, OrgUnitLevel2Name, OrgUnitLevel2Geometry, OrgUnitLevel1Name',
+    },
+    { label: 'Total Size', value: '27166.517 Kb' },
+    { label: 'Description', value: 'Test Groupe 2' },
+    { label: 'Last update', value: 'Friday, 13 December 2024 19:16:42 GMT' },
+  ];
+  return (
+    <>
+      <div className="text-[#4B4B4B] mt-3 mb-4 text-xl font-medium">
+        Data Model Information
+      </div>
+      <div className="flex flex-col gap-y-[1px]">
+        {data.map((item, index) => (
+          <div key={index} className="flex flex-row gap-x-[2px]">
+            <div className="bg-[#00764B] w-[210px] h-11 flex items-center">
+              <p className="text-white font-semibold px-3">{item.label}</p>
+            </div>
+            <div className="bg-[#F3F4F6] w-[600px] h-11 flex items-center">
+              <p className="text-[#6B7280] px-3">{item.value}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
 }
 
 function RelatedChartsTab() {
