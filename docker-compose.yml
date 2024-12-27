@@ -505,15 +505,15 @@ services:
   # Airflow upgrade: DB migration service
   # =======
 
-  # airflow-db-migrate:
-  #  <<: *airflow
-  #  depends_on:
-  #    airflow-pg:
-  #      condition: service_healthy
-  #  container_name: airflow-db-migrate
-  #  restart: always
-  #  entrypoint: /bin/bash
-  #  command: -c "sleep 60 && airflow db upgrade"
+  airflow-db-migrate:
+   <<: *airflow
+   depends_on:
+     airflow-pg:
+       condition: service_healthy
+   container_name: airflow-db-migrate
+   restart: always
+   entrypoint: /bin/bash
+   command: -c "sleep 60 && airflow db upgrade"
 
   # =======
   # keycloak
