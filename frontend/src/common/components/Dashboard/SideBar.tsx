@@ -101,8 +101,8 @@ export default function SideBar({ isOpen }: SidebarProps) {
           className="px-4 flex items-center justify-center flex-col mx-4 my-auto"
         >
           <img
-            className={`w-32 h-auto ${!isOpen && 'w-10'}`}
-            src="/d-OHP-logo-horizontal.png"
+            className={`w-44 h-auto ${!isOpen && 'w-10'}`}
+            src="/cohis.png"
             alt="company logo"
           />
         </motion.div>
