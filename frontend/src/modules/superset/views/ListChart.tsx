@@ -40,10 +40,12 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
 
   let filteredCharts: any = { result: [] };
 
+  // Filter charts based on dagId if provided
   if (data?.result && filterByDagId) {
-    const filtered = data.result.filter(
-      (element: any) => element.datasource_name_text === filterByDagId
-    );
+    const filtered = data.result.filter((element: any) => {
+      const dagId = element.datasource_name_text.split('druid.')[1];
+      return dagId === filterByDagId;
+    });
     filteredCharts = { ...data, result: filtered };
   } else if (data?.result) {
     filteredCharts = data;
@@ -105,89 +107,103 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
       />
-      <Card className="bg-white">
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableHeaderCell>{t('chartTitle')}</TableHeaderCell>
-              <MediaQuery minWidth={768}>
-                <TableHeaderCell>{t('visualizationType')}</TableHeaderCell>
-              </MediaQuery>
-              <MediaQuery minWidth={1090}>
-                <TableHeaderCell>{t('dataset')}</TableHeaderCell>
-              </MediaQuery>
-              <MediaQuery minWidth={1220}>
-                <TableHeaderCell>{t('createdBy')}</TableHeaderCell>
-              </MediaQuery>
-              <MediaQuery minWidth={1350}>
-                <TableHeaderCell>{t('createdOn')}</TableHeaderCell>
-                <TableHeaderCell>{t('modifiedBy')}</TableHeaderCell>
-              </MediaQuery>
-              <TableHeaderCell className="text-right">
-                {t('lastModified')}
-              </TableHeaderCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {currentItems.map((item: ChartItem, index: number) => (
-              <TableRow key={index}>
-                <TableCell>
-                  <Link
-                    style={{ textDecoration: 'underline' }}
-                    href={`${process.env.NEXT_PUBLIC_SUPERSET_URL}${
-                      item.slice_url || '#'
-                    }`}
-                    target="_blank"
-                  >
-                    {item.slice_name}
-                  </Link>
-                </TableCell>
 
-                <MediaQuery minWidth={768}>
-                  <TableCell>{item.viz_type}</TableCell>
-                </MediaQuery>
-                <MediaQuery minWidth={1090}>
-                  <TableCell>{item.datasource_name_text}</TableCell>
-                </MediaQuery>
-                <MediaQuery minWidth={1220}>
-                  <TableCell>
-                    {item.created_by?.first_name} {item.created_by?.last_name}
-                  </TableCell>
-                </MediaQuery>
-                <MediaQuery minWidth={1350}>
-                  <TableCell>
-                    {translateTimeDelta(item.created_on_delta_humanized)}
-                  </TableCell>
-                  <TableCell>
-                    {item.changed_by?.first_name} {item.changed_by?.last_name}
-                  </TableCell>
-                </MediaQuery>
-                <TableCell className="justify-end">
-                  {translateTimeDelta(item.changed_on_delta_humanized)}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
-      <div className="flex justify-end items-center mt-4">
-        <Button
-          onClick={prevPage}
-          className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
-          size="xs"
-          disabled={currentPage === 1}
-        >
-          ← {t('prev')}
-        </Button>
-        <Button
-          onClick={nextPage}
-          className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none cursor-pointer"
-          size="xs"
-          disabled={currentPage === totalPages}
-        >
-          {t('next')} →
-        </Button>
-      </div>
+      {filteredCharts.result.length === 0 ? (
+        <div className="text-center p-4">
+          {filterByDagId
+            ? t('noChartsForDagId', { dagId: filterByDagId })
+            : t('noChartsAvailable')}
+        </div>
+      ) : (
+        <>
+          <Card className="bg-white">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableHeaderCell>{t('chartTitle')}</TableHeaderCell>
+                  <MediaQuery minWidth={768}>
+                    <TableHeaderCell>{t('visualizationType')}</TableHeaderCell>
+                  </MediaQuery>
+                  <MediaQuery minWidth={1090}>
+                    <TableHeaderCell>{t('dataset')}</TableHeaderCell>
+                  </MediaQuery>
+                  <MediaQuery minWidth={1220}>
+                    <TableHeaderCell>{t('createdBy')}</TableHeaderCell>
+                  </MediaQuery>
+                  <MediaQuery minWidth={1350}>
+                    <TableHeaderCell>{t('createdOn')}</TableHeaderCell>
+                    <TableHeaderCell>{t('modifiedBy')}</TableHeaderCell>
+                  </MediaQuery>
+                  <TableHeaderCell className="text-right">
+                    {t('lastModified')}
+                  </TableHeaderCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {currentItems.map((item: ChartItem, index: number) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <Link
+                        style={{ textDecoration: 'underline' }}
+                        href={`${process.env.NEXT_PUBLIC_SUPERSET_URL}${
+                          item.slice_url || '#'
+                        }`}
+                        target="_blank"
+                      >
+                        {item.slice_name}
+                      </Link>
+                    </TableCell>
+
+                    <MediaQuery minWidth={768}>
+                      <TableCell>{item.viz_type}</TableCell>
+                    </MediaQuery>
+                    <MediaQuery minWidth={1090}>
+                      <TableCell>{item.datasource_name_text}</TableCell>
+                    </MediaQuery>
+                    <MediaQuery minWidth={1220}>
+                      <TableCell>
+                        {item.created_by?.first_name}{' '}
+                        {item.created_by?.last_name}
+                      </TableCell>
+                    </MediaQuery>
+                    <MediaQuery minWidth={1350}>
+                      <TableCell>
+                        {translateTimeDelta(item.created_on_delta_humanized)}
+                      </TableCell>
+                      <TableCell>
+                        {item.changed_by?.first_name}{' '}
+                        {item.changed_by?.last_name}
+                      </TableCell>
+                    </MediaQuery>
+                    <TableCell className="justify-end">
+                      {translateTimeDelta(item.changed_on_delta_humanized)}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+
+          <div className="flex justify-end items-center mt-4">
+            <Button
+              onClick={prevPage}
+              className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
+              size="xs"
+              disabled={currentPage === 1}
+            >
+              ← {t('prev')}
+            </Button>
+            <Button
+              onClick={nextPage}
+              className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none cursor-pointer"
+              size="xs"
+              disabled={currentPage === totalPages}
+            >
+              {t('next')} →
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
