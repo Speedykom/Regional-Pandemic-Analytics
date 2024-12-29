@@ -12,25 +12,31 @@ import {
   TableRow,
   TabList,
 } from '@tremor/react';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { GoVerified } from 'react-icons/go';
 import { IoMdCloseCircleOutline } from 'react-icons/io';
 import { TfiReload } from 'react-icons/tfi';
 import { IoSearch } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 import { AiOutlinePieChart } from 'react-icons/ai';
+import punycode from 'punycode';
+import { useGetChartsQuery } from '@/modules/superset/superset';
+import { DagDetails } from '../interface';
 
 export default function ProcessChainDialog({
   isOpen,
   setIsOpen,
   tab,
   setTab,
+  processData,
 }: {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   tab: number;
   setTab: React.Dispatch<React.SetStateAction<number>>;
+  processData: DagDetails | null;
 }) {
+  const processName = punycode.toUnicode(processData?.dag_id ?? '');
   function closeModal() {
     setIsOpen(false);
   }
@@ -64,7 +70,7 @@ export default function ProcessChainDialog({
               >
                 <Dialog.Panel className="w-full max-w-7xl transform overflow-hidden rounded-md bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <h1 className="text-4xl text-center my-4 text-[#4B4B4B] font-semibold">
-                    Process Chain: covid-dag-id{' '}
+                    Process Chain: {processName}
                   </h1>
                   <TabGroup>
                     <TabList variant="solid">
@@ -103,9 +109,11 @@ export default function ProcessChainDialog({
                     {tab == 1 ? (
                       <OrchestrationTab />
                     ) : tab == 2 ? (
-                      <DetailsTab />
+                      <DetailsTab processData={processData} />
                     ) : tab == 3 ? (
-                      <RelatedChartsTab />
+                      <div className="py-4">
+                        <RelatedChartsTab filterByDagId={processData?.dag_id} />
+                      </div>
                     ) : null}
                   </>
                 </Dialog.Panel>
@@ -207,19 +215,24 @@ function OrchestrationTab() {
   );
 }
 
-function DetailsTab() {
+function DetailsTab({ processData }: { processData: any }) {
   const data = [
-    { label: 'Name', value: 'covid-dag-id' },
-    { label: 'Created at', value: '2024-12-13T19:43:00.152Z' },
-    { label: 'Segment Count', value: '12' },
+    { label: 'Name', value: processData.dag_id },
+    { label: 'Created at', value: null },
+    { label: 'Segment Count', value: null },
     {
       label: 'Dimensions',
       value:
         'Name, Cases, OrgUnitLevel2Name, OrgUnitLevel2Geometry, OrgUnitLevel1Name',
     },
-    { label: 'Total Size', value: '27166.517 Kb' },
-    { label: 'Description', value: 'Test Groupe 2' },
-    { label: 'Last update', value: 'Friday, 13 December 2024 19:16:42 GMT' },
+    { label: 'Total Size', value: null },
+    { label: 'Description', value: null },
+    { label: 'last update', value: processData.last_updated_at },
+    { label: 'Status', value: processData.status },
+    {
+      label: 'Last DAG run',
+      value: processData.latest_dag_run_status || null, // Status of the latest DAG run (from 'latest_dag_run_status' in 'DagDetails')
+    },
   ];
   return (
     <>
@@ -242,28 +255,47 @@ function DetailsTab() {
   );
 }
 
-function RelatedChartsTab() {
+function RelatedChartsTab({
+  filterByDagId,
+}: {
+  filterByDagId: string | undefined;
+}) {
   const { t } = useTranslation();
-  const tableData = [
-    {
-      chartTitle: 'Residus',
-      visualizationType: 'echarts_area',
-      dataset: 'druid.ChaineResidus',
-      createdBy: '1 day ago',
-      createdOn: '',
-      modifiedBy: '',
-      lastModified: '1 day ago',
-    },
-    {
-      chartTitle: 'Residus',
-      visualizationType: 'echarts_area',
-      dataset: 'druid.ChaineResidus',
-      createdBy: '1 day ago',
-      createdOn: '',
-      modifiedBy: '',
-      lastModified: '1 day ago',
-    },
-  ];
+  const [searchInput, setSearchInput] = useState<string>('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5);
+
+  // Assuming useGetChartsQuery is similar to the original code's query hook
+  const { data } = useGetChartsQuery(searchInput);
+
+  let filteredCharts: any = { result: [] };
+
+  // Filter charts based on dagId if provided
+  if (data?.result && filterByDagId) {
+    const filtered = data.result.filter((element: any) => {
+      const dagId = element.datasource_name_text.split('druid.')[1];
+      return dagId === filterByDagId;
+    });
+    filteredCharts = { ...data, result: filtered };
+  } else if (data?.result) {
+    filteredCharts = data;
+  }
+
+  const lastItemIndex = currentPage * itemsPerPage;
+  const firstItemIndex = lastItemIndex - itemsPerPage;
+  const currentItems = filteredCharts.result.slice(
+    firstItemIndex,
+    lastItemIndex
+  );
+  const totalPages = Math.ceil(filteredCharts.result.length / itemsPerPage);
+
+  const nextPage = () => {
+    setCurrentPage((prev) => (prev < totalPages ? prev + 1 : prev));
+  };
+
+  const prevPage = () => {
+    setCurrentPage((prev) => (prev > 1 ? prev - 1 : prev));
+  };
 
   return (
     <>
@@ -275,80 +307,97 @@ function RelatedChartsTab() {
               id="search"
               name="search"
               type="text"
-              placeholder="Search for charts..."
+              placeholder={t('searchForCharts')}
               className="block min-w-0 grow py-1.5 pl-1 pr-3 text-base text-gray-900 placeholder:text-gray-400 focus:outline focus:outline-0 sm:text-sm/6"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
             />
           </div>
         </div>
+
         <Card className="p-0 my-1">
           <Table>
             <TableHead className="bg-[#F9FAFB]">
               <TableRow>
                 <TableHeaderCell className="text-[#475467] font-semibold">
-                  Chart Title
+                  {t('chartTitle')}
                 </TableHeaderCell>
                 <TableHeaderCell className="text-[#475467] font-semibold">
-                  Visualization Type
+                  {t('visualizationType')}
                 </TableHeaderCell>
                 <TableHeaderCell className="text-[#475467] font-semibold">
-                  Dataset
+                  {t('dataset')}
                 </TableHeaderCell>
                 <TableHeaderCell className="text-[#475467] font-semibold">
-                  Created By
+                  {t('createdBy')}
                 </TableHeaderCell>
                 <TableHeaderCell className="text-[#475467] font-semibold">
-                  Created On
+                  {t('createdOn')}
                 </TableHeaderCell>
                 <TableHeaderCell className="text-[#475467] font-semibold">
-                  Modified By
+                  {t('modifiedBy')}
                 </TableHeaderCell>
                 <TableHeaderCell className="text-[#475467] font-semibold">
-                  Last Modified
+                  {t('lastModified')}
                 </TableHeaderCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {tableData.map((row, index) => (
+              {currentItems.map((item: any, index: number) => (
                 <TableRow key={index}>
                   <TableCell className="text-black underline">
-                    {row.chartTitle}
+                    <a
+                      href={`${process.env.NEXT_PUBLIC_SUPERSET_URL}${
+                        item.slice_url || '#'
+                      }`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {item.slice_name}
+                    </a>
                   </TableCell>
+                  <TableCell className="text-black">{item.viz_type}</TableCell>
                   <TableCell className="text-black">
-                    {row.visualizationType}
+                    {item.datasource_name_text}
                   </TableCell>
-                  <TableCell className="text-black">{row.dataset}</TableCell>
-                  <TableCell className="text-black">{row.createdBy}</TableCell>
-                  <TableCell className="text-black">{row.createdOn}</TableCell>
-                  <TableCell className="text-black">{row.modifiedBy}</TableCell>
+                  <TableCell className="text-black">{`${item.created_by?.first_name} ${item.created_by?.last_name}`}</TableCell>
                   <TableCell className="text-black">
-                    {row.lastModified}
+                    {item.created_on_delta_humanized}
+                  </TableCell>
+                  <TableCell className="text-black">{`${item.changed_by?.first_name} ${item.changed_by?.last_name}`}</TableCell>
+                  <TableCell className="text-black">
+                    {item.changed_on_delta_humanized}
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </Card>
+
         <div className="flex justify-end items-center mt-4">
           <Button
+            onClick={prevPage}
             className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
             size="xs"
-            disabled={true}
+            disabled={currentPage === 1}
           >
             ← {t('prev')}
           </Button>
           <Button
+            onClick={nextPage}
             className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none cursor-pointer"
             size="xs"
-            disabled={true}
+            disabled={currentPage === totalPages}
           >
             {t('next')} →
           </Button>
         </div>
+
         <div className="flex justify-end items-center mt-2">
           <Button className="text-white py-2 px-4 rounded">
             <span className="tremor-Button-text text-sm whitespace-nowrap flex items-center gap-2">
               <AiOutlinePieChart size={20} />
-              <span>Add a Chart</span>
+              <span>{t('addChartBtn')}</span>
             </span>
           </Button>
         </div>
