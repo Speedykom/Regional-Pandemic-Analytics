@@ -140,7 +140,8 @@ export default function ProcessChainList() {
     }
   };
   const [tab, setTab] = useState<number>(1);
-  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [processData, setProcessData] = useState<DagDetails | null>(null);
   return (
     <div>
       <ProcessChainDialog
@@ -148,6 +149,7 @@ export default function ProcessChainList() {
         setIsOpen={setIsOpen}
         tab={tab}
         setTab={setTab}
+        processData={processData}
       />
       <div className="flex justify-between items-center">
         <div>
@@ -277,6 +279,7 @@ export default function ProcessChainList() {
                             onClick={() => {
                               setTab(1);
                               setIsOpen(true);
+                              setProcessData(e ?? null);
                             }}
                             size="40"
                             color="black"
