@@ -70,7 +70,7 @@ export default function ProcessChainDialog({
               >
                 <Dialog.Panel className="w-full max-w-7xl transform overflow-hidden rounded-md bg-white p-6 text-left align-middle shadow-xl transition-all">
                   <h1 className="text-4xl text-center my-4 text-[#4B4B4B] font-semibold">
-                    Process Chain: {processName}
+                    {t('processChainDialog.processChainText')} {processName}
                   </h1>
                   <TabGroup>
                     <TabList variant="solid">
@@ -82,7 +82,7 @@ export default function ProcessChainDialog({
                         className={`p-1 ${tab === 1 ? '' : ''}`}
                       >
                         <p className="text-black text-base px-4">
-                          {t('processChainDialog.orchestrationTab')}
+                          {t('processChainDialog.orchestration')}
                         </p>
                       </Tab>
                       <Tab
@@ -220,28 +220,34 @@ function OrchestrationTab() {
 }
 
 function DetailsTab({ processData }: { processData: any }) {
+  const { t } = useTranslation();
+
   const data = [
-    { label: 'Name', value: processData.dag_id },
-    { label: 'Created at', value: null },
-    { label: 'Segment Count', value: null },
+    { label: t('processChainDialog.modelName'), value: processData.dag_id },
+    { label: t('processChainDialog.modelCreatedAt'), value: null },
+    { label: t('processChainDialog.modelSegmentCount'), value: null },
     {
-      label: 'Dimensions',
+      label: t('processChainDialog.modelDimensions'),
       value:
         'Name, Cases, OrgUnitLevel2Name, OrgUnitLevel2Geometry, OrgUnitLevel1Name',
     },
-    { label: 'Total Size', value: null },
-    { label: 'Description', value: null },
-    { label: 'last update', value: processData.last_updated_at },
-    { label: 'Status', value: processData.status },
+    { label: t('processChainDialog.modelTotalSize'), value: null },
+    { label: t('processChainDialog.modelDescription'), value: null },
     {
-      label: 'Last DAG run',
-      value: processData.latest_dag_run_status || null, // Status of the latest DAG run (from 'latest_dag_run_status' in 'DagDetails')
+      label: t('processChainDialog.modelLastUpdate'),
+      value: processData.last_updated_at,
+    },
+    { label: t('processChainDialog.modelStatus'), value: processData.status },
+    {
+      label: t('processChainDialog.modelLastDagRun'),
+      value: processData.latest_dag_run_status || null,
     },
   ];
+
   return (
     <>
       <div className="text-[#4B4B4B] mt-3 mb-4 text-xl font-medium">
-        Data Model Information
+        {t('processChainDialog.dataModelInfo')}
       </div>
       <div className="flex flex-col gap-y-[1px]">
         {data.map((item, index) => (
@@ -401,7 +407,7 @@ function RelatedChartsTab({
           <Button className="text-white py-2 px-4 rounded">
             <span className="tremor-Button-text text-sm whitespace-nowrap flex items-center gap-2">
               <AiOutlinePieChart size={20} />
-              <span>{t('addChartBtn')}</span>
+              <span>{t('processChainDialog.addChart')}</span>
             </span>
           </Button>
         </div>

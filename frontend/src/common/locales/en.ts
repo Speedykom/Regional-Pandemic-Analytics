@@ -411,6 +411,15 @@ const enTranslation = {
     inactiveStatus: 'Disabled',
     success: 'Success',
     failed: 'Failed',
+    modelName: 'Name',
+    modelCreatedAt: 'Created at',
+    modelSegmentCount: 'Segment Count',
+    modelDimensions: 'Dimensions',
+    modelTotalSize: 'Total Size',
+    modelDescription: 'Description',
+    modelLastUpdate: 'last update',
+    modelStatus: 'Status',
+    modelLastDagRun: 'Last DAG run',
   },
 };
 

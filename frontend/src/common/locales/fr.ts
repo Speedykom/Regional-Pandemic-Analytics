@@ -423,6 +423,15 @@ const frTranslation = {
     inactiveStatus: 'Désactivé',
     success: 'Succès',
     failed: 'Échec',
+    modelName: 'Nom',
+    modelCreatedAt: 'Créé le',
+    modelSegmentCount: 'Nombre de segments',
+    modelDimensions: 'Dimensions',
+    modelTotalSize: 'Taille totale',
+    modelDescription: 'Description',
+    modelLastUpdate: 'Dernière mise à jour',
+    modelStatus: 'Statut',
+    modelLastDagRun: 'Dernière exécution de DAG',
   },
 };
 
