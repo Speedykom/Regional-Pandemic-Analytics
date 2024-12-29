@@ -40,7 +40,7 @@ export default function ProcessChainDialog({
   function closeModal() {
     setIsOpen(false);
   }
-
+  const { t } = useTranslation();
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
@@ -82,7 +82,7 @@ export default function ProcessChainDialog({
                         className={`p-1 ${tab === 1 ? '' : ''}`}
                       >
                         <p className="text-black text-base px-4">
-                          Orchestration
+                          {t('processChainDialog.orchestrationTab')}
                         </p>
                       </Tab>
                       <Tab
@@ -90,7 +90,9 @@ export default function ProcessChainDialog({
                         onClick={() => setTab(2)}
                         className={`p-1 ${tab === 2 ? '' : ''}`}
                       >
-                        <p className="text-black text-base px-4">Details</p>
+                        <p className="text-black text-base px-4">
+                          {t('processChainDialog.details')}
+                        </p>
                       </Tab>
                       <Tab
                         value={3}
@@ -100,7 +102,7 @@ export default function ProcessChainDialog({
                         className={`p-1 ${tab === 3 ? '' : ''}`}
                       >
                         <p className="text-black text-base px-4">
-                          Related Charts
+                          {t('processChainDialog.relatedCharts')}
                         </p>
                       </Tab>
                     </TabList>
@@ -140,10 +142,12 @@ function OrchestrationTab() {
     { label: 'Add the dataset to', completed: true },
   ];
 
+  const { t } = useTranslation();
+
   return (
     <div>
       <div className="text-[#4B4B4B]  text-xl font-medium py-2">
-        Last Executions
+        {t('processChainDialog.lastExec')}
       </div>
       <div className="flex flex-row gap-x-4">
         <div className="flex flex-col gap-y-2">

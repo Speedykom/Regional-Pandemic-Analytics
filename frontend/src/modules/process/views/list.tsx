@@ -204,22 +204,22 @@ export default function ProcessChainList() {
               <Table className="rounded-md">
                 <TableHead className="bg-[#F9FAFB] border-[1px] border-[#E4E7EC]">
                   <TableHeaderCell className="text-[#475467]">
-                    Process Chain Name
+                    {t('processChainDialog.ProcessChainName')}
                   </TableHeaderCell>
                   <TableHeaderCell className="text-[#475467]">
-                    Data Pipeline
+                    {t('processChainDialog.dataPip')}
                   </TableHeaderCell>
                   <TableHeaderCell className="text-[#475467]">
-                    Periodicity
+                    {t('processChainDialog.period')}
                   </TableHeaderCell>
                   <TableHeaderCell className="text-[#475467]">
-                    Process Status
+                    {t('processChainDialog.processStatus')}
                   </TableHeaderCell>
                   <TableHeaderCell className="text-[#475467]">
-                    Execution State
+                    {t('processChainDialog.execState')}
                   </TableHeaderCell>
                   <TableHeaderCell className="w-1/4 border-[#E4E7EC] border-l-[1px] text-[#475467]">
-                    Actions
+                    {t('processChainDialog.actions')}
                   </TableHeaderCell>
                 </TableHead>
                 <TableBody>
@@ -234,23 +234,27 @@ export default function ProcessChainList() {
                         {e?.status ? (
                           <>
                             <span className="text-2xl text-green-700">•</span>{' '}
-                            <span className="!font-medium">Active</span>
+                            <span className="!font-medium">
+                              {t('processChainDialog.activeStatus')}
+                            </span>
                           </>
                         ) : (
                           <>
                             <span className="text-2xl text-red-700">•</span>{' '}
-                            <span className="!font-medium">Disabled</span>
+                            <span className="!font-medium">
+                              {t('processChainDialog.inactiveStatus')}
+                            </span>
                           </>
                         )}
                       </TableCell>
                       <TableCell>
                         {e.dataset_success ? (
                           <Button className="bg-transparent py-3 hover:bg-transparent text-green-700 border-green-700 hover:border-green-700">
-                            Success
+                            {t('processChainDialog.success')}
                           </Button>
                         ) : (
                           <Button className="bg-transparent py-3 hover:bg-transparent text-red-700 border-red-700 hover:border-red-700">
-                            Failed
+                            {t('processChainDialog.Failed')}
                           </Button>
                         )}
                       </TableCell>
