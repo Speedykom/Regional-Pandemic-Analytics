@@ -224,18 +224,26 @@ function DetailsTab({ processData }: { processData: any }) {
 
   const data = [
     { label: t('processChainDialog.modelName'), value: processData.dag_id },
-    { label: t('processChainDialog.modelCreatedAt'), value: null },
-    { label: t('processChainDialog.modelSegmentCount'), value: null },
+    {
+      label: t('processChainDialog.modelCreatedAt'),
+      value: new Date(processData?.properties?.created).toLocaleString(),
+    },
+    {
+      label: t('processChainDialog.modelSegmentCount'),
+      value: processData.segments_count,
+    },
     {
       label: t('processChainDialog.modelDimensions'),
-      value:
-        'Name, Cases, OrgUnitLevel2Name, OrgUnitLevel2Geometry, OrgUnitLevel1Name',
+      value: processData?.last_segment?.dimensions?.join(', '),
     },
-    { label: t('processChainDialog.modelTotalSize'), value: null },
+    {
+      label: t('processChainDialog.modelTotalSize'),
+      value: processData?.total_size,
+    },
     { label: t('processChainDialog.modelDescription'), value: null },
     {
       label: t('processChainDialog.modelLastUpdate'),
-      value: processData.last_updated_at,
+      value: new Date(processData?.last_segment?.version).toLocaleString(),
     },
     { label: t('processChainDialog.modelStatus'), value: processData.status },
     {
