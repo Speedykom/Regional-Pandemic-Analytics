@@ -69,3 +69,31 @@ export interface DagDatasetResponse {
     url: string;
   };
 }
+
+export interface DataSourceInfoResponse {
+  name: string;
+  properties: {
+    created: string;
+  };
+  segments_count: number;
+  total_size: number;
+  last_segment: {
+    dataSource: string;
+    interval: string;
+    version: string;
+    loadSpec: {
+      type: string;
+      path: string;
+    };
+    dimensions: string[];
+    metrics: string;
+    shardSpec: {
+      type: string;
+      partitionNum: number;
+      partitions: number;
+    };
+    binaryVersion: number;
+    size: number;
+    identifier: string;
+  };
+}

@@ -8,6 +8,7 @@ import {
   DagRunTasksResponse,
   DagRunTasksRequest,
   DagDatasetResponse,
+  DataSourceInfoResponse,
 } from '../../modules/process/interface';
 import { baseQuery } from '@/common/redux/api';
 
@@ -16,7 +17,7 @@ export const processApi = createApi({
   baseQuery,
   tagTypes: ['process'],
   endpoints: (builder) => ({
-    getDatasourceInfo: builder.query<DagDetailsResponse, string>({
+    getDatasourceInfo: builder.query<DataSourceInfoResponse, string>({
       query: (datasource_id) => `/process/datasource/${datasource_id}/`,
       providesTags: ['process'],
     }),
