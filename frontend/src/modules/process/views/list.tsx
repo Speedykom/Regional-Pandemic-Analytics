@@ -11,7 +11,11 @@ import {
 } from '@tremor/react';
 import { Loader } from '@/common/components/Loader';
 import { usePermission } from '@/common/hooks/use-permission';
-import { useGetProcessQuery } from '../process';
+import {
+  useGetProcessQuery,
+  useRunProcessByIdMutation,
+  useToggleProcessStatusMutation,
+} from '../process';
 import { DagDetails, DagDetailsResponse } from '../interface';
 import ProcessCard from '../components/ProcessCard';
 import { AddProcess } from './add';
@@ -142,6 +146,24 @@ export default function ProcessChainList() {
   const [tab, setTab] = useState<number>(1);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [processData, setProcessData] = useState<DagDetails | null>(null);
+  const [runProcessById] = useRunProcessByIdMutation();
+  const [toggleProcessStatus] = useToggleProcessStatusMutation();
+
+  function handleRunProcess(
+    event: React.MouseEvent<SVGElement>,
+    dagId: string
+  ) {
+    event.stopPropagation();
+    runProcessById(dagId);
+  }
+
+  function handleToggleProcessStatus(
+    event: React.MouseEvent<SVGElement>,
+    dagId: string
+  ) {
+    event.stopPropagation();
+    toggleProcessStatus(dagId);
+  }
   return (
     <div>
       <ProcessChainDialog
@@ -263,12 +285,18 @@ export default function ProcessChainList() {
                           <FaPlay
                             size="40"
                             color="#15803d"
-                            className="p-2 rounded-md border-[1.8px] border-green-700"
+                            className="p-2 rounded-md border-[1.8px] border-green-700 cursor-pointer"
+                            onClick={(event) =>
+                              handleRunProcess(event, e?.dag_id)
+                            }
                           />
                           <AiOutlineStop
                             size="40"
                             color="#b91c1c"
-                            className="p-2 rounded-md border-[1.8px] border-red-700"
+                            className="p-2 rounded-md border-[1.8px] border-red-700 cursor-pointer"
+                            onClick={(event) =>
+                              handleToggleProcessStatus(event, e?.dag_id)
+                            }
                           />
                           <AiOutlinePieChart
                             size="40"
@@ -280,14 +308,14 @@ export default function ProcessChainList() {
                             }}
                           />
                           <TbReportSearch
+                            size="40"
+                            color="black"
+                            className="p-2 rounded-md border-[1.8px] border-black cursor-pointer"
                             onClick={() => {
                               setTab(1);
                               setIsOpen(true);
                               setProcessData(e ?? null);
                             }}
-                            size="40"
-                            color="black"
-                            className="p-2 rounded-md border-[1.8px] border-black cursor-pointer"
                           />
                         </div>
                       </TableCell>
