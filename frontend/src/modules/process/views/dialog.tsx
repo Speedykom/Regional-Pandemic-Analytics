@@ -23,6 +23,7 @@ import punycode from 'punycode';
 import { useGetChartsQuery } from '@/modules/superset/superset';
 import { DagDetails } from '../interface';
 import { ChartList } from '@/modules/superset/views/ListChart';
+import { useGetDatasourceInfoQuery } from '../process';
 
 export default function ProcessChainDialog({
   isOpen,
@@ -35,7 +36,7 @@ export default function ProcessChainDialog({
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   tab: number;
   setTab: React.Dispatch<React.SetStateAction<number>>;
-  processData: DagDetails | null;
+  processData: DagDetails;
 }) {
   const processName = punycode.toUnicode(processData?.dag_id ?? '');
   function closeModal() {
@@ -112,7 +113,7 @@ export default function ProcessChainDialog({
                     {tab == 1 ? (
                       <OrchestrationTab />
                     ) : tab == 2 ? (
-                      <DetailsTab processData={processData} />
+                      <DetailsTab dagId={processData?.dag_id} />
                     ) : tab == 3 ? (
                       <div className="py-4">
                         <ChartList filterByDagId={processData?.dag_id} />
@@ -220,36 +221,39 @@ function OrchestrationTab() {
   );
 }
 
-function DetailsTab({ processData }: { processData: any }) {
+function DetailsTab({ dagId }: { dagId: string }) {
   const { t } = useTranslation();
+  const { data: detailsTabData } = useGetDatasourceInfoQuery(dagId);
 
   const data = [
-    { label: t('processChainDialog.modelName'), value: processData.dag_id },
+    { label: t('processChainDialog.modelName'), value: detailsTabData?.name },
     {
       label: t('processChainDialog.modelCreatedAt'),
-      value: new Date(processData?.properties?.created).toLocaleString(),
+      value: new Date(
+        detailsTabData?.properties?.created ?? ''
+      ).toLocaleString(),
     },
     {
       label: t('processChainDialog.modelSegmentCount'),
-      value: processData.segments_count,
+      value: detailsTabData?.segments_count,
     },
     {
       label: t('processChainDialog.modelDimensions'),
-      value: processData?.last_segment?.dimensions?.join(', '),
+      value: detailsTabData?.last_segment?.dimensions?.join(', '),
     },
     {
       label: t('processChainDialog.modelTotalSize'),
-      value: processData?.total_size,
+      value: `${detailsTabData?.total_size} kb`,
     },
-    { label: t('processChainDialog.modelDescription'), value: null },
     {
       label: t('processChainDialog.modelLastUpdate'),
-      value: new Date(processData?.last_segment?.version).toLocaleString(),
+      value: new Date(
+        detailsTabData?.last_segment?.version ?? ''
+      ).toLocaleString(),
     },
-    { label: t('processChainDialog.modelStatus'), value: processData.status },
     {
-      label: t('processChainDialog.modelLastDagRun'),
-      value: processData.latest_dag_run_status || null,
+      label: 'Binary Version',
+      value: detailsTabData?.last_segment?.binaryVersion,
     },
   ];
 
