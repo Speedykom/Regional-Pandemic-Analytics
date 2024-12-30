@@ -22,6 +22,7 @@ import { AiOutlinePieChart } from 'react-icons/ai';
 import punycode from 'punycode';
 import { useGetChartsQuery } from '@/modules/superset/superset';
 import { DagDetails } from '../interface';
+import { ChartList } from '@/modules/superset/views/ListChart';
 
 export default function ProcessChainDialog({
   isOpen,
@@ -114,7 +115,7 @@ export default function ProcessChainDialog({
                       <DetailsTab processData={processData} />
                     ) : tab == 3 ? (
                       <div className="py-4">
-                        <RelatedChartsTab filterByDagId={processData?.dag_id} />
+                        <ChartList filterByDagId={processData?.dag_id} />
                       </div>
                     ) : null}
                   </>
@@ -273,6 +274,7 @@ function DetailsTab({ processData }: { processData: any }) {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function RelatedChartsTab({
   filterByDagId,
 }: {
