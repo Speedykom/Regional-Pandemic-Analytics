@@ -166,13 +166,15 @@ export default function ProcessChainList() {
   }
   return (
     <div>
-      <ProcessChainDialog
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        tab={tab}
-        setTab={setTab}
-        processData={processData}
-      />
+      {processData && (
+        <ProcessChainDialog
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          tab={tab}
+          setTab={setTab}
+          processData={processData}
+        />
+      )}
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl">{t('processChain')}</h2>
