@@ -164,7 +164,11 @@ function OrchestrationTab({ dagId }: { dagId: string }) {
     setSelectedExecutionId(executionId);
   };
 
-  const { data: stepsData, isLoading } = useGetProcessHistoryTasksbyIdQuery(
+  const {
+    data: stepsData,
+    isLoading,
+    refetch,
+  } = useGetProcessHistoryTasksbyIdQuery(
     {
       dag_id: dagId,
       dag_run_id: selectedExecutionId,
@@ -262,6 +266,7 @@ function OrchestrationTab({ dagId }: { dagId: string }) {
             <div className="flex flex-row gap-y-2 items-center justify-center h-[300px]">
               {renderStepsList()}
               <TfiReload
+                onClick={refetch}
                 size={35}
                 color="white"
                 className="bg-[#00764B] m-2 p-2 rounded-md cursor-pointer"
