@@ -11,11 +11,7 @@ import {
 } from '@tremor/react';
 import { Loader } from '@/common/components/Loader';
 import { usePermission } from '@/common/hooks/use-permission';
-import {
-  useGetProcessQuery,
-  useRunProcessByIdMutation,
-  useToggleProcessStatusMutation,
-} from '../process';
+import { useGetProcessQuery, useToggleProcessStatusMutation } from '../process';
 import { DagDetails, DagDetailsResponse } from '../interface';
 import ProcessCard from '../components/ProcessCard';
 import { AddProcess } from './add';
@@ -60,10 +56,12 @@ export default function ProcessChainList() {
 
     var processChainToShowLength = 0;
     if (showDisabled) {
-      processChainToShowLength = processChainList?.dags?.length;
+      processChainToShowLength = processChainList?.dags?.filter(
+        (e) => e.status === false
+      ).length;
     } else {
       processChainToShowLength = processChainList.dags.filter(
-        (dag) => dag.status == false
+        (dag) => dag.status == true
       ).length;
     }
 
@@ -146,22 +144,12 @@ export default function ProcessChainList() {
   const [tab, setTab] = useState<number>(1);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [processData, setProcessData] = useState<DagDetails | null>(null);
-  const [runProcessById] = useRunProcessByIdMutation();
   const [toggleProcessStatus] = useToggleProcessStatusMutation();
-
-  function handleRunProcess(
-    event: React.MouseEvent<SVGElement>,
-    dagId: string
-  ) {
-    event.stopPropagation();
-    runProcessById(dagId);
-  }
 
   function handleToggleProcessStatus(
     event: React.MouseEvent<SVGElement>,
     dagId: string
   ) {
-    event.stopPropagation();
     toggleProcessStatus(dagId);
   }
   return (
@@ -262,14 +250,18 @@ export default function ProcessChainList() {
                         <TableCell className="my-auto">
                           {e?.status ? (
                             <>
-                              <span className="text-2xl text-green-700">•</span>{' '}
+                              <span className="text-2xl text-green-700 relative top-[3.5px]">
+                                •
+                              </span>{' '}
                               <span className="!font-medium">
                                 {t('processChainDialog.activeStatus')}
                               </span>
                             </>
                           ) : (
                             <>
-                              <span className="text-2xl text-red-700">•</span>{' '}
+                              <span className="text-2xl text-red-700 relative top-[3.5px]">
+                                •
+                              </span>{' '}
                               <span className="!font-medium">
                                 {t('processChainDialog.inactiveStatus')}
                               </span>
@@ -292,15 +284,23 @@ export default function ProcessChainList() {
                             <FaPlay
                               size="40"
                               color="#15803d"
-                              className="p-2 rounded-md border-[1.8px] border-green-700 cursor-pointer"
+                              className={
+                                e?.status == false
+                                  ? `p-2 rounded-md border-[1.8px] border-green-700 cursor-pointer`
+                                  : `p-2 rounded-md border-[1.8px] border-gray-300 bg-gray-100 text-gray-400 pointer-events-none opacity-50`
+                              }
                               onClick={(event) =>
-                                handleRunProcess(event, e?.dag_id)
+                                handleToggleProcessStatus(event, e?.dag_id)
                               }
                             />
                             <AiOutlineStop
                               size="40"
                               color="#b91c1c"
-                              className="p-2 rounded-md border-[1.8px] border-red-700 cursor-pointer"
+                              className={
+                                e?.status == true
+                                  ? `p-2 rounded-md border-[1.8px] border-red-700 cursor-pointer`
+                                  : `p-2 rounded-md border-[1.8px] border-gray-300 bg-gray-100 text-gray-400 pointer-events-none opacity-50`
+                              }
                               onClick={(event) =>
                                 handleToggleProcessStatus(event, e?.dag_id)
                               }
