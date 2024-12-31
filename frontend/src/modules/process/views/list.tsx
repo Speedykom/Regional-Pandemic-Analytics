@@ -247,82 +247,87 @@ export default function ProcessChainList() {
                   </TableHeaderCell>
                 </TableHead>
                 <TableBody>
-                  {data?.dags.map((e, k) => (
-                    <TableRow key={k} className="border-[1px] border-[#E4E7EC]">
-                      <TableCell className="text-black">{e?.name}</TableCell>
-                      <TableCell className="text-blue-700 underline font-normal">
-                        {e?.data_source_name}
-                      </TableCell>
-                      <TableCell>{e?.schedule_interval}</TableCell>
-                      <TableCell className="my-auto">
-                        {e?.status ? (
-                          <>
-                            <span className="text-2xl text-green-700">•</span>{' '}
-                            <span className="!font-medium">
-                              {t('processChainDialog.activeStatus')}
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <span className="text-2xl text-red-700">•</span>{' '}
-                            <span className="!font-medium">
-                              {t('processChainDialog.inactiveStatus')}
-                            </span>
-                          </>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {e.dataset_success ? (
-                          <Button className="bg-transparent py-3 hover:bg-transparent text-green-700 border-green-700 hover:border-green-700">
-                            {t('processChainDialog.success')}
-                          </Button>
-                        ) : (
-                          <Button className="bg-transparent py-3 hover:bg-transparent text-red-700 border-red-700 hover:border-red-700">
-                            {t('processChainDialog.Failed')}
-                          </Button>
-                        )}
-                      </TableCell>
-                      <TableCell className="border-[#E4E7EC] border-l-[1px]">
-                        <div className="flex flex-row gap-x-2">
-                          <FaPlay
-                            size="40"
-                            color="#15803d"
-                            className="p-2 rounded-md border-[1.8px] border-green-700 cursor-pointer"
-                            onClick={(event) =>
-                              handleRunProcess(event, e?.dag_id)
-                            }
-                          />
-                          <AiOutlineStop
-                            size="40"
-                            color="#b91c1c"
-                            className="p-2 rounded-md border-[1.8px] border-red-700 cursor-pointer"
-                            onClick={(event) =>
-                              handleToggleProcessStatus(event, e?.dag_id)
-                            }
-                          />
-                          <AiOutlinePieChart
-                            size="40"
-                            color="black"
-                            className="p-2 rounded-md border-[1.8px] border-black cursor-pointer"
-                            onClick={() => {
-                              setIsOpen(true);
-                              setTab(3);
-                            }}
-                          />
-                          <TbReportSearch
-                            size="40"
-                            color="black"
-                            className="p-2 rounded-md border-[1.8px] border-black cursor-pointer"
-                            onClick={() => {
-                              setTab(1);
-                              setIsOpen(true);
-                              setProcessData(e ?? null);
-                            }}
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {data?.dags
+                    .filter((e) => (showDisabled ? !e.status : e.status)) // Filter based on status
+                    .map((e, k) => (
+                      <TableRow
+                        key={k}
+                        className="border-[1px] border-[#E4E7EC]"
+                      >
+                        <TableCell className="text-black">{e?.name}</TableCell>
+                        <TableCell className="text-blue-700 underline font-normal">
+                          {e?.data_source_name}
+                        </TableCell>
+                        <TableCell>{e?.schedule_interval}</TableCell>
+                        <TableCell className="my-auto">
+                          {e?.status ? (
+                            <>
+                              <span className="text-2xl text-green-700">•</span>{' '}
+                              <span className="!font-medium">
+                                {t('processChainDialog.activeStatus')}
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-2xl text-red-700">•</span>{' '}
+                              <span className="!font-medium">
+                                {t('processChainDialog.inactiveStatus')}
+                              </span>
+                            </>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {e.dataset_success ? (
+                            <Button className="bg-transparent py-3 hover:bg-transparent text-green-700 border-green-700 hover:border-green-700">
+                              {t('processChainDialog.success')}
+                            </Button>
+                          ) : (
+                            <Button className="bg-transparent py-3 hover:bg-transparent text-red-700 border-red-700 hover:border-red-700">
+                              {t('processChainDialog.Failed')}
+                            </Button>
+                          )}
+                        </TableCell>
+                        <TableCell className="border-[#E4E7EC] border-l-[1px]">
+                          <div className="flex flex-row gap-x-2">
+                            <FaPlay
+                              size="40"
+                              color="#15803d"
+                              className="p-2 rounded-md border-[1.8px] border-green-700 cursor-pointer"
+                              onClick={(event) =>
+                                handleRunProcess(event, e?.dag_id)
+                              }
+                            />
+                            <AiOutlineStop
+                              size="40"
+                              color="#b91c1c"
+                              className="p-2 rounded-md border-[1.8px] border-red-700 cursor-pointer"
+                              onClick={(event) =>
+                                handleToggleProcessStatus(event, e?.dag_id)
+                              }
+                            />
+                            <AiOutlinePieChart
+                              size="40"
+                              color="black"
+                              className="p-2 rounded-md border-[1.8px] border-black cursor-pointer"
+                              onClick={() => {
+                                setIsOpen(true);
+                                setTab(3);
+                              }}
+                            />
+                            <TbReportSearch
+                              size="40"
+                              color="black"
+                              className="p-2 rounded-md border-[1.8px] border-black cursor-pointer"
+                              onClick={() => {
+                                setTab(1);
+                                setIsOpen(true);
+                                setProcessData(e ?? null);
+                              }}
+                            />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                 </TableBody>
               </Table>
               <div className="py-1">{renderPagination(data)}</div>
