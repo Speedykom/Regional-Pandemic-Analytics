@@ -38,7 +38,7 @@ export default function Layout({ children }: LayoutProps) {
                 <div className="px-4 flex items-center justify-center flex-col mx-4 my-auto">
                   <img
                     className={`w-24 h-auto py-4`}
-                    src="/d-OHP-logo-horizontal.png"
+                    src="/cohis.png"
                     alt="company-logo"
                   />
                 </div>
