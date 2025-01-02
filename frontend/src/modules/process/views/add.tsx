@@ -66,16 +66,11 @@ export const AddProcess = ({
           } as DagForm)
             .unwrap()
             .then(() => {
-              const intervalId = setInterval(() => {
-                refetch().then((response: any) => {
-                  const createdProcess = response.data?.dags.find(
-                    (dag: any) => dag.dag_id === encodedId
-                  );
-                  if (createdProcess) {
-                    clearInterval(intervalId);
-                  }
-                });
-              }, 500);
+              // WARNING !!!
+              // The only reason why we're using setTimeout
+              // is because Airflow takes time to rescan the dags directory
+              // NEED TO BE CHANGED !!!
+              setTimeout(refetch, 1000);
               toast.success(t('addProcess.successMessage'));
               closePanel();
             })
@@ -107,7 +102,7 @@ export const AddProcess = ({
       <div className="w-96 px-3">
         <div className="flex flex-col space-y-3">
           <div>
-            <label>{t('addProcess.title')}</label>
+            <label>{t('addProcess.name')} *</label>
             <TextInput
               {...register('processName', {
                 required: true,
@@ -124,7 +119,7 @@ export const AddProcess = ({
             />
           </div>
           <div>
-            <label>{t('addProcess.pipelineTemplateLabel')}</label>
+            <label>{t('addProcess.pipelineTemplateLabel')} *</label>
             <Controller
               name="pipelineTemplate"
               control={control}
@@ -155,7 +150,7 @@ export const AddProcess = ({
 
           <div>
             <label>
-              <div>{t('addProcess.startDateLabel')}</div>
+              <div>{t('addProcess.startDateLabel')} *</div>
               <div className="p-1 pb-2">
                 <p className="text-sm italic">{t('addProcess.note')}</p>
               </div>
@@ -182,7 +177,7 @@ export const AddProcess = ({
           </div>
 
           <div>
-            <label>{t('addProcess.scheduleIntervalLabel')}</label>
+            <label>{t('addProcess.scheduleIntervalLabel')} *</label>
             <Controller
               name="scheduleInterval"
               control={control}
@@ -195,7 +190,7 @@ export const AddProcess = ({
                   >
                     {schedule_intervals.map((interval) => {
                       const translatedInterval = t(
-                        `schedule_intervals.${interval}`
+                        `schedule_intervals.${interval.replace('@', '')}`
                       );
                       return (
                         <SearchSelectItem key={interval} value={interval}>
@@ -210,7 +205,7 @@ export const AddProcess = ({
           </div>
 
           <div>
-            <label>{t('addProcess.descriptionLabel')}</label>
+            <label>{t('addProcess.descriptionLabel')} *</label>
             <TextInput
               {...register('description', { required: true })}
               placeholder={t('addProcess.descriptionPlaceholder')}

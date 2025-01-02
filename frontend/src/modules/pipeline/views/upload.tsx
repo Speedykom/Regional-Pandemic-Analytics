@@ -1,6 +1,7 @@
 import Drawer from '@/common/components/common/Drawer';
 import { Button, TextInput } from '@tremor/react';
 import { useDropzone } from 'react-dropzone';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { useUploadPipelineMutation } from '../pipeline';
@@ -26,7 +27,10 @@ export const UploadPipeline = ({
   } = useForm({ mode: 'onChange' });
   const [uploadPipeline, { isLoading }] = useUploadPipelineMutation();
   const { t } = useTranslation();
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
+  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop: (files) => setAcceptedFiles(files),
+  });
   const permittedCharactersRegex = /^[^\s!@#$%^&*()+=[\]{}\\|;:'",<>/?]*$/;
 
   const onFinish = (value: any) => {
@@ -54,6 +58,7 @@ export const UploadPipeline = ({
 
   const cancel = () => {
     reset();
+    setAcceptedFiles([]);
     onClose();
   };
 
@@ -120,7 +125,7 @@ export const UploadPipeline = ({
               className="block text-blueGray-600 text-xs font-bold mb-2"
               htmlFor="descriptiond"
             >
-              Description*
+              {t('description')} *
             </label>
             <TextInput
               {...register('description', {
@@ -137,6 +142,12 @@ export const UploadPipeline = ({
             />
           </div>
           <div className="relative w-full mb-3">
+            <label
+              className="block text-blueGray-600 text-xs font-bold mb-2"
+              htmlFor="descriptiond"
+            >
+              {t('uploadFile')}
+            </label>
             <div>
               <div className="mt-3 text-center sm:mt-5">
                 <div className="mt-2">
@@ -144,8 +155,12 @@ export const UploadPipeline = ({
                     <section className="container">
                       <div
                         {...getRootProps({
-                          className:
-                            'dropzone border-dashed border-2 border-gray-300 p-4 rounded-md',
+                          className: `dropzone border-dashed border-2 border-gray-300 p-4 rounded-md
+                          ${
+                            acceptedFiles.length === 0
+                              ? 'bg-gray-100'
+                              : 'bg-white'
+                          }`,
                         })}
                       >
                         <input {...getInputProps()} />

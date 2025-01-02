@@ -57,10 +57,9 @@ export default function Orchestration({
             {isValidDate(nextDagRunDate) && (
               <tr>
                 <td className="p-3 font-bold bg-prim text-white w-1/4 border border-gray-200">
-                  {t('orchestraion.nextScheduleExection')}
+                  {t('orchestration.nextScheduleExection')}
                 </td>
                 <td className="p-3 bg-gray-100 w-3/4 border border-gray-200">
-                  {nextDagRunDate.toUTCString()}
                   {t(`days.${nextDagRunDate.getUTCDay()}`)},{' '}
                   {nextDagRunDate.getUTCDate()}{' '}
                   {t(`months.${nextDagRunDate.getUTCMonth()}`)}{' '}
