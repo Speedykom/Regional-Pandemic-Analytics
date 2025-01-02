@@ -342,6 +342,7 @@
         {
           "id": "b209766b-e17c-4d58-bc1b-0e09be89e1f9",
           "name": "uma_protection",
+          "description": "Provides permissions related to the User-Managed Access (UMA) protocol, allowing users to control access to their resources.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -350,6 +351,7 @@
         {
           "id": "4ec7b1ed-00ee-4807-9afa-6c8adbfd9716",
           "name": "superset_alpha",
+          "description": "Provides permissions related to the User-Managed Access (UMA) protocol, allowing users to control access to their resources.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -358,6 +360,7 @@
         {
           "id": "46bc5ee3-b1be-4ce4-b804-e53572f33129",
           "name": "Gamma",
+          "description": "A predefined role for users with viewer-level access. Users can view dashboards and slices but cannot create or modify them.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -366,6 +369,7 @@
         {
           "id": "9886d5b5-cd5d-4b1d-9dad-c5a011875de8",
           "name": "superset_granter",
+          "description": "Allows users to manage access and permissions, granting roles or permissions to others in the Superset environment.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -374,6 +378,7 @@
         {
           "id": "c77d07b2-9177-49a6-8d49-9d697106eac9",
           "name": "superset_sql_lab",
+          "description": "Grants access to the SQL Lab feature in Superset, allowing users to write and execute SQL queries on connected databases.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -382,6 +387,7 @@
         {
           "id": "ec9abdc5-b954-4b46-84bb-a2642699caa5",
           "name": "superset_gamma",
+          "description": "Similar to the 'Gamma' role but tailored for specific configurations. Users with this role have read-only access to dashboards and slices.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -390,6 +396,7 @@
         {
           "id": "265837f2-0d33-4b99-ac25-d3368e7e3c0f",
           "name": "superset_public",
+          "description": "Provides minimal access intended for public or anonymous users, typically for accessing publicly available dashboards or views.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -398,6 +405,7 @@
         {
           "id": "fcc23677-9672-4d0a-9dad-db1ce6954555",
           "name": "superset_admin",
+          "description": "Grants full administrative permissions in Superset, including the ability to create, edit, and delete dashboards, manage users, and configure system settings.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
