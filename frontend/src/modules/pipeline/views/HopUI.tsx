@@ -2,7 +2,11 @@ import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { Button } from '@tremor/react';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
-import { useGetPipelineQuery, useUpdatePipelineMutation } from '../pipeline';
+import {
+  useCancelPipelineMutation,
+  useGetPipelineQuery,
+  useUpdatePipelineMutation,
+} from '../pipeline';
 import { useTranslation } from 'react-i18next';
 
 interface HopUIProps {
@@ -15,6 +19,7 @@ export const HopUI = ({ name }: HopUIProps) => {
     refetchOnMountOrArgChange: true,
   });
   const [updatePipeline] = useUpdatePipelineMutation();
+  const [cancelPipeline] = useCancelPipelineMutation();
 
   const savePipeline = async () => {
     try {
@@ -37,6 +42,23 @@ export const HopUI = ({ name }: HopUIProps) => {
     }
   };
 
+  const cancelPipelineEditing = async () => {
+    try {
+      const response = await cancelPipeline(name);
+      if ('data' in response && response.data.status === 'success') {
+        await navigateToPipelines();
+        toast.success('Pipeline canceled successfully', {
+          position: 'top-right',
+        });
+        return;
+      }
+      throw new Error('API failed to cancel pipeline');
+    } catch (e) {
+      await navigateToPipelines();
+      toast.error('Unable to cancel pipeline', { position: 'top-right' });
+    }
+  };
+
   const navigateToPipelines = () => {
     return router.push(`/pipelines`);
   };
@@ -52,7 +74,7 @@ export const HopUI = ({ name }: HopUIProps) => {
         <div>
           <Button
             icon={XMarkIcon}
-            onClick={navigateToPipelines}
+            onClick={cancelPipelineEditing}
             className="bg-gray-400 hover:bg-gray-400-hover border-0 mx-1"
           >
             {t('cancel')}

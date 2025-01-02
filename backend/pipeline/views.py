@@ -14,6 +14,8 @@ from .validator import check_pipeline_validity
 from urllib.parse import quote, unquote
 from minio import Minio
 import pyclamd
+import time
+import logging
 
 class AirflowInstance:
     url = os.getenv("AIRFLOW_API")
@@ -23,12 +25,28 @@ class AirflowInstance:
 class EditAccessProcess:
     def __init__(self, file):
         self.file = file
+        self.max_retries = 5
+        self.retry_interval = 1
+
 
     def request_edit(self, path):
-        config = open(self.file, "w")
-        config.write(path)
-        config.close()
+        payload = json.dumps(path)
+        for attempt in range(self.max_retries):
+            try:
+                with open(self.file, "w") as config:
+                    config.write(payload)
+                logging.info(f"File {self.file} successfully written.")
+                break
 
+            except (OSError, IOError) as e:
+                logging.error(f"Error writing to file {self.file}: {str(e)}")
+
+                if attempt < self.max_retries - 1:
+                    logging.info(f"Retrying to write to {self.file} in {self.retry_interval} seconds...")
+                    time.sleep(self.retry_interval)
+                else:
+                    logging.error(f"Failed to write to {self.file} after {self.max_retries} attempts.")
+                    raise Exception(f"Failed to edit file {self.file} after {self.max_retries} attempts.")
 
 class PipelineListView(APIView):
     keycloak_scopes = {
@@ -125,6 +143,7 @@ class PipelineDetailView(APIView):
     keycloak_scopes = {
         "PUT": "pipeline:update",
         "GET": "pipeline:read",
+        "DELETE": "pipeline:delete",
     }
 
     # dynamic dag output
@@ -135,6 +154,7 @@ class PipelineDetailView(APIView):
         Endpoint for getting details of pipeline
         """
         user_id = get_current_user_id(request)
+        local_file_path = f"/hop/pipelines/{name}.hpl"
         try:
             object = client.stat_object(
                 "pipelines", f"pipelines-created/{user_id}/{name}.hpl"
@@ -144,13 +164,30 @@ class PipelineDetailView(APIView):
             client.fget_object(
                 "pipelines",
                 f"pipelines-created/{user_id}/{name}.hpl",
-                f"/hop/pipelines/{name}.hpl",
+                local_file_path,
             )
 
+            timeout = 10
+            interval = 1
+            elapsed_time = 0
+
+            while elapsed_time < timeout:
+                if os.path.exists(local_file_path):
+                    break
+                time.sleep(interval)
+                elapsed_time += interval
+
+            if not os.path.exists(local_file_path):
+                logging.error(f"File {name}.hpl not available after {timeout} seconds.")
+                return Response(
+                    {"status": "error", "message": f"Pipeline file {name}.hpl not available."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
             # Automatically open file in visual editor when HopUI opens
-            payload = {"names": ["file:///files/{}.hpl".format(name)]}
+            payload = {"names": [f"file:///files/{name}.hpl"]}
+
             edit_hop = EditAccessProcess(file=self.file)
-            edit_hop.request_edit(json.dumps(payload))
+            edit_hop.request_edit(payload)
             return Response(
                 {
                     "name": name,
@@ -208,6 +245,23 @@ class PipelineDetailView(APIView):
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
+    def delete(self, request, name=None):
+        """
+        Endpoint for deleting a pipeline from local file system after downloading it from Minio
+        """
+        if not name:
+            return Response({"status": "fail", "message": "Pipeline name is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        local_file_path = f"/hop/pipelines/{name}.hpl"
+
+        if os.path.exists(local_file_path):
+            try:
+                os.remove(local_file_path)
+                return Response({"status": "success", "message": f"Pipeline {name} deleted successfully."}, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({"status": "error", "message": f"Error deleting file: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            return Response({"status": "fail", "message": f"Pipeline file {name}.hpl not found."}, status=status.HTTP_404_NOT_FOUND)
 
 class PipelineDownloadView(APIView):
     keycloak_scopes = {
