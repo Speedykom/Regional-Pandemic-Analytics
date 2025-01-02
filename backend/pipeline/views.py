@@ -49,27 +49,28 @@ class PipelineListView(APIView):
             "pipelines", prefix=f"pipelines-created/{user_id}/", include_user_meta=True
         )
         for object in objects:
-            object_name = object.object_name.removeprefix(
-                        f"pipelines-created/{user_id}/"
-                    ).removesuffix(".hpl")
-            if query:
-                if (re.search(query, object_name, re.IGNORECASE)):
+            if object.object_name.endswith(".hpl"):
+                object_name = object.object_name.removeprefix(
+                            f"pipelines-created/{user_id}/"
+                        ).removesuffix(".hpl")
+                if query:
+                    if (re.search(query, object_name, re.IGNORECASE)):
+                        pipelines.append(
+                            {
+                                "name": object_name,
+                                "description": unquote(object.metadata["X-Amz-Meta-Description"]),
+                                "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
+                                "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
+                            })
+                else:
                     pipelines.append(
-                        {
-                            "name": object_name,
-                            "description": unquote(object.metadata["X-Amz-Meta-Description"]),
-                            "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
-                            "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
-                        })
-            else:
-                pipelines.append(
-                {
-                    "name": object_name,
-                    "description": unquote(object.metadata["X-Amz-Meta-Description"]),
-                    "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
-                    "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
-                }
-            )
+                    {
+                        "name": object_name,
+                        "description": unquote(object.metadata["X-Amz-Meta-Description"]),
+                        "check_status": object.metadata.get("X-Amz-Meta-Check_status", "Status not available"),
+                        "check_text": object.metadata.get("X-Amz-Meta-Check_text", "Text not available"),
+                    }
+                )
 
         return Response(
             {"status": "success", "data": pipelines}, status=status.HTTP_200_OK
@@ -259,7 +260,7 @@ class PipelineUploadView(APIView):
         if scan_result is not None:
             logging.error(f"Malicious Pipeline uploaded : {scan_result}")
             return Response({'errorMessage': f'Malicious File Upload: {scan_result}'}, status=status.HTTP_400_BAD_REQUEST)
-        # seeking to 0 in the uploaded_file because scan_stream does not release the pointer 
+        # seeking to 0 in the uploaded_file because scan_stream does not release the pointer
         uploaded_file.seek(0)
 
         if not self.permitted_characters_regex.search(name):
@@ -303,6 +304,77 @@ class PipelineUploadView(APIView):
                     },
                     )
                 return Response({"status": "success"}, status=status.HTTP_200_OK)
+
+class PipelineUploadExternalFilesView(APIView):
+    parser_classes = (MultiPartParser,)
+    keycloak_scopes = {
+        "POST": "pipeline:add",
+        "GET": "pipeline:read",
+    }
+
+    def __init__(self):
+        self.permitted_characters_regex = re.compile(r'^[^\s!@#$%^&*()+=[\]{}\\|;:\'",<>/?]*$')
+
+    def post(self, request, format=None):
+        """
+        Endpoint for uploading an external file to an existing pipeline
+        """
+        user_id = get_current_user_id(request)
+        name = request.data.get("name")
+        description = request.data.get("description")
+        uploaded_file = request.FILES.get("uploadedFile")
+
+        file_extension = os.path.splitext(uploaded_file.name)[1]
+        if not file_extension:
+            return Response(
+                {"status": "Fail", "message": "Uploaded file does not have a valid extension"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        local_save_path = f"/hop/pipelines/external_files/{name}{file_extension}"
+
+        # Scan the file for viruses
+        cd = pyclamd.ClamdNetworkSocket(host="clamav", port=3310)
+        scan_result = cd.scan_stream(uploaded_file.read())
+        if scan_result is not None:
+            logging.error(f"Malicious Pipeline uploaded: {scan_result}")
+            return Response({'errorMessage': f'Malicious File Upload: {scan_result}'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Reset the file pointer after scanning
+        uploaded_file.seek(0)
+
+        # Check for unpermitted characters in the name
+        if not self.permitted_characters_regex.search(name):
+            return Response(
+                {"status": "Fail", "message": "Pipeline name contains unpermitted characters"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            os.makedirs(os.path.dirname(local_save_path), exist_ok=True)
+            with open(local_save_path, "wb") as local_file:
+                for chunk in uploaded_file.chunks():
+                    local_file.write(chunk)
+
+            object_name = f"pipelines-created/{user_id}/{name}{file_extension}"
+            client.put_object(
+                bucket_name="pipelines",
+                object_name=object_name,
+                data=open(local_save_path, "rb"),
+                length=os.path.getsize(local_save_path),
+                metadata={
+                    "description": f"{quote(description.encode('utf-8'))}",
+                    "created": f"{datetime.utcnow()}"
+                },
+            )
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logging.error(f"Error uploading file: {str(e)}")
+            return Response(
+                {"status": "Fail", "message": "Error processing the uploaded file"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
 class PipelineDeleteView(APIView):
     keycloak_scopes = {
         "DELETE": "pipeline:delete",
