@@ -168,7 +168,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://data2.igad-health.eu",
+    "https://data2.repan.info",
 ]
 
 # Excempt list - URL paths that doesn't need Keycloak Authorization
@@ -221,3 +221,5 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_REGION = "us-east-1"
 AWS_S3_SECURE_URLS = False
 AWS_S3_VERIFY = False
+DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100 MB
