@@ -35,6 +35,8 @@ import {
 import { toast } from 'react-toastify';
 import { skipToken } from '@reduxjs/toolkit/query/react';
 import { UploadExternalFiles } from './upload-external-files';
+import { Tooltip } from 'react-tooltip';
+import 'react-tooltip/dist/react-tooltip.css';
 
 export const MyPipelines = () => {
   const router = useRouter();
@@ -181,21 +183,31 @@ export const MyPipelines = () => {
       let statusIcon;
       if (item.check_status === 'success') {
         statusIcon = (
-          <Icon
-            size="lg"
-            icon={CheckCircleIcon}
-            color="green"
-            tooltip={t(item.check_text)}
-          />
+          <>
+            <Icon
+              size="lg"
+              icon={CheckCircleIcon}
+              color="green"
+              className="green-icon"
+            />
+            <Tooltip anchorSelect=".green-icon" place="top">
+              {t(item.check_text)}
+            </Tooltip>
+          </>
         );
       } else if (item.check_status === 'failed') {
         statusIcon = (
-          <Icon
-            size="lg"
-            icon={XCircleIcon}
-            color="red"
-            tooltip={t(item.check_text)}
-          />
+          <>
+            <Icon
+              size="lg"
+              icon={XCircleIcon}
+              color="red"
+              className="red-icon"
+            />
+            <Tooltip anchorSelect=".red-icon" place="top">
+              {t(item.check_text)}
+            </Tooltip>
+          </>
         );
       } else {
         statusIcon = (
