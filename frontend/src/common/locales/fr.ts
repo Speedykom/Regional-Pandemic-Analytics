@@ -81,6 +81,21 @@ const frTranslation = {
   pipelineCheckSuccessful: 'Vérification du pipeline réussie',
   pipelineCheckFailed: 'Échec de la vérification du pipeline',
   addPipeline: 'Ajouter un Pipeline',
+  MissingParquetTransform: 'Une Transformation Parquet doit figurer',
+  InvalidFilenameBase:
+    'Sortie Fichier Parquet: Filename base ne peut pas être vide',
+  InvalidFilenameExtension:
+    "Sortie Fichier Parquet: l'extension doit être specifiée à parquet",
+  InvalidFilenameIncludeCopy:
+    'Sortie Fichier Parquet: Include transform copy number ne doit pas être cochée',
+  InvalidFilenameIncludeDate:
+    'Sortie Fichier Parquet: Include date ne doit pas être cochée',
+  InvalidFilenameIncludeDatetime:
+    'Sortie Fichier Parquet: Include date-time format ne doit pas être cochée',
+  InvalidFilenameIncludeSplit:
+    'Sortie Fichier Parquet:  Split into parts and include number ne doit pas être cochée',
+  InvalidFilenameIncludeTime:
+    'Sortie Fichier Parquet: Include time ne doit pas être cochée',
   pipelineInvalidName:
     'Caractères invalides. Le nom du pipeline doit être composé exclusivement de caractères alphanumériques, de tirets, de points et de tirets bas.',
   fileInvalidName:
@@ -114,7 +129,10 @@ const frTranslation = {
   searchForTemplate: 'Rechercher un modèle...',
   pipelineCreatedSuccessfully: 'Pipeline créé avec succès',
   fileAddedSuccessfully: 'Fichier ajouté avec succès',
-
+  pipelineUpdateSuccess: 'Pipeline mis à jour avec succès',
+  pipelineUpdateError: 'Impossible de mettre à jour le Pipeline',
+  pipelineCancelSuccess: 'Mise a jour du Pipeline annulée avec succès',
+  pipelineCancelError: "Impossible d'annuler la mise à jour du Pipeline",
   supersetCharts: 'Graphiques Superset',
   chartListCreatedOnSuperset:
     'Liste des graphiques créés avec Apache Superset.',
