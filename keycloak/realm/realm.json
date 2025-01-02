@@ -81,15 +81,44 @@
         "attributes": {}
       },
       {
+        "id": "42540210-bc30-4412-b6ff-5dec3a6f313c",
+        "name": "M&E_Expert",
+        "description": "",
+        "composite": true,
+        "composites": {
+          "client": {
+            "superset": [
+              "superset_admin"
+            ],
+            "airflow": [
+              "airflow_admin"
+            ],
+            "${BACKEND_CLIENT_ID}": [
+              "me_expert_role"
+            ]
+          }
+        },
+        "clientRole": false,
+        "containerId": "c89b3c58-aefb-4429-972b-feccb6a77750",
+        "attributes": {}
+      },
+      {
         "id": "48ffed22-78a6-4c9b-82e8-e80e5de635ec",
         "name": "Digital_Health_Officer",
         "description": "",
         "composite": true,
         "composites": {
           "client": {
-            "superset": ["superset_admin"],
-            "airflow": ["airflow_admin"],
-            "${BACKEND_CLIENT_ID}": ["user"]
+            "superset": [
+              "superset_admin"
+            ],
+            "airflow": [
+              "airflow_admin"
+            ],
+            "${BACKEND_CLIENT_ID}": [
+              "dho_role",
+              "admin"
+            ]
           }
         },
         "clientRole": false,
@@ -100,7 +129,23 @@
         "id": "3f14f73e-3e22-47b5-ab96-56ad5c48ba2b",
         "name": "Administrator",
         "description": "",
-        "composite": false,
+        "composite": true,
+        "composites": {
+          "client": {
+            "realm-management": [
+              "realm-admin"
+            ],
+            "superset": [
+              "superset_admin"
+            ],
+            "airflow": [
+              "airflow_admin"
+            ],
+            "${BACKEND_CLIENT_ID}": [
+              "admin"
+            ]
+          }
+        },
         "clientRole": false,
         "containerId": "c89b3c58-aefb-4429-972b-feccb6a77750",
         "attributes": {}
@@ -1846,6 +1891,28 @@
             }
           },
           {
+            "id": "ffcd3d7e-f870-49ee-b94b-b8c69d5ffa01",
+            "name": "dho_policy",
+            "description": "",
+            "type": "role",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "roles": "[{\"id\":\"${BACKEND_CLIENT_ID}/dho_role\",\"required\":false}]"
+            }
+          },
+          {
+            "id": "c3cbf38f-06e3-469a-b0c0-740080178696",
+            "name": "me_policy",
+            "description": "",
+            "type": "role",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "roles": "[{\"id\":\"${BACKEND_CLIENT_ID}/me_expert_role\",\"required\":false}]"
+            }
+          },
+          {
             "id": "840bf064-b47c-4e81-8157-58382c8f6478",
             "name": "Users Management",
             "description": "",
@@ -1867,7 +1934,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "defaultResourceType": "",
-              "applyPolicies": "[\"user_policy\",\"admin-policy\"]",
+              "applyPolicies": "[\"user_policy\",\"me_policy\",\"dho_policy\",\"admin-policy\"]",
               "scopes": "[\"dashboard:read\"]"
             }
           },
@@ -1880,7 +1947,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"chart:read\"]",
-              "applyPolicies": "[\"user_policy\",\"admin-policy\"]"
+              "applyPolicies": "[\"user_policy\",\"me_policy\",\"dho_policy\",\"admin-policy\"]"
             }
           },
           {
@@ -1892,7 +1959,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"process:delete\",\"process:run\",\"process:add\",\"process:update\",\"process:read\"]",
-              "applyPolicies": "[\"user_policy\",\"admin-policy\"]"
+              "applyPolicies": "[\"user_policy\",\"dho_policy\",\"admin-policy\"]"
             }
           },
           {
@@ -1904,7 +1971,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"pipeline:read\",\"pipeline:update\",\"pipeline:add\",\"pipeline:delete\"]",
-              "applyPolicies": "[\"user_policy\",\"admin-policy\"]"
+              "applyPolicies": "[\"user_policy\",\"dho_policy\",\"admin-policy\"]"
             }
           },
           {
@@ -1916,7 +1983,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"data:read\",\"data:add\"]",
-              "applyPolicies": "[\"user_policy\",\"admin-policy\"]"
+              "applyPolicies": "[\"user_policy\",\"dho_policy\",\"admin-policy\"]"
             }
           },
           {
@@ -1928,7 +1995,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"user:update\",\"user:read\"]",
-              "applyPolicies": "[\"user_policy\"]"
+              "applyPolicies": "[\"user_policy\",\"me_policy\",\"dho_policy\",\"admin-policy\"]"
             }
           }
         ],
