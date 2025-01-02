@@ -103,7 +103,7 @@
         "composite": true,
         "composites": {
           "client": {
-            "superset": ["superset_admin"],
+            "superset": ["superset_gamma"],
             "airflow": ["airflow_admin"],
             "${BACKEND_CLIENT_ID}": ["dho_role", "admin"]
           }
