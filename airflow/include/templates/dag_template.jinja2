@@ -48,6 +48,18 @@ def download_pipeline_minio():
     client.fget_object("pipelines","pipelines-created/{{user_id}}/{{pipeline_display_name}}","/hop/config/projects/default/{{user_id}}/{{pipeline_display_name}}")
     task_logger.info('Download of pipeline from MinIO completed')
 
+    # Open the file in read-write mode to modify in place
+    try:
+        with open("/hop/config/projects/default/{{user_id}}/{{pipeline_display_name}}", 'r+') as file:
+            content = file.read()
+            updated_content = content.replace("${PROJECT_HOME}", "/files/")
+            file.seek(0)
+            file.write(updated_content)
+            file.truncate()
+    except Exception as e:
+        task_logger.error(f"Error while modifying the file: {e}")
+        raise AirflowException(f"Failed to replace string in pipeline file: {e}")
+
 # Ingest to druid
 class DruidOperator(BaseOperator):
   def __init__(self, **kwargs):
@@ -150,7 +162,7 @@ class SupersetOperator(BaseOperator):
     superset_user_id = client.get_current_user_id('{{owner}}')
 
     dataset_id, explore_url = client.create_or_update_dataset(
-            name='{{dag_display_name}}', 
+            name='{{dag_display_name}}',
             db_name=db_id,
             owner_id=superset_user_id
         )

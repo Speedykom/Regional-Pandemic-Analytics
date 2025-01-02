@@ -356,7 +356,7 @@ class PipelineUploadExternalFilesView(APIView):
                 for chunk in uploaded_file.chunks():
                     local_file.write(chunk)
 
-            object_name = f"pipelines-created/{user_id}/{name}{file_extension}"
+            object_name = f"external_files/{name}{file_extension}"
             client.put_object(
                 bucket_name="pipelines",
                 object_name=object_name,
