@@ -375,6 +375,8 @@ const frTranslation = {
     allRightsReserved: 'Tous droits réservés.',
   },
   download: 'Télécharger',
+  createDashboardBtn: 'Créer un nouveau tableau de bord',
+  createChartBtn: 'Créer un nouveau graphique',
 };
 
 export default frTranslation;

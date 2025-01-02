@@ -83,19 +83,15 @@ const enTranslation = {
   of: 'of',
   // Pipeline validation check
   MissingParquetTransform: 'One Parquet transform should be available',
-  InvalidFilenameBase: 'Parquet File Output: Filename base cannot be empty',
-  InvalidFilenameExtension:
-    'Parquet File Output: Extension should be set to parquet',
-  InvalidFilenameIncludeCopy:
-    'Parquet File Output: Include transform copy number should not be checked',
-  InvalidFilenameIncludeDate:
-    'Parquet File Output: Include date should not be checked',
+  InvalidFilenameBase:
+    'Filename base should be set to ftp://${minio_ftp}/parquets/${user_id}/${dag_id}',
+  InvalidFilenameExtension: 'Filename extension should be set to parquet',
+  InvalidFilenameIncludeCopy: 'Filename include copy should be set to N',
+  InvalidFilenameIncludeDate: 'Filename include date should be set to N',
   InvalidFilenameIncludeDatetime:
-    'Parquet File Output: Include date-time format should not be checked',
-  InvalidFilenameIncludeSplit:
-    'Parquet File Output:  Split into parts and include number should not be checked',
-  InvalidFilenameIncludeTime:
-    'Parquet File Output: Include time should not be checked',
+    'Filename include datetime should be set to N',
+  InvalidFilenameIncludeSplit: 'Filename include split should be set to N',
+  InvalidFilenameIncludeTime: 'Filename include time should be set to N',
   ValidPipeline: 'Pipeline is valid',
   pipelineInvalidName:
     'Invalid characters. Pipeline Name must consist exclusively of alphanumeric characters, dashes, dots and underscores.',
@@ -378,6 +374,8 @@ const enTranslation = {
     confirmationPlaceholder: 'Type...',
   },
   download: 'Download',
+  createDashboardBtn: 'Create New Dashboard',
+  createChartBtn: 'Create New Chart',
 };
 
 export default enTranslation;
