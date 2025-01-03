@@ -13,4 +13,5 @@ urlpatterns = [
     path("/delete/<str:name>", PipelineDeleteView.as_view()),
     path("/template/", TemplateView.as_view()),
     path("/template/<str:query>", TemplateView.as_view()),
+    path("tags/", PipelineDetailView.as_view()),
 ]

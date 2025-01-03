@@ -6,6 +6,7 @@ export interface PipelineData {
   parquet_path: string;
   path: string;
   user_id: string;
+  created: string;
 }
 
 export interface PipelineDeleteRequest {
