@@ -40,7 +40,7 @@ const frTranslation = {
   checkStatus: 'Statut du pipeline',
   ValidPipeline: 'Pipeline est valide',
 
-  save: 'Enregistrer',
+  validate_pipeline: 'Valider le pipeline',
   cancel: 'Annuler',
   continue: 'Continuer',
   appAccounts: "Comptes de l'application",
