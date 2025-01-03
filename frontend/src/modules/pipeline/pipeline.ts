@@ -62,16 +62,6 @@ export const pipelineApi = createApi({
       }),
       invalidatesTags: ['pipelines'], // Invalidates cache for 'pipelines'
     }),
-    cancelPipeline: builder.mutation<
-      { status: string; message?: string },
-      string
-    >({
-      query: (name) => ({
-        url: `/pipeline/cancel/${name}`,
-        method: 'PUT',
-      }),
-      invalidatesTags: ['pipelines'],
-    }),
     getAllTemplates: builder.query<TemplateList, string>({
       query: (query) => `/pipeline/template/${query}`,
     }),
@@ -111,7 +101,6 @@ export const {
   useUploadPipelineMutation,
   useUploadExternalFilesMutation,
   useUpdatePipelineMutation,
-  useCancelPipelineMutation,
   useGetAllTemplatesQuery,
   useUploadTemplateMutation,
   useDeletePipelineMutation,
