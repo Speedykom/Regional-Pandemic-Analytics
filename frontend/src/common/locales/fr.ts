@@ -141,6 +141,8 @@ const frTranslation = {
   chartTitle: 'Titre du Graphique',
   visualizationType: 'Type de Visualisation',
   processChainCharts: 'Les graphiques du chaîne de processus',
+  noChartsForDagId: 'Pas de graphiques créés pour cette chaine de processus',
+  noChartsAvailable: 'Pas de graphique(s) disponible(s)',
   dataset: 'Ensemble de Données',
   createdBy: 'Créé par',
   createdOn: 'Créé le',
