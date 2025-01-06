@@ -19,6 +19,7 @@ import { TfiReload } from 'react-icons/tfi';
 import { IoSearch } from 'react-icons/io5';
 import { useTranslation } from 'react-i18next';
 import { AiOutlinePieChart } from 'react-icons/ai';
+import { FaExclamationCircle } from 'react-icons/fa';
 import punycode from 'punycode';
 import { useGetChartsQuery } from '@/modules/superset/superset';
 import { DagDetails } from '../interface';
@@ -199,38 +200,53 @@ function OrchestrationTab({ dagId }: { dagId: string }) {
     return (
       <ol className="flex items-center w-[800px] mx-10">
         {/* @ts-ignore */}
-        {steps[0]?.tasks?.map((step, index) => (
-          <li key={index} className="flex w-full flex-col">
-            <div
-              className={`flex items-center w-full ${
-                index < steps[0]?.tasks?.length - 1
-                  ? "after:content-[''] after:w-full after:h-1 after:border-b after:border-[#00764B] after:border-4 after:inline-block"
-                  : ''
-              }`}
-            >
-              <span className="flex items-center justify-center w-8 h-8 bg-[#00764B] rounded-full shrink-0">
-                <svg
-                  className="w-3 h-3 text-white lg:w-4 lg:h-4"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 16 12"
-                >
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M1 5.917 5.724 10.5 15 1.5"
-                  />
-                </svg>
-              </span>
-            </div>
-            <div className="text-sm font-medium relative right-5 text-[#4B4B4B] mt-2">
-              {step?.task_id}
-            </div>
-          </li>
-        ))}
+        {steps[0]?.tasks?.map((step, index) => {
+          const isNextStepFailing =
+            steps[0]?.tasks[index + 1]?.state !== 'success';
+
+          return (
+            <li key={index} className="flex w-full flex-col">
+              <div
+                className={`flex items-center w-full ${
+                  index < steps[0]?.tasks?.length - 1
+                    ? `after:content-[''] after:w-full after:h-1 after:border-b ${
+                        isNextStepFailing
+                          ? 'after:border-red-600'
+                          : 'after:border-[#00764B]'
+                      } after:border-4 after:inline-block`
+                    : ''
+                }`}
+              >
+                {step.state === 'success' ? (
+                  <span className="flex items-center justify-center w-8 h-8 bg-[#00764B] rounded-full shrink-0">
+                    <svg
+                      className="w-3 h-3 text-white lg:w-4 lg:h-4"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 16 12"
+                    >
+                      <path
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M1 5.917 5.724 10.5 15 1.5"
+                      />
+                    </svg>
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center w-8 h-8 bg-red-600 rounded-full shrink-0">
+                    <FaExclamationCircle className="text-white w-4 h-4" />
+                  </span>
+                )}
+              </div>
+              <div className="text-sm font-medium relative right-5 text-[#4B4B4B] mt-2">
+                {step?.task_id}
+              </div>
+            </li>
+          );
+        })}
       </ol>
     );
   };
