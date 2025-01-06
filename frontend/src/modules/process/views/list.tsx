@@ -141,7 +141,7 @@ export default function ProcessChainList() {
       });
     }
   };
-  const [tab, setTab] = useState<number>(1);
+  const [tab, setTab] = useState<number>(0);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [processData, setProcessData] = useState<DagDetails | null>(null);
   const [toggleProcessStatus] = useToggleProcessStatusMutation();
@@ -311,7 +311,7 @@ export default function ProcessChainList() {
                               className="p-2 rounded-md border-[1.8px] border-black cursor-pointer"
                               onClick={() => {
                                 setIsOpen(true);
-                                setTab(3);
+                                setTab(2);
                               }}
                             />
                             <TbReportSearch
@@ -319,7 +319,7 @@ export default function ProcessChainList() {
                               color="black"
                               className="p-2 rounded-md border-[1.8px] border-black cursor-pointer"
                               onClick={() => {
-                                setTab(1);
+                                setTab(0);
                                 setIsOpen(true);
                                 setProcessData(e ?? null);
                               }}

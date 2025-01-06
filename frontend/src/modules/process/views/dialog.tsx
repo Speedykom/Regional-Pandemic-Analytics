@@ -79,35 +79,19 @@ export default function ProcessChainDialog({
                   <h1 className="text-4xl text-center my-4 text-[#4B4B4B] font-semibold">
                     {t('processChainDialog.processChainText')} {processName}
                   </h1>
-                  <TabGroup>
+                  <TabGroup index={tab} onIndexChange={setTab}>
                     <TabList variant="solid">
-                      <Tab
-                        value={1}
-                        onClick={() => {
-                          setTab(1);
-                        }}
-                        className={`p-1 ${tab === 1 ? '' : ''}`}
-                      >
+                      <Tab className="p-1">
                         <p className="text-black text-base px-4">
                           {t('processChainDialog.orchestration')}
                         </p>
                       </Tab>
-                      <Tab
-                        value={2}
-                        onClick={() => setTab(2)}
-                        className={`p-1 ${tab === 2 ? '' : ''}`}
-                      >
+                      <Tab className="p-1">
                         <p className="text-black text-base px-4">
                           {t('processChainDialog.details')}
                         </p>
                       </Tab>
-                      <Tab
-                        value={3}
-                        onClick={() => {
-                          setTab(3);
-                        }}
-                        className={`p-1 ${tab === 3 ? '' : ''}`}
-                      >
+                      <Tab className="p-1">
                         <p className="text-black text-base px-4">
                           {t('processChainDialog.relatedCharts')}
                         </p>
@@ -115,15 +99,15 @@ export default function ProcessChainDialog({
                     </TabList>
                   </TabGroup>
                   <>
-                    {tab == 1 ? (
+                    {tab === 0 ? (
                       <OrchestrationTab dagId={processData?.dag_id} />
-                    ) : tab == 2 ? (
+                    ) : tab === 1 ? (
                       <DetailsTab dagId={processData?.dag_id} />
-                    ) : tab == 3 ? (
+                    ) : (
                       <div className="py-4">
                         <ChartList filterByDagId={processData?.dag_id} />
                       </div>
-                    ) : null}
+                    )}
                   </>
                 </Dialog.Panel>
               </Transition.Child>
