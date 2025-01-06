@@ -250,20 +250,20 @@ export default function ProcessChainList() {
                         <TableCell className="my-auto">
                           {e?.status ? (
                             <>
-                              <span className="text-2xl text-green-700 relative top-[3.5px]">
-                                •
-                              </span>{' '}
-                              <span className="!font-medium">
-                                {t('processChainDialog.activeStatus')}
-                              </span>
-                            </>
-                          ) : (
-                            <>
                               <span className="text-2xl text-red-700 relative top-[3.5px]">
                                 •
                               </span>{' '}
                               <span className="!font-medium">
                                 {t('processChainDialog.inactiveStatus')}
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <span className="text-2xl text-green-700 relative top-[3.5px]">
+                                •
+                              </span>{' '}
+                              <span className="!font-medium">
+                                {t('processChainDialog.activeStatus')}
                               </span>
                             </>
                           )}
