@@ -269,13 +269,13 @@ export default function ProcessChainList() {
                           )}
                         </TableCell>
                         <TableCell>
-                          {e.dataset_success ? (
+                          {e.latestDagRunStatus ? (
                             <Button className="bg-transparent py-3 hover:bg-transparent text-green-700 border-green-700 hover:border-green-700">
                               {t('processChainDialog.success')}
                             </Button>
                           ) : (
                             <Button className="bg-transparent py-3 hover:bg-transparent text-red-700 border-red-700 hover:border-red-700">
-                              {t('processChainDialog.Failed')}
+                              {t('processChainDialog.failed')}
                             </Button>
                           )}
                         </TableCell>

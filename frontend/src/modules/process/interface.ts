@@ -7,6 +7,7 @@ export interface DagForm {
 }
 
 export interface DagDetails {
+  latestDagRunStatus: boolean;
   dataset_success: boolean;
   name: string;
   dag_id: string;
