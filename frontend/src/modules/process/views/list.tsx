@@ -236,7 +236,7 @@ export default function ProcessChainList() {
                 </TableHead>
                 <TableBody>
                   {data?.dags
-                    .filter((e) => (showDisabled ? !e.status : e.status)) // Filter based on status
+                    .filter((e) => (showDisabled ? e.status : !e.status)) // Filter based on status
                     .map((e, k) => (
                       <TableRow
                         key={k}
