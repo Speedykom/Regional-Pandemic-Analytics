@@ -429,6 +429,7 @@ const frTranslation = {
     viewChart: 'Voir le graphique du processus',
     viewReport: 'Voir le rapport du processus',
     enableProcess: 'Activer le processus',
+    loading: 'Chargement...',
     modelName: 'Nom',
     modelCreatedAt: 'Créé le',
     modelSegmentCount: 'Nombre de segments',

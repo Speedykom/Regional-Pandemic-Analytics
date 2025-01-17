@@ -159,8 +159,13 @@ export default function ProcessChainList() {
     runProcessById(dagId);
   };
 
+  const [isProcessing, setIsProcessing] = useState({});
   function handleToggleProcessStatus(dagId: string) {
+    setIsProcessing(dagId);
     toggleProcessStatus(dagId);
+    setTimeout(() => {
+      setIsProcessing({});
+    }, 3000);
   }
   return (
     <div>
@@ -350,18 +355,21 @@ export default function ProcessChainList() {
                                 />
                               </>
                             ) : (
-                              <>
-                                <span className="text-gray-600">
-                                  {t('processChainDialog.enableProcess')}
-                                </span>
-                                <Switch
-                                  checked={e?.status}
-                                  title={t('processChainDialog.enableProcess')}
-                                  onChange={() =>
-                                    handleToggleProcessStatus(e?.dag_id)
-                                  }
-                                />
-                              </>
+                              <Button
+                                title={t('processChainDialog.enableProcess')}
+                                onClick={() =>
+                                  handleToggleProcessStatus(e?.dag_id)
+                                }
+                                disabled={isProcessing === e?.dag_id}
+                              >
+                                {isProcessing === e?.dag_id ? (
+                                  <span>{t('processChainDialog.loading')}</span>
+                                ) : (
+                                  <span>
+                                    {t('processChainDialog.enableProcess')}
+                                  </span>
+                                )}
+                              </Button>
                             )}
                           </div>
                         </TableCell>
