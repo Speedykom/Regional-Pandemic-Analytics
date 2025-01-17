@@ -367,7 +367,7 @@ class ProcessView(ViewSet):
                                 dag["dag_display_name"],
                                 airflow_start_date_response.json()["start_date"],
                                 dag["schedule_interval"]["value"],
-                                dag["is_paused"],
+                                not dag["is_paused"],
                                 dag["description"],
                                 dag["last_parsed_time"],
                                 dag["next_dagrun"],
