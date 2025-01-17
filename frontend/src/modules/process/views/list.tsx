@@ -159,10 +159,7 @@ export default function ProcessChainList() {
     runProcessById(dagId);
   };
 
-  function handleToggleProcessStatus(
-    event: React.MouseEvent<SVGElement>,
-    dagId: string
-  ) {
+  function handleToggleProcessStatus(dagId: string) {
     toggleProcessStatus(dagId);
   }
   return (
@@ -326,8 +323,8 @@ export default function ProcessChainList() {
                                   className={
                                     'p-2 rounded-md border-[1.8px] border-red-700 cursor-pointer'
                                   }
-                                  onClick={(event) =>
-                                    handleToggleProcessStatus(event, e?.dag_id)
+                                  onClick={() =>
+                                    handleToggleProcessStatus(e?.dag_id)
                                   }
                                 />
                                 <AiOutlinePieChart
@@ -360,8 +357,8 @@ export default function ProcessChainList() {
                                 <Switch
                                   checked={e?.status}
                                   title={t('processChainDialog.enableProcess')}
-                                  onChange={(event) =>
-                                    handleToggleProcessStatus(event, e?.dag_id)
+                                  onChange={() =>
+                                    handleToggleProcessStatus(e?.dag_id)
                                   }
                                 />
                               </>
