@@ -17,7 +17,6 @@ import {
   useToggleProcessStatusMutation,
 } from '../process';
 import { DagDetails, DagDetailsResponse } from '../interface';
-import ProcessCard from '../components/ProcessCard';
 import { AddProcess } from './add';
 import { useGetAllPipelinesQuery } from '@/modules/pipeline/pipeline';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +25,7 @@ import { FaPlay } from 'react-icons/fa';
 import { AiOutlinePieChart, AiOutlineStop } from 'react-icons/ai';
 import { TbReportSearch } from 'react-icons/tb';
 import ProcessChainDialog from './dialog';
+import { Tooltip } from 'react-tooltip';
 
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();
@@ -50,6 +50,18 @@ export default function ProcessChainList() {
     setShowDisabled(!showDisabled);
   };
 
+  const filteredProcesses = showDisabled
+    ? data?.dags?.filter((dag) => dag.status === false)
+    : data?.dags?.filter((dag) => dag.status === true);
+
+  const processChainToShowLength = filteredProcesses?.length || 0;
+
+  const totalPages = Math.ceil(processChainToShowLength / defaultPageSize);
+  const startIndex = (currentPage - 1) * defaultPageSize;
+  const endIndex = currentPage * defaultPageSize;
+
+  const paginatedProcesses = filteredProcesses?.slice(startIndex, endIndex);
+
   const renderPagination = (processChainList: DagDetailsResponse) => {
     if (
       !defaultPageSize ||
@@ -58,23 +70,9 @@ export default function ProcessChainList() {
     )
       return null;
 
-    var processChainToShowLength = 0;
-    if (showDisabled) {
-      processChainToShowLength = processChainList?.dags?.filter(
-        (e) => e.status === false
-      ).length;
-    } else {
-      processChainToShowLength = processChainList.dags.filter(
-        (dag) => dag.status == true
-      ).length;
-    }
+    const startItem = Math.min(startIndex + 1, processChainToShowLength);
+    const endItem = Math.min(endIndex, processChainToShowLength);
 
-    const totalPages = Math.ceil(processChainToShowLength / defaultPageSize);
-    const startItem = (currentPage - 1) * defaultPageSize + 1;
-    const endItem = Math.min(
-      currentPage * defaultPageSize,
-      processChainToShowLength
-    );
     return (
       <>
         <div className="flex justify-end items-center mt-4">
@@ -106,45 +104,140 @@ export default function ProcessChainList() {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const renderProcessChainData = (processChainList: DagDetails[]) => {
-    var processChainToShow = null;
-    if (!showDisabled) {
-      processChainToShow = processChainList.filter(
-        (dag) => dag.status == false
-      );
-    } else {
-      processChainToShow = processChainList;
-    }
-    if (!defaultPageSize && !!pipelineList) {
-      return processChainToShow.map((process) => {
-        return (
-          <ProcessCard
-            key={process.dag_id}
-            process={process}
-            pipelineList={pipelineList}
-            showDisabled={showDisabled}
-            latest_dag_run_status={process.latest_dag_run_status || null}
-          />
-        );
-      });
-    }
+  const renderProcessChainData = () => {
+    if (!paginatedProcesses) return null;
 
-    const startIndex = (currentPage - 1) * defaultPageSize;
-    const endIndex = startIndex + defaultPageSize;
-    if (!!pipelineList) {
-      return processChainToShow?.slice(startIndex, endIndex).map((process) => {
-        return (
-          <ProcessCard
-            key={process.dag_id}
-            process={process}
-            pipelineList={pipelineList}
-            showDisabled={showDisabled}
-            latest_dag_run_status={process.latest_dag_run_status || null}
-          />
-        );
-      });
-    }
+    return paginatedProcesses
+      .filter((e) => (showDisabled ? !e.status : e.status)) // Filter based on status
+      .map((e, k) => (
+        <TableRow key={k} className="border-[1px] border-[#E4E7EC]">
+          <TableCell className="text-black">{e?.name}</TableCell>
+          <TableCell className="text-blue-700 underline font-normal">
+            {e?.data_source_name}
+          </TableCell>
+          <TableCell>{e?.schedule_interval}</TableCell>
+          <TableCell className="my-auto">
+            {e?.status ? (
+              <>
+                <span className="text-2xl text-green-700 relative top-[3.5px]">
+                  •
+                </span>{' '}
+                <span className="!font-medium">
+                  {t('processChainDialog.activeStatus')}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="text-2xl text-red-700 relative top-[3.5px]">
+                  •
+                </span>{' '}
+                <span className="!font-medium">
+                  {t('processChainDialog.inactiveStatus')}
+                </span>
+              </>
+            )}
+          </TableCell>
+          <TableCell>
+            {e.latest_dag_run_status === 'success' ? (
+              <span className="bg-transparent py-3 text-green-700 border-green-700 w-32">
+                {t('processChainDialog.success')}
+              </span>
+            ) : e.latest_dag_run_status === 'failed' ? (
+              <span className="bg-transparent py-3 text-red-700 border-red-700 w-32">
+                {t('processChainDialog.failed')}
+              </span>
+            ) : (
+              <span className="bg-transparent py-3 text-yellow-700 border-yellow-700 w-32">
+                {t('processChainDialog.running')}
+              </span>
+            )}
+          </TableCell>
+          <TableCell className="border-[#E4E7EC] border-l-[1px]">
+            <div
+              className={`flex flex-row gap-x-2 ${
+                e?.latest_dag_run_status !== 'success' &&
+                e?.latest_dag_run_status !== 'failed'
+                  ? 'pointer-events-none opacity-50'
+                  : ''
+              }`}
+            >
+              {e?.status === true ? (
+                <>
+                  <>
+                    <FaPlay
+                      size="40"
+                      color="#15803d"
+                      className="p-2 rounded-md border-[1.8px] border-green-700 cursor-pointer play"
+                      onClick={(
+                        event: React.MouseEvent<SVGElement, MouseEvent>
+                      ) => handleRunProcess(event, e?.dag_id)}
+                    />
+                    <Tooltip anchorSelect=".play" place="top">
+                      {t('processChainDialog.startProcess')}
+                    </Tooltip>
+                  </>
+                  <>
+                    <AiOutlineStop
+                      size="40"
+                      color="#b91c1c"
+                      className={
+                        'p-2 rounded-md border-[1.8px] border-red-700 cursor-pointer stop'
+                      }
+                      onClick={() => handleToggleProcessStatus(e?.dag_id)}
+                    />
+                    <Tooltip anchorSelect=".stop" place="top">
+                      {t('processChainDialog.disableProcess')}
+                    </Tooltip>
+                  </>
+                  <>
+                    <AiOutlinePieChart
+                      size="40"
+                      color="black"
+                      className="p-2 rounded-md border-[1.8px] border-black cursor-pointer chart"
+                      onClick={() => {
+                        setIsOpen(true);
+                        setTab(2);
+                      }}
+                    />
+                    <Tooltip anchorSelect=".chart" place="top">
+                      {t('processChainDialog.viewChart')}
+                    </Tooltip>
+                  </>
+                  <>
+                    <TbReportSearch
+                      size="40"
+                      color="black"
+                      className="p-2 rounded-md border-[1.8px] border-black cursor-pointer report"
+                      onClick={() => {
+                        setTab(0);
+                        setIsOpen(true);
+                        setProcessData(e ?? null);
+                      }}
+                    />
+                    <Tooltip anchorSelect=".report" place="top">
+                      {t('processChainDialog.viewReport')}
+                    </Tooltip>
+                  </>
+                </>
+              ) : (
+                <Button
+                  title={t('processChainDialog.enableProcess')}
+                  onClick={() => handleToggleProcessStatus(e?.dag_id)}
+                  disabled={isProcessing === e?.dag_id}
+                >
+                  {isProcessing === e?.dag_id ? (
+                    <span>{t('processChainDialog.loading')}</span>
+                  ) : (
+                    <span>{t('processChainDialog.enableProcess')}</span>
+                  )}
+                </Button>
+              )}
+            </div>
+          </TableCell>
+        </TableRow>
+      ));
   };
+
   const [tab, setTab] = useState<number>(0);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [processData, setProcessData] = useState<DagDetails | null>(null);
@@ -249,133 +342,7 @@ export default function ProcessChainList() {
                     {t('processChainDialog.actions')}
                   </TableHeaderCell>
                 </TableHead>
-                <TableBody>
-                  {data?.dags
-                    .filter((e) => (showDisabled ? !e.status : e.status)) // Filter based on status
-                    .map((e, k) => (
-                      <TableRow
-                        key={k}
-                        className="border-[1px] border-[#E4E7EC]"
-                      >
-                        <TableCell className="text-black">{e?.name}</TableCell>
-                        <TableCell className="text-blue-700 underline font-normal">
-                          {e?.data_source_name}
-                        </TableCell>
-                        <TableCell>{e?.schedule_interval}</TableCell>
-                        <TableCell className="my-auto">
-                          {e?.status ? (
-                            <>
-                              <span className="text-2xl text-green-700 relative top-[3.5px]">
-                                •
-                              </span>{' '}
-                              <span className="!font-medium">
-                                {t('processChainDialog.activeStatus')}
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              <span className="text-2xl text-red-700 relative top-[3.5px]">
-                                •
-                              </span>{' '}
-                              <span className="!font-medium">
-                                {t('processChainDialog.inactiveStatus')}
-                              </span>
-                            </>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {e.latest_dag_run_status === 'success' ? (
-                            <span className="bg-transparent py-3 text-green-700 border-green-700 w-32">
-                              {t('processChainDialog.success')}
-                            </span>
-                          ) : e.latest_dag_run_status === 'failed' ? (
-                            <span className="bg-transparent py-3 text-red-700 border-red-700 w-32">
-                              {t('processChainDialog.failed')}
-                            </span>
-                          ) : (
-                            <span className="bg-transparent py-3 text-yellow-700 border-yellow-700 w-32">
-                              {t('processChainDialog.running')}
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell className="border-[#E4E7EC] border-l-[1px]">
-                          <div
-                            className={`flex flex-row gap-x-2 ${
-                              e?.latest_dag_run_status !== 'success' &&
-                              e?.latest_dag_run_status !== 'failed'
-                                ? 'pointer-events-none opacity-50'
-                                : ''
-                            }`}
-                          >
-                            {e?.status === true ? (
-                              <>
-                                <FaPlay
-                                  size="40"
-                                  color="#15803d"
-                                  title={t('processChainDialog.startProcess')}
-                                  className="p-2 rounded-md border-[1.8px] border-green-700 cursor-pointer"
-                                  onClick={(
-                                    event: React.MouseEvent<
-                                      SVGElement,
-                                      MouseEvent
-                                    >
-                                  ) => handleRunProcess(event, e?.dag_id)}
-                                />
-                                <AiOutlineStop
-                                  size="40"
-                                  color="#b91c1c"
-                                  title={t('processChainDialog.disableProcess')}
-                                  className={
-                                    'p-2 rounded-md border-[1.8px] border-red-700 cursor-pointer'
-                                  }
-                                  onClick={() =>
-                                    handleToggleProcessStatus(e?.dag_id)
-                                  }
-                                />
-                                <AiOutlinePieChart
-                                  size="40"
-                                  color="black"
-                                  title={t('processChainDialog.viewChart')}
-                                  className="p-2 rounded-md border-[1.8px] border-black cursor-pointer"
-                                  onClick={() => {
-                                    setIsOpen(true);
-                                    setTab(2);
-                                  }}
-                                />
-                                <TbReportSearch
-                                  size="40"
-                                  color="black"
-                                  title={t('processChainDialog.viewReport')}
-                                  className="p-2 rounded-md border-[1.8px] border-black cursor-pointer"
-                                  onClick={() => {
-                                    setTab(0);
-                                    setIsOpen(true);
-                                    setProcessData(e ?? null);
-                                  }}
-                                />
-                              </>
-                            ) : (
-                              <Button
-                                title={t('processChainDialog.enableProcess')}
-                                onClick={() =>
-                                  handleToggleProcessStatus(e?.dag_id)
-                                }
-                                disabled={isProcessing === e?.dag_id}
-                              >
-                                {isProcessing === e?.dag_id ? (
-                                  <span>{t('processChainDialog.loading')}</span>
-                                ) : (
-                                  <span>
-                                    {t('processChainDialog.enableProcess')}
-                                  </span>
-                                )}
-                              </Button>
-                            )}
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
+                <TableBody>{renderProcessChainData()}</TableBody>
               </Table>
               <div className="py-1">{renderPagination(data)}</div>
             </Card>
