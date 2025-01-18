@@ -71,9 +71,9 @@
 
     <login-config>
         <auth-method>KEYCLOAK</auth-method>
-        <realm-name>this is ignored currently</realm-name>
+        <realm-name>regional-pandemic-analytics</realm-name>
     </login-config>
-    
+
     <security-role>
         <role-name>admin</role-name>
     </security-role>

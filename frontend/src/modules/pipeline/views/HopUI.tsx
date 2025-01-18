@@ -18,10 +18,14 @@ export const HopUI = ({ name }: HopUIProps) => {
 
   const savePipeline = async () => {
     try {
-      const response = await updatePipeline(name);
+      const response = await updatePipeline({
+        name: data?.name ?? 'Pipeline Name',
+        created: data?.created ?? 'Creation Time',
+        description: data?.description ?? 'Description',
+      });
       if ('data' in response && response.data.status === 'success') {
         await navigateToPipelines();
-        toast.success('Pipeline updated successfully', {
+        toast.success(t('pipelineUpdateSuccess'), {
           position: 'top-right',
         });
         return;
@@ -33,7 +37,20 @@ export const HopUI = ({ name }: HopUIProps) => {
       /* eslint-disable no-console */
       console.error('Failed to update pipeline', e);
       await navigateToPipelines();
-      toast.error('Unable to update pipeline', { position: 'top-right' });
+      toast.error(t('pipelineUpdateError'), { position: 'top-right' });
+    }
+  };
+
+  const cancelPipelineEditing = async () => {
+    try {
+      await navigateToPipelines();
+      toast.success(t('pipelineCancelSuccess'), {
+        position: 'top-right',
+      });
+      return;
+    } catch (e) {
+      await navigateToPipelines();
+      toast.error(t('pipelineCancelError'), { position: 'top-right' });
     }
   };
 
@@ -52,7 +69,7 @@ export const HopUI = ({ name }: HopUIProps) => {
         <div>
           <Button
             icon={XMarkIcon}
-            onClick={navigateToPipelines}
+            onClick={cancelPipelineEditing}
             className="bg-gray-400 hover:bg-gray-400-hover border-0 mx-1"
           >
             {t('cancel')}
@@ -62,7 +79,7 @@ export const HopUI = ({ name }: HopUIProps) => {
             onClick={savePipeline}
             className="bg-prim hover:bg-prim-hover border-0 mx-1"
           >
-            {t('save')}
+            {t('validate_pipeline')}
           </Button>
         </div>
       </nav>

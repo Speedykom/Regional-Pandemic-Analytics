@@ -121,7 +121,6 @@ volumes:
   broker_var: {}
   coordinator_var: {}
   router_var: {}
-
 services:
   # ========
   # Minio
@@ -296,7 +295,7 @@ services:
       - SUPERSET_ALLOWED_DOMAINS=${BACKEND_SUPERSET_ALLOWED_DOMAINS}
       - PASSWORD_HEX_KEY=${BACKEND_PASSWORD_HEX_KEY}
       - PASSWORD_IVHEX=${BACKEND_PASSWORD_IVHEX}
-
+      - MINIO_HOST=${MINIO_FTP_SERVER}
       - DRUID_URL=${BACKEND_DRUID_URL}
       - DRUID_ADMIN_PASSWORD=${DRUID_ADMIN_PASSWORD}
       - BACKEND_URL=${NGINX_BACKEND_DOMAIN_NAME}
@@ -428,8 +427,9 @@ services:
     user: "0:1000"
     volumes:
       - ./hop/pipelines:/files
+      - ./hop/pipelines/external_files:/files/external_files
       - ./storage:/home
-      - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/igad/data-orch.list
+      - ./hop/data-orch.list:/usr/local/tomcat/webapps/ROOT/audit/default/data-orch.list
       - ./hop/keycloak/index.jsp:/usr/local/tomcat/webapps/ROOT/index.jsp
       - ./hop/keycloak/server.xml:/usr/local/tomcat/conf/server.xml
     environment:
@@ -441,6 +441,8 @@ services:
       - HOP_KEYCLOAK_SSL_REQUIRED=${HOP_KEYCLOAK_SSL_REQUIRED}
       - HOP_KEYCLOAK_CONFIDENTIAL_PORT=${HOP_KEYCLOAK_CONFIDENTIAL_PORT}
       - HOP_KEYCLOAK_DISABLE_SSL_VERIFICATION=${HOP_KEYCLOAK_DISABLE_SSL_VERIFICATION}
+      - HOP_MINIO_ACCES=${BACKEND_MINIO_ACCESS_KEY}
+      - HOP_MINIO_SECRET=${BACKEND_MINIO_SECRET_KEY}
 
   hop-server:
     image: apache/hop:2.7.0
@@ -450,6 +452,9 @@ services:
       HOP_SERVER_PASS: ${HOP_SERVER_PASS}
       HOP_SERVER_PORT: 8080
       HOP_SERVER_HOSTNAME: 0.0.0.0
+      HOP_MINIO_ACCES: minio
+      HOP_MINIO_SECRET: miniorepan
+
     volumes:
       - ./hop/pipelines:/files
     # =======
@@ -501,14 +506,14 @@ services:
   # =======
 
   # airflow-db-migrate:
-  #   <<: *airflow
-  #   depends_on:
-  #     airflow-pg:
-  #       condition: service_healthy
-  #   container_name: airflow-db-migrate
-  #   restart: always
-  #   entrypoint: /bin/bash
-  #   command: -c "sleep 60 && airflow db upgrade"
+  #  <<: *airflow
+  #  depends_on:
+  #    airflow-pg:
+  #      condition: service_healthy
+  #  container_name: airflow-db-migrate
+  #  restart: always
+  #  entrypoint: /bin/bash
+  #  command: -c "sleep 60 && airflow db upgrade"
 
   # =======
   # keycloak

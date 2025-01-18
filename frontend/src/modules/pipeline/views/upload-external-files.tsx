@@ -1,36 +1,32 @@
 import Drawer from '@/common/components/common/Drawer';
 import { Button, TextInput } from '@tremor/react';
 import { useDropzone } from 'react-dropzone';
-import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
-import { useUploadPipelineMutation } from '../pipeline';
+import { useUploadExternalFilesMutation } from '../pipeline';
 import { useTranslation } from 'react-i18next';
 
-interface UploadPipelineProps {
+interface UploadExternalFilesProps {
   state: boolean;
   onClose: () => void;
   template: any;
   refetch: () => void;
 }
 
-export const UploadPipeline = ({
+export const UploadExternalFiles = ({
   state,
   onClose,
   refetch,
-}: UploadPipelineProps) => {
+}: UploadExternalFilesProps) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm({ mode: 'onChange' });
-  const [uploadPipeline, { isLoading }] = useUploadPipelineMutation();
+  const [uploadExternalFiles, { isLoading }] = useUploadExternalFilesMutation();
   const { t } = useTranslation();
-  const [acceptedFiles, setAcceptedFiles] = useState<File[]>([]);
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop: (files) => setAcceptedFiles(files),
-  });
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({});
   const permittedCharactersRegex = /^[^\s!@#$%^&*()+=[\]{}\\|;:'",<>/?]*$/;
 
   const onFinish = (value: any) => {
@@ -40,7 +36,7 @@ export const UploadPipeline = ({
     formData.append('name', value.name);
     formData.append('description', value.description);
     formData.append('uploadedFile', file, file.name);
-    uploadPipeline(formData).then((res: any) => {
+    uploadExternalFiles(formData).then((res: any) => {
       if (res.error) {
         const { data } = res.error;
         const { message } = data;
@@ -48,7 +44,7 @@ export const UploadPipeline = ({
         return;
       }
 
-      toast.success(t('pipelineCreatedSuccessfully'), {
+      toast.success(t('fileUploadedSuccessfully'), {
         position: 'top-right',
       });
       cancel();
@@ -58,7 +54,6 @@ export const UploadPipeline = ({
 
   const cancel = () => {
     reset();
-    setAcceptedFiles([]);
     onClose();
   };
 
@@ -86,7 +81,7 @@ export const UploadPipeline = ({
 
   return (
     <Drawer
-      title={t('uploadPipeline')}
+      title={t('uploadExternalFiles')}
       isOpen={state}
       onClose={cancel}
       placement="right"
@@ -100,24 +95,24 @@ export const UploadPipeline = ({
               className="block text-blueGray-600 text-xs font-bold mb-2"
               htmlFor="descriptiond"
             >
-              {t('pipelineName')}
+              {t('fileName')}
             </label>
             <TextInput
               {...register('name', {
                 required: {
                   value: true,
-                  message: t('pipelineNameRequired'),
+                  message: t('fileNameRequired'),
                 },
                 pattern: {
                   value: permittedCharactersRegex,
-                  message: t('pipelineInvalidName'),
+                  message: t('fileInvalidName'),
                 },
               })}
               error={!!errors.name}
               errorMessage={errors?.name?.message?.toString()}
               type="text"
               className="w-full h-12"
-              placeholder={t('enterPipelineName')}
+              placeholder={t('enterFileName')}
             />
           </div>
           <div className="relative w-full mb-3">
@@ -164,7 +159,7 @@ export const UploadPipeline = ({
                         })}
                       >
                         <input {...getInputProps()} />
-                        <p>{t('fileUploadDesc')}</p>
+                        <p>{t('externalFileUploadDesc')}</p>
                       </div>
                       {acceptedFiles.length === 1 && (
                         <div>

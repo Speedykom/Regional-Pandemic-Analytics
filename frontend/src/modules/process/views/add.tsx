@@ -102,7 +102,7 @@ export const AddProcess = ({
       <div className="w-96 px-3">
         <div className="flex flex-col space-y-3">
           <div>
-            <label>{t('addProcess.title')}</label>
+            <label>{t('addProcess.name')} *</label>
             <TextInput
               {...register('processName', {
                 required: true,
@@ -119,7 +119,7 @@ export const AddProcess = ({
             />
           </div>
           <div>
-            <label>{t('addProcess.pipelineTemplateLabel')}</label>
+            <label>{t('addProcess.pipelineTemplateLabel')} *</label>
             <Controller
               name="pipelineTemplate"
               control={control}
@@ -150,7 +150,7 @@ export const AddProcess = ({
 
           <div>
             <label>
-              <div>{t('addProcess.startDateLabel')}</div>
+              <div>{t('addProcess.startDateLabel')} *</div>
               <div className="p-1 pb-2">
                 <p className="text-sm italic">{t('addProcess.note')}</p>
               </div>
@@ -177,7 +177,7 @@ export const AddProcess = ({
           </div>
 
           <div>
-            <label>{t('addProcess.scheduleIntervalLabel')}</label>
+            <label>{t('addProcess.scheduleIntervalLabel')} *</label>
             <Controller
               name="scheduleInterval"
               control={control}
@@ -189,9 +189,12 @@ export const AddProcess = ({
                     placeholder={t('addProcess.scheduleIntervalPlaceholder')}
                   >
                     {schedule_intervals.map((interval) => {
+                      const translatedInterval = t(
+                        `schedule_intervals.${interval.replace('@', '')}`
+                      );
                       return (
                         <SearchSelectItem key={interval} value={interval}>
-                          {interval}
+                          {translatedInterval}
                         </SearchSelectItem>
                       );
                     })}
@@ -202,7 +205,7 @@ export const AddProcess = ({
           </div>
 
           <div>
-            <label>{t('addProcess.descriptionLabel')}</label>
+            <label>{t('addProcess.descriptionLabel')} *</label>
             <TextInput
               {...register('description', { required: true })}
               placeholder={t('addProcess.descriptionPlaceholder')}

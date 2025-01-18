@@ -43,17 +43,25 @@ export const pipelineApi = createApi({
       }),
       invalidatesTags: ['pipelines'],
     }),
-    updatePipeline: builder.mutation<
-      { status: string; message?: string },
-      string
-    >({
-      query: (name) => ({
-        url: `/pipeline/${name}`,
-        method: 'PUT',
+    uploadExternalFiles: builder.mutation<any, FormData>({
+      query: (formData) => ({
+        url: '/pipeline/upload-external-files/',
+        method: 'POST',
+        body: formData,
       }),
       invalidatesTags: ['pipelines'],
     }),
-
+    updatePipeline: builder.mutation<
+      { status: string; message?: string }, // Response type
+      { name: string; created: string; description: string } // Argument type (parameters)
+    >({
+      query: ({ name, created, description }) => ({
+        url: `/pipeline/tags`, // API endpoint
+        method: 'PUT', // HTTP method
+        body: { name, created, description }, // Body parameters
+      }),
+      invalidatesTags: ['pipelines'], // Invalidates cache for 'pipelines'
+    }),
     getAllTemplates: builder.query<TemplateList, string>({
       query: (query) => `/pipeline/template/${query}`,
     }),
@@ -91,6 +99,7 @@ export const {
   useDownloadPipelineQuery,
   useCreatePipelineMutation,
   useUploadPipelineMutation,
+  useUploadExternalFilesMutation,
   useUpdatePipelineMutation,
   useGetAllTemplatesQuery,
   useUploadTemplateMutation,

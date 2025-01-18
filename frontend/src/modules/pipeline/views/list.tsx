@@ -27,12 +27,16 @@ import { UploadPipeline } from './upload';
 import { TemplateModal } from './template-modal';
 import {
   ArrowDownTrayIcon,
+  ArrowUpTrayIcon,
   TrashIcon,
   XCircleIcon,
   CheckCircleIcon,
 } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 import { skipToken } from '@reduxjs/toolkit/query/react';
+import { UploadExternalFiles } from './upload-external-files';
+import { Tooltip } from 'react-tooltip';
+import 'react-tooltip/dist/react-tooltip.css';
 
 export const MyPipelines = () => {
   const router = useRouter();
@@ -41,6 +45,8 @@ export const MyPipelines = () => {
   const [template, setTemplate] = useState<any>();
   const [drawer, setDrawer] = useState<boolean>(false);
   const [uploadDrawer, setUploadDrawer] = useState<boolean>(false);
+  const [externalFileUploadDrawer, setExternalFilesUploadDrawer] =
+    useState<boolean>(false);
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const defaultPageSize = 5;
@@ -61,6 +67,9 @@ export const MyPipelines = () => {
 
   const uploadClose = () => {
     setUploadDrawer(false);
+  };
+  const uploadExternalFilesClose = () => {
+    setExternalFilesUploadDrawer(false);
   };
   const { showModal, hideModal } = useModal();
 
@@ -125,6 +134,10 @@ export const MyPipelines = () => {
   const showUploadModal = () => {
     setUploadDrawer(true);
   };
+
+  const showExternalFilesUploadModal = () => {
+    setExternalFilesUploadDrawer(true);
+  };
   const renderPagination = () => {
     if (!defaultPageSize || !data?.data || data?.data?.length == 0) return null;
 
@@ -170,21 +183,31 @@ export const MyPipelines = () => {
       let statusIcon;
       if (item.check_status === 'success') {
         statusIcon = (
-          <Icon
-            size="lg"
-            icon={CheckCircleIcon}
-            color="green"
-            tooltip={t(item.check_text)}
-          />
+          <>
+            <Icon
+              size="lg"
+              icon={CheckCircleIcon}
+              color="green"
+              className="green-icon"
+            />
+            <Tooltip anchorSelect=".green-icon" place="top">
+              {t(item.check_text)}
+            </Tooltip>
+          </>
         );
       } else if (item.check_status === 'failed') {
         statusIcon = (
-          <Icon
-            size="lg"
-            icon={XCircleIcon}
-            color="red"
-            tooltip={t(item.check_text)}
-          />
+          <>
+            <Icon
+              size="lg"
+              icon={XCircleIcon}
+              color="red"
+              className="red-icon"
+            />
+            <Tooltip anchorSelect=".red-icon" place="top">
+              {t(item.check_text)}
+            </Tooltip>
+          </>
         );
       } else {
         statusIcon = (
@@ -227,6 +250,14 @@ export const MyPipelines = () => {
                 size="lg"
                 icon={ArrowDownTrayIcon}
                 tooltip={t('download')}
+                className="cursor-pointer"
+                variant="shadow"
+              />
+              <Icon
+                onClick={showExternalFilesUploadModal}
+                size="lg"
+                icon={ArrowUpTrayIcon}
+                tooltip={t('uploadExternalFiles')}
                 className="cursor-pointer"
                 variant="shadow"
               />
@@ -325,6 +356,12 @@ export const MyPipelines = () => {
         state={uploadDrawer}
         template={template}
         onClose={uploadClose}
+        refetch={refetch}
+      />
+      <UploadExternalFiles
+        state={externalFileUploadDrawer}
+        template={template}
+        onClose={uploadExternalFilesClose}
         refetch={refetch}
       />
     </div>

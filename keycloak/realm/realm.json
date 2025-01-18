@@ -81,15 +81,31 @@
         "attributes": {}
       },
       {
-        "id": "48ffed22-78a6-4c9b-82e8-e80e5de635ec",
-        "name": "Digital_Health_Officer",
+        "id": "42540210-bc30-4412-b6ff-5dec3a6f313c",
+        "name": "M&E_Expert",
         "description": "",
         "composite": true,
         "composites": {
           "client": {
             "superset": ["superset_admin"],
             "airflow": ["airflow_admin"],
-            "${BACKEND_CLIENT_ID}": ["user"]
+            "${BACKEND_CLIENT_ID}": ["me_expert_role"]
+          }
+        },
+        "clientRole": false,
+        "containerId": "c89b3c58-aefb-4429-972b-feccb6a77750",
+        "attributes": {}
+      },
+      {
+        "id": "48ffed22-78a6-4c9b-82e8-e80e5de635ec",
+        "name": "Digital_Health_Officer",
+        "description": "",
+        "composite": true,
+        "composites": {
+          "client": {
+            "superset": ["superset_gamma"],
+            "airflow": ["airflow_admin"],
+            "${BACKEND_CLIENT_ID}": ["dho_role", "admin"]
           }
         },
         "clientRole": false,
@@ -100,7 +116,15 @@
         "id": "3f14f73e-3e22-47b5-ab96-56ad5c48ba2b",
         "name": "Administrator",
         "description": "",
-        "composite": false,
+        "composite": true,
+        "composites": {
+          "client": {
+            "realm-management": ["realm-admin"],
+            "superset": ["superset_admin"],
+            "airflow": ["airflow_admin"],
+            "${BACKEND_CLIENT_ID}": ["admin"]
+          }
+        },
         "clientRole": false,
         "containerId": "c89b3c58-aefb-4429-972b-feccb6a77750",
         "attributes": {}
@@ -318,6 +342,7 @@
         {
           "id": "b209766b-e17c-4d58-bc1b-0e09be89e1f9",
           "name": "uma_protection",
+          "description": "Provides permissions related to the User-Managed Access (UMA) protocol, allowing users to control access to their resources.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -326,6 +351,7 @@
         {
           "id": "4ec7b1ed-00ee-4807-9afa-6c8adbfd9716",
           "name": "superset_alpha",
+          "description": "Provides permissions related to the User-Managed Access (UMA) protocol, allowing users to control access to their resources.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -334,6 +360,7 @@
         {
           "id": "46bc5ee3-b1be-4ce4-b804-e53572f33129",
           "name": "Gamma",
+          "description": "A predefined role for users with viewer-level access. Users can view dashboards and slices but cannot create or modify them.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -342,6 +369,7 @@
         {
           "id": "9886d5b5-cd5d-4b1d-9dad-c5a011875de8",
           "name": "superset_granter",
+          "description": "Allows users to manage access and permissions, granting roles or permissions to others in the Superset environment.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -350,6 +378,7 @@
         {
           "id": "c77d07b2-9177-49a6-8d49-9d697106eac9",
           "name": "superset_sql_lab",
+          "description": "Grants access to the SQL Lab feature in Superset, allowing users to write and execute SQL queries on connected databases.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -358,6 +387,7 @@
         {
           "id": "ec9abdc5-b954-4b46-84bb-a2642699caa5",
           "name": "superset_gamma",
+          "description": "Similar to the 'Gamma' role but tailored for specific configurations. Users with this role have read-only access to dashboards and slices.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -366,6 +396,7 @@
         {
           "id": "265837f2-0d33-4b99-ac25-d3368e7e3c0f",
           "name": "superset_public",
+          "description": "Provides minimal access intended for public or anonymous users, typically for accessing publicly available dashboards or views.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -374,6 +405,7 @@
         {
           "id": "fcc23677-9672-4d0a-9dad-db1ce6954555",
           "name": "superset_admin",
+          "description": "Grants full administrative permissions in Superset, including the ability to create, edit, and delete dashboards, manage users, and configure system settings.",
           "composite": false,
           "clientRole": true,
           "containerId": "902e2a8a-8c08-44df-aa55-77f7f0b67629",
@@ -472,6 +504,22 @@
       "admin-cli": [],
       "account-console": [],
       "${BACKEND_CLIENT_ID}": [
+        {
+          "id": "f4f3058f-b50d-4d41-b4bb-f2045fbb25c4",
+          "name": "me_expert_role",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "124138ae-d2f7-4d57-803c-4d239ba05e12",
+          "attributes": {}
+        },
+        {
+          "id": "7a8eeba1-7f0d-47bc-9632-636d79265701",
+          "name": "dho_role",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "124138ae-d2f7-4d57-803c-4d239ba05e12",
+          "attributes": {}
+        },
         {
           "id": "8708cdc4-fb05-4bb2-ae34-91717dec6133",
           "name": "admin",
@@ -1846,6 +1894,28 @@
             }
           },
           {
+            "id": "ffcd3d7e-f870-49ee-b94b-b8c69d5ffa01",
+            "name": "dho_policy",
+            "description": "",
+            "type": "role",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "roles": "[{\"id\":\"${BACKEND_CLIENT_ID}/dho_role\",\"required\":false}]"
+            }
+          },
+          {
+            "id": "c3cbf38f-06e3-469a-b0c0-740080178696",
+            "name": "me_policy",
+            "description": "",
+            "type": "role",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "roles": "[{\"id\":\"${BACKEND_CLIENT_ID}/me_expert_role\",\"required\":false}]"
+            }
+          },
+          {
             "id": "840bf064-b47c-4e81-8157-58382c8f6478",
             "name": "Users Management",
             "description": "",
@@ -1867,7 +1937,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "defaultResourceType": "",
-              "applyPolicies": "[\"user_policy\",\"admin-policy\"]",
+              "applyPolicies": "[\"user_policy\",\"me_policy\",\"dho_policy\",\"admin-policy\"]",
               "scopes": "[\"dashboard:read\"]"
             }
           },
@@ -1880,7 +1950,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"chart:read\"]",
-              "applyPolicies": "[\"user_policy\",\"admin-policy\"]"
+              "applyPolicies": "[\"user_policy\",\"me_policy\",\"dho_policy\",\"admin-policy\"]"
             }
           },
           {
@@ -1892,7 +1962,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"process:delete\",\"process:run\",\"process:add\",\"process:update\",\"process:read\"]",
-              "applyPolicies": "[\"user_policy\",\"admin-policy\"]"
+              "applyPolicies": "[\"user_policy\",\"dho_policy\",\"admin-policy\"]"
             }
           },
           {
@@ -1904,7 +1974,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"pipeline:read\",\"pipeline:update\",\"pipeline:add\",\"pipeline:delete\"]",
-              "applyPolicies": "[\"user_policy\",\"admin-policy\"]"
+              "applyPolicies": "[\"user_policy\",\"dho_policy\",\"admin-policy\"]"
             }
           },
           {
@@ -1916,7 +1986,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"data:read\",\"data:add\"]",
-              "applyPolicies": "[\"user_policy\",\"admin-policy\"]"
+              "applyPolicies": "[\"user_policy\",\"dho_policy\",\"admin-policy\"]"
             }
           },
           {
@@ -1928,7 +1998,7 @@
             "decisionStrategy": "UNANIMOUS",
             "config": {
               "scopes": "[\"user:update\",\"user:read\"]",
-              "applyPolicies": "[\"user_policy\"]"
+              "applyPolicies": "[\"user_policy\",\"me_policy\",\"dho_policy\",\"admin-policy\"]"
             }
           }
         ],

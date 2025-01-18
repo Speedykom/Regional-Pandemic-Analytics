@@ -1,12 +1,15 @@
 import xml.etree.ElementTree as ET
+from utils.minio import client
 
 from .rules.parquet_file_output_rule import ParquetFileOutputRule
 # A XML Schema validation check should be implemented in the future to ensure that the XML data is valid
-def check_pipeline_validity(name):
+def check_pipeline_validity(name, user_id=None):
     valid_pipeline = False
     check_text = "ValidationFailed"
+    # Download the pipeline in /tmp
+    f = client.fget_object("pipelines", f"/pipelines-created/{user_id}/{name}.hpl", file_path=f"/tmp/{name}.hpl")
     # Read the .hpl file
-    with open(f"/hop/pipelines/{name}.hpl", "r") as file:
+    with open(f"/tmp/{name}.hpl", "r") as file:
         xml_data = file.read()
 
     # Parse the XML data
