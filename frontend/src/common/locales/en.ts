@@ -417,6 +417,7 @@ const enTranslation = {
     viewChart: 'View the process chart',
     viewReport: 'View the process report',
     enableProcess: 'Enable the process',
+    progressEnablingProcess: 'Process activation is in progress...',
     loading: 'Loading...',
     modelName: 'Name',
     modelCreatedAt: 'Created at',

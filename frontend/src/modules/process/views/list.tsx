@@ -26,6 +26,7 @@ import { AiOutlinePieChart, AiOutlineStop } from 'react-icons/ai';
 import { TbReportSearch } from 'react-icons/tb';
 import ProcessChainDialog from './dialog';
 import { Tooltip } from 'react-tooltip';
+import { toast } from 'react-toastify';
 
 export default function ProcessChainList() {
   const { hasPermission } = usePermission();
@@ -222,14 +223,23 @@ export default function ProcessChainList() {
               ) : (
                 <Button
                   title={t('processChainDialog.enableProcess')}
-                  onClick={() => handleToggleProcessStatus(e?.dag_id)}
-                  disabled={isProcessing === e?.dag_id}
+                  onClick={() => {
+                    handleToggleProcessStatus(e?.dag_id);
+                    toast.info(
+                      t('processChainDialog.progressEnablingProcess'),
+                      {
+                        position: 'top-right',
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                      }
+                    );
+                  }}
                 >
-                  {isProcessing === e?.dag_id ? (
-                    <span>{t('processChainDialog.loading')}</span>
-                  ) : (
-                    <span>{t('processChainDialog.enableProcess')}</span>
-                  )}
+                  <span>{t('processChainDialog.enableProcess')}</span>
                 </Button>
               )}
             </div>
@@ -252,13 +262,8 @@ export default function ProcessChainList() {
     runProcessById(dagId);
   };
 
-  const [isProcessing, setIsProcessing] = useState({});
   function handleToggleProcessStatus(dagId: string) {
-    setIsProcessing(dagId);
     toggleProcessStatus(dagId);
-    setTimeout(() => {
-      setIsProcessing({});
-    }, 3000);
   }
   return (
     <div>
