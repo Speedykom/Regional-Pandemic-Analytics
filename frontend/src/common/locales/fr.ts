@@ -256,12 +256,12 @@ const frTranslation = {
     latestDagRunStatus: "Etat d'exécution",
   },
   schedule_intervals: {
-    once: '@une fois',
-    hourly: '@une fois par heure',
-    daily: '@quotidien',
-    weekly: '@hebdomadaire',
-    monthly: '@mensuel',
-    yearly: '@annuel',
+    once: 'une fois',
+    hourly: 'une fois par heure',
+    daily: 'quotidien',
+    weekly: 'hebdomadaire',
+    monthly: 'mensuel',
+    yearly: 'annuel',
   },
   home: {
     favorite_dashboard: 'Tableaux de bord favoris',

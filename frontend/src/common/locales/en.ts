@@ -249,12 +249,12 @@ const enTranslation = {
     latestDagRunStatus: 'Execution State',
   },
   schedule_intervals: {
-    once: '@once',
-    hourly: '@hourly',
-    daily: '@daily',
-    weekly: '@weekly',
-    monthly: '@monthly',
-    yearly: '@yearly',
+    once: 'once',
+    hourly: 'hourly',
+    daily: 'daily',
+    weekly: 'weekly',
+    monthly: 'monthly',
+    yearly: 'yearly',
   },
   home: {
     favorite_dashboard: 'Favorite Dashboards',
