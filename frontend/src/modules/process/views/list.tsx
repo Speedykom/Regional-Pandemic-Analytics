@@ -37,25 +37,29 @@ export default function ProcessChainList() {
   const { data, isLoading, isSuccess, refetch } =
     useGetProcessQuery(searchInput);
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPageEnabled, setCurrentPageEnabled] = useState(1);
+  const [currentPageDisabled, setCurrentPageDisabled] = useState(1);
   const defaultPageSize = 5;
-
   const [showDisabled, setShowDisabled] = useState(false);
   const toggleShowDisabled = () => {
     setShowDisabled(!showDisabled);
+    setCurrentPageEnabled(1);
+    setCurrentPageDisabled(1);
   };
-
-  const filteredProcesses = showDisabled
-    ? data?.dags?.filter((dag) => dag.status === false)
-    : data?.dags?.filter((dag) => dag.status === true);
-
-  const processChainToShowLength = filteredProcesses?.length || 0;
-
+  const enabledProcesses = data?.dags?.filter((dag) => dag.status === true);
+  const disabledProcesses = data?.dags?.filter((dag) => dag.status === false);
+  const processChainToShow = showDisabled
+    ? disabledProcesses
+    : enabledProcesses;
+  const processChainToShowLength = processChainToShow?.length || 0;
   const totalPages = Math.ceil(processChainToShowLength / defaultPageSize);
-  const startIndex = (currentPage - 1) * defaultPageSize;
-  const endIndex = currentPage * defaultPageSize;
-
-  const paginatedProcesses = filteredProcesses?.slice(startIndex, endIndex);
+  const currentPage = showDisabled ? currentPageDisabled : currentPageEnabled;
+  const startIndex =
+    ((showDisabled ? currentPageDisabled : currentPageEnabled) - 1) *
+    defaultPageSize;
+  const endIndex =
+    (showDisabled ? currentPageDisabled : currentPageEnabled) * defaultPageSize;
+  const paginatedProcesses = processChainToShow?.slice(startIndex, endIndex);
 
   const renderPagination = (processChainList: DagDetailsResponse) => {
     if (
@@ -79,16 +83,30 @@ export default function ProcessChainList() {
             <Button
               className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer mr-2"
               size="xs"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage(currentPage - 1)}
+              disabled={processChainToShowLength === 0 || currentPage === 1}
+              onClick={() => {
+                if (showDisabled) {
+                  setCurrentPageDisabled(currentPageDisabled - 1);
+                } else {
+                  setCurrentPageEnabled(currentPageEnabled - 1);
+                }
+              }}
             >
               &larr; {t('prev')}
             </Button>
             <Button
               className="bg-prim hover:bg-green-900 border-0 text-white font-bold py-2 px-4 focus:outline-none focus:shadow-outline cursor-pointer"
               size="xs"
-              disabled={currentPage === totalPages}
-              onClick={() => setCurrentPage(currentPage + 1)}
+              disabled={
+                processChainToShowLength === 0 || currentPage === totalPages
+              }
+              onClick={() => {
+                if (showDisabled) {
+                  setCurrentPageDisabled(currentPageDisabled + 1);
+                } else {
+                  setCurrentPageEnabled(currentPageEnabled + 1);
+                }
+              }}
             >
               {t('next')} &rarr;
             </Button>
