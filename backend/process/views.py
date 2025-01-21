@@ -292,7 +292,7 @@ class ProcessView(ViewSet):
             )
 
     # Dag Pipeline
-    def retrieve(self, request, dag_id=None):
+    def retrieve(self, dag_id=None):
         """Get process pipeline"""
         route = f"{AirflowInstance.url}/dags/{dag_id}/tasks"
         airflow_response = requests.get(
@@ -355,6 +355,8 @@ class ProcessView(ViewSet):
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
     def _augment_dag(self, dag):
+        pipeline_response = self.retrieve(dag['dag_id'])
+        data_source_name = pipeline_response.data.get("pipeline") if pipeline_response.status_code == status.HTTP_200_OK else None
         airflow_start_date_response = requests.get(
                             f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
                             auth=(AirflowInstance.username, AirflowInstance.password),
@@ -363,8 +365,8 @@ class ProcessView(ViewSet):
         augmentedDag= Dag(
                                 dag["dag_id"],
                                 dag["dag_id"],
-                                dag["dag_id"],
                                 dag["dag_display_name"],
+                                data_source_name, 
                                 airflow_start_date_response.json()["start_date"],
                                 dag["schedule_interval"]["value"],
                                 not dag["is_paused"],
