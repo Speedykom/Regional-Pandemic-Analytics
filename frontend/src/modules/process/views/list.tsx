@@ -126,8 +126,9 @@ export default function ProcessChainList() {
         handleRunProcess={handleRunProcess}
         handleToggleProcessStatus={handleToggleProcessStatus}
         setIsOpen={setIsOpen}
-        setTab={setTab}
         setProcessData={setProcessData}
+        setChartTabIsActive={setChartTabIsActive}
+        setReportTabIsActive={setReportTabIsActive}
       />
     );
   };
@@ -137,6 +138,8 @@ export default function ProcessChainList() {
   const [processData, setProcessData] = useState<DagDetails | null>(null);
   const [runProcessById] = useRunProcessByIdMutation();
   const [toggleProcessStatus] = useToggleProcessStatusMutation();
+  const [chartTabIsActive, setChartTabIsActive] = useState<boolean>(false);
+  const [reportTabIsActive, setReportTabIsActive] = useState<boolean>(false);
 
   const handleRunProcess = (dagId: string) => {
     runProcessById(dagId);
@@ -154,6 +157,10 @@ export default function ProcessChainList() {
           tab={tab}
           setTab={setTab}
           processData={processData}
+          chartTabIsActive={chartTabIsActive}
+          setChartTabIsActive={setChartTabIsActive}
+          reportTabIsActive={reportTabIsActive}
+          setReportTabIsActive={setReportTabIsActive}
         />
       )}
       <div className="flex justify-between items-center">

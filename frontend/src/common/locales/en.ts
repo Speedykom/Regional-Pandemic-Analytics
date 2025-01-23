@@ -414,7 +414,7 @@ const enTranslation = {
     running: 'Running',
     startProcess: 'Start the process',
     disableProcess: 'Disable the process',
-    viewChart: 'View the process chart',
+    viewChart: 'View the process charts',
     viewReport: 'View the process report',
     enableProcess: 'Enable the process',
     progressEnablingProcess: 'Process activation is in progress...',

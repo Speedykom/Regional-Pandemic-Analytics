@@ -14,8 +14,9 @@ interface ProcessCardProps {
   handleRunProcess: (dagId: string) => void;
   handleToggleProcessStatus: (dagId: string) => void;
   setIsOpen: (isOpen: boolean) => void;
-  setTab: (tab: number) => void;
   setProcessData: (data: any) => void;
+  setChartTabIsActive: (isOpen: boolean) => void;
+  setReportTabIsActive: (isOpen: boolean) => void;
 }
 
 const ProcessCard: React.FC<ProcessCardProps> = ({
@@ -25,8 +26,9 @@ const ProcessCard: React.FC<ProcessCardProps> = ({
   handleRunProcess,
   handleToggleProcessStatus,
   setIsOpen,
-  setTab,
   setProcessData,
+  setChartTabIsActive,
+  setReportTabIsActive,
 }) => {
   if (!paginatedProcesses) return null;
   return (
@@ -131,8 +133,9 @@ const ProcessCard: React.FC<ProcessCardProps> = ({
                         color="black"
                         className="p-2 rounded-md border-[1.8px] border-black cursor-pointer chart"
                         onClick={() => {
+                          setChartTabIsActive(true);
                           setIsOpen(true);
-                          setTab(2);
+                          setProcessData(e ?? null);
                         }}
                       />
                       <Tooltip anchorSelect=".chart" place="top">
@@ -145,7 +148,7 @@ const ProcessCard: React.FC<ProcessCardProps> = ({
                         color="black"
                         className="p-2 rounded-md border-[1.8px] border-black cursor-pointer report"
                         onClick={() => {
-                          setTab(0);
+                          setReportTabIsActive(true);
                           setIsOpen(true);
                           setProcessData(e ?? null);
                         }}

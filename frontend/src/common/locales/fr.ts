@@ -426,7 +426,7 @@ const frTranslation = {
     running: 'En cours',
     startProcess: 'Démarrer le processus',
     disableProcess: 'Désactiver le processus',
-    viewChart: 'Voir le graphique du processus',
+    viewChart: 'Voir les graphiques du processus',
     viewReport: 'Voir le rapport du processus',
     enableProcess: 'Activer le processus',
     progressEnablingProcess: 'Activation du processus en cours...',
