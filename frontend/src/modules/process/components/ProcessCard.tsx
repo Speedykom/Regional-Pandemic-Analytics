@@ -1,205 +1,191 @@
-import { Disclosure } from '@headlessui/react';
-import { Badge, Button, Accordion, AccordionBody } from '@tremor/react';
+import React from 'react';
+import { FaPlay } from 'react-icons/fa';
+import { AiOutlineStop, AiOutlinePieChart } from 'react-icons/ai';
+import { TbReportSearch } from 'react-icons/tb';
+import { Tooltip } from 'react-tooltip';
+import { Button, TableCell, TableRow } from '@tremor/react';
+import { toast } from 'react-toastify';
 import { DagDetails } from '../interface';
-import {
-  useGetProcessPipelineByIdQuery,
-  useRunProcessByIdMutation,
-  useToggleProcessStatusMutation,
-} from '../process';
-import { ChevronRightIcon } from '@heroicons/react/24/solid';
-import { useState } from 'react';
-import Stepper from './Stepper';
-import { useTranslation } from 'react-i18next';
-import punycode from 'punycode';
 
-import { PipelineList } from '@/modules/pipeline/interface';
 interface ProcessCardProps {
-  process: DagDetails;
-  pipelineList: PipelineList;
+  paginatedProcesses: DagDetails[];
   showDisabled: boolean;
-  latest_dag_run_status: string | null;
+  t: (key: string) => string;
+  handleRunProcess: (dagId: string) => void;
+  handleToggleProcessStatus: (dagId: string) => void;
+  setIsOpen: (isOpen: boolean) => void;
+  setProcessData: (data: any) => void;
+  setChartTabIsActive: (isOpen: boolean) => void;
+  setReportTabIsActive: (isOpen: boolean) => void;
 }
 
-export default function ProcessCard({
-  process,
-  pipelineList,
+const ProcessCard: React.FC<ProcessCardProps> = ({
+  paginatedProcesses,
   showDisabled,
-  latest_dag_run_status,
-}: ProcessCardProps) {
-  const { t } = useTranslation();
-
-  const { data, isSuccess, refetch } = useGetProcessPipelineByIdQuery(
-    process.dag_id
-  );
-  const [runProcessById] = useRunProcessByIdMutation();
-  const [toggleProcessStatus] = useToggleProcessStatusMutation();
-
-  const [open, setOpen] = useState(false);
-
-  const dateProcess = new Date(process.start_date);
-  const processName = punycode.toUnicode(process.dag_id);
-
-  const handleRunProcess = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    runProcessById(process.dag_id);
-  };
-
-  const handleToggleProcessStatus = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.stopPropagation();
-    toggleProcessStatus(process.dag_id);
-  };
-
+  t,
+  handleRunProcess,
+  handleToggleProcessStatus,
+  setIsOpen,
+  setProcessData,
+  setChartTabIsActive,
+  setReportTabIsActive,
+}) => {
+  if (!paginatedProcesses) return null;
   return (
     <>
-      {(showDisabled || !process.status) && (
-        <div className="mb-2">
-          <Accordion
-            defaultOpen={true}
-            onClick={() => {
-              setOpen(!open);
-            }}
-          >
-            <Disclosure.Button
-              disabled={true}
-              as="div"
-              className="w-full flex items-center justify-between text-tremor-content-emphasis pr-9 rounded-lg"
-            >
-              <div className="flex w-full justify-between items-center">
-                <div className="flex space-x-10 ml-3">
-                  <div>
-                    <div className="mb-2 text-xs font-bold">
-                      {t('addProcess.name')}
-                    </div>
-                    <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                      {processName}
-                    </Badge>
-                  </div>
-                  <div>
-                    <div className="mb-2 text-xs font-bold">
-                      {t('addProcess.scheduleIntervalLabel')}
-                    </div>
-                    <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                      {process.schedule_interval === '@once'
-                        ? t('schedule_intervals.once')
-                        : process.schedule_interval === '@hourly'
-                        ? t('schedule_intervals.hourly')
-                        : process.schedule_interval === '@daily'
-                        ? t('schedule_intervals.daily')
-                        : process.schedule_interval === '@weekly'
-                        ? t('schedule_intervals.weekly')
-                        : process.schedule_interval === '@monthly'
+      {paginatedProcesses
+        .filter((e) => (showDisabled ? !e.status : e.status))
+        .map((e, k) => (
+          <TableRow key={k} className="border-[1px] border-[#E4E7EC]">
+            <TableCell className="text-black">{e?.name}</TableCell>
+            <TableCell className="text-blue-700 underline font-normal">
+              {e?.data_source_name}
+            </TableCell>
+            <TableCell>
+              {e?.schedule_interval === '@once'
+                ? t('schedule_intervals.once')
+                : e?.schedule_interval === '@hourly'
+                  ? t('schedule_intervals.hourly')
+                  : e?.schedule_interval === '@daily'
+                    ? t('schedule_intervals.daily')
+                    : e?.schedule_interval === '@weekly'
+                      ? t('schedule_intervals.weekly')
+                      : e?.schedule_interval === '@monthly'
                         ? t('schedule_intervals.monthly')
-                        : process.schedule_interval === '@yearly'
-                        ? t('schedule_intervals.yearly')
-                        : 'Default case'}
-                    </Badge>
-                  </div>
-                  <div>
-                    <div className="mb-2 text-xs font-bold">
-                      {t('addProcess.status')}
-                    </div>
-                    {process.status ? (
-                      <Badge className="bg-red-100 text-red-500 rounded-full p-1 px-3">
-                        <span>{t('addProcess.inactive')}</span>
-                      </Badge>
-                    ) : (
-                      <Badge className="bg-gray-100 text-prim rounded-full p-1 px-3">
-                        <span>{t('addProcess.active')}</span>
-                      </Badge>
-                    )}
-                  </div>
-                  <div>
-                    <div className="mb-2 text-xs font-bold">
-                      {t('addProcess.latestDagRunStatus')}
-                    </div>
-                    {latest_dag_run_status ? (
-                      <Badge
-                        className={`rounded-full p-1 px-3 ${
-                          latest_dag_run_status === 'failed'
-                            ? 'bg-red-100 text-red-500'
-                            : latest_dag_run_status === 'success'
-                            ? 'bg-green-100 text-green-500'
-                            : 'bg-gray-100 text-gray-500'
-                        }`}
-                      >
-                        <span>{t(`addProcess.${latest_dag_run_status}`)}</span>
-                      </Badge>
-                    ) : (
-                      <Badge className="bg-gray-100 text-gray-500 rounded-full p-1 px-3">
-                        <span>{t('addProcess.unknown')}</span>
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-                <div className="flex space-x-3 p-3 mt-4">
-                  {!process.status && (
-                    <Button
-                      variant="secondary"
-                      color="green"
-                      disabled={
-                        !isNaN(dateProcess.getTime()) &&
-                        dateProcess > new Date()
-                          ? true
-                          : false
-                      }
-                      onClick={handleRunProcess}
-                    >
-                      {t('addProcess.run')}
-                    </Button>
-                  )}
-
-                  {process.status ? (
-                    <Button
-                      variant="secondary"
-                      color="red"
-                      onClick={handleToggleProcessStatus}
-                    >
-                      {t('addProcess.enable')}
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="secondary"
-                      color="red"
-                      onClick={handleToggleProcessStatus}
-                    >
-                      {t('addProcess.disable')}
-                    </Button>
-                  )}
-                </div>
+                        : e?.schedule_interval === '@yearly'
+                          ? t('schedule_intervals.yearly')
+                          : t('schedule_intervals.default')}
+            </TableCell>
+            <TableCell className="my-auto">
+              {e?.status ? (
+                <>
+                  <span className="text-2xl text-green-700 relative top-[3.5px]">
+                    •
+                  </span>{' '}
+                  <span className="!font-medium">
+                    {t('processChainDialog.activeStatus')}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className="text-2xl text-red-700 relative top-[3.5px]">
+                    •
+                  </span>{' '}
+                  <span className="!font-medium">
+                    {t('processChainDialog.inactiveStatus')}
+                  </span>
+                </>
+              )}
+            </TableCell>
+            <TableCell>
+              {e.latest_dag_run_status === 'success' ? (
+                <span className="bg-transparent py-3 text-green-700 border-green-700 w-32">
+                  {t('processChainDialog.success')}
+                </span>
+              ) : e.latest_dag_run_status === 'failed' ? (
+                <span className="bg-transparent py-3 text-red-700 border-red-700 w-32">
+                  {t('processChainDialog.failed')}
+                </span>
+              ) : (
+                <span className="bg-transparent py-3 text-yellow-700 border-yellow-700 w-32">
+                  {t('processChainDialog.running')}
+                </span>
+              )}
+            </TableCell>
+            <TableCell className="border-[#E4E7EC] border-l-[1px]">
+              <div
+                className={`flex flex-row gap-x-2 ${
+                  e?.latest_dag_run_status !== 'success' &&
+                  e?.latest_dag_run_status !== 'failed'
+                    ? 'pointer-events-none opacity-50'
+                    : ''
+                }`}
+              >
+                {e?.status === true ? (
+                  <>
+                    <>
+                      <FaPlay
+                        size="40"
+                        color="#15803d"
+                        className="p-2 rounded-md border-[1.8px] border-green-700 cursor-pointer play"
+                        onClick={() => handleRunProcess(e?.dag_id)}
+                      />
+                      <Tooltip anchorSelect=".play" place="top">
+                        {t('processChainDialog.startProcess')}
+                      </Tooltip>
+                    </>
+                    <>
+                      <AiOutlineStop
+                        size="40"
+                        color="#b91c1c"
+                        className={
+                          'p-2 rounded-md border-[1.8px] border-red-700 cursor-pointer stop'
+                        }
+                        onClick={() => handleToggleProcessStatus(e?.dag_id)}
+                      />
+                      <Tooltip anchorSelect=".stop" place="top">
+                        {t('processChainDialog.disableProcess')}
+                      </Tooltip>
+                    </>
+                    <>
+                      <AiOutlinePieChart
+                        size="40"
+                        color="black"
+                        className="p-2 rounded-md border-[1.8px] border-black cursor-pointer chart"
+                        onClick={() => {
+                          setChartTabIsActive(true);
+                          setIsOpen(true);
+                          setProcessData(e ?? null);
+                        }}
+                      />
+                      <Tooltip anchorSelect=".chart" place="top">
+                        {t('processChainDialog.viewChart')}
+                      </Tooltip>
+                    </>
+                    <>
+                      <TbReportSearch
+                        size="40"
+                        color="black"
+                        className="p-2 rounded-md border-[1.8px] border-black cursor-pointer report"
+                        onClick={() => {
+                          setReportTabIsActive(true);
+                          setIsOpen(true);
+                          setProcessData(e ?? null);
+                        }}
+                      />
+                      <Tooltip anchorSelect=".report" place="top">
+                        {t('processChainDialog.viewReport')}
+                      </Tooltip>
+                    </>
+                  </>
+                ) : (
+                  <Button
+                    title={t('processChainDialog.enableProcess')}
+                    onClick={() => {
+                      handleToggleProcessStatus(e?.dag_id);
+                      toast.info(
+                        t('processChainDialog.progressEnablingProcess'),
+                        {
+                          position: 'top-right',
+                          autoClose: 5000,
+                          hideProgressBar: false,
+                          closeOnClick: true,
+                          pauseOnHover: true,
+                          draggable: true,
+                          progress: undefined,
+                        }
+                      );
+                    }}
+                  >
+                    <span>{t('processChainDialog.enableProcess')}</span>
+                  </Button>
+                )}
               </div>
-              <div>
-                <ChevronRightIcon
-                  className={
-                    open ? 'ui-open:rotate-90 transform w-4' : 'transform w-4'
-                  }
-                  onClick={() => {
-                    setOpen(!open);
-                  }}
-                />
-              </div>
-            </Disclosure.Button>
-            {open && isSuccess && (
-              <AccordionBody>
-                <div className="flex flex-col space-y-2 pt-2 px-10 pb-1">
-                  <Stepper
-                    pipeline={punycode.toUnicode(data.pipeline)}
-                    pipelineList={pipelineList}
-                    dagId={process.dag_id}
-                    refetch={refetch}
-                    description={process.description}
-                    nextDagRun={process.next_dagrun}
-                    lastParsedTime={process.last_parsed_time}
-                    createChartUrl={process.dataset_url}
-                    data_source_name={process.dag_id}
-                  />
-                </div>
-              </AccordionBody>
-            )}
-          </Accordion>
-        </div>
-      )}
+            </TableCell>
+          </TableRow>
+        ))}
     </>
   );
-}
+};
+
+export default ProcessCard;

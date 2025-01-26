@@ -292,7 +292,7 @@ class ProcessView(ViewSet):
             )
 
     # Dag Pipeline
-    def retrieve(self, request, dag_id=None):
+    def retrieve(self, dag_id=None):
         """Get process pipeline"""
         route = f"{AirflowInstance.url}/dags/{dag_id}/tasks"
         airflow_response = requests.get(
@@ -355,6 +355,8 @@ class ProcessView(ViewSet):
             return Response({"status": "failed"}, status=airflow_response.status_code)
 
     def _augment_dag(self, dag):
+        pipeline_response = self.retrieve(dag['dag_id'])
+        data_source_name = pipeline_response.data.get("pipeline") if pipeline_response.status_code == status.HTTP_200_OK else None
         airflow_start_date_response = requests.get(
                             f"{AirflowInstance.url}/dags/{dag['dag_id']}/details",
                             auth=(AirflowInstance.username, AirflowInstance.password),
@@ -363,11 +365,11 @@ class ProcessView(ViewSet):
         augmentedDag= Dag(
                                 dag["dag_id"],
                                 dag["dag_id"],
-                                dag["dag_id"],
                                 dag["dag_display_name"],
+                                data_source_name,
                                 airflow_start_date_response.json()["start_date"],
                                 dag["schedule_interval"]["value"],
-                                dag["is_paused"],
+                                not dag["is_paused"],
                                 dag["description"],
                                 dag["last_parsed_time"],
                                 dag["next_dagrun"],
@@ -538,7 +540,7 @@ class ProcessRunView(ViewSet):
     }
 
     def list(self, request, dag_id=None):
-        """Listing the dag-runs of a specific dag""" 
+        """Listing the dag-runs of a specific dag"""
         dag_runs = []
 
         route = f"{AirflowInstance.url}/dags/{dag_id}/dagRuns"
