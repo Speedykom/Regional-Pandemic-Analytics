@@ -45,16 +45,16 @@ const ProcessCard: React.FC<ProcessCardProps> = ({
               {e?.schedule_interval === '@once'
                 ? t('schedule_intervals.once')
                 : e?.schedule_interval === '@hourly'
-                  ? t('schedule_intervals.hourly')
-                  : e?.schedule_interval === '@daily'
-                    ? t('schedule_intervals.daily')
-                    : e?.schedule_interval === '@weekly'
-                      ? t('schedule_intervals.weekly')
-                      : e?.schedule_interval === '@monthly'
-                        ? t('schedule_intervals.monthly')
-                        : e?.schedule_interval === '@yearly'
-                          ? t('schedule_intervals.yearly')
-                          : t('schedule_intervals.default')}
+                ? t('schedule_intervals.hourly')
+                : e?.schedule_interval === '@daily'
+                ? t('schedule_intervals.daily')
+                : e?.schedule_interval === '@weekly'
+                ? t('schedule_intervals.weekly')
+                : e?.schedule_interval === '@monthly'
+                ? t('schedule_intervals.monthly')
+                : e?.schedule_interval === '@yearly'
+                ? t('schedule_intervals.yearly')
+                : t('schedule_intervals.default')}
             </TableCell>
             <TableCell className="my-auto">
               {e?.status ? (
