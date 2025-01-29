@@ -5,7 +5,7 @@ import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 import punycode from 'punycode';
 import { DagDetails } from '../interface';
-import { ChartList } from '@/modules/superset/views/ListChart';
+import Charts from '../components/StepperElements/Charts';
 import DetailsTab from '../components/StepperElements/DetailsTab';
 import OrchestrationTab from '../components/StepperElements/OrchestrationTab';
 
@@ -98,7 +98,10 @@ export default function ProcessChainDialog({
                   <>
                     {chartTabIsActive && tab === 0 && (
                       <div className="py-4">
-                        <ChartList filterByDagId={processData?.dag_id} />
+                        <Charts
+                          dagId={processData?.dag_id}
+                          createChartUrl={processData?.dataset_url}
+                        />
                       </div>
                     )}
                     {reportTabIsActive && (
