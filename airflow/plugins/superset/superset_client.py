@@ -137,12 +137,8 @@ class SupersetClient:
     def get_current_user_id(self, owner: str) -> int:
         """Fetch the current user ID."""
         query = urllib.parse.urlencode({ "q": JSONEncoder().encode({ "columns": ["user.username", "user_id"] }) })
-        # This is just a workaround to find the superset user_id which is different as the keycloak user_id
-        # The log api is missued to return the superset user_id belonding to the keycloak username
-        # Therefore this needs to be changed or solved in a cleaner way
-        # The only superset api returning the user that makes the call, needs that the user is logged in to the system
-        # which is not possible in our case and enforcing user login programmatically will increase the complexity
-        get_log_url = urllib.parse.urljoin(self._base_url, "/api/v1/log/?{}".format(query))
+        get_log_url = urllib.parse.urljoin(self._base_url, "/api/v1/security/users/?{}".format(query))
+
         log_response = requests.get(url=get_log_url, headers=self.authorize({}))
         if log_response.status_code >= 400:
             raise RuntimeError(f"Unable to retrieve current user ID from Superset. Status code: {log_response.status_code}, Response: {log_response.text}")
@@ -151,7 +147,7 @@ class SupersetClient:
         log_result = log_response_json["result"]
         first_user_id = 1
         for entry in log_result:
-            if entry['user']['username'] == owner:
-                first_user_id = entry['user_id']
+            if entry['username'] == owner:
+                first_user_id = entry['id']
                 break
         return first_user_id
