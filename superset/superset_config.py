@@ -476,6 +476,8 @@ RESULTS_BACKEND = RedisCache(host=REDIS_HOST, port=REDIS_PORT, key_prefix='super
 
 SCREENSHOT_LOCATE_WAIT = 100
 SCREENSHOT_LOAD_WAIT = 600
+# Needed to enable additionnal security apis
+FAB_ADD_SECURITY_API = True
 
 WEBDRIVER_TYPE= "chrome"
 
