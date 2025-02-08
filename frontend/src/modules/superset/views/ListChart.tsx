@@ -28,9 +28,13 @@ type ChartItem = {
 
 interface ChartListProps {
   filterByDagId?: string;
+  hideCreateButton?: boolean;
 }
 
-const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
+const ChartList = ({
+  filterByDagId = '',
+  hideCreateButton = false,
+}: ChartListProps) => {
   const { t } = useTranslation();
   const [searchInput, setSearchInput] = useState<string>('');
   const { data } = useGetChartsQuery(searchInput);
@@ -88,17 +92,19 @@ const ChartList = ({ filterByDagId = '' }: ChartListProps) => {
             {filterByDagId ? t('processChainCharts') : t('supersetCharts')}
           </h2>
         </nav>
-        <Button
-          className="bg-prim hover:bg-prim-hover border-0 h-10"
-          onClick={() => {
-            window.open(
-              `${publicRuntimeConfig.NEXT_PUBLIC_SUPERSET_URL}/chart/list`,
-              '_blank'
-            );
-          }}
-        >
-          {t('createChartBtn')}
-        </Button>
+        {!hideCreateButton && (
+          <Button
+            className="bg-prim hover:bg-prim-hover border-0 h-10"
+            onClick={() => {
+              window.open(
+                `${publicRuntimeConfig.NEXT_PUBLIC_SUPERSET_URL}/chart/list`,
+                '_blank'
+              );
+            }}
+          >
+            {t('createChartBtn')}
+          </Button>
+        )}
       </div>
       <input
         type="text"
