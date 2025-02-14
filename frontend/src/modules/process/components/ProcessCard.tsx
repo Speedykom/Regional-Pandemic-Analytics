@@ -93,7 +93,7 @@ const ProcessCard: React.FC<ProcessCardProps> = ({
               )}
             </TableCell>
             <TableCell className="border-[#E4E7EC] border-l-[1px]">
-            <div className="flex flex-row gap-x-2">
+              <div className="flex flex-row gap-x-2">
                 {e?.status === true ? (
                   <>
                     <>
