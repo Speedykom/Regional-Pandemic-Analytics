@@ -1,14 +1,31 @@
 #!/bin/bash
 
 # This deployment script will read from cfg configuration file and adapt 
-# repan to the provided configs.This script will first create a branch
+# RePan to the provided configs.This script will first create a branch
 # then change files locally. The developer at last should validate the 
 # changes and push to the repository.
 
 project_directory="../"
+exclude_list=(".git/*" "repan-adapt/*" "no/*")
+
+replace() {
+    local old_var="$1"
+    local new_var="$2"
+
+    # Build the find command with exclusions
+    local find_cmd="find \"$project_directory\" -type f"
+
+    for exclude in "${exclude_list[@]}"; do
+        find_cmd+=" -not -path \"$project_directory$exclude\""
+    done
+
+    find_cmd+=" -exec sed -i \"s/$old_var/$new_var/gI\" {} +"
+    # Execute the command
+    eval "$find_cmd"
+}
 
 
-########################## Adapting variables ############################## 
+########################## Reading variables ############################## 
 ############################################################################
 
 echo "Reading variables from template.cfg"
@@ -26,9 +43,7 @@ echo "Adapting local domains."
 
 old_local_domain="igad.local"
 new_local_domain=$local_domain
-#find all old domains and change them with new domain
-find "$project_directory" -type f -exec sed -i "s/$old_local_domain/$new_local_domain/g" {} +
-
+replace $old_local_domain $new_local_domain
 echo "Adapting local domains complete."
 
 
@@ -39,8 +54,7 @@ echo "Adapting dev domains."
 
 old_dev_domain="igad-health.eu"
 new_dev_domain=$dev_domain
-find "$project_directory" -type f -exec sed -i "s/$old_dev_domain/$new_dev_domain/g" {} +
-
+replace $old_dev_domain $new_dev_domain
 echo "Adapting dev domains complete."
 
 
@@ -49,10 +63,9 @@ echo "Adapting dev domains complete."
 
 echo "Adapting prod domains."
 
-old_local_domain="prod-igad.domain"
-new_local_domain=$prod_domain
-find "$project_directory" -type f -exec sed -i "s/$old_dev_domain/$new_local_domain/g" {} +
-
+old_prod_domain="repan.com"
+new_prod_domain=$prod_domain
+replace $old_prod_domain $new_prod_domain
 echo "Adapting prod domain complete."
 
 
@@ -61,18 +74,16 @@ echo "Adapting prod domain complete."
 
 echo "Adapting project name and env variables"
 # Changing Regionl Pandemic Analytics
-old_project_name="Regional Pandemic Analytics"
+old_project_name="RegionaL Pandemic Analytics"
 new_project_name=$project_name
-find "$project_directory" -type f -exec sed -i "s/$old_project_name/$new_project_name/gI" {} +
-
-# Changing RePan
-old_repan="repan"
+echo $project_name
+replace $old_project_name $new_project_name
+# Changing REPAN
+old_repan="REPAN"
 new_word="$project_name_abbreviation"
-find "$project_directory" -type f -exec sed -i "s/$old_repan/$new_word/gI" {} +
-
-# Changing IGAD
+replace $old_repan $new_word
+# Changing igad
 old_igad="igad"
-new_word="$project_name_abbreviation"
-find "$project_directory" -type f -exec sed -i "s/$old_repan/$new_word/gI" {} +
+replace $old_igad $new_word
 
 echo "Adapting project name and variables complete."
