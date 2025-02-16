@@ -129,15 +129,31 @@ class PipelineListView(APIView):
                 "check_status": "success",
                 "check_text": "ValidPipeline"
             }
-            client_result = client.copy_object(
-                "pipelines",
-                f"pipelines-created/{user_id}/{name}.hpl",
-                CopySource("pipelines", f"templates/{template}"),
-                metadata_directive=REPLACE,
+
+            #user could use a private template /templates/user_id/name or a public template /templates/name
+            possible_sources = [
+            f"templates/{template}",
+            f"templates/{user_id}/{template}"
+            ]
+
+            for source in possible_sources:
+                try:
+                    client.stat_object("pipelines", source)
+
+                    client.copy_object(
+                        "pipelines",
+                        f"pipelines-created/{user_id}/{name}.hpl",
+                        CopySource("pipelines", source)
+                    )
+                    save_pipeline_metadata(client, user_id, name, metadata)
+                    return Response({"status": "success"}, status=status.HTTP_200_OK)
+                except:
+                    continue  # Try the next source if this one doesn't exist
+
+            return Response(
+                {"status": "Fail", "message": "Template not found"},
+                status=status.HTTP_404_NOT_FOUND
             )
-            # Metadata for the pipeline should be saved in a separate json file
-            save_pipeline_metadata(client, user_id, name, metadata)
-            return Response({"status": "success"}, status=status.HTTP_200_OK)
 
 
 class PipelineDetailView(APIView):
@@ -391,27 +407,64 @@ class PipelineDeleteView(APIView):
 
         result = self._deactivate_processes(dag_ids)
         if result["status"] == "failed":
-            return Response({"status": "failed", "message": result["message"] }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"status": "failed", "message": result["message"]},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         # Back up and then delete the pipeline
         user_id = get_current_user_id(request)
-        try:
-            # back up pipeline file
-            client.copy_object(
-            "pipelines",
-            f"pipelines-deleted/{user_id}/{name}_{datetime.utcnow()}.hpl",
-            CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
-            # delete pipeline file from Minio
-            client.remove_object(
-                "pipelines",
-                f"pipelines-created/{user_id}/{name}.hpl")
+        hpl_object_name = f"pipelines-created/{user_id}/{name}.hpl"
+        json_object_name = f"pipelines-created/{user_id}/{name}.json"
+        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        backup_hpl_object_name = (
+            f"pipelines-deleted/{user_id}/{name}_{timestamp}.hpl"
+        )
+        backup_json_object_name = (
+            f"pipelines-deleted/{user_id}/{name}_{timestamp}.json"
+        )
 
-            return Response({"status": "success"}, status=status.HTTP_200_OK)
-        except:
+        try:
+            hpl_meta_data = client.stat_object("pipelines", hpl_object_name)
+            json_meta_data = client.stat_object("pipelines", json_object_name)
+        except Exception:
             return Response(
                 {
                     "status": "error",
-                    "message": "Unable to delete the pipeline {}".format(name),
+                    "message": f"Files {name}.hpl and/or {name}.json not found",
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        try:
+            client.copy_object(
+                "pipelines",
+                backup_hpl_object_name,
+                CopySource("pipelines", hpl_object_name),
+            )
+            client.copy_object(
+                "pipelines",
+                backup_json_object_name,
+                CopySource("pipelines", json_object_name),
+            )
+        except Exception:
+            return Response(
+                {
+                    "status": "error",
+                    "message": f"Unable to backup files",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        try:
+            client.remove_object("pipelines", hpl_object_name)
+            client.remove_object("pipelines", json_object_name)
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Unable to delete the pipeline",
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
@@ -437,9 +490,11 @@ class PipelineDeleteView(APIView):
                 for dag_id in deactivated_processes:
                     reactivation_result = self._set_process_status(dag_id, False)
                     messages.append(reactivation_result["message"])
-                return {"status": "failed",
+                return {
+                    "status": "failed",
                     "message": "One or more process deactivation failed.",
-                    "errors": messages}
+                    "errors": messages,
+                }
         return {"status": "success"}
 
     def _set_process_status(self, dag_id, is_deactivated):
@@ -456,9 +511,16 @@ class PipelineDeleteView(APIView):
             if airflow_toggle_response.ok:
                 return {"status": "success"}
             else:
-                return {"status": "failed", "message": f"Failed to update process status for {dag_id}"}
+                return {
+                    "status": "failed",
+                    "message": f"Failed to update process status for {dag_id}",
+                }
         except Exception as e:
-            return {"status": "failed", "message": f"Exception occured while updating process status {dag_id}: {str(e)}"}
+            return {
+                "status": "failed",
+                "message": f"Exception occured while updating process status {dag_id}: {str(e)}",
+            }
+
 
 class TemplateView(APIView):
     keycloak_scopes = {
