@@ -17,6 +17,10 @@ export const HopUI = ({ name }: HopUIProps) => {
   const [updatePipeline] = useUpdatePipelineMutation();
 
   const savePipeline = async () => {
+    // Update pipeline should not be possible if data is not valid
+    if (!data) {
+      return;
+    }
     try {
       const response = await updatePipeline({
         name: data?.name ?? 'Pipeline Name',
