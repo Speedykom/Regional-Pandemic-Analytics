@@ -441,7 +441,7 @@ services:
       - HOP_MINIO_SECRET=${BACKEND_MINIO_SECRET_KEY}
 
   hop-server:
-    image: apache/hop:2.7.0
+    image: apache/hop:2.11.0
     container_name: hop-server
     environment:
       HOP_SERVER_USER: ${HOP_SERVER_USER}
@@ -453,6 +453,7 @@ services:
 
     volumes:
       - ./hop/pipelines:/files
+      - ./hop/keycloak/lib/commons-net-3.9.0.jar:/opt/hop/lib/core/commons-net-3.9.0.jar
     # =======
     # Airflow
     # =======

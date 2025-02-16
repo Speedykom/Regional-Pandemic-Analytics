@@ -60,34 +60,23 @@ class PipelineListView(APIView):
     def __init__(self):
         self.permitted_characters_regex = re.compile(r'^[^\s!@#$%^&*()+=[\]{}\\|;:\'",<>/?]*$')
 
-    def get(self, request, query=None):
+    def get(self, request , query = None):
         """Endpoint for getting pipelines created by a user"""
-
         user_id = get_current_user_id(request)
-
         pipelines: list[str] = []
 
-        try:
-            objects = client.list_objects(
-                "pipelines", prefix=f"pipelines-created/{user_id}/", include_user_meta=True
-            )
-            objects = list(objects)
-        except Exception as e:
-            return Response(
-                {"status": "error", "message": f"Failed to retrieve pipelines. Details: {str(e)}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-        for obj in objects:
-            if obj.object_name.endswith(".hpl"):
-                object_name = obj.object_name.removeprefix(
-                    f"pipelines-created/{user_id}/"
-                ).removesuffix(".hpl")
-
+        objects = client.list_objects(
+            "pipelines", prefix=f"pipelines-created/{user_id}/", include_user_meta=True
+        )
+        for object in objects:
+            if object.object_name.endswith(".hpl"):
+                object_name = object.object_name.removeprefix(
+                            f"pipelines-created/{user_id}/"
+                        ).removesuffix(".hpl")
+                
                 metadata = get_pipeline_metadata(client, user_id, object_name)
-
                 if query:
-                    if re.search(query, object_name, re.IGNORECASE):
+                    if (re.search(query, object_name, re.IGNORECASE)):
                         pipelines.append(
                             {
                                 "name": object_name,
@@ -108,7 +97,7 @@ class PipelineListView(APIView):
         return Response(
             {"status": "success", "data": pipelines}, status=status.HTTP_200_OK
         )
-        
+
     def post(self, request):
         """Create a pipeline from a chosen template for a specific user"""
         user_id = get_current_user_id(request)
@@ -135,7 +124,6 @@ class PipelineListView(APIView):
                 status=409,
             )
         except:
-        
             metadata = {
                 "description": description,
                 "created": datetime.utcnow().isoformat(),
@@ -151,6 +139,7 @@ class PipelineListView(APIView):
             # Metadata for the pipeline should be saved in a separate json file
             save_pipeline_metadata(client, user_id, name, metadata)
             return Response({"status": "success"}, status=status.HTTP_200_OK)
+
 
 class PipelineDetailView(APIView):
     keycloak_scopes = {
