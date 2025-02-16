@@ -11,7 +11,6 @@ from datetime import datetime
 from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
 from .validator import check_pipeline_validity
-from urllib.parse import quote, unquote
 from minio import Minio
 import pyclamd
 import time
@@ -162,12 +161,9 @@ class PipelineDetailView(APIView):
             minio_secret_key=os.getenv("MINIO_SECRET_KEY")
             minio_host = os.getenv("MINIO_HOST")
             metadata = get_pipeline_metadata(client, user_id, name)
-            print(metadata)
             
-            # url = f"http://storage:9000/pipelines/pipelines-created/{user_id}/{name}.hpl"
             minio_ftp = f"{minio_access_key}:{minio_secret_key}@{minio_host}"
             url = f"ftp://{minio_ftp}/pipelines/pipelines-created/{user_id}/{name}.hpl"
-            # url = client.get_presigned_url("GET","pipelines",f"pipelines-created/{user_id}/{name}.hpl", expires=timedelta(hours=2))
             payload = {"names": [url]}
 
             edit_hop = EditAccessProcess(file=self.file)
