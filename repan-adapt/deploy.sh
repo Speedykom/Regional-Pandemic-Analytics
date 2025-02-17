@@ -6,12 +6,12 @@
 # changes and push to the repository.
 
 project_directory="../"
-exclude_list=(".git/*" "repan-adapt/*" "no/*")
+exclude_list=(".git/*" "repan-adapt/*")
 
 replace() {
+
     local old_var="$1"
     local new_var="$2"
-
     # Build the find command with exclusions
     local find_cmd="find \"$project_directory\" -type f"
 
@@ -74,10 +74,10 @@ echo "Adapting prod domain complete."
 
 echo "Adapting project name and env variables"
 # Changing Regionl Pandemic Analytics
-old_project_name="RegionaL Pandemic Analytics"
+old_project_name="Regional Pandemic Analytics"
 new_project_name=$project_name
 echo $project_name
-replace $old_project_name $new_project_name
+replace "$old_project_name" "$new_project_name"
 # Changing REPAN
 old_repan="REPAN"
 new_word="$project_name_abbreviation"
