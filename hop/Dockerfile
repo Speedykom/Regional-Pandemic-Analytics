@@ -1,4 +1,4 @@
-FROM apache/hop-web:2.7.0
+FROM apache/hop-web:2.11.0
 
 # add installation of inotify tools
 USER root

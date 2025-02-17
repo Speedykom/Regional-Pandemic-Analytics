@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+mkdir -p "/files"
+
 envsubst </usr/local/tomcat/webapps/ROOT/WEB-INF/keycloak.template.json >/usr/local/tomcat/webapps/ROOT/WEB-INF/keycloak.json
 
 set -Euo pipefail

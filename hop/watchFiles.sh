@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# # Specify the directory to watch for changes
+# Specify the directory to watch for changes
 WATCH_DIR="/home"
+
+# Verify if /files exists
+mkdir -p "/files"
 
 echo "Running watcher..."
 

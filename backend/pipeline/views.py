@@ -6,17 +6,17 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from utils.minio import client
-from minio.commonconfig import CopySource, REPLACE, Tags
+from minio.commonconfig import CopySource, REPLACE
 from datetime import datetime
 from utils.keycloak_auth import get_current_user_id
 from rest_framework.parsers import MultiPartParser
 from .validator import check_pipeline_validity
-from urllib.parse import quote, unquote
 from minio import Minio
 import pyclamd
 import time
 import logging
 from datetime import datetime, timedelta
+from .metadata_helper import get_pipeline_metadata, save_pipeline_metadata, update_pipeline_metadata
 
 
 class AirflowInstance:
@@ -59,63 +59,44 @@ class PipelineListView(APIView):
     def __init__(self):
         self.permitted_characters_regex = re.compile(r'^[^\s!@#$%^&*()+=[\]{}\\|;:\'",<>/?]*$')
 
-    def get(self, request, query=None):
+    def get(self, request , query = None):
         """Endpoint for getting pipelines created by a user"""
-
         user_id = get_current_user_id(request)
-
         pipelines: list[str] = []
 
-        try:
-            objects = client.list_objects(
-                "pipelines", prefix=f"pipelines-created/{user_id}/", include_user_meta=True
-            )
-            objects = list(objects)
-        except Exception as e:
-            return Response(
-                {"status": "error", "message": f"Failed to retrieve pipelines. Details: {str(e)}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
-
-        for obj in objects:
-            if obj.object_name.endswith(".hpl"):
-                try:
-                    object_name = obj.object_name.removeprefix(
-                        f"pipelines-created/{user_id}/"
-                    ).removesuffix(".hpl")
-
-                    tags = client.get_object_tags(bucket_name="pipelines", object_name=obj.object_name)
-
-                    if tags is None:
-                        tags = {}
-
-                except Exception as e:
-                    continue
-
+        objects = client.list_objects(
+            "pipelines", prefix=f"pipelines-created/{user_id}/", include_user_meta=True
+        )
+        for object in objects:
+            if object.object_name.endswith(".hpl"):
+                object_name = object.object_name.removeprefix(
+                            f"pipelines-created/{user_id}/"
+                        ).removesuffix(".hpl")
+                
+                metadata = get_pipeline_metadata(client, user_id, object_name)
                 if query:
-                    if re.search(query, object_name, re.IGNORECASE):
+                    if (re.search(query, object_name, re.IGNORECASE)):
                         pipelines.append(
                             {
                                 "name": object_name,
-                                "description": tags.get("description", ""),
-                                "check_status": tags.get("check_status", ""),
-                                "check_text": tags.get("check_text", ""),
-                            }
-                        )
+                                "description": metadata.get("description", ""),
+                                "check_status": metadata.get("check_status", "failed"),
+                                "check_text": metadata.get("check_text", ""),    
+                            })
                 else:
                     pipelines.append(
-                        {
-                            "name": object_name,
-                            "description": tags.get("description", ""),
-                            "check_status": tags.get("check_status", ""),
-                            "check_text": tags.get("check_text", ""),
-                        }
-                    )
+                    {
+                        "name": object_name,
+                        "description": metadata.get("description", ""),
+                        "check_status": metadata.get("check_status", "failed"),
+                        "check_text": metadata.get("check_text", ""),
+                    }
+                )
 
         return Response(
             {"status": "success", "data": pipelines}, status=status.HTTP_200_OK
         )
-        
+
     def post(self, request):
         """Create a pipeline from a chosen template for a specific user"""
         user_id = get_current_user_id(request)
@@ -142,24 +123,38 @@ class PipelineListView(APIView):
                 status=409,
             )
         except:
-            # Create new pipeline by:
-            #   1. copying the template,
-            #   2. renaming it to another index in the same bukcket
-            #   3. adding tags: description + date of creation
-            tags = Tags(for_object=True)
-            tags["description"] = f"{quote(description.encode('utf-8'))}"
-            tags["created"] = f"{datetime.utcnow()}"
-            tags["check_status"] = "success"
-            tags["check_text"] = "ValidPipeline"
-            client_result = client.copy_object(
-                "pipelines",
-                f"pipelines-created/{user_id}/{name}.hpl",
-                CopySource("pipelines", f"templates/{template}"),
-                tags=tags,
-                metadata_directive=REPLACE,
+            metadata = {
+                "description": description,
+                "created": datetime.utcnow().isoformat(),
+                "check_status": "success",
+                "check_text": "ValidPipeline"
+            }
+
+            #user could use a private template /templates/user_id/name or a public template /templates/name
+            possible_sources = [
+            f"templates/{template}",
+            f"templates/{user_id}/{template}"
+            ]
+
+            for source in possible_sources:
+                try:
+                    client.stat_object("pipelines", source)
+
+                    client.copy_object(
+                        "pipelines",
+                        f"pipelines-created/{user_id}/{name}.hpl",
+                        CopySource("pipelines", source)
+                    )
+                    save_pipeline_metadata(client, user_id, name, metadata)
+                    return Response({"status": "success"}, status=status.HTTP_200_OK)
+                except:
+                    continue  # Try the next source if this one doesn't exist
+
+            return Response(
+                {"status": "Fail", "message": "Template not found"},
+                status=status.HTTP_404_NOT_FOUND
             )
 
-            return Response({"status": "success"}, status=status.HTTP_200_OK)
 
 class PipelineDetailView(APIView):
     keycloak_scopes = {
@@ -181,14 +176,10 @@ class PipelineDetailView(APIView):
             minio_access_key=os.getenv("MINIO_ACCESS_KEY")
             minio_secret_key=os.getenv("MINIO_SECRET_KEY")
             minio_host = os.getenv("MINIO_HOST")
-            tags = client.get_object_tags(bucket_name="pipelines", object_name=f"pipelines-created/{user_id}/{name}.hpl")
-            if tags is None :
-                tags = {}
-            # url = f"http://storage:9000/pipelines/pipelines-created/{user_id}/{name}.hpl"
+            metadata = get_pipeline_metadata(client, user_id, name)
+            
             minio_ftp = f"{minio_access_key}:{minio_secret_key}@{minio_host}"
             url = f"ftp://{minio_ftp}/pipelines/pipelines-created/{user_id}/{name}.hpl"
-            # url = client.get_presigned_url("GET","pipelines",f"pipelines-created/{user_id}/{name}.hpl", expires=timedelta(hours=2))
-            print(url)
             payload = {"names": [url]}
 
             edit_hop = EditAccessProcess(file=self.file)
@@ -196,10 +187,10 @@ class PipelineDetailView(APIView):
             return Response(
                 {
                     "name": name,
-                    "description": tags.get("description", ""),
-                    "check_status": tags.get("check_status", ""),
-                    "check_text": tags.get("check_text", ""),
-                    "created": tags.get("created", "")
+                    "description": metadata.get("description", ""),
+                    "check_status": metadata.get("check_status", "failed"),
+                    "check_text": metadata.get("check_text", ""),
+                    "created": metadata.get("created", "")
                 },
                 status=status.HTTP_200_OK,
             )
@@ -218,12 +209,13 @@ class PipelineDetailView(APIView):
         user_id = get_current_user_id(request)
         name = request.data.get("name")
         valid_pipeline, check_text = check_pipeline_validity(name, user_id)
-        tags = Tags(for_object=True)
-        tags["description"] = request.data.get("description")
-        tags["created"] = request.data.get("created")
-        tags["check_status"] = "success" if valid_pipeline else "failed"
-        tags["check_text"] = check_text
-        client.set_object_tags("pipelines",f"pipelines-created/{user_id}/{name}.hpl", tags)            
+        metadata = {
+                "description": request.data.get("description"),
+                "created": request.data.get("created"),
+                "check_status": "success" if valid_pipeline else "failed",
+                "check_text": check_text
+        }
+        update_pipeline_metadata(client, user_id, name, metadata)           
         return Response(
                 {
                     "status": "success",
@@ -292,6 +284,7 @@ class PipelineUploadView(APIView):
             )
         if uploaded_file:
             # To check if file is valid we first have to have it saved on the local file system
+            # todo: needs to be optimized no need to save pipeline locally for checking
             with open(f"/hop/pipelines/{name}.hpl", 'wb') as f:
                 for chunk in uploaded_file.chunks():
                     f.write(chunk)
@@ -310,22 +303,28 @@ class PipelineUploadView(APIView):
                     status=409,
                 )
             except:
-                # Upload new pipeline
-                valid_pipeline, check_text = check_pipeline_validity(name)
-                tags = Tags(for_object=True)
-                tags["desciprtion"] = f"{quote(description.encode('utf-8'))}"
-                tags["created"] = f"{datetime.utcnow()}"
-                tags["check_status"] = "success" if valid_pipeline else "failed"
-                tags["check_text"] = check_text
                 with open(f"/hop/pipelines/{name}.hpl", 'rb') as f:
+                    
                     client_result = client.put_object(
                     bucket_name='pipelines',
                     object_name=f"pipelines-created/{user_id}/{name}.hpl",
                     data=f,
-                    length=os.path.getsize(f.name),
-                    tags=tags
+                    length=os.path.getsize(f.name)
                     )
-                return Response({"status": "success"}, status=status.HTTP_200_OK)
+                # Upload new pipeline
+                valid_pipeline, check_text = check_pipeline_validity(name, user_id)
+                metadata = {
+                    "description": description, # no need to quote the description as it is now saved in a json files
+                    "created": f"{datetime.utcnow()}",
+                    "check_status": "success" if valid_pipeline else "failed",
+                    "check_text": check_text
+                    }
+                save_pipeline_metadata(client, user_id, name, metadata)
+                local_file_path = f"/hop/pipelines/{name}.hpl"
+
+                if os.path.exists(local_file_path):
+                    os.remove(local_file_path)
+        return Response({"status": "success"}, status=status.HTTP_200_OK)
 
 class PipelineUploadExternalFilesView(APIView):
     parser_classes = (MultiPartParser,)
@@ -341,8 +340,8 @@ class PipelineUploadExternalFilesView(APIView):
         """
         Endpoint for uploading an external file to an existing pipeline
         """
-        user_id = get_current_user_id(request)
         name = request.data.get("name")
+        #todo no need to pass a description for external files as this will never be used
         description = request.data.get("description")
         uploaded_file = request.FILES.get("uploadedFile")
 
@@ -377,18 +376,13 @@ class PipelineUploadExternalFilesView(APIView):
             with open(local_save_path, "wb") as local_file:
                 for chunk in uploaded_file.chunks():
                     local_file.write(chunk)
-            tags = Tags(for_object=True)
-            tags["desciprtion"] = f"{quote(description.encode('utf-8'))}"
-            tags["created"] = f"{datetime.utcnow()}"
            
             object_name = f"external_files/{name}{file_extension}"
             client.put_object(
                 bucket_name="pipelines",
                 object_name=object_name,
                 data=open(local_save_path, "rb"),
-                length=os.path.getsize(local_save_path),
-                
-                tags=tags
+                length=os.path.getsize(local_save_path)
             )
             return Response({"status": "success"}, status=status.HTTP_200_OK)
         except Exception as e:
@@ -397,6 +391,7 @@ class PipelineUploadExternalFilesView(APIView):
                 {"status": "Fail", "message": "Error processing the uploaded file"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
 
 class PipelineDeleteView(APIView):
     keycloak_scopes = {
@@ -412,27 +407,64 @@ class PipelineDeleteView(APIView):
 
         result = self._deactivate_processes(dag_ids)
         if result["status"] == "failed":
-            return Response({"status": "failed", "message": result["message"] }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"status": "failed", "message": result["message"]},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
         # Back up and then delete the pipeline
         user_id = get_current_user_id(request)
-        try:
-            # back up pipeline file
-            client.copy_object(
-            "pipelines",
-            f"pipelines-deleted/{user_id}/{name}_{datetime.utcnow()}.hpl",
-            CopySource("pipelines", f"pipelines-created/{user_id}/{name}.hpl"))
-            # delete pipeline file from Minio
-            client.remove_object(
-                "pipelines",
-                f"pipelines-created/{user_id}/{name}.hpl")
+        hpl_object_name = f"pipelines-created/{user_id}/{name}.hpl"
+        json_object_name = f"pipelines-created/{user_id}/{name}.json"
+        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        backup_hpl_object_name = (
+            f"pipelines-deleted/{user_id}/{name}_{timestamp}.hpl"
+        )
+        backup_json_object_name = (
+            f"pipelines-deleted/{user_id}/{name}_{timestamp}.json"
+        )
 
-            return Response({"status": "success"}, status=status.HTTP_200_OK)
-        except:
+        try:
+            hpl_meta_data = client.stat_object("pipelines", hpl_object_name)
+            json_meta_data = client.stat_object("pipelines", json_object_name)
+        except Exception:
             return Response(
                 {
                     "status": "error",
-                    "message": "Unable to delete the pipeline {}".format(name),
+                    "message": f"Files {name}.hpl and/or {name}.json not found",
+                },
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        try:
+            client.copy_object(
+                "pipelines",
+                backup_hpl_object_name,
+                CopySource("pipelines", hpl_object_name),
+            )
+            client.copy_object(
+                "pipelines",
+                backup_json_object_name,
+                CopySource("pipelines", json_object_name),
+            )
+        except Exception:
+            return Response(
+                {
+                    "status": "error",
+                    "message": f"Unable to backup files",
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        try:
+            client.remove_object("pipelines", hpl_object_name)
+            client.remove_object("pipelines", json_object_name)
+            return Response({"status": "success"}, status=status.HTTP_200_OK)
+        except Exception:
+            return Response(
+                {
+                    "status": "error",
+                    "message": "Unable to delete the pipeline",
                 },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
@@ -458,9 +490,11 @@ class PipelineDeleteView(APIView):
                 for dag_id in deactivated_processes:
                     reactivation_result = self._set_process_status(dag_id, False)
                     messages.append(reactivation_result["message"])
-                return {"status": "failed",
+                return {
+                    "status": "failed",
                     "message": "One or more process deactivation failed.",
-                    "errors": messages}
+                    "errors": messages,
+                }
         return {"status": "success"}
 
     def _set_process_status(self, dag_id, is_deactivated):
@@ -477,9 +511,16 @@ class PipelineDeleteView(APIView):
             if airflow_toggle_response.ok:
                 return {"status": "success"}
             else:
-                return {"status": "failed", "message": f"Failed to update process status for {dag_id}"}
+                return {
+                    "status": "failed",
+                    "message": f"Failed to update process status for {dag_id}",
+                }
         except Exception as e:
-            return {"status": "failed", "message": f"Exception occured while updating process status {dag_id}: {str(e)}"}
+            return {
+                "status": "failed",
+                "message": f"Exception occured while updating process status {dag_id}: {str(e)}",
+            }
+
 
 class TemplateView(APIView):
     keycloak_scopes = {
