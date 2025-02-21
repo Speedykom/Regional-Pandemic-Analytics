@@ -21,7 +21,7 @@ else
 endif
 ifeq ($(BACKUP),1)
 	@sed -i 's/\r$//' ./backups/*_db/*.sh
-	@docker compose --env-file ./.env.local -f ./backups/docker-compose-backups.yml up -d
+	@docker compose --env-file ./.env.local -f ./backups/docker-compose-backups.local.yml up -d
 endif
 
 start-dev:
