@@ -7,6 +7,7 @@ ifdef service
 else
 	@docker compose --env-file ./.env.prod -f docker-compose.yml -f docker-compose.prod.yml down --remove-orphans
 	@docker compose --env-file ./.env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d --build --force-recreate
+	@docker compose --env-file ./.env.prod -f ./backups/docker-compose-backups.yml up -d
 endif
 
 start-local:
@@ -32,6 +33,7 @@ ifdef service
 else
 	@docker compose --env-file ./.env.dev -f docker-compose.yml -f docker-compose.dev.yml down --remove-orphans
 	@docker compose --env-file ./.env.dev -f docker-compose.yml -f docker-compose.dev.yml up -d --build --force-recreate
+	@docker compose --env-file ./.env.dev -f ./backups/docker-compose-backups.yml up -d
 endif
 
 destroy-prod:
