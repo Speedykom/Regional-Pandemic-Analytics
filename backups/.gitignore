@@ -18,6 +18,7 @@ logs/*
 !.gitkeep
 !Dockerfile
 !docker-compose-backups.yml
+!docker-compose-backups.local.yml
 !.env
 !.gitignore
 !README.md
