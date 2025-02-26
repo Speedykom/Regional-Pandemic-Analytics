@@ -22,8 +22,8 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-CORS_ORIGIN_ALLOW_ALL = os.getenv("CORS_ORIGIN_ALLOW_ALL", "False")
-CORS_ALLOW_CREDENTIALS = True
+# CORS_ORIGIN_ALLOW_ALL = os.getenv("CORS_ORIGIN_ALLOW_ALL", "False")
+# CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = os.getenv(
     "CORS_ORIGIN_WHITELIST", "http://localhost:3000,http://localhost:8000"
 ).split(",")
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "pipeline",
     "data",
     "hop",
+    "shared_datasets",
     "rest_framework.authtoken",
     "rest_framework",
     "corsheaders",
@@ -63,6 +64,24 @@ MIDDLEWARE = [
     "core.user_id.UserIdMiddleware",
     "django.middleware.gzip.GZipMiddleware"
 ]
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'JWT Authorization header using the Bearer scheme. Example: "Bearer your_token_here"',
+        }
+    },
+    'USE_SESSION_AUTH': False,
+    'DEFAULT_MODEL_RENDERING': 'example',
+    'DOC_EXPANSION': 'none',
+    'VALIDATOR_URL': None,
+    'JSON_EDITOR': True,
+}
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 ROOT_URLCONF = "core.urls"
 
@@ -190,7 +209,10 @@ KEYCLOAK_CONFIG = {
     "KEYCLOAK_ADMIN_USERNAME": os.getenv("KEYCLOAK_ADMIN_USERNAME"),
     "KEYCLOAK_ADMIN_PASSWORD": os.getenv("KEYCLOAK_ADMIN_PASSWORD"),
     "KEYCLOAK_REDIRECT_URI": os.getenv("KEYCLOAK_REDIRECT_URI"),
+    
 }
+
+SERVICE_USER_PASSWORD = os.environ.get("SERVICE_USER_PASSWORD", "JFKLDSF4562£µFEZF556ZEF6ZEF")
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
@@ -199,6 +221,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MINIO_ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
 MINIO_SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
 MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET")
+PIPELINES_BUCKET_NAME = "pipelines"
 MINIO_ENDPOINT = os.getenv("MINIO_URL")
 
 # EMAIL TRASMISSION SETTINGS

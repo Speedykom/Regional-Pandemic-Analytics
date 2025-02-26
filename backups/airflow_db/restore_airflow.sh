@@ -38,12 +38,17 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+BACKUP_FILENAME_SQL="/tmp/$AIRFLOW_POSTGRES_HOST/backup_${DATE_BACKUP}_airflow_db.sql"
+
+if [ ! -f "$BACKUP_FILENAME_SQL" ]; then
+  echo -e "Backup file not found $BACKUP_FILENAME_SQL." | tee -a "$LOG_FILE"
+  exit 1
+fi
+
 echo "Restoring $AIRFLOW_POSTGRES_DB..." | tee -a "$LOG_FILE"
 PGPASSWORD="$AIRFLOW_POSTGRES_PASSWORD" psql -U "$AIRFLOW_POSTGRES_USER" -h "$AIRFLOW_POSTGRES_HOST" -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$AIRFLOW_POSTGRES_DB';" > /dev/null 2>> "$LOG_FILE"
 PGPASSWORD="$AIRFLOW_POSTGRES_PASSWORD" psql -U "$AIRFLOW_POSTGRES_USER" -h "$AIRFLOW_POSTGRES_HOST" -d postgres -c "DROP DATABASE IF EXISTS $AIRFLOW_POSTGRES_DB" > /dev/null 2>> "$LOG_FILE"
 PGPASSWORD="$AIRFLOW_POSTGRES_PASSWORD" psql -U "$AIRFLOW_POSTGRES_USER" -h "$AIRFLOW_POSTGRES_HOST" -d postgres -c "CREATE DATABASE $AIRFLOW_POSTGRES_DB" > /dev/null 2>> "$LOG_FILE"
-
-BACKUP_FILENAME_SQL="/tmp/$AIRFLOW_POSTGRES_HOST/backup_${DATE_BACKUP}_airflow_db.sql"
 cat "$BACKUP_FILENAME_SQL" | PGPASSWORD="$AIRFLOW_POSTGRES_PASSWORD" psql -h "$AIRFLOW_POSTGRES_HOST" -U "$AIRFLOW_POSTGRES_USER" -d "$AIRFLOW_POSTGRES_DB" > /dev/null 2>> "$LOG_FILE"
 
 if [ $? -eq 0 ]; then

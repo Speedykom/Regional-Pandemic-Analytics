@@ -14,14 +14,14 @@ class DataUploadAPIView(APIView):
     }
     parser = [MultiPartParser]
 
-    @swagger_auto_schema(request_body=openapi.Schema(
-        type=openapi.TYPE_OBJECT,
-        properties={
-            'file_name': openapi.Schema(type=openapi.TYPE_STRING),
-            'file_type': openapi.Schema(type=openapi.TYPE_STRING),
-            'file': openapi.Schema(type=openapi.TYPE_FILE)
-        }
-    ))
+    # @swagger_auto_schema(request_body=openapi.Schema(
+    #     type=openapi.TYPE_OBJECT,
+    #     properties={
+    #         'file_name': openapi.Schema(type=openapi.TYPE_STRING),
+    #         'file_type': openapi.Schema(type=openapi.TYPE_STRING),
+    #         'file': openapi.Schema(type=openapi.TYPE_FILE)
+    #     }
+    # ))
     def get(self, request, *args, **kwargs):
         """Retrieves and returns file uploads associated with a specific username"""
         username = request.query_params.get("username")

@@ -33,13 +33,18 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+BACKUP_FILENAME_SQL="$DRUID_RESTORE_DIR/db_backup_${DATE_BACKUP}_druid_db.sql"
+
+if [ ! -f "$BACKUP_FILENAME_SQL" ]; then
+  echo -e "Backup file not found $BACKUP_FILENAME_SQL." | tee -a "$LOG_FILE"
+  exit 1
+fi
+
 # DB RESTORE
 echo "Restoring $DRUID_POSTGRES_DB..." | tee -a "$DRUID_LOG_FILE"
 PGPASSWORD="$DRUID_POSTGRES_PASSWORD" psql -U "$DRUID_POSTGRES_USER" -h "$DRUID_POSTGRES_HOST" -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$DRUID_POSTGRES_DB';" > /dev/null 2>> "$DRUID_LOG_FILE"
 PGPASSWORD="$DRUID_POSTGRES_PASSWORD" psql -U "$DRUID_POSTGRES_USER" -h "$DRUID_POSTGRES_HOST" -d postgres -c "DROP DATABASE IF EXISTS $DRUID_POSTGRES_DB" > /dev/null 2>> "$DRUID_LOG_FILE"
 PGPASSWORD="$DRUID_POSTGRES_PASSWORD" psql -U "$DRUID_POSTGRES_USER" -h "$DRUID_POSTGRES_HOST" -d postgres -c "CREATE DATABASE $DRUID_POSTGRES_DB" > /dev/null 2>> "$DRUID_LOG_FILE"
-
-BACKUP_FILENAME_SQL="$DRUID_RESTORE_DIR/db_backup_${DATE_BACKUP}_druid_db.sql"
 cat "$BACKUP_FILENAME_SQL" | PGPASSWORD="$DRUID_POSTGRES_PASSWORD" psql -h "$DRUID_POSTGRES_HOST" -U "$DRUID_POSTGRES_USER" -d "$DRUID_POSTGRES_DB" > /dev/null 2>> "$DRUID_LOG_FILE"
 
 if [ $? -eq 0 ]; then
