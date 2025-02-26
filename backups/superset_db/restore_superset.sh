@@ -38,12 +38,17 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+BACKUP_FILENAME_SQL="/tmp/$SUPERSET_POSTGRES_HOST/db_backup_${DATE_BACKUP}_superset_db.sql"
+
+if [ ! -f "$BACKUP_FILENAME_SQL" ]; then
+  echo -e "Backup file not found $BACKUP_FILENAME_SQL." | tee -a "$LOG_FILE"
+  exit 1
+fi
+
 echo "Restoring $SUPERSET_POSTGRES_DB..." | tee -a "$LOG_FILE"
 PGPASSWORD="$SUPERSET_POSTGRES_PASSWORD" psql -U "$SUPERSET_POSTGRES_USER" -h "$SUPERSET_POSTGRES_HOST" -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$SUPERSET_POSTGRES_DB';" > /dev/null 2>> "$LOG_FILE"
 PGPASSWORD="$SUPERSET_POSTGRES_PASSWORD" psql -U "$SUPERSET_POSTGRES_USER" -h "$SUPERSET_POSTGRES_HOST" -d postgres -c "DROP DATABASE IF EXISTS $SUPERSET_POSTGRES_DB" > /dev/null 2>> "$LOG_FILE"
 PGPASSWORD="$SUPERSET_POSTGRES_PASSWORD" psql -U "$SUPERSET_POSTGRES_USER" -h "$SUPERSET_POSTGRES_HOST" -d postgres -c "CREATE DATABASE $SUPERSET_POSTGRES_DB" > /dev/null 2>> "$LOG_FILE"
-
-BACKUP_FILENAME_SQL="/tmp/$SUPERSET_POSTGRES_HOST/backup_${DATE_BACKUP}_superset_db.sql"
 cat "$BACKUP_FILENAME_SQL" | PGPASSWORD="$SUPERSET_POSTGRES_PASSWORD" psql -h "$SUPERSET_POSTGRES_HOST" -U "$SUPERSET_POSTGRES_USER" -d "$SUPERSET_POSTGRES_DB" > /dev/null 2>> "$LOG_FILE"
 
 if [ $? -eq 0 ]; then

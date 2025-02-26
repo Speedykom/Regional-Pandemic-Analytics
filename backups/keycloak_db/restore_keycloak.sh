@@ -38,12 +38,17 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+BACKUP_FILENAME_SQL="/tmp/$KEYCLOAK_DB_URL_HOST/db_backup_${DATE_BACKUP}_keycloak-pg.sql"
+
+if [ ! -f "$BACKUP_FILENAME_SQL" ]; then
+  echo -e "Backup file not found $BACKUP_FILENAME_SQL." | tee -a "$LOG_FILE"
+  exit 1
+fi
+
 echo "Restoring $KEYCLOAK_POSTGRES_DB..." | tee -a "$LOG_FILE"
 PGPASSWORD="$KEYCLOAK_POSTGRES_PASSWORD" psql -U "$KEYCLOAK_POSTGRES_USER" -h "$KEYCLOAK_DB_URL_HOST" -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$KEYCLOAK_POSTGRES_DB';" > /dev/null 2>> "$LOG_FILE"
 PGPASSWORD="$KEYCLOAK_POSTGRES_PASSWORD" psql -U "$KEYCLOAK_POSTGRES_USER" -h "$KEYCLOAK_DB_URL_HOST" -d postgres -c "DROP DATABASE IF EXISTS $KEYCLOAK_POSTGRES_DB" > /dev/null 2>> "$LOG_FILE"
 PGPASSWORD="$KEYCLOAK_POSTGRES_PASSWORD" psql -U "$KEYCLOAK_POSTGRES_USER" -h "$KEYCLOAK_DB_URL_HOST" -d postgres -c "CREATE DATABASE $KEYCLOAK_POSTGRES_DB" > /dev/null 2>> "$LOG_FILE"
-
-BACKUP_FILENAME_SQL="/tmp/$KEYCLOAK_DB_URL_HOST/backup_${DATE_BACKUP}_keycloak-pg.sql"
 cat "$BACKUP_FILENAME_SQL" | PGPASSWORD="$KEYCLOAK_POSTGRES_PASSWORD" psql -h "$KEYCLOAK_DB_URL_HOST" -U "$KEYCLOAK_POSTGRES_USER" -d "$KEYCLOAK_POSTGRES_DB" > /dev/null 2>> "$LOG_FILE"
 
 if [ $? -eq 0 ]; then

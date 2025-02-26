@@ -38,12 +38,16 @@ if [ $? -ne 0 ]; then
   exit 1
 fi
 
+BACKUP_FILENAME_SQL="/tmp/$BACKEND_DB_HOST/db_backup_${DATE_BACKUP}_backend_db.sql"
+if [ ! -f "$BACKUP_FILENAME_SQL" ]; then
+  echo -e "Backup file not found $BACKUP_FILENAME_SQL" | tee -a "$LOG_FILE"
+  exit 1
+fi
+
 echo "Restoring $BACKEND_DB_NAME..." | tee -a "$BACKEND_LOG_FILE"
 PGPASSWORD="$BACKEND_DB_PASSWORD" psql -U "$BACKEND_DB_USER" -h "$BACKEND_DB_HOST" -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$BACKEND_DB_NAME';" > /dev/null 2>> "$BACKEND_LOG_FILE"
 PGPASSWORD="$BACKEND_DB_PASSWORD" psql -U "$BACKEND_DB_USER" -h "$BACKEND_DB_HOST" -d postgres -c "DROP DATABASE IF EXISTS $BACKEND_DB_NAME" > /dev/null 2>> "$BACKEND_LOG_FILE"
 PGPASSWORD="$BACKEND_DB_PASSWORD" psql -U "$BACKEND_DB_USER" -h "$BACKEND_DB_HOST" -d postgres -c "CREATE DATABASE $BACKEND_DB_NAME" > /dev/null 2>> "$BACKEND_LOG_FILE"
-
-BACKUP_FILENAME_SQL="/tmp/$BACKEND_DB_HOST/backup_${DATE_BACKUP}_backend_db.sql"
 cat "$BACKUP_FILENAME_SQL" | PGPASSWORD="$BACKEND_DB_PASSWORD" psql -h "$BACKEND_DB_HOST" -U "$BACKEND_DB_USER" -d "$BACKEND_DB_NAME" > /dev/null 2>> "$BACKEND_LOG_FILE"
 
 if [ $? -eq 0 ]; then
