@@ -8,7 +8,7 @@ DRUID_BACKUP_DIR="/opt/airflow/druid_db/backup_druid"
 DRUID_STORAGE_PATH="/opt/airflow/storage"
 DRUID_RESTORE_DIR="/tmp/restore_druid"
 
-DRUID_BACKUP_FILE_TAR=$(ls $DRUID_BACKUP_DIR/backup_*.tar.gz | head -n 1)
+DRUID_BACKUP_FILE_TAR=$(ls -t $DRUID_BACKUP_DIR/backup_*.tar.gz | head -n 1)
 if [ -z "$DRUID_BACKUP_FILE_TAR" ]; then
   echo -e "No backup file found for storage in $DRUID_BACKUP_DIR." | tee -a "$DRUID_LOG_FILE"
   exit 1

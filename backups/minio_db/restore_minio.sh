@@ -5,7 +5,7 @@ MINIO_LOG_FILE="/opt/airflow/minio_db/restore_logs/restore_minio_$(date +%Y-%m-%
 touch "$MINIO_LOG_FILE"
 
 MINIO_BACKUP_DIR="/opt/airflow/minio_db/backup_minio"
-MINIO_BACKUP_FILE=$(ls $MINIO_BACKUP_DIR/backup_*.tar.gz | head -n 1)
+MINIO_BACKUP_FILE=$(ls -t $MINIO_BACKUP_DIR/backup_*.tar.gz | head -n 1)
 if [ -z "$MINIO_BACKUP_FILE" ]; then
   echo -e "No backup file found in $MINIO_BACKUP_DIR." | tee -a "$MINIO_LOG_FILE"
   exit 1

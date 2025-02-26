@@ -5,7 +5,7 @@ BACKEND_LOG_FILE="/opt/airflow/backend_db/restore_logs/restore_backend_$(date +%
 touch "$BACKEND_LOG_FILE"
 
 BACKEND_BACKUP_DIR="/opt/airflow/backend_db/backup_backend"
-BACKEND_BACKUP_FILE=$(ls $BACKEND_BACKUP_DIR/backup_*.tar.gz | head -n 1)
+BACKEND_BACKUP_FILE=$(ls -t $BACKEND_BACKUP_DIR/backup_*.tar.gz | head -n 1)
 if [ -z "$BACKEND_BACKUP_FILE" ]; then
   echo -e "No backup file found in $BACKEND_BACKUP_DIR." | tee -a "$BACKEND_LOG_FILE"
   exit 1

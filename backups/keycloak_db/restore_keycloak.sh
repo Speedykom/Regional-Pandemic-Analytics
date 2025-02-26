@@ -5,7 +5,7 @@ LOG_FILE="/opt/airflow/keycloak_db/restore_logs/restore_keycloak_$(date +%Y-%m-%
 touch "$LOG_FILE"
 
 BACKUP_DIR="/opt/airflow/keycloak_db/backup_keycloak"
-BACKUP_FILE=$(ls $BACKUP_DIR/backup_*.tar.gz | head -n 1)
+BACKUP_FILE=$(ls -t $BACKUP_DIR/backup_*.tar.gz | head -n 1)
 if [ -z "$BACKUP_FILE" ]; then
   echo -e "No backup file found in $BACKUP_DIR." | tee -a "$LOG_FILE"
   exit 1
