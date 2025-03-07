@@ -78,6 +78,9 @@ old_project_name="Regional Pandemic Analytics"
 new_project_name=$project_name
 echo $project_name
 replace "$old_project_name" "$new_project_name"
+old_realm_name="regional-pandemic-analytics"
+new_realm_name=$realm_name
+replace "$old_realm_name" "$new_realm_name"
 # Changing REPAN
 old_repan="REPAN"
 new_word="$project_name_abbreviation"
