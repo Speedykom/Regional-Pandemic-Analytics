@@ -1,0 +1,133 @@
+version: "3.4"
+
+services:
+  backup-webserver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    user: "0:0"
+    container_name: backup-webserver
+    restart: always
+    command: webserver
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=${BACKUP_BACKUP__CORE__EXECUTOR}
+      - AIRFLOW__CORE__FERNET_KEY=${BACKUP_BACKUP__CORE__FERNET_KEY}
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=${BACKUP_BACKUP__DATABASE__SQL_ALCHEMY_CONN}
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=${BACKUP_BACKUP__DATABASE__SQL_ALCHEMY_CONN}
+      - BACKUP_ADMIN_PASSWORD=${BACKUP_ADMIN_PASSWORD}
+      - BACKUP_ADMIN_USER=${BACKUP_ADMIN_USER}
+      - BACKUP_ADMIN_EMAIL=${BACKUP_ADMIN_EMAIL}
+      - BACKUP_ADMIN_FIRSTNAME=${BACKUP_ADMIN_FIRSTNAME}
+      - BACKUP_ADMIN_LASTNAME=${BACKUP_ADMIN_LASTNAME}
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+    depends_on:
+      backup_db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:8080/health" ]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+
+  backup-update:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backup-update
+    restart: always
+    entrypoint: /bin/bash
+    command: -c "sleep 60 && airflow db upgrade"
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=${BACKUP_BACKUP__CORE__EXECUTOR}
+      - AIRFLOW__CORE__FERNET_KEY=${BACKUP_BACKUP__CORE__FERNET_KEY}
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=${BACKUP_BACKUP__DATABASE__SQL_ALCHEMY_CONN}
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=${BACKUP_BACKUP__DATABASE__SQL_ALCHEMY_CONN}
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+    depends_on:
+      backup_db:
+        condition: service_healthy
+  
+  backup-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    user: "0:0"
+    container_name: backup-scheduler
+    depends_on:
+      - backup_db
+    entrypoint: [ "/bin/bash", "-c" ]
+    command: /tmp/entrypoint.sh
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=${BACKUP_BACKUP__CORE__EXECUTOR}
+      - AIRFLOW__CORE__FERNET_KEY=${BACKUP_BACKUP__CORE__FERNET_KEY}
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=${BACKUP_BACKUP__DATABASE__SQL_ALCHEMY_CONN}
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=${BACKUP_BACKUP__DATABASE__SQL_ALCHEMY_CONN}
+      - AIRFLOW_UID=${BACKUP_AIRFLOW_UID}
+      - BACKUP_ADMIN_USER=${BACKUP_ADMIN_USER}
+      - BACKUP_ADMIN_PASSWORD=${BACKUP_ADMIN_PASSWORD}
+      - BACKUP_ADMIN_FIRSTNAME=${BACKUP_ADMIN_FIRSTNAME}
+      - BACKUP_ADMIN_LASTNAME=${BACKUP_ADMIN_LASTNAME}
+      - BACKUP_ADMIN_EMAIL=${BACKUP_ADMIN_EMAIL}
+      - BACKEND_DB_USER=${BACKEND_DB_USER}
+      - BACKEND_DB_PASSWORD=${BACKEND_DB_PASSWORD}
+      - BACKEND_DB_NAME=${BACKEND_DB_NAME}
+      - BACKEND_DB_HOST=${BACKEND_DB_HOST}
+      - SUPERSET_POSTGRES_USER=${SUPERSET_POSTGRES_USER}
+      - SUPERSET_POSTGRES_PASSWORD=${SUPERSET_POSTGRES_PASSWORD}
+      - SUPERSET_POSTGRES_DB=${SUPERSET_POSTGRES_DB}
+      - SUPERSET_POSTGRES_HOST=${SUPERSET_POSTGRES_HOST}
+      - KEYCLOAK_POSTGRES_USER=${KEYCLOAK_POSTGRES_USER}
+      - KEYCLOAK_POSTGRES_PASSWORD=${KEYCLOAK_POSTGRES_PASSWORD}
+      - KEYCLOAK_POSTGRES_DB=${KEYCLOAK_POSTGRES_DB}
+      - KEYCLOAK_DB_URL_HOST=${KEYCLOAK_DB_URL_HOST}
+      - AIRFLOW_POSTGRES_USER=${AIRFLOW_POSTGRES_USER}
+      - AIRFLOW_POSTGRES_PASSWORD=${AIRFLOW_POSTGRES_PASSWORD}
+      - AIRFLOW_POSTGRES_DB=${AIRFLOW_POSTGRES_DB}
+      - AIRFLOW_POSTGRES_HOST=${AIRFLOW_POSTGRES_HOST}
+      - DRUID_POSTGRES_USER=${DRUID_POSTGRES_USER}
+      - DRUID_POSTGRES_PASSWORD=${DRUID_POSTGRES_PASSWORD}
+      - DRUID_POSTGRES_DB=${DRUID_POSTGRES_DB}
+      - DRUID_POSTGRES_HOST=${DRUID_POSTGRES_HOST}
+      - MINIO_MC_REMOTE_SERVER_URL=${MINIO_MC_REMOTE_SERVER_URL}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./backend_db/:/opt/airflow/backend_db/
+      - ./airflow_db/:/opt/airflow/airflow_db/
+      - ./superset_db/:/opt/airflow/superset_db/
+      - ./keycloak_db/:/opt/airflow/keycloak_db/
+      - ./druid_db/:/opt/airflow/druid_db/
+      - ./minio_db/:/opt/airflow/minio_db/
+      - ../storage:/opt/airflow/storage
+    restart: on-failure
+
+  backup_db:
+    image: postgres:14
+    container_name: backup_db
+    environment:
+      - POSTGRES_USER=${BACKUP_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${BACKUP_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${BACKUP_POSTGRES_DB}
+    volumes:
+      - backup_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "backup" ]
+      interval: 5s
+      retries: 5
+
+volumes:
+  backup_data:
+
+networks:
+  default:
+    external: true
+    name: backup_network
