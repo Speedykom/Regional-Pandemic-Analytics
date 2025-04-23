@@ -4,7 +4,7 @@ const frTranslation = {
     KeycloakSignIn: 'Connexion avec KeyCloak',
     WelcomeMessage: 'Bienvenue!',
     WelcomeText:
-      "Connectez-vous simplement pour accéder à d-OHP (digital-One Health Platform) afin de collecter, d'analyser et de rapporter des données granulaires et agrégées de plusieurs sources pour une prise de décision éclairée.",
+      "Connectez-vous simplement pour accéder à COHIS (Cameroon One Health Information System) afin de collecter, d'analyser et de rapporter des données granulaires et agrégées de plusieurs sources pour une prise de décision éclairée.",
   },
   supersetcharts: {
     secondago: 'il y a une seconde',
