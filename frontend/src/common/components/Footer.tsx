@@ -41,7 +41,7 @@ const Footer: React.FC = () => {
             </ul>
           </div>
           <div className="text-xs text-gray-500">
-            &copy; {currentYear} COHIS. 
+            &copy; {currentYear} COHIS.
           </div>
         </div>
       </div>
