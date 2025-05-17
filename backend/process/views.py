@@ -454,7 +454,16 @@ class ProcessView(ViewSet):
         druid_url = f"{DruidInstance.url}/druid/coordinator/v1/metadata/datasources/{datasource_id}"
 
         try:
-            response = requests.get(druid_url, auth=(DruidInstance.username, DruidInstance.password), verify=False)
+            verify_tls = os.getenv("DRUID_VERIFY_SSL", "True").lower() in (
+                "true",
+                "1",
+                "t",
+            )
+            response = requests.get(
+                druid_url,
+                auth=(DruidInstance.username, DruidInstance.password),
+                verify=verify_tls,
+            )
             response.raise_for_status()
         except requests.exceptions.ConnectionError:
             return Response({"error": "Failed to connect to Druid"}, status=status.HTTP_503_SERVICE_UNAVAILABLE)

@@ -1,3 +1,4 @@
+import os
 from keycloak import KeycloakAdmin, KeycloakOpenID
 from django.conf import settings
 from typing import Union
@@ -28,13 +29,19 @@ def get_current_user_name(request):
 
 def get_keycloak_admin():
     config = settings.KEYCLOAK_CONFIG
+    verify_tls = os.getenv("KEYCLOAK_VERIFY_SSL", "True").lower() in (
+        "true",
+        "1",
+        "t",
+    )
+
     return KeycloakAdmin(
         server_url=config['KEYCLOAK_INTERNAL_SERVER_URL'] + "/auth",
         username=config['KEYCLOAK_ADMIN_USERNAME'],
         password=config['KEYCLOAK_ADMIN_PASSWORD'],
         realm_name=config['KEYCLOAK_REALM'],
         user_realm_name="master",
-        verify=False)
+        verify=verify_tls)
 
 
 def get_keycloak_openid(request = None) -> KeycloakOpenID:
@@ -61,10 +68,18 @@ def get_keycloak_openid(request = None) -> KeycloakOpenID:
                 "X-Forwarded-For": request.headers.get('X-Forwarded-For')
             }
 
-        keycloak = KeycloakOpenID(server_url=server_url,
-                                       client_id=client_id,
-                                       realm_name=realm,
-                                       client_secret_key=client_secret_key,
-                                       custom_headers=custom_headers,
-                                       verify=False) # @todo : add env var for local dev
+        verify_tls = os.getenv("KEYCLOAK_VERIFY_SSL", "True").lower() in (
+            "true",
+            "1",
+            "t",
+        )
+
+        keycloak = KeycloakOpenID(
+            server_url=server_url,
+            client_id=client_id,
+            realm_name=realm,
+            client_secret_key=client_secret_key,
+            custom_headers=custom_headers,
+            verify=verify_tls,
+        )
         return keycloak

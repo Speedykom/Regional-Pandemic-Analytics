@@ -30,6 +30,16 @@ To run the cluster, on local environment:
 4. run `make start-local` to start the cluster
 5. open keycloak interface and add a new user
 
+## Environment variables
+
+The services rely on a few environment variables. Important ones include:
+
+- `DJANGO_DEBUG` – set to `True` to enable Django debug mode.
+- `DJANGO_ALLOWED_HOSTS` – comma separated list of allowed hosts for Django.
+- `KEYCLOAK_VERIFY_SSL` – set to `False` to skip TLS verification when talking to Keycloak.
+- `DRUID_VERIFY_SSL` – controls TLS verification for requests to Druid.
+- `SUPERSET_VERIFY_SSL` – controls TLS verification in Superset/Keycloak integration.
+
 ## Domain Names
 
 ### Local domains

@@ -19,9 +19,11 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "False").lower() in ("true", "1", "t")
 
-ALLOWED_HOSTS = ["*"]
+# Comma separated list of allowed hosts, defaults to "*" for backwards
+# compatibility. This mirrors Django's ALLOWED_HOSTS setting.
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 CORS_ORIGIN_ALLOW_ALL = os.getenv("CORS_ORIGIN_ALLOW_ALL", "False")
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = os.getenv(

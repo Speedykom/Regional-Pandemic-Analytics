@@ -7,6 +7,9 @@
 /hop/pipelines/*.hpl
 /hop/config/projects/default/*.hpl
 /hop/config/projects/default/*/*.hpl
+/hop/plugins/
+
+/backend/staticfiles/
 
 /storage
 frontend/.env

@@ -38,6 +38,14 @@ SUPERSET_KEYCLOAK_ADMIN_PASSWORD=os.getenv('SUPERSET_KEYCLOAK_ADMIN_PASSWORD')
 SUPERSET_DATABASE_URI=os.getenv('SUPERSET_DATABASE_URI')
 SECRET_KEY = os.getenv('SUPERSET_SECRET_KEY')
 
+# Controls TLS certificate verification when communicating with Keycloak or
+# other external services. Defaults to True.
+SUPERSET_VERIFY_SSL = os.getenv('SUPERSET_VERIFY_SSL', 'True').lower() in (
+    'true',
+    '1',
+    't',
+)
+
 # Set the authentication type to OAuth
 AUTH_TYPE = AUTH_OAUTH
 OAUTH_PROVIDERS = [
@@ -192,7 +200,7 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
             try:
                 me = self.appbuilder.sm.oauth_remotes[provider].get(
                     f"{SUPERSET_KEYCLOAK_EXTERNAL_URL}/realms/{SUPERSET_KEYCLOAK_APP_REALM}/protocol/openid-connect/userinfo",
-                    verify=False
+                    verify=SUPERSET_VERIFY_SSL,
                 )
                 me.raise_for_status()
                 data = me.json()
@@ -226,11 +234,13 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
         from superset.extensions import feature_flag_manager
 
 
-        keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL,
-                                client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
-                                realm_name=SUPERSET_KEYCLOAK_APP_REALM,
-                                client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET,
-                                verify=False) # @todo : add env var for local dev
+        keycloak_openid = KeycloakOpenID(
+            server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL,
+            client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
+            realm_name=SUPERSET_KEYCLOAK_APP_REALM,
+            client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET,
+            verify=SUPERSET_VERIFY_SSL,
+        )
 
         # next, try to login using Basic Auth
         access_token = request.headers.get('X-KeycloakToken')
@@ -289,11 +299,13 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
         if api_token:
             # Register user if he did his first sign-in via frontend
             try:
-                keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL,
-                                                 client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
-                                                 realm_name=SUPERSET_KEYCLOAK_APP_REALM,
-                                                 client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET,
-                                                 verify=False)
+                keycloak_openid = KeycloakOpenID(
+                    server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL,
+                    client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
+                    realm_name=SUPERSET_KEYCLOAK_APP_REALM,
+                    client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET,
+                    verify=SUPERSET_VERIFY_SSL,
+                )
                 KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" + keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
                 options = {"verify_signature": True,
                            "verify_aud": False, "verify_exp": True}
@@ -333,23 +345,26 @@ class CustomSupersetSecurityManager(SupersetSecurityManager):
             # Check if user has active session every 10 sec, else logout
             if access_token and (last_check is None or (ts - last_check) > 10):
                 try:
-                    keycloak_openid = KeycloakOpenID(server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL,
-                                                     client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
-                                                     realm_name=SUPERSET_KEYCLOAK_APP_REALM,
-                                                     client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET,
-                                                     verify=False)
+                    keycloak_openid = KeycloakOpenID(
+                        server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL,
+                        client_id=SUPERSET_KEYCLOAK_CLIENT_ID,
+                        realm_name=SUPERSET_KEYCLOAK_APP_REALM,
+                        client_secret_key=SUPERSET_KEYCLOAK_CLIENT_SECRET,
+                        verify=SUPERSET_VERIFY_SSL,
+                    )
                     KEYCLOAK_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\n" + keycloak_openid.public_key() + "\n-----END PUBLIC KEY-----"
                     options = {"verify_signature": True,
                                "verify_aud": False, "verify_exp": True}
                     full_data = keycloak_openid.decode_token(access_token, key=KEYCLOAK_PUBLIC_KEY, options=options)
 
                     keycloak_admin = KeycloakAdmin(
-                            server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL + "/auth",
-                            username=SUPERSET_KEYCLOAK_ADMIN_USERNAME,
-                            password=SUPERSET_KEYCLOAK_ADMIN_PASSWORD,
-                            realm_name=SUPERSET_KEYCLOAK_APP_REALM,
-                            user_realm_name="master",
-                            verify=False)
+                        server_url=SUPERSET_KEYCLOAK_EXTERNAL_URL + "/auth",
+                        username=SUPERSET_KEYCLOAK_ADMIN_USERNAME,
+                        password=SUPERSET_KEYCLOAK_ADMIN_PASSWORD,
+                        realm_name=SUPERSET_KEYCLOAK_APP_REALM,
+                        user_realm_name="master",
+                        verify=SUPERSET_VERIFY_SSL,
+                    )
                     sessions = keycloak_admin.get_sessions(user_id=full_data["sub"])
 
                     if (len(sessions) > 0):
