@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "pipeline",
     "data",
     "hop",
+    "shared-datasets",
     "rest_framework.authtoken",
     "rest_framework",
     "corsheaders",
@@ -190,7 +191,10 @@ KEYCLOAK_CONFIG = {
     "KEYCLOAK_ADMIN_USERNAME": os.getenv("KEYCLOAK_ADMIN_USERNAME"),
     "KEYCLOAK_ADMIN_PASSWORD": os.getenv("KEYCLOAK_ADMIN_PASSWORD"),
     "KEYCLOAK_REDIRECT_URI": os.getenv("KEYCLOAK_REDIRECT_URI"),
+    
 }
+
+SERVICE_USER_PASSWORD = os.environ.get("SERVICE_USER_PASSWORD", "JFKLDSF4562£µFEZF556ZEF6ZEF")
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
