@@ -15,6 +15,12 @@ from shared_datasets.views import (
     SharedDatasetView,
     DatasetDownloadView,
 )
+from shared_datasets.views import (
+    TokenManagementView,
+    TokenRevokeView,
+    SharedDatasetView,
+    DatasetDownloadView,
+)
 
 
 urlpatterns = [
