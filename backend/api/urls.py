@@ -9,18 +9,8 @@ from hop.views import GetSingleHopAPIView, NewHopAPIView
 from auth import views as auth_view
 from roles import views as role_view
 from supersets import views as superset_view
-from shared_datasets.views import (
-    TokenManagementView,
-    TokenRevokeView,
-    SharedDatasetView,
-    DatasetDownloadView,
-)
-from shared_datasets.views import (
-    TokenManagementView,
-    TokenRevokeView,
-    SharedDatasetView,
-    DatasetDownloadView,
-)
+
+
 
 
 urlpatterns = [
@@ -87,11 +77,7 @@ urlpatterns = [
     # endpoint for uploading data
     path("hop/new/", NewHopAPIView.as_view()),
     path("hop/<str:filename>/", GetSingleHopAPIView.as_view()),
-    
-    
-    # endpoints for speedymesh integration
-    path('tokens/', TokenManagementView.as_view(), name='token_management'),
-    path('tokens/<str:token_id>/', TokenRevokeView.as_view(), name='token_revoke'),
-    path('shared_datasets/', SharedDatasetView.as_view(), name='shared_datasets'),
-    path('shared_datasets/<str:dataset_id>/', DatasetDownloadView.as_view(), name='dataset_download'),
+
+    path("shared-datasets/", include("shared_datasets.urls")),
+
 ]

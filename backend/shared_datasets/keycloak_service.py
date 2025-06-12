@@ -1,6 +1,10 @@
 import requests
 
 class KeycloakService:
+    """
+    Service for interacting with Keycloak for shared datasets module.
+    Handles service user creation, and token exchange for offline access.
+    """
     def __init__(self, settings):
         self.settings = settings
         self.admin_url = f"{settings.KEYCLOAK_CONFIG['KEYCLOAK_SERVER_URL']}/admin/realms/{settings.KEYCLOAK_CONFIG['KEYCLOAK_REALM']}"
@@ -8,31 +12,57 @@ class KeycloakService:
         self.admin_user = settings.KEYCLOAK_CONFIG["KEYCLOAK_ADMIN_USERNAME"]
         self.admin_password = settings.KEYCLOAK_CONFIG["KEYCLOAK_ADMIN_PASSWORD"]
         self.client_id = settings.KEYCLOAK_CONFIG["KEYCLOAK_CLIENT_ID"]
-    
+   
     def get_admin_token(self):
-        resp = requests.post(
-            self.token_url,
-            data={
-                "grant_type": "password",
-                "client_id": "admin-cli",
-                "username": self.admin_user,
-                "password": self.admin_password,
-            },
+        admin_token_url = self.token_url.replace(
+            f"/realms/{self.settings.KEYCLOAK_CONFIG['KEYCLOAK_REALM']}/",
+            "/realms/master/"
         )
+        resp = requests.post(
+            admin_token_url,
+        data={
+            "grant_type": "password",
+            "client_id": "admin-cli",
+            "username": self.admin_user,
+            "password": self.admin_password,
+        },
+        verify=False
+    )
         if resp.status_code != 200:
             raise ValueError("Failed to authenticate as Keycloak admin")
         return resp.json()["access_token"]
 
-    def create_or_get_service_user(self, username, password):
+    def ensure_role_exists(self, role_name):
         """
-        Create a service user if it doesn't exist.
-        Service users are used for generating offline tokens for dataset sharing.
+        Ensure the given role exists in Keycloak. If not, create it.
         """
         headers = {"Authorization": f"Bearer {self.get_admin_token()}", "Content-Type": "application/json"}
-        resp = requests.get(f"{self.admin_url}/users?username={username}", headers=headers)
+        # Check if role exists
+        resp = requests.get(f"{self.admin_url}/roles/{role_name}", headers=headers, verify=False)
+        if resp.status_code == 404:
+            # Create the role
+            create_resp = requests.post(
+                f"{self.admin_url}/roles",
+                json={"name": role_name, "description": f"Role for {role_name} scope"},
+                headers=headers,
+                verify=False
+            )
+            create_resp.raise_for_status()
+        elif resp.status_code != 200:
+            raise ValueError(f"Failed to check or create role {role_name}")
+
+    def create_or_get_service_user(self, username, password):
+        headers = {"Authorization": f"Bearer {self.get_admin_token()}", "Content-Type": "application/json"}
+
+        # Ensure the 'shared_datasets:read' role exists
+        self.ensure_role_exists("shared_datasets:read")
+
+        # Check if user exists
+        resp = requests.get(f"{self.admin_url}/users?username={username}", headers=headers, verify=False)
         resp.raise_for_status()
         users = resp.json()
         if not users:
+            # Create the user
             create_resp = requests.post(
                 f"{self.admin_url}/users",
                 json={
@@ -44,13 +74,16 @@ class KeycloakService:
                         "temporary": False
                     }]
                 },
-                headers=headers
+                headers=headers,
+                verify=False
             )
             if create_resp.status_code not in [201, 204]:
                 raise ValueError("Failed to create service user")
-        
-        # Ensure the client has offline_access scope enabled
+        # Always ensure client has offline_access
         self.ensure_client_has_offline_access()
+        # Always get and return the offline token
+        result = self.get_service_token(username, password)
+        return result["refresh_token"]
 
     def ensure_client_has_offline_access(self):
         """
@@ -65,7 +98,8 @@ class KeycloakService:
         # Get the client
         clients_resp = requests.get(
             f"{self.admin_url}/clients?clientId={self.client_id}",
-            headers=headers
+            headers=headers,
+            verify=False
         )
         clients_resp.raise_for_status()
         clients = clients_resp.json()
@@ -93,28 +127,48 @@ class KeycloakService:
             modify_resp = requests.put(
                 f"{self.admin_url}/clients/{client['id']}",
                 json=client,
-                headers=headers
+                headers=headers,
+                verify=False
             )
             modify_resp.raise_for_status()
 
     def get_service_token(self, username, password):
-        """
-        Get an offline token for a service user.
-        Offline tokens don't expire and are perfect for long-term API access.
-        """
-        resp = requests.post(
-            self.token_url,
-            data={
+            """
+            Get an offline token for a service user using a confidential client.
+            """
+            data = {
                 "grant_type": "password",
                 "client_id": self.client_id,
-                "username": username,
-                "password": password,
-                "scope": "offline_access"  # Request an offline token
-            }
-        )
+            "client_secret": self.settings.KEYCLOAK_CONFIG["KEYCLOAK_CLIENT_SECRET_KEY"],
+            "username": username,
+            "password": password,
+            "scope": "offline_access"
+        }
+            resp = requests.post(
+                self.token_url,
+                data=data,
+                verify=False
+            )
+            if resp.status_code != 200:
+                print("Status code:", resp.status_code)
+                print("Response text:", resp.text)
+                try:
+                    print("JSON error:", resp.json())
+                except Exception:
+                    pass
+                raise ValueError("Failed to get service token")
+            return resp.json()
+    
+
+    def get_access_token_from_refresh(self, refresh_token):
+        data = {
+            "grant_type": "refresh_token",
+            "client_id": self.client_id,
+            "client_secret": self.settings.KEYCLOAK_CONFIG["KEYCLOAK_CLIENT_SECRET_KEY"],
+            "refresh_token": refresh_token,
+        }
+        resp = requests.post(self.token_url, data=data, verify=False)
         if resp.status_code != 200:
-            raise ValueError("Failed to get service token")
-        
-        # Return the refresh token (offline token) instead of the access token
-        # Offline tokens don't expire and can be used for long-term access
-        return resp.json()["refresh_token"]
+            raise ValueError("Failed to get access token from refresh token")
+        return resp.json()["access_token"]
+
