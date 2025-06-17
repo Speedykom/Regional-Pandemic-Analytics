@@ -81,14 +81,6 @@ export const baseQuery: BaseQueryFn<
         type: 'auth/clearCredentials',
       });
       router.push('/');
-    } else {
-      throw new Error(
-        result.error.data &&
-        typeof result.error.data === 'object' &&
-        'message' in result.error.data
-          ? (result.error.data.message as string)
-          : 'Unknown error'
-      );
     }
   }
 
