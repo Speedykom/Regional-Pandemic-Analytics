@@ -26,7 +26,6 @@ class KeycloakService:
             "username": self.admin_user,
             "password": self.admin_password,
         },
-        verify=False
     )
         if resp.status_code != 200:
             raise ValueError("Failed to authenticate as Keycloak admin")
@@ -38,14 +37,13 @@ class KeycloakService:
         """
         headers = {"Authorization": f"Bearer {self.get_admin_token()}", "Content-Type": "application/json"}
         # Check if role exists
-        resp = requests.get(f"{self.admin_url}/roles/{role_name}", headers=headers, verify=False)
+        resp = requests.get(f"{self.admin_url}/roles/{role_name}", headers=headers)
         if resp.status_code == 404:
             # Create the role
             create_resp = requests.post(
                 f"{self.admin_url}/roles",
                 json={"name": role_name, "description": f"Role for {role_name} scope"},
                 headers=headers,
-                verify=False
             )
             create_resp.raise_for_status()
         elif resp.status_code != 200:
@@ -58,7 +56,7 @@ class KeycloakService:
         self.ensure_role_exists("shared_datasets:read")
 
         # Check if user exists
-        resp = requests.get(f"{self.admin_url}/users?username={username}", headers=headers, verify=False)
+        resp = requests.get(f"{self.admin_url}/users?username={username}", headers=headers, )
         resp.raise_for_status()
         users = resp.json()
         if not users:
@@ -75,7 +73,6 @@ class KeycloakService:
                     }]
                 },
                 headers=headers,
-                verify=False
             )
             if create_resp.status_code not in [201, 204]:
                 raise ValueError("Failed to create service user")
@@ -99,7 +96,6 @@ class KeycloakService:
         clients_resp = requests.get(
             f"{self.admin_url}/clients?clientId={self.client_id}",
             headers=headers,
-            verify=False
         )
         clients_resp.raise_for_status()
         clients = clients_resp.json()
@@ -128,7 +124,6 @@ class KeycloakService:
                 f"{self.admin_url}/clients/{client['id']}",
                 json=client,
                 headers=headers,
-                verify=False
             )
             modify_resp.raise_for_status()
 
@@ -147,7 +142,6 @@ class KeycloakService:
             resp = requests.post(
                 self.token_url,
                 data=data,
-                verify=False
             )
             if resp.status_code != 200:
                 print("Status code:", resp.status_code)
@@ -167,7 +161,7 @@ class KeycloakService:
             "client_secret": self.settings.KEYCLOAK_CONFIG["KEYCLOAK_CLIENT_SECRET_KEY"],
             "refresh_token": refresh_token,
         }
-        resp = requests.post(self.token_url, data=data, verify=False)
+        resp = requests.post(self.token_url, data=data)
         if resp.status_code != 200:
             raise ValueError("Failed to get access token from refresh token")
         return resp.json()["access_token"]
