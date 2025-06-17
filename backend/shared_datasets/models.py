@@ -7,6 +7,7 @@ class AccessToken(models.Model):
     allowed_objects = ArrayField(models.CharField(max_length=255))  # Array of MinIO object IDs
     created_at = models.DateTimeField(auto_now_add=True)
     is_revoked = models.BooleanField(default=False)
+    description = models.TextField(blank=True, null=True)  # Added description field
 
     class Meta:
         db_table = 'shared_datasets_access_tokens'
