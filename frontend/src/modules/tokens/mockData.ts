@@ -67,6 +67,76 @@ export const mockTokens: Token[] = [
     is_active: false,
     last_used: '2023-10-01T16:45:00Z',
   },
+  {
+    id: '4',
+    name: 'CDC Data Sharing Initiative',
+    datasets: [mockDatasets[0], mockDatasets[2], mockDatasets[4]],
+    created_at: '2023-09-10T11:20:00Z',
+    expires_at: '2024-09-10T11:20:00Z',
+    is_active: true,
+    last_used: '2023-12-01T14:22:00Z',
+  },
+  {
+    id: '5',
+    name: 'Emergency Response Team',
+    datasets: [mockDatasets[4], mockDatasets[2]],
+    created_at: '2023-10-05T08:45:00Z',
+    is_active: true,
+    last_used: '2023-12-15T09:10:00Z',
+  },
+  {
+    id: '6',
+    name: 'Academic Research Portal',
+    datasets: [mockDatasets[1], mockDatasets[3]],
+    created_at: '2023-11-12T16:30:00Z',
+    expires_at: '2024-11-12T16:30:00Z',
+    is_active: true,
+    last_used: '2023-12-10T13:45:00Z',
+  },
+  {
+    id: '7',
+    name: 'Public Health Dashboard',
+    datasets: [mockDatasets[0]],
+    created_at: '2023-12-01T10:15:00Z',
+    expires_at: '2024-03-01T10:15:00Z',
+    is_active: true,
+    last_used: '2023-12-20T11:30:00Z',
+  },
+  {
+    id: '8',
+    name: 'Policy Analysis Team',
+    datasets: [mockDatasets[1], mockDatasets[3], mockDatasets[4]],
+    created_at: '2023-05-20T13:40:00Z',
+    expires_at: '2023-11-20T13:40:00Z',
+    is_active: false,
+    last_used: '2023-09-15T10:20:00Z',
+  },
+  {
+    id: '9',
+    name: 'International Cooperation',
+    datasets: mockDatasets,
+    created_at: '2023-03-15T09:25:00Z',
+    is_active: true,
+    last_used: '2023-12-18T15:55:00Z',
+  },
+  {
+    id: '10',
+    name: 'Temporary Data Export 1',
+    datasets: [mockDatasets[2]],
+    created_at: '2023-12-10T14:50:00Z',
+    expires_at: '2023-12-25T14:50:00Z',
+    is_active: false,
+    last_used: '2023-12-12T16:20:00Z',
+  },
+  {
+    id: '11',
+    name: 'Temporary Data Export 2',
+    datasets: [mockDatasets[2]],
+    created_at: '2023-12-11T14:50:00Z',
+    expires_at: '2023-12-22T14:50:00Z',
+    is_active: false,
+    last_used: '2023-12-12T16:20:00Z',
+  },
 ];
 
 // Simulate API responses
@@ -81,12 +151,21 @@ export const getMockDatasets = () => {
   });
 };
 
-export const getMockTokens = () => {
+export const getMockTokens = (page: number = 1, limit: number = 10) => {
   return new Promise((resolve) => {
     setTimeout(() => {
+      const startIndex = (page - 1) * limit;
+      const endIndex = startIndex + limit;
+      const paginatedTokens = mockTokens.slice(startIndex, endIndex);
+
       resolve({
-        tokens: mockTokens,
+        tokens: paginatedTokens,
         count: mockTokens.length,
+        page,
+        limit,
+        totalPages: Math.ceil(mockTokens.length / limit),
+        hasNext: endIndex < mockTokens.length,
+        hasPrev: page > 1,
       });
     }, 500);
   });

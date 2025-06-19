@@ -221,6 +221,7 @@ const CreateTokenModal: React.FC<CreateTokenModalProps> = ({
                       icon={XMarkIcon}
                       onClick={handleClose}
                       size="xs"
+                      className="text-gray-400 hover:text-gray-600 hover:bg-gray-100"
                     />
                   </div>
 
@@ -313,7 +314,11 @@ const CreateTokenModal: React.FC<CreateTokenModalProps> = ({
                   </div>
 
                   <div className="flex justify-end space-x-3 mt-6">
-                    <Button variant="secondary" onClick={handleClose}>
+                    <Button
+                      variant="secondary"
+                      onClick={handleClose}
+                      className="text-gray-700 border-gray-300 hover:bg-gray-50 hover:text-gray-900 focus:ring-gray-200"
+                    >
                       {t('tokens.cancel')}
                     </Button>
                     <Button

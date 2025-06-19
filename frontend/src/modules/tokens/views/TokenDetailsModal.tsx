@@ -70,6 +70,7 @@ const TokenDetailsModal: React.FC<TokenDetailsModalProps> = ({
                     icon={XMarkIcon}
                     onClick={onClose}
                     size="xs"
+                    className="text-gray-400 hover:text-gray-600 hover:bg-gray-100"
                   />
                 </div>
 
@@ -160,7 +161,11 @@ const TokenDetailsModal: React.FC<TokenDetailsModalProps> = ({
                 </div>
 
                 <div className="flex justify-end mt-6">
-                  <Button onClick={onClose} variant="secondary">
+                  <Button
+                    onClick={onClose}
+                    variant="secondary"
+                    className="text-gray-700 border-gray-300 hover:bg-gray-50 hover:text-gray-900 focus:ring-gray-200"
+                  >
                     {t('tokens.close')}
                   </Button>
                 </div>

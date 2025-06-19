@@ -39,11 +39,14 @@ export const tokensApi = createApi({
       providesTags: ['Dataset'],
     }),
 
-    // Get all tokens for the authenticated user
-    getTokens: builder.query<TokenListResponse, void>({
-      queryFn: async () => {
+    // Get all tokens for the authenticated user with pagination
+    getTokens: builder.query<
+      TokenListResponse,
+      { page?: number; limit?: number }
+    >({
+      queryFn: async ({ page = 1, limit = 10 } = {}) => {
         try {
-          const data = await getMockTokens();
+          const data = await getMockTokens(page, limit);
           return { data: data as TokenListResponse };
         } catch (error) {
           return { error: { status: 500, data: 'Failed to fetch tokens' } };

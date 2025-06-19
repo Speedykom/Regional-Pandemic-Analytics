@@ -431,6 +431,25 @@ const enTranslation = {
     modelLastDagRun: 'Last DAG run',
   },
 
+  common: {
+    loading: 'Loading...',
+    id: 'ID',
+    pagination: {
+      showing: 'Showing {{from}} to {{to}} of {{total}} {{items}}',
+      pageOf: 'Page {{current}} of {{total}}',
+      totalItems: '{{count}} total items',
+      first: 'First',
+      previous: 'Previous',
+      next: 'Next',
+      last: 'Last',
+      firstPage: 'First page',
+      previousPage: 'Previous page',
+      nextPage: 'Next page',
+      lastPage: 'Last page',
+      goToPage: 'Go to page {{page}}',
+    },
+  },
+
   tokens: {
     tokenManagement: 'Token Management',
     createNewToken: 'Create New Token',
@@ -482,8 +501,13 @@ const enTranslation = {
     createdAt: 'Created',
     created: 'Created',
     size: 'Size',
-    description: 'Description',
-    datasetCount: 'dataset(s)',
+    description: 'Generate and manage access tokens for secure dataset sharing',
+    activeTokens: 'Active Tokens',
+    noTokensYet: 'No tokens yet',
+    expired: 'Expired',
+    tokens: 'tokens',
+    datasetCount_one: '{{count}} dataset',
+    datasetCount_other: '{{count}} datasets',
   },
 };
 

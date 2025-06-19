@@ -34,6 +34,11 @@ export interface CreateTokenResponse {
 export interface TokenListResponse {
   tokens: Token[];
   count: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
 }
 
 export interface DatasetListResponse {

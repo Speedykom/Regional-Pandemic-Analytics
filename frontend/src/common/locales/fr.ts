@@ -443,6 +443,25 @@ const frTranslation = {
     modelLastDagRun: 'Dernière exécution de DAG',
   },
 
+  common: {
+    loading: 'Chargement...',
+    id: 'ID',
+    pagination: {
+      showing: 'Affichage de {{from}} à {{to}} sur {{total}} {{items}}',
+      pageOf: 'Page {{current}} sur {{total}}',
+      totalItems: '{{count}} éléments au total',
+      first: 'Premier',
+      previous: 'Précédent',
+      next: 'Suivant',
+      last: 'Dernier',
+      firstPage: 'Première page',
+      previousPage: 'Page précédente',
+      nextPage: 'Page suivante',
+      lastPage: 'Dernière page',
+      goToPage: 'Aller à la page {{page}}',
+    },
+  },
+
   tokens: {
     tokenManagement: 'Gestion des jetons',
     createNewToken: 'Créer un nouveau jeton',
@@ -495,8 +514,14 @@ const frTranslation = {
     createdAt: 'Créé',
     created: 'Créé',
     size: 'Taille',
-    description: 'Description',
-    datasetCount: 'ensemble(s) de données',
+    description:
+      "Générer et gérer les jetons d'accès pour le partage sécurisé des données",
+    activeTokens: 'Jetons actifs',
+    noTokensYet: 'Aucun jeton pour le moment',
+    expired: 'Expiré',
+    tokens: 'jetons',
+    datasetCount_one: '{{count}} ensemble de données',
+    datasetCount_other: '{{count}} ensembles de données',
   },
 };
 
