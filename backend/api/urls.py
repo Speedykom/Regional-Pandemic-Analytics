@@ -78,6 +78,6 @@ urlpatterns = [
     path("hop/new/", NewHopAPIView.as_view()),
     path("hop/<str:filename>/", GetSingleHopAPIView.as_view()),
 
-    path("shared-datasets/", include("shared_datasets.urls")),
+    path("datasets/", include("shared_datasets.urls")),
 
 ]
