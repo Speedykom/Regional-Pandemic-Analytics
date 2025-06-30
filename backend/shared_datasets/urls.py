@@ -17,9 +17,8 @@ urlpatterns = [
     path('tokens/<str:token_id>/', TokenDetailView.as_view(), name='token_detail'),  # GET=details, DELETE=revoke
     
     # Dataset management
-    path('datasets/', DatasetListView.as_view(), name='dataset_list'),  # GET=list datasets
-    path('datasets/<str:file_name>/download/', DatasetDownloadView.as_view(), name='dataset_download'),
-    
+    path('list/', DatasetListView.as_view(), name='dataset_list'),  # GET=list datasets
+    path('<str:file_name>/download/', DatasetDownloadView.as_view(), name='dataset_download'),    
     # Legacy/shared endpoint
     path('', SharedDatasetView.as_view(), name='shared_datasets'),
 ]

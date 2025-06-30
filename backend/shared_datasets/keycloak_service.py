@@ -77,7 +77,7 @@ class KeycloakService:
                     # Delete the user to avoid inconsistent state
                     del_resp = requests.delete(f"{self.admin_url}/users/{user_id}", headers=headers)
                     if del_resp.status_code not in [204, 200]:
-                    raise ValueError("Failed to set user password; user deleted to avoid inconsistent state")
+                        raise ValueError("Failed to set user password; user deleted to avoid inconsistent state")
         # Always ensure client has offline_access
         self.ensure_client_has_offline_access()
         # Always get and return the offline token
