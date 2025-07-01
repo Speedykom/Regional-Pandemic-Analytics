@@ -152,6 +152,9 @@ services:
       keycloak:
         condition: service_healthy
         restart: true
+    networks:
+      - backup_network
+      - default
   minio-mc:
     image: minio/mc
     container_name: minio-mc
@@ -221,6 +224,9 @@ services:
       interval: 10s
       timeout: 3s
       retries: 3
+    networks:
+      - backup_network
+      - default
 
   backend:
     container_name: backend
@@ -240,6 +246,8 @@ services:
       - DEVELOPMENT_MODE=${BACKEND_DEVELOPMENT_MODE}
       - KEYCLOAK_ADMIN_USERNAME=${BACKEND_KEYCLOAK_ADMIN_USERNAME}
       - KEYCLOAK_ADMIN_PASSWORD=${BACKEND_KEYCLOAK_ADMIN_PASSWORD}
+      - KEYCLOAK_ADMIN_SERVER_URL=${BACKEND_KEYCLOAK_ADMIN_SERVER_URL}
+      - SERVICE_USER_PASSWORD=${BACKEND_SERVICE_USER_PASSWORD}
       - KEYCLOAK_REDIRECT_URI=${BACKEND_PUBLIC_URL}
       - APP_REALM=${BACKEND_APP_REALM}
       - APP_CLIENT_ID=${BACKEND_APP_CLIENT_ID}
@@ -308,6 +316,9 @@ services:
       - POSTGRES_PASSWORD=${DRUID_POSTGRES_PASSWORD}
       - POSTGRES_USER=${DRUID_POSTGRES_USER}
       - POSTGRES_DB=${DRUID_POSTGRES_DB}
+    networks:
+      - backup_network
+      - default
 
   # Need 3.5 or later for container nodes
   zookeeper:
@@ -401,6 +412,9 @@ services:
       - POSTGRES_PASSWORD=${SUPERSET_POSTGRES_PASSWORD}
       - POSTGRES_USER=${SUPERSET_POSTGRES_USER}
       - POSTGRES_DB=${SUPERSET_POSTGRES_DB}
+    networks:
+      - backup_network
+      - default
 
   superset:
     <<: *superset
@@ -470,6 +484,9 @@ services:
       test: [ "CMD", "pg_isready", "-U", "airflow" ]
       interval: 5s
       retries: 5
+    networks:
+      - backup_network
+      - default
 
   airflow-triggerer:
     <<: *airflow
@@ -527,6 +544,9 @@ services:
       - POSTGRES_DB=${KEYCLOAK_POSTGRES_DB}
     healthcheck:
       test: "exit 0"
+    networks:
+      - backup_network
+      - default
 
   keycloak:
     image: quay.io/keycloak/keycloak:20.0.0
@@ -630,3 +650,8 @@ services:
     image: mkodockx/docker-clamav:alpine
     ports:
       - "3310:3310"
+
+networks:
+  default:
+  backup_network:
+    external: true

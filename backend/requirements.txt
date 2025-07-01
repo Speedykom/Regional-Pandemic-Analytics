@@ -43,7 +43,6 @@ django-environ==0.10.0
 django-minio-storage==0.5.4
 django-storages==1.13.2
 djangorestframework==3.14.0
-django-rest-swagger==2.2.0
 dnspython==2.3.0
 docutils==0.20.1
 drf-yasg==1.21.5

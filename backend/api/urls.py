@@ -11,6 +11,8 @@ from roles import views as role_view
 from supersets import views as superset_view
 
 
+
+
 urlpatterns = [
     
     ## ---------------------- Auth Endpoints -----------------------------------
@@ -75,4 +77,7 @@ urlpatterns = [
     # endpoint for uploading data
     path("hop/new/", NewHopAPIView.as_view()),
     path("hop/<str:filename>/", GetSingleHopAPIView.as_view()),
+
+    path("datasets/", include("shared_datasets.urls")),
+
 ]
