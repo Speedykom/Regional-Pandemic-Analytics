@@ -43,9 +43,6 @@ const TokenListSkeleton: React.FC<TokenListSkeletonProps> = ({ rows = 5 }) => {
                 {t('tokens.createdAt')}
               </TableHeaderCell>
               <TableHeaderCell className="px-6 py-4 text-center text-sm font-semibold text-gray-900 uppercase tracking-wide">
-                {t('tokens.expires')}
-              </TableHeaderCell>
-              <TableHeaderCell className="px-6 py-4 text-center text-sm font-semibold text-gray-900 uppercase tracking-wide">
                 {t('status')}
               </TableHeaderCell>
               <TableHeaderCell className="px-6 py-4 text-center text-sm font-semibold text-gray-900 uppercase tracking-wide">
@@ -108,12 +105,6 @@ const TokenListSkeleton: React.FC<TokenListSkeletonProps> = ({ rows = 5 }) => {
                 <TableCell className="px-6 py-4 text-center">
                   <div className="h-4 bg-gray-200 rounded w-20 mx-auto mb-1"></div>
                   <div className="h-3 bg-gray-200 rounded w-16 mx-auto"></div>
-                </TableCell>
-
-                {/* Expires Column */}
-                <TableCell className="px-6 py-4 text-center">
-                  <div className="h-4 bg-gray-200 rounded w-20 mx-auto mb-1"></div>
-                  <div className="h-3 bg-gray-200 rounded w-12 mx-auto"></div>
                 </TableCell>
 
                 {/* Status Column */}

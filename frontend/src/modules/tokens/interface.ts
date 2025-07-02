@@ -1,47 +1,32 @@
 export interface Dataset {
   id: string;
   name: string;
-  size: number;
-  created_at: string;
+  size?: number;
+  created_at?: string;
   description?: string;
 }
 
 export interface Token {
-  id: string;
-  name: string;
-  datasets: Dataset[];
+  user_id: string;
+  allowed_objects: string[];
   created_at: string;
-  expires_at?: string;
-  is_active: boolean;
-  last_used?: string;
+  is_revoked: boolean;
+  description?: string;
 }
 
 export interface CreateTokenRequest {
-  name: string;
-  dataset_ids: string[];
-  expires_at?: string;
+  description?: string;
+  allowed_objects: string[];
 }
 
 export interface CreateTokenResponse {
-  id: string;
   token: string;
-  name: string;
-  datasets: Dataset[];
-  created_at: string;
-  expires_at?: string;
 }
 
 export interface TokenListResponse {
   tokens: Token[];
-  count: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-  hasNext: boolean;
-  hasPrev: boolean;
 }
 
 export interface DatasetListResponse {
-  datasets: Dataset[];
-  count: number;
+  datasets: string[];
 }

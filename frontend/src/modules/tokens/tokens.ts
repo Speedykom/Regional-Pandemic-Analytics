@@ -1,87 +1,57 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
+import { baseQuery } from '@/common/redux/api';
 import {
   CreateTokenRequest,
   CreateTokenResponse,
   TokenListResponse,
   DatasetListResponse,
 } from './interface';
-import {
-  getMockDatasets,
-  getMockTokens,
-  createMockToken,
-  mockTokens,
-} from './mockData';
-
-// Create a mock base query that simulates API calls
-const mockBaseQuery = fetchBaseQuery({
-  baseUrl: '/mock-api/',
-  fetchFn: async () => {
-    // This will never actually be called, we override all endpoints
-    throw new Error('Mock API should not make real HTTP requests');
-  },
-});
 
 export const tokensApi = createApi({
   reducerPath: 'tokensApi',
-  baseQuery: mockBaseQuery,
+  baseQuery,
   tagTypes: ['Token', 'Dataset'],
   endpoints: (builder) => ({
     // Get all datasets for the authenticated user
     getDatasets: builder.query<DatasetListResponse, void>({
-      queryFn: async () => {
-        try {
-          const data = await getMockDatasets();
-          return { data: data as DatasetListResponse };
-        } catch (error) {
-          return { error: { status: 500, data: 'Failed to fetch datasets' } };
-        }
-      },
+      query: () => '/datasets/list/',
+      transformResponse: (response: string[]) => ({
+        datasets: response,
+      }),
       providesTags: ['Dataset'],
     }),
 
-    // Get all tokens for the authenticated user with pagination
-    getTokens: builder.query<
-      TokenListResponse,
-      { page?: number; limit?: number }
-    >({
-      queryFn: async ({ page = 1, limit = 10 } = {}) => {
-        try {
-          const data = await getMockTokens(page, limit);
-          return { data: data as TokenListResponse };
-        } catch (error) {
-          return { error: { status: 500, data: 'Failed to fetch tokens' } };
-        }
-      },
+    // Get all tokens for the authenticated user
+    getTokens: builder.query<TokenListResponse, void>({
+      query: () => '/datasets/tokens/',
+      transformResponse: (response: any[]) => ({
+        tokens: response,
+      }),
       providesTags: ['Token'],
     }),
 
     // Create a new token
     createToken: builder.mutation<CreateTokenResponse, CreateTokenRequest>({
-      queryFn: async (body) => {
-        try {
-          const data = await createMockToken(body);
-          return { data: data as CreateTokenResponse };
-        } catch (error) {
-          return { error: { status: 500, data: 'Failed to create token' } };
-        }
-      },
+      query: (body: CreateTokenRequest) => ({
+        url: '/datasets/tokens/create/',
+        method: 'POST',
+        body: {
+          allowed_objects: body.allowed_objects,
+          description: body.description,
+        },
+      }),
+      transformResponse: (response: { token: string }) => ({
+        token: response.token,
+      }),
       invalidatesTags: ['Token'],
     }),
 
-    // Delete a token
+    // Delete a token - we need to use the actual token value as the ID
     deleteToken: builder.mutation<void, string>({
-      queryFn: async (id) => {
-        try {
-          // Simulate deletion by removing from mock data
-          const index = mockTokens.findIndex((token) => token.id === id);
-          if (index > -1) {
-            mockTokens.splice(index, 1);
-          }
-          return { data: undefined };
-        } catch (error) {
-          return { error: { status: 500, data: 'Failed to delete token' } };
-        }
-      },
+      query: (tokenId: string) => ({
+        url: `/datasets/tokens/${tokenId}/`,
+        method: 'DELETE',
+      }),
       invalidatesTags: ['Token'],
     }),
   }),

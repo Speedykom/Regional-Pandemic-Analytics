@@ -448,6 +448,8 @@ const enTranslation = {
       lastPage: 'Last page',
       goToPage: 'Go to page {{page}}',
     },
+    cancel: 'Cancel',
+    warning: 'Warning',
   },
 
   tokens: {
@@ -508,6 +510,29 @@ const enTranslation = {
     tokens: 'tokens',
     datasetCount_one: '{{count}} dataset',
     datasetCount_other: '{{count}} datasets',
+    // Delete token specific translations
+    tokenId: 'Token ID',
+    enterTokenId: 'Enter the token ID to delete',
+    tokenIdHint:
+      'This is the token string that was provided when the token was created',
+    confirmationText: 'Confirmation',
+    confirmationTextHint:
+      'Type "Delete token" or "Supprimer le jeton" to confirm deletion',
+    deleteWarning:
+      'This action cannot be undone. The token will be permanently revoked and cannot be used for future API requests.',
+    tokenIdRequired: 'Token ID is required',
+    confirmationTextMismatch:
+      'Please type "Delete token" or "Supprimer le jeton" to confirm',
+    tokenRevokedSuccessfully: 'Token revoked successfully',
+    tokenNotFound: 'Token not found or does not belong to you',
+    tokenRevocationFailed: 'Failed to revoke token',
+    revoked: 'Revoked',
+    revoke: 'Revoke',
+    confirmRevocation:
+      'Are you sure you want to revoke this token? This action cannot be undone.',
+    unnamedToken: 'Unnamed Token',
+    datasetFile: 'File',
+    confirmationPlaceholder: 'Type "Delete token" or "Supprimer le jeton"',
   },
 };
 

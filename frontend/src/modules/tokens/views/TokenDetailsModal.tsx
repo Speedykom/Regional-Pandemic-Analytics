@@ -27,10 +27,6 @@ const TokenDetailsModal: React.FC<TokenDetailsModalProps> = ({
     return new Date(dateString).toLocaleDateString();
   };
 
-  const formatSize = (size: number) => {
-    return (size / 1024 / 1024).toFixed(2);
-  };
-
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onClose}>
@@ -78,14 +74,16 @@ const TokenDetailsModal: React.FC<TokenDetailsModalProps> = ({
                   <Card>
                     <div className="flex items-center space-x-3 mb-3">
                       <KeyIcon className="h-5 w-5 text-gray-600" />
-                      <Title>{token.name}</Title>
+                      <Title>
+                        {token.description || t('tokens.unnamedToken')}
+                      </Title>
                       <Badge
-                        color={token.is_active ? 'green' : 'red'}
+                        color={!token.is_revoked ? 'green' : 'red'}
                         size="sm"
                       >
-                        {token.is_active
+                        {!token.is_revoked
                           ? t('tokens.active')
-                          : t('tokens.inactive')}
+                          : t('tokens.revoked')}
                       </Badge>
                     </div>
 
@@ -96,32 +94,20 @@ const TokenDetailsModal: React.FC<TokenDetailsModalProps> = ({
                         </Text>
                         <Text>{formatDate(token.created_at)}</Text>
                       </div>
+
                       <div>
                         <Text className="font-medium text-gray-600">
-                          {t('tokens.expires')}:
+                          {t('tokens.userId')}:
                         </Text>
-                        <Text>
-                          {token.expires_at
-                            ? formatDate(token.expires_at)
-                            : t('tokens.never')}
-                        </Text>
-                      </div>
-                      <div>
-                        <Text className="font-medium text-gray-600">
-                          {t('tokens.lastUsed')}:
-                        </Text>
-                        <Text>
-                          {token.last_used
-                            ? formatDate(token.last_used)
-                            : t('tokens.never')}
-                        </Text>
+                        <Text>{token.user_id}</Text>
                       </div>
                       <div>
                         <Text className="font-medium text-gray-600">
                           {t('tokens.datasets')}:
                         </Text>
                         <Text>
-                          {token.datasets.length} {t('tokens.datasetCount')}
+                          {token.allowed_objects.length}{' '}
+                          {t('tokens.datasetCount')}
                         </Text>
                       </div>
                     </div>
@@ -132,26 +118,17 @@ const TokenDetailsModal: React.FC<TokenDetailsModalProps> = ({
                       {t('tokens.associatedDatasets')}
                     </Title>
                     <div className="space-y-3">
-                      {token.datasets.map((dataset) => (
+                      {token.allowed_objects.map((dataset, index) => (
                         <div
-                          key={dataset.id}
+                          key={`${dataset}-${index}`}
                           className="p-3 border border-gray-200 rounded-lg"
                         >
                           <Flex className="justify-between items-start">
                             <div>
-                              <Text className="font-medium">
-                                {dataset.name}
-                              </Text>
+                              <Text className="font-medium">{dataset}</Text>
                               <Text className="text-xs text-gray-500">
-                                {t('tokens.size')}: {formatSize(dataset.size)}{' '}
-                                MB • {t('tokens.created')}:{' '}
-                                {formatDate(dataset.created_at)}
+                                {t('tokens.datasetFile')}: {dataset}.parquet
                               </Text>
-                              {dataset.description && (
-                                <Text className="text-xs text-gray-600 mt-1">
-                                  {dataset.description}
-                                </Text>
-                              )}
                             </div>
                           </Flex>
                         </div>

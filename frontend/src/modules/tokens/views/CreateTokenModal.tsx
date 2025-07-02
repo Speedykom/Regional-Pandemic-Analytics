@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
-import { Button, Text, TextInput, DatePicker, Card, Flex } from '@tremor/react';
+import { Button, Text, TextInput, Card, Flex } from '@tremor/react';
 import {
   XMarkIcon,
   ClipboardDocumentIcon,
@@ -10,7 +10,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useGetDatasetsQuery, useCreateTokenMutation } from '../tokens';
-import { Dataset } from '../interface';
 
 interface CreateTokenModalProps {
   isOpen: boolean;
@@ -130,15 +129,15 @@ const CreateTokenModal: React.FC<CreateTokenModalProps> = ({
 
   const [tokenName, setTokenName] = useState('');
   const [selectedDatasets, setSelectedDatasets] = useState<string[]>([]);
-  const [expiresAt, setExpiresAt] = useState<Date | undefined>(undefined);
   const [createdToken, setCreatedToken] = useState<string>('');
+  const [createdTokenName, setCreatedTokenName] = useState<string>('');
   const [isTokenCreatedModalOpen, setIsTokenCreatedModalOpen] = useState(false);
 
   const handleClose = () => {
     setTokenName('');
     setSelectedDatasets([]);
-    setExpiresAt(undefined);
     setCreatedToken('');
+    setCreatedTokenName('');
     onClose();
   };
 
@@ -163,14 +162,21 @@ const CreateTokenModal: React.FC<CreateTokenModalProps> = ({
 
     try {
       const response = await createToken({
-        name: tokenName.trim(),
-        dataset_ids: selectedDatasets,
-        expires_at: expiresAt?.toISOString(),
+        description: tokenName.trim(),
+        allowed_objects: selectedDatasets,
       }).unwrap();
 
+      // Store the token name before clearing the state
+      const currentTokenName = tokenName.trim();
       setCreatedToken(response.token);
+      setCreatedTokenName(currentTokenName);
       setIsTokenCreatedModalOpen(true);
-      handleClose();
+
+      // Clear the form state
+      setTokenName('');
+      setSelectedDatasets([]);
+      onClose();
+
       toast.success(t('tokens.tokenCreatedSuccess'));
     } catch (error) {
       toast.error(t('tokens.failedToCreateToken'));
@@ -221,7 +227,7 @@ const CreateTokenModal: React.FC<CreateTokenModalProps> = ({
                       icon={XMarkIcon}
                       onClick={handleClose}
                       size="xs"
-                      className="text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                      className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md p-1"
                     />
                   </div>
 
@@ -240,66 +246,40 @@ const CreateTokenModal: React.FC<CreateTokenModalProps> = ({
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t('tokens.expiration')} ({t('tokens.optional')})
-                      </label>
-                      <DatePicker
-                        value={expiresAt}
-                        onValueChange={setExpiresAt}
-                        placeholder={t('tokens.selectExpirationDate')}
-                        className="w-full"
-                        minDate={new Date()}
-                      />
-                      <Text className="text-xs text-gray-500 mt-1">
-                        {t('tokens.neverExpiresHint')}
-                      </Text>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         {t('tokens.selectDatasets')} * (
                         {selectedDatasets.length} {t('tokens.selected')})
                       </label>
                       <div className="max-h-64 overflow-y-auto border border-gray-200 rounded-lg">
-                        {datasetsData?.datasets?.map((dataset: Dataset) => (
-                          <div
-                            key={dataset.id}
-                            className={`p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${
-                              selectedDatasets.includes(dataset.id)
-                                ? 'bg-blue-50'
-                                : ''
-                            }`}
-                            onClick={() => toggleDatasetSelection(dataset.id)}
-                          >
-                            <Flex className="items-center">
-                              <input
-                                type="checkbox"
-                                checked={selectedDatasets.includes(dataset.id)}
-                                onChange={() =>
-                                  toggleDatasetSelection(dataset.id)
-                                }
-                                className="mr-3"
-                              />
-                              <div className="flex-1">
-                                <Text className="font-medium">
-                                  {dataset.name}
-                                </Text>
-                                <Text className="text-xs text-gray-500">
-                                  {t('tokens.size')}:{' '}
-                                  {(dataset.size / 1024 / 1024).toFixed(2)} MB •{' '}
-                                  {t('tokens.created')}:{' '}
-                                  {new Date(
-                                    dataset.created_at
-                                  ).toLocaleDateString()}
-                                </Text>
-                                {dataset.description && (
-                                  <Text className="text-xs text-gray-600 mt-1">
-                                    {dataset.description}
+                        {datasetsData?.datasets?.map(
+                          (dataset: string, index: number) => (
+                            <div
+                              key={`${dataset}-${index}`}
+                              className={`p-3 border-b border-gray-100 cursor-pointer hover:bg-gray-50 ${
+                                selectedDatasets.includes(dataset)
+                                  ? 'bg-blue-50'
+                                  : ''
+                              }`}
+                              onClick={() => toggleDatasetSelection(dataset)}
+                            >
+                              <Flex className="items-center">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedDatasets.includes(dataset)}
+                                  onChange={() =>
+                                    toggleDatasetSelection(dataset)
+                                  }
+                                  className="mr-3"
+                                />
+                                <div className="flex-1">
+                                  <Text className="font-medium">{dataset}</Text>
+                                  <Text className="text-xs text-gray-500">
+                                    {t('tokens.datasetFile')}: {dataset}.parquet
                                   </Text>
-                                )}
-                              </div>
-                            </Flex>
-                          </div>
-                        ))}
+                                </div>
+                              </Flex>
+                            </div>
+                          )
+                        )}
                       </div>
 
                       {(!datasetsData?.datasets ||
@@ -317,9 +297,9 @@ const CreateTokenModal: React.FC<CreateTokenModalProps> = ({
                     <Button
                       variant="secondary"
                       onClick={handleClose}
-                      className="text-gray-700 border-gray-300 hover:bg-gray-50 hover:text-gray-900 focus:ring-gray-200"
+                      className="text-gray-700 border-gray-300 hover:bg-gray-50 hover:border-gray-400 focus:ring-gray-200"
                     >
-                      {t('tokens.cancel')}
+                      {t('cancel')}
                     </Button>
                     <Button
                       onClick={handleCreateToken}
@@ -343,7 +323,7 @@ const CreateTokenModal: React.FC<CreateTokenModalProps> = ({
         isOpen={isTokenCreatedModalOpen}
         onClose={() => setIsTokenCreatedModalOpen(false)}
         token={createdToken}
-        tokenName={tokenName}
+        tokenName={createdTokenName}
       />
     </>
   );

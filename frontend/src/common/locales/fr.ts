@@ -460,6 +460,8 @@ const frTranslation = {
       lastPage: 'Dernière page',
       goToPage: 'Aller à la page {{page}}',
     },
+    cancel: 'Annuler',
+    warning: 'Attention',
   },
 
   tokens: {
@@ -522,6 +524,29 @@ const frTranslation = {
     tokens: 'jetons',
     datasetCount_one: '{{count}} ensemble de données',
     datasetCount_other: '{{count}} ensembles de données',
+    // Delete token specific translations
+    tokenId: 'ID du jeton',
+    enterTokenId: "Entrez l'ID du jeton à supprimer",
+    tokenIdHint:
+      "Il s'agit de la chaîne de jeton qui a été fournie lors de la création du jeton",
+    confirmationText: 'Confirmation',
+    confirmationTextHint:
+      'Tapez "Delete token" ou "Supprimer le jeton" pour confirmer la suppression',
+    deleteWarning:
+      'Cette action ne peut pas être annulée. Le jeton sera définitivement révoqué et ne pourra pas être utilisé pour de futures requêtes API.',
+    tokenIdRequired: "L'ID du jeton est requis",
+    confirmationTextMismatch:
+      'Veuillez taper "Delete token" ou "Supprimer le jeton" pour confirmer',
+    tokenRevokedSuccessfully: 'Jeton révoqué avec succès',
+    tokenNotFound: 'Jeton non trouvé ou ne vous appartient pas',
+    tokenRevocationFailed: 'Échec de la révocation du jeton',
+    revoked: 'Révoqué',
+    revoke: 'Révoquer',
+    confirmRevocation:
+      'Êtes-vous sûr de vouloir révoquer ce jeton ? Cette action ne peut pas être annulée.',
+    unnamedToken: 'Jeton sans nom',
+    datasetFile: 'Fichier',
+    confirmationPlaceholder: 'Tapez "Delete token" ou "Supprimer le jeton"',
   },
 };
 
