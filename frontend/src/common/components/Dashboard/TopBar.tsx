@@ -4,6 +4,7 @@ import {
   UserIcon,
   ChevronDownIcon,
   ArrowLeftOnRectangleIcon,
+  KeyIcon,
 } from '@heroicons/react/24/solid';
 import { Bars3CenterLeftIcon } from '@heroicons/react/24/outline';
 import { Menu, Transition } from '@headlessui/react';
@@ -111,6 +112,16 @@ export default function TopBar({ isOpen, setIsOpen, isTabletOrMobile }: props) {
                   >
                     <UserIcon className="h-4 w-4 mr-2" />
                     {t('yourProfile')}
+                  </Link>
+                </Menu.Item>
+
+                <Menu.Item>
+                  <Link
+                    href="/tokens"
+                    className="flex hover:bg-orange-500 hover:text-white text-gray-700 rounded p-2 text-sm group transition-colors items-center"
+                  >
+                    <KeyIcon className="h-4 w-4 mr-2" />
+                    {t('tokens.tokenManagement')}
                   </Link>
                 </Menu.Item>
 
