@@ -87,6 +87,9 @@ AUTH_ROLES_MAPPING = {
 # The default user self registration role
 AUTH_USER_REGISTRATION_ROLE = os.getenv('AUTH_USER_REGISTRATION_ROLE','Public')
 
+# disable CSP warning since TALISMAN is disabled
+CONTENT_SECURITY_POLICY_WARNING = False
+
 # Mapping of Keycloak user names or ids to superset user names. This is used in JWT-based
 # authentication. Taken from env, where `SUPERSET_JWT_USER_MAPPING` is a semicolon(;) separated list
 # of colon (:) separated pairs of JWT `sub` or `preferred_username` values to superset usernames,
@@ -487,7 +490,7 @@ WEBDRIVER_OPTION_ARGS = [
     "--force-device-scale-factor=2.0",
     "--high-dpi-support=2.0",
     "--headless",
-    "--disable-gpu"
+    "--disable-gpu",
     "--disable-dev-shm-usage",
     "--no-sandbox",
     "--disable-setuid-sandbox",
