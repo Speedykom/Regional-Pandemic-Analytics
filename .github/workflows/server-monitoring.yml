@@ -1,0 +1,166 @@
+name: Regional-Pandemic-Analytics Server Monitor
+
+on:
+  # Allow manual runs and nightly schedule
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *" # Run every day at 1 AM UTC (3 AM CET)
+
+env:
+  # Email configuration
+  BACKEND_MAIL_HOST: ${{ secrets.BACKEND_MAIL_HOST || 'smtp.gmail.com' }}
+  BACKEND_MAIL_PORT: ${{ secrets.BACKEND_MAIL_PORT || '587' }}
+  BACKEND_MAIL_USER: ${{ secrets.BACKEND_MAIL_USER || '' }}
+  BACKEND_MAIL_PASSWORD: ${{ secrets.BACKEND_MAIL_PASSWORD || '' }}
+  EMAIL_FROM: ${{ secrets.EMAIL_FROM || '' }}
+  EMAIL_TO: ${{ secrets.EMAIL_TO || '' }}
+
+  # Server list - Add or remove servers here
+  SERVER_LIST: "repan.info"
+
+jobs:
+  server-monitoring:
+    runs-on: ubuntu-latest
+    outputs:
+      status_report: ${{ steps.report.outputs.status }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Setup environment
+        id: setup
+        run: |
+          # Set REPORT_FILE variable for current shell and future steps
+          REPORT_FILE="${{ github.workspace }}/status_report_${{ github.run_id }}.txt"
+          echo "REPORT_FILE=$REPORT_FILE" >> $GITHUB_ENV
+          echo "SERVICES_DOWN=0" >> $GITHUB_ENV
+          echo "SERVERS_UP=0" >> $GITHUB_ENV
+          echo "TOTAL_SERVERS=0" >> $GITHUB_ENV
+
+          # Initialize status report
+          echo "# Regional-Pandemic-Analytics Server Status Report - $(date -u)" > "$REPORT_FILE"
+
+          # Make the Python script executable
+          chmod +x .github/scripts/send_status_email.py
+
+          cat << 'EOF' > $GITHUB_WORKSPACE/run_check.sh
+          run_check() {
+            url="$1"
+            service_name="$2"
+            server_domain="$3"
+            CURL_OUTPUT=$(mktemp)
+            STATUS=""
+            result="down"
+            trap 'if [ -z "$STATUS" ]; then 
+                    echo "${server_domain}:${service_name}:down" >> "$REPORT_FILE"; 
+                    echo "::warning::Service ${service_name} on ${server_domain} failed to respond";
+                  fi; 
+                  rm -f "$CURL_OUTPUT"' EXIT
+            
+            # Always check the service status
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --retry 3 --retry-delay 10 "$url" 2> "$CURL_OUTPUT") || true
+            
+            if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 600 ]; then
+              result="up"
+            else
+              result="down"
+              echo "::warning::Service ${service_name} on ${server_domain} is down (Status: ${STATUS:-No response})"
+            fi
+            
+            echo "${server_domain}:${service_name}:$result" >> "$REPORT_FILE"
+          }
+          EOF
+
+      # Parse server list from environment variable
+      - name: Parse server list
+        run: |
+          IFS=',' read -ra SERVERS <<< "$SERVER_LIST"
+          echo "TOTAL_SERVERS=${#SERVERS[@]}" >> $GITHUB_ENV
+      # Check development services
+      - name: Check development services
+        continue-on-error: true
+        run: |
+          source $GITHUB_WORKSPACE/run_check.sh
+          run_check "https://analytics2.repan.info" "analytics" "repan.info"
+          run_check "https://coordinator2.repan.info" "coordinator" "repan.info"
+          run_check "https://db2.repan.info" "db" "repan.info"
+          run_check "https://auth2.repan.info" "auth" "repan.info"
+          run_check "https://orchestration2.repan.info" "orchestration" "repan.info"
+          run_check "https://cache2.repan.info" "cache" "repan.info"
+          run_check "https://data2.repan.info" "data" "repan.info"
+          run_check "https://home2.repan.info" "home" "repan.info"
+
+      - name: Calculate Server Status
+        id: calculate-status
+        if: always()
+        run: |
+          # Initialize counters
+          UP_SERVERS=0
+          DOWN_SERVERS=0
+          TOTAL_SERVICES=0
+          DOWN_SERVICES=0
+
+          # Process each server in SERVER_LIST
+          IFS=',' read -ra SERVERS <<< "$SERVER_LIST"
+          for server in "${SERVERS[@]}"; do
+            SERVER_UP=true
+            
+            # Check all services for this server
+            while IFS= read -r line; do
+              if [[ "$line" =~ ^${server}:.*:down$ ]]; then
+                SERVER_UP=false
+                DOWN_SERVICES=$((DOWN_SERVICES + 1))
+              fi
+              TOTAL_SERVICES=$((TOTAL_SERVICES + 1))
+            done < <(grep -v '^#' "$REPORT_FILE" 2>/dev/null | grep "^${server}:" || true)
+            
+            # Update server counts
+            if $SERVER_UP; then
+              UP_SERVERS=$((UP_SERVERS + 1))
+            else
+              DOWN_SERVERS=$((DOWN_SERVERS + 1))
+              echo "::notice::Server $server is DOWN (one or more services failed)"
+            fi
+          done
+
+          # Calculate up services
+          UP_SERVICES=$((TOTAL_SERVICES - DOWN_SERVICES))
+
+          # Set environment variables
+          echo "SERVERS_UP=$UP_SERVERS" >> $GITHUB_ENV
+          echo "SERVERS_DOWN=$DOWN_SERVERS" >> $GITHUB_ENV
+          echo "SERVICES_DOWN=$DOWN_SERVICES" >> $GITHUB_ENV
+
+          # Print summary
+          echo "Status Summary:"
+          echo "- Servers: $UP_SERVERS up, $DOWN_SERVERS down"
+          echo "- Services: $UP_SERVICES up, $DOWN_SERVICES down"
+
+          # Print detailed service status
+          echo -e "\nDetailed Service Status:"
+          if [ -s "$REPORT_FILE" ]; then
+            grep -v '^#' "$REPORT_FILE" 2>/dev/null || echo "No service status available"
+          else
+            echo "No services were checked."
+          fi
+
+      - name: Send Email with Result
+        id: send-email
+        if: always()
+        run: |
+          # Create a combined subject with server status
+          SUBJECT_PREFIX="[$SERVERS_UP/$TOTAL_SERVERS servers up]"
+
+          # Use Python script to send email with project name and server count
+          python3 .github/scripts/send_status_email.py "$REPORT_FILE" "Regional-Pandemic-Analytics Server Monitor" "$SUBJECT_PREFIX"
+
+          # Fail the workflow if any servers are down
+          if [ "$SERVERS_DOWN" -gt 0 ]; then
+            echo "::error::Detected $SERVERS_DOWN servers down ($SERVICES_DOWN services down)"
+            exit 1
+          fi
