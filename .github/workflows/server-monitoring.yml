@@ -2,12 +2,10 @@ name: Regional-Pandemic-Analytics Server Monitor
 
 on:
   # Allow manual runs and nightly schedule
-  # workflow_dispatch:
-  # schedule:
-  #   - cron: "0 1 * * *" # Run every day at 1 AM UTC (3 AM CET)
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *" # Run every day at 1 AM UTC (3 AM CET)
 
-  pull_request:
-    types: [opened, synchronize]
 env:
   # Email configuration
   BACKEND_MAIL_HOST: ${{ secrets.BACKEND_MAIL_HOST || 'smtp.gmail.com' }}
@@ -198,8 +196,7 @@ jobs:
           # Use Python script to send email with project name and server count
           python3 .github/scripts/send_status_email.py "$REPORT_FILE" "Regional-Pandemic-Analytics Server Monitor" "$SUBJECT_PREFIX"
 
-          # Fail the workflow if any servers are down
+          # Report down servers but don't fail the workflow
           if [ "$SERVERS_DOWN" -gt 0 ]; then
-            echo "::error::Detected $SERVERS_DOWN servers down ($SERVICES_DOWN services down)"
-            exit 1
+            echo "::notice::Detected $SERVERS_DOWN servers down ($SERVICES_DOWN services down)"
           fi

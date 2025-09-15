@@ -1,14 +1,8 @@
-FROM apache/superset:4.1.1
-RUN pip install --upgrade pip
-RUN pip --no-cache-dir install \
-    Authlib==1.2.1 \
-    python-keycloak==3.12.0 \
-    python-jose==3.3.0 \
-    'apache-superset[druid]' \
-    'apache-superset[excel]' \
-    'apache-superset[postgres]' \
-    'apache-superset[prophet]' \
-    'apache-superset[thumbnails]'
+FROM apache/superset:4.1.3
+
+COPY requirements.txt /app/requirements.txt
+
+RUN pip --no-cache-dir install -r /app/requirements.txt
 
 USER root
 RUN apt-get update \
