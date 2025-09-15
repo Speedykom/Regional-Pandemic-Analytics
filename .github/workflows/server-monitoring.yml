@@ -16,7 +16,7 @@ env:
   EMAIL_TO: ${{ secrets.EMAIL_TO || '' }}
 
   # Server list - Add or remove servers here
-  SERVER_LIST: "repan.info"
+  SERVER_LIST: "repan.info,train-cohis.minsante.cm,cohis.minsante.cm,monitoring-cohis.minsante.cm"
 
 jobs:
   server-monitoring:
@@ -81,6 +81,7 @@ jobs:
         run: |
           IFS=',' read -ra SERVERS <<< "$SERVER_LIST"
           echo "TOTAL_SERVERS=${#SERVERS[@]}" >> $GITHUB_ENV
+
       # Check development services
       - name: Check development services
         continue-on-error: true
@@ -94,6 +95,42 @@ jobs:
           run_check "https://cache2.repan.info" "cache" "repan.info"
           run_check "https://data2.repan.info" "data" "repan.info"
           run_check "https://home2.repan.info" "home" "repan.info"
+
+      - name: Check propagation (train) services
+        continue-on-error: true
+        run: |
+          source $GITHUB_WORKSPACE/run_check.sh
+          run_check "https://home.train-cohis.minsante.cm" "home" "train-cohis.minsante.cm"
+          run_check "https://data.train-cohis.minsante.cm" "data" "train-cohis.minsante.cm"
+          run_check "https://auth.train-cohis.minsante.cm" "auth" "train-cohis.minsante.cm"
+          run_check "https://cache.train-cohis.minsante.cm" "cache" "train-cohis.minsante.cm"
+          run_check "https://console.cache.train-cohis.minsante.cm" "console-cache" "train-cohis.minsante.cm"
+          run_check "https://analytics.train-cohis.minsante.cm" "analytics" "train-cohis.minsante.cm"
+          run_check "https://guest.analytics.train-cohis.minsante.cm" "guest-analytics" "train-cohis.minsante.cm"
+          run_check "https://orchestration.train-cohis.minsante.cm" "orchestration" "train-cohis.minsante.cm"
+          run_check "https://db.train-cohis.minsante.cm" "db" "train-cohis.minsante.cm"
+          run_check "https://coordinator.train-cohis.minsante.cm" "coordinator" "train-cohis.minsante.cm"
+
+      - name: Check production services
+        continue-on-error: true
+        run: |
+          source $GITHUB_WORKSPACE/run_check.sh
+          run_check "https://home.cohis.minsante.cm" "home" "cohis.minsante.cm"
+          run_check "https://data.cohis.minsante.cm" "data" "cohis.minsante.cm"
+          run_check "https://auth.cohis.minsante.cm" "auth" "cohis.minsante.cm"
+          run_check "https://cache.cohis.minsante.cm" "cache" "cohis.minsante.cm"
+          run_check "https://console.cache.cohis.minsante.cm" "console-cache" "cohis.minsante.cm"
+          run_check "https://analytics.cohis.minsante.cm" "analytics" "cohis.minsante.cm"
+          run_check "https://guest.analytics.cohis.minsante.cm" "guest-analytics" "cohis.minsante.cm"
+          run_check "https://orchestration.cohis.minsante.cm" "orchestration" "cohis.minsante.cm"
+          run_check "https://db.cohis.minsante.cm" "db" "cohis.minsante.cm"
+          run_check "https://coordinator.cohis.minsante.cm" "coordinator" "cohis.minsante.cm"
+
+      - name: Check monitoring environment
+        continue-on-error: true
+        run: |
+          source $GITHUB_WORKSPACE/run_check.sh
+          run_check "https://monitoring-cohis.minsante.cm" "monitoring" "monitoring-cohis.minsante.cm"
 
       - name: Calculate Server Status
         id: calculate-status
@@ -159,8 +196,7 @@ jobs:
           # Use Python script to send email with project name and server count
           python3 .github/scripts/send_status_email.py "$REPORT_FILE" "Regional-Pandemic-Analytics Server Monitor" "$SUBJECT_PREFIX"
 
-          # Fail the workflow if any servers are down
+          # Report down servers but don't fail the workflow
           if [ "$SERVERS_DOWN" -gt 0 ]; then
-            echo "::error::Detected $SERVERS_DOWN servers down ($SERVICES_DOWN services down)"
-            exit 1
+            echo "::notice::Detected $SERVERS_DOWN servers down ($SERVICES_DOWN services down)"
           fi

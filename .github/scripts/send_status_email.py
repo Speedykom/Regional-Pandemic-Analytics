@@ -91,17 +91,19 @@ Overall Summary:
     # Table header with server names
     header = "+----------------------+"
     for _ in services:
-        header += "----------+"
+        header += "--------------+"
     body += header + "\n"
     
     # Service column and server names
     servers_header = "|      Service         |"
     for server in sorted(services.keys()):
-        # Truncate long server names but ensure they're distinct
+        # Truncate long server names but keep them more readable
         display_name = server
-        if len(display_name) > 8:
-            display_name = display_name[:7] + "."
-        servers_header += f" {display_name:<8} |"
+        if len(display_name) > 12:
+            display_name = display_name.split('.')[0]  # Use only the first part of the domain
+            if len(display_name) > 12:
+                display_name = display_name[:11] + "…"
+        servers_header += f" {display_name:<12} |"
     body += servers_header + "\n"
     
     # Separator line
@@ -113,7 +115,7 @@ Overall Summary:
         for server in sorted(services.keys()):
             status = services[server].get(service, "unknown")
             status_symbol = "✅" if status == "up" else "❌" if status == "down" else "?"
-            row += f" {status_symbol:<8} |"
+            row += f" {status_symbol:^12} |"
         body += row + "\n"
     
     body += header + "\n"
