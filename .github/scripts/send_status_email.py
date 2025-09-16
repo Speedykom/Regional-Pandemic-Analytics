@@ -2,165 +2,154 @@
 import os
 import smtplib
 import sys
+import re
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timezone
 
 def read_status_file(file_path):
-    services = {}
-    
+    """Read the status file and parse the service statuses."""
+    services = []
     try:
-        with open(file_path, 'r') as f:
-            for line in f:
-                line = line.strip()
-                # Skip empty lines and comments
-                if not line or line.startswith('#'):
-                    continue
+        with open(file_path, 'r', encoding='utf-8') as f:
+            content = f.read()
+            
+            # Extract service statuses using regex
+            pattern = r'<tr><td>(.*?)\(([^)]+)\)<\/td><td class=\"(status-(?:up|down|na))\">(.*?)<\/td><\/tr>'
+            matches = re.findall(pattern, content)
+            
+            for match in matches:
+                service_name = match[0].strip()
+                url = match[1].strip()
+                status_class = match[2]
+                status_text = match[3].strip()
                 
-                # Process status lines
-                if ':' in line:
-                    parts = line.split(':', 2)
-                    if len(parts) == 3:  # Format: server:service:status
-                        server, service, status = parts
-                        server = server.strip()
-                        service = service.strip()
-                        status = status.strip().lower()
-                        
-                        # Initialize server dict if not exists
-                        if server not in services:
-                            services[server] = {}
-                        
-                        # Add service status
-                        services[server][service] = status
+                # Map status class to status
+                if 'status-up' in status_class:
+                    status = 'UP'
+                elif 'status-down' in status_class:
+                    status = 'DOWN'
+                else:
+                    status = 'N/A'
+                
+                # Extract server from URL
+                server = url.split('//')[-1].split('/')[0].split('.', 1)[1] if '.' in url else 'unknown'
+                
+                services.append({
+                    'server': server,
+                    'service': service_name,
+                    'status': status,
+                    'url': url
+                })
+                
     except Exception as e:
         print(f"Error reading status file: {e}")
-    
     return services
 
-def generate_email_content(services, timestamp, project_name, subject_prefix=None):
-    # Count total services and down services across all servers
-    total_services = 0
-    down_services = 0
-    servers_with_issues = 0
-    total_servers = len(services)
+def generate_email_content(services, project_name, subject_prefix=None):
+    """Generate the email content in the desired format."""
+    # Group services by server
+    servers = {}
+    for service in services:
+        if service['server'] not in servers:
+            servers[service['server']] = []
+        servers[service['server']].append(service)
     
-    # Collect all unique service names across all servers
-    all_services = set()
-    for server, server_services in services.items():
-        all_services.update(server_services.keys())
-    all_services = sorted(list(all_services))
+    # Get unique services for the comparison table (maintain original order)
+    seen = set()
+    all_services = [s['service'] for s in services if not (s['service'] in seen or seen.add(s['service']))]
     
-    # Count statistics
-    for server, server_services in services.items():
-        server_has_issues = False
-        for service, status in server_services.items():
-            total_services += 1
-            if status == 'down':
-                down_services += 1
-                server_has_issues = True
-        if server_has_issues:
-            servers_with_issues += 1
+    # Build the email content
+    timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
     
-    # Create subject line with status icon
-    if subject_prefix:
-        subject = f"{subject_prefix} - {project_name} Status Report"
-    else:
-        subject = f"[{'❌' if down_services > 0 else '✅'}] {project_name} Status Report"
+    # Start HTML content
+    html = """<!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <style>
+            body {{ font-family: Arial, sans-serif; line-height: 1.6; }}
+            .status-up {{ color: green; font-weight: bold; }}
+            .status-down {{ color: red; font-weight: bold; }}
+            .status-na {{ color: black; font-weight: bold; }}
+            table {{ border-collapse: collapse; margin: 15px 0; border: 1px solid #ddd; }}
+            th, td {{ padding: 8px; text-align: left; border: 1px solid #ddd; }}
+            th {{ background-color: #f2f2f2; }}
+            h3, h4 {{ margin-top: 20px; }}
+            a {{ color: #0066cc; text-decoration: none; }}
+            a:hover {{ text-decoration: underline; }}
+        </style>
+    </head>
+    <body>
+        <p>Hello,</p>
+        <p>This is your automated production server status report generated by {project_name} Server Monitor CI/CD.<br>
+        Timestamp: {timestamp}</p>
+    """.format(project_name=project_name, timestamp=timestamp)
     
-    # Build email body
-    body = f"""
-===================================================
- {project_name} Production Server Status Report
-===================================================
 
-Hello,
-
-This is your automated production server status report generated by {project_name} CI/CD.
-Timestamp: {timestamp} UTC
-
-Overall Summary:
-  - Total Servers: {total_servers}
-  - Servers with Issues: {servers_with_issues}
-  - Total Services: {total_services}
-  - Down Services: {down_services}
-"""
+    # Add detailed reports for each server
+    html += "<h3>Detailed Server Reports</h3>"
     
-    # Create a comparison table showing all servers side by side
-    body += "\n\n## Status Comparison Across All Servers\n"
-    
-    # Table header with server names
-    header = "+----------------------+"
-    for _ in services:
-        header += "--------------+"
-    body += header + "\n"
-    
-    # Service column and server names
-    servers_header = "|      Service         |"
-    for server in sorted(services.keys()):
-        # Truncate long server names but keep them more readable
-        display_name = server
-        if len(display_name) > 12:
-            display_name = display_name.split('.')[0]  # Use only the first part of the domain
-            if len(display_name) > 12:
-                display_name = display_name[:11] + "…"
-        servers_header += f" {display_name:<12} |"
-    body += servers_header + "\n"
-    
-    # Separator line
-    body += header + "\n"
-    
-    # Add rows for each service
-    for service in all_services:
-        row = f"| {service:<20} |"
-        for server in sorted(services.keys()):
-            status = services[server].get(service, "unknown")
-            status_symbol = "✅" if status == "up" else "❌" if status == "down" else "?"
-            row += f" {status_symbol:^12} |"
-        body += row + "\n"
-    
-    body += header + "\n"
-    
-    # Add detailed tables for each server
-    body += "\n\n## Detailed Server Reports\n"
-    
-    # Add per-server details
-    for server in sorted(services.keys()):
-        server_services = services[server]
-        body += f"\n### Server: {server}\n"
-        body += """
-+----------------------+----------+-----------------------------+
-|      Service         |  Status  |           URL               |
-+----------------------+----------+-----------------------------+
-"""
+    for server in servers.keys():
+        html += f"<h4>Server: {server}</h4>"
+        html += """
+        <table>
+            <tr>
+                <th>Service</th>
+                <th>Status</th>
+                <th>URL</th>
+            </tr>
+        """
         
-        # Sort services for consistent display
-        for service in sorted(all_services):
-            url = f"https://{service}2.{server}"
+        for service in servers[server]:
+            service_name = service['service']
+            status = service['status']
+            status_class = 'status-up' if status == 'UP' else 'status-down' if status == 'DOWN' else 'status-na'
+            url = service.get('url', f"https://{service_name.lower()}.{server}")
             
-            if service in server_services:
-                status = server_services[service]
-                status_display = status.upper()
-            else:
-                status_display = "N/A"
-                
-            body += f"| {service:<20} | {status_display:<8} | {url:<27} |\n"
+            html += f"""
+            <tr>
+                <td>{service_name}</td>
+                <td class='{status_class}'>{status}</td>
+                <td><a href='{url}'>{url}</a></td>
+            </tr>
+            """
         
-        body += "+----------------------+----------+-----------------------------+\n"
+        html += "</table>"
     
-    return subject, body
+    # Close HTML
+    html += """
+        <p><br>Best regards,<br>Automated Monitoring System</p>
+    </body>
+    </html>
+    """
+    
+    # Create subject line
+    up_count = sum(1 for s in services if s.get('status') == 'UP')
+    down_count = sum(1 for s in services if s.get('status') == 'DOWN')
+    subject = f"[Status] {up_count} UP, {down_count} DOWN - {project_name}"
+    if subject_prefix:
+        subject = f"{subject_prefix} {subject}"
+    
+    return subject, html
 
-def send_email(sender, recipients, subject, body, smtp_config):
-    msg = MIMEMultipart()
+def send_email(sender, recipients, subject, html_content, smtp_config):
+    """Send the email with the status report."""
+    # Create message container
+    msg = MIMEMultipart('alternative')
     msg['From'] = sender
     msg['To'] = ', '.join(recipients)
     msg['Subject'] = subject
     
-    msg.attach(MIMEText(body, 'plain'))
+    # Attach HTML content
+    part1 = MIMEText(html_content, 'html', 'utf-8')
+    msg.attach(part1)
     
     try:
         with smtplib.SMTP(smtp_config['host'], smtp_config['port']) as server:
             server.starttls()
-            server.login(smtp_config['user'], smtp_config['password'])
+            if smtp_config['user'] and smtp_config['password']:
+                server.login(smtp_config['user'], smtp_config['password'])
             server.send_message(msg)
         print("✅ Email sent successfully")
         return True
@@ -171,7 +160,6 @@ def send_email(sender, recipients, subject, body, smtp_config):
 def main():
     if len(sys.argv) < 3:
         print("Usage: python send_status_email.py <status_file> <project_name> [subject_prefix]")
-        print("Example: python send_status_email.py status.txt 'SpeedyMesh Multi-Server Monitor' '[2/3 servers up]'")
         sys.exit(1)
     
     status_file = sys.argv[1]
@@ -189,19 +177,18 @@ def main():
     sender = os.getenv('EMAIL_FROM', '')
     recipients = [r.strip() for r in os.getenv('EMAIL_TO', '').split(',') if r.strip()]
     
-    if not all([sender, recipients, smtp_config['user'], smtp_config['password']]):
-        print("❌ Missing required email configuration")
+    if not all([sender, recipients]):
+        print("❌ Missing required email configuration (EMAIL_FROM or EMAIL_TO)")
         sys.exit(1)
     
     try:
         services = read_status_file(status_file)
-        timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M')
-        subject, body = generate_email_content(services, timestamp, project_name, subject_prefix)
-        
-        print(f"Sending email with subject: {subject}")
-        if send_email(sender, recipients, subject, body, smtp_config):
-            sys.exit(0)
-        else:
+        if not services:
+            print("❌ No services found in the status file")
+            sys.exit(1)
+            
+        subject, html = generate_email_content(services, project_name, subject_prefix)
+        if not send_email(sender, recipients, subject, html, smtp_config):
             sys.exit(1)
     except Exception as e:
         print(f"❌ Error: {e}")
