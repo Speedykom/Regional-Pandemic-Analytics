@@ -1,0 +1,129 @@
+name: Cameroon One Health Information System - Propagation Monitoring
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+env:
+  # Email configuration
+  BACKEND_MAIL_HOST: ${{ secrets.BACKEND_MAIL_HOST || 'smtp.gmail.com' }}
+  BACKEND_MAIL_PORT: ${{ secrets.BACKEND_MAIL_PORT || '587' }}
+  BACKEND_MAIL_USER: ${{ secrets.BACKEND_MAIL_USER || '' }}
+  BACKEND_MAIL_PASSWORD: ${{ secrets.BACKEND_MAIL_PASSWORD || '' }}
+  EMAIL_FROM: ${{ secrets.EMAIL_FROM || '' }}
+  EMAIL_TO: ${{ secrets.EMAIL_TO || '' }}
+
+jobs:
+  propagation-monitoring:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Setup environment
+        id: setup
+        run: |
+          # Set REPORT_FILE variable for current shell and future steps
+          REPORT_FILE="${{ github.workspace }}/propagation_status_report_${{ github.run_id }}.txt"
+          echo "REPORT_FILE=$REPORT_FILE" >> $GITHUB_ENV
+
+          # Initialize status report with minimal HTML structure
+          cat > "$REPORT_FILE" << 'EOL'
+          <!DOCTYPE html>
+          <html>
+          <body>
+          <table>
+              <tr><th>Service</th><th>Status</th></tr>
+          EOL
+
+          # Make the Python script executable
+          chmod +x .github/scripts/send_status_email.py
+
+          cat << 'EOF' > $GITHUB_WORKSPACE/run_check.sh
+          run_check() {
+            url="$1"
+            service_name="$2"
+            CURL_OUTPUT=$(mktemp)
+            STATUS=""
+            result="down"
+            
+            # Try to get HTTP status code
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" --retry 2 --retry-delay 5 "$url" 2> "$CURL_OUTPUT") || true
+            
+            if [ -n "$STATUS" ] && [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 400 ]; then
+              result="up"
+              status_class="status-up"
+              status_text="UP"
+            elif [ -n "$STATUS" ]; then
+              result="down"
+              status_class="status-down"
+              status_text="DOWN ($STATUS)"
+            else
+              # Treat timeouts or empty responses as DOWN
+              result="down"
+              status_class="status-down"
+              status_text="DOWN (Timeout/Error)"
+            fi
+            
+            # Append to HTML report in the exact format expected by send_status_email.py
+            # Note: No spaces around the parentheses in service_name(url)
+            echo "<tr><td>${service_name}(${url})</td><td class=\"${status_class}\">${status_text}</td></tr>" >> "$REPORT_FILE"
+            
+            # Cleanup
+            rm -f "$CURL_OUTPUT"
+          }
+          EOF
+
+      - name: Check propagation services
+        continue-on-error: true
+        run: |
+          source $GITHUB_WORKSPACE/run_check.sh
+
+          # Check each service
+          run_check "https://home.train-cohis.minsante.cm" "Home Service"
+          run_check "https://data.train-cohis.minsante.cm" "Backend"
+          run_check "https://auth.train-cohis.minsante.cm" "Keycloak"
+          run_check "https://cache.train-cohis.minsante.cm" "Minio"
+          run_check "https://console.cache.train-cohis.minsante.cm" "Minio Console"
+          run_check "https://analytics.train-cohis.minsante.cm" "Superset"
+          run_check "https://guest.analytics.train-cohis.minsante.cm" "Guest Analytics"
+          run_check "https://orchestration.train-cohis.minsante.cm" "Orchestration"
+          run_check "https://db.train-cohis.minsante.cm" "Druid"
+          run_check "https://coordinator.train-cohis.minsante.cm" "Coordinator"
+
+          # Close HTML tags
+          echo "</table></body></html>" >> "$REPORT_FILE"
+
+      - name: Send Email with Result
+        if: always()
+        run: |
+          # Count statuses for subject line
+          UP_COUNT=$(grep -c 'status-up' "$REPORT_FILE" || true)
+          DOWN_COUNT=$(grep -c 'status-down' "$REPORT_FILE" || true)
+          NA_COUNT=$(grep -c 'status-na' "$REPORT_FILE" || true)
+
+          # Create subject line
+          SUBJECT="[PROPAGATION] Status: $UP_COUNT UP, $DOWN_COUNT DOWN, $NA_COUNT N/A - $(date +'%Y-%m-%d %H:%M')"
+
+          # Create a temporary file with just the table content for the script
+          TEMP_FILE="${REPORT_FILE}.tmp"
+
+          # Copy the entire HTML content to the temp file
+          cp "$REPORT_FILE" "$TEMP_FILE"
+
+          # Run the script with the temporary file
+          python3 .github/scripts/send_status_email.py "$TEMP_FILE" "Cameroon One Health Information System - Propagation" "$SUBJECT"
+
+          # Clean up
+          rm -f "$TEMP_FILE"
+
+          # Show summary in logs
+          echo "Status Summary:"
+          echo "- UP: $UP_COUNT"
+          echo "- DOWN: $DOWN_COUNT"
+          echo "- N/A: $NA_COUNT"
+          # Do not fail the job; always succeed so email is sent and workflow is green
