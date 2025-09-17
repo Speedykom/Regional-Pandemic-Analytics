@@ -1,0 +1,28 @@
+name: Trigger Server Monitoring
+
+on:
+  schedule:
+    - cron: "0 16 * * *"
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  trigger-monitoring:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        workflow:
+          - propagation-monitoring.yml
+          - prod-monitoring.yml
+          - monitoring-env.yml
+    steps:
+      - name: Trigger ${{ matrix.workflow }}
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: ${{ matrix.workflow }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: "rel/repan-cameroon"
+          inputs: "{}"
