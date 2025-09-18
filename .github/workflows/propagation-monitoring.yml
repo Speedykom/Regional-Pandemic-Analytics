@@ -1,8 +1,8 @@
 name: Cameroon One Health Information System - Propagation Monitoring
 
 on:
-  workflow_dispatch:
-
+  pull_request:
+    types: [opened, synchronize]
 env:
   # Email configuration
   BACKEND_MAIL_HOST: ${{ secrets.BACKEND_MAIL_HOST || 'smtp.gmail.com' }}
@@ -85,14 +85,14 @@ jobs:
 
           # Check each service
           run_check "https://home.train-cohis.minsante.cm" "Home Service"
-          run_check "https://data.train-cohis.minsante.cm" "Data Service"
-          run_check "https://auth.train-cohis.minsante.cm" "Auth Service"
-          run_check "https://cache.train-cohis.minsante.cm" "Cache Service"
-          run_check "https://console.cache.train-cohis.minsante.cm" "Cache Console"
-          run_check "https://analytics.train-cohis.minsante.cm" "Analytics"
+          run_check "https://data.train-cohis.minsante.cm" "Backend"
+          run_check "https://auth.train-cohis.minsante.cm" "Keycloak"
+          run_check "https://cache.train-cohis.minsante.cm" "Minio"
+          run_check "https://console.cache.train-cohis.minsante.cm" "Minio Console"
+          run_check "https://analytics.train-cohis.minsante.cm" "Superset"
           run_check "https://guest.analytics.train-cohis.minsante.cm" "Guest Analytics"
           run_check "https://orchestration.train-cohis.minsante.cm" "Orchestration"
-          run_check "https://db.train-cohis.minsante.cm" "Database"
+          run_check "https://db.train-cohis.minsante.cm" "Druid"
           run_check "https://coordinator.train-cohis.minsante.cm" "Coordinator"
 
           # Close HTML tags

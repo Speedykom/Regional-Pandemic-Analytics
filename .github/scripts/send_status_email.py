@@ -32,8 +32,14 @@ def read_status_file(file_path):
                 else:
                     status = 'N/A'
                 
-                # Extract server from URL
-                server = url.split('//')[-1].split('/')[0].split('.', 1)[1] if '.' in url else 'unknown'
+                # Extract server from URL - use the main domain (last 3 parts of the hostname)
+                hostname = url.split('//')[-1].split('/')[0]
+                if '.' in hostname:
+                    # Get the main domain (last 3 parts like 'train-cohis.minsante.cm')
+                    parts = hostname.split('.')
+                    server = '.'.join(parts[-3:]) if len(parts) >= 3 else hostname
+                else:
+                    server = 'unknown'
                 
                 services.append({
                     'server': server,

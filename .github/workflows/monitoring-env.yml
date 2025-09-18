@@ -1,8 +1,9 @@
 name: Cameroon One Health Information System - Monitoring Environment
 
 on:
-  workflow_dispatch:
-env:
+  pull_request:
+    types: [opened, synchronize]
+  env:
   # Email configuration
   BACKEND_MAIL_HOST: ${{ secrets.BACKEND_MAIL_HOST || 'smtp.gmail.com' }}
   BACKEND_MAIL_PORT: ${{ secrets.BACKEND_MAIL_PORT || '587' }}

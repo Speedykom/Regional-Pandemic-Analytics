@@ -1,7 +1,8 @@
 name: Cameroon One Health Information System - Production Monitoring
 
 on:
-  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize]
 
 env:
   # Email configuration
@@ -85,14 +86,14 @@ jobs:
 
           # Check each service
           run_check "https://home.cohis.minsante.cm" "Home Service"
-          run_check "https://data.cohis.minsante.cm" "Data Service"
-          run_check "https://auth.cohis.minsante.cm" "Auth Service"
-          run_check "https://cache.cohis.minsante.cm" "Cache Service"
-          run_check "https://console.cache.cohis.minsante.cm" "Cache Console"
-          run_check "https://analytics.cohis.minsante.cm" "Analytics"
+          run_check "https://data.cohis.minsante.cm" "Backend"
+          run_check "https://auth.cohis.minsante.cm" "Keycloak"
+          run_check "https://cache.cohis.minsante.cm" "Minio"
+          run_check "https://console.cache.cohis.minsante.cm" "Minio Console"
+          run_check "https://analytics.cohis.minsante.cm" "Superset"
           run_check "https://guest.analytics.cohis.minsante.cm" "Guest Analytics"
           run_check "https://orchestration.cohis.minsante.cm" "Orchestration"
-          run_check "https://db.cohis.minsante.cm" "Database"
+          run_check "https://db.cohis.minsante.cm" "Druid"
           run_check "https://coordinator.cohis.minsante.cm" "Coordinator"
 
           # Close HTML tags
