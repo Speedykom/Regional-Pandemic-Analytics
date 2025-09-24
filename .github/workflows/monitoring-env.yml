@@ -98,7 +98,7 @@ jobs:
           NA_COUNT=$(grep -c 'status-na' "$REPORT_FILE" || true)
 
           # Create subject line
-          SUBJECT="[MONITORING] Status: $UP_COUNT UP, $DOWN_COUNT DOWN, $NA_COUNT N/A - $(date +'%Y-%m-%d %H:%M')"
+          SUBJECT="[COHIS: MONITORING] Status: $UP_COUNT UP, $DOWN_COUNT DOWN, $NA_COUNT N/A - $(date +'%Y-%m-%d %H:%M')"
 
           # Create a temporary file with just the table content for the script
           TEMP_FILE="${REPORT_FILE}.tmp"
@@ -107,7 +107,7 @@ jobs:
           cp "$REPORT_FILE" "$TEMP_FILE"
 
           # Run the script with the temporary file
-          python3 .github/scripts/send_status_email.py "$TEMP_FILE" "Cameroon One Health Information System - Monitoring" "$SUBJECT"
+          python3 .github/scripts/send_status_email.py "$TEMP_FILE" "Cameroon One Health Information System - Monitoring" "$SUBJECT" "monitoring"
 
           # Clean up
           rm -f "$TEMP_FILE"
