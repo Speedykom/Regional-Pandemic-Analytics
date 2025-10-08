@@ -1,8 +1,7 @@
 name: Cameroon One Health Information System - Production Monitoring
 
 on:
-  pull_request:
-    types: [opened, synchronize]
+  workflow_dispatch:
 
 env:
   # Email configuration

@@ -1,8 +1,8 @@
 name: Cameroon One Health Information System - Propagation Monitoring
 
 on:
-  pull_request:
-    types: [opened, synchronize]
+  workflow_dispatch:
+  
 env:
   # Email configuration
   BACKEND_MAIL_HOST: ${{ secrets.BACKEND_MAIL_HOST || 'smtp.gmail.com' }}
