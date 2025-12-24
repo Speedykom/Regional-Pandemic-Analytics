@@ -1,0 +1,33 @@
+server {
+    if ($host = orchestration.cohis.minsante.cm) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+	listen 80;
+	server_name orchestration.cohis.minsante.cm;
+
+
+}
+server {
+	listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/orchestration.cohis.minsante.cm/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/orchestration.cohis.minsante.cm/privkey.pem; # managed by Certbot
+	server_name orchestration.cohis.minsante.cm;
+
+	include /etc/letsencrypt/options-ssl-nginx.conf;
+        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+location / {
+	proxy_set_header Host                    $host;
+	proxy_set_header X-Real-IP               $remote_addr;
+	proxy_set_header X-Scheme                $scheme;
+	proxy_set_header X-Auth-Request-Redirect $request_uri;
+		proxy_set_header X-Auth-Request-Redirect $scheme://$host$request_uri;
+		proxy_pass http://192.168.100.103:8083/;
+		error_log /var/log/airflow_end_errors.log;
+	}
+
+
+}
+

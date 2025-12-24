@@ -1,0 +1,30 @@
+server {
+    if ($host = coordinator.train-cohis.minsante.cm) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+	listen 80;
+	server_name coordinator.train-cohis.minsante.cm;
+	
+	return 301 https://$host$request_uri;
+
+
+}
+server {
+	listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/coordinator.train-cohis.minsante.cm/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/coordinator.train-cohis.minsante.cm/privkey.pem; # managed by Certbot
+	server_name coordinator.train-cohis.minsante.cm;
+
+	include /etc/letsencrypt/options-ssl-nginx.conf;
+        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+location / {
+		proxy_pass http://192.168.100.102:8081/;
+		error_log /var/log/druid_errors.log;
+	}
+
+
+}
+

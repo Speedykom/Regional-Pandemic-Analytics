@@ -1,0 +1,61 @@
+server {
+    if ($host = auth.cohis.minsante.cm) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+	listen 80;
+	server_name auth.cohis.minsante.cm;
+	return 301 https://$host$request_uri;
+
+location / {
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Real-IP $remote_addr;
+        #proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Server $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header X-Forwarded-Proto $scheme;       
+	#proxy_set_header Authorization           $http_authorization; 
+	#proxy_pass_header                        Authorization; 
+	proxy_set_header X-Forwarded-Host $host;
+        #proxy_set_header X-Auth-Request-Redirect $request_uri;
+        proxy_pass http://192.168.100.103:8080;
+	error_log /var/log/keycloak_errors.log;
+    }
+
+}
+server {
+	listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/auth.cohis.minsante.cm/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/auth.cohis.minsante.cm/privkey.pem; # managed by Certbot
+	server_name auth.cohis.minsante.cm;
+
+	include /etc/letsencrypt/options-ssl-nginx.conf;
+        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+location / {
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Real-IP $remote_addr;
+#       proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Server $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+        proxy_set_header X-Forwarded-Proto $scheme;       
+#proxy_set_header Authorization           $http_authorization; 
+#	proxy_pass_header                        Authorization; 
+	proxy_set_header X-Forwarded-Host $host;
+#   proxy_set_header X-Auth-Request-Redirect $request_uri;
+        proxy_pass http://192.168.100.103:8080;
+	error_log /var/log/keycloak_errors.log;
+    }
+
+
+}
+

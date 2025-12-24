@@ -1,0 +1,30 @@
+server {
+    if ($host = db.cohis.minsante.cm) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+	listen 80;
+	server_name db.cohis.minsante.cm;
+
+	return 301 https://$host$request_uri;
+
+
+}
+server {
+	listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/db.cohis.minsante.cm/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/db.cohis.minsante.cm/privkey.pem; # managed by Certbot
+	server_name db.cohis.minsante.cm;
+
+	include /etc/letsencrypt/options-ssl-nginx.conf;
+        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+location / {
+		proxy_pass http://192.168.100.103:8888;
+		error_log /var/log/druid_errors.log;
+	}
+
+
+}
+

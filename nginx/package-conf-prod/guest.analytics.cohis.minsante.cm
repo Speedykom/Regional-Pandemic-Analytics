@@ -1,27 +1,26 @@
-# IGAD superset config
 server {
-    listen          80;
-    server_name     $NGINX_SUPERSET_DOMAIN_NAME;
+    if ($host = guest.analytics.cohis.minsante.cm) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
 
-	location ^~ /.well-known/acme-challenge/ {
-		root /var/www/certbot;
-	}
 
-	location / {
-		return 301 https://$host$request_uri;
-	}
+	listen 80;
+	server_name guest.analytics.cohis.minsante.cm;
+	
+	return 301 https://$host$request_uri;
+
+
 }
-
 server {
 	listen 443 ssl;
-	server_name $NGINX_SUPERSET_DOMAIN_NAME;
+    ssl_certificate /etc/letsencrypt/live/guest.analytics.cohis.minsante.cm/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/guest.analytics.cohis.minsante.cm/privkey.pem; # managed by Certbot
+	server_name guest.analytics.cohis.minsante.cm;
 
-	ssl_certificate /etc/letsencrypt/live/$NGINX_SUPERSET_DOMAIN_NAME/fullchain.pem;
-	ssl_certificate_key /etc/letsencrypt/live/$NGINX_SUPERSET_DOMAIN_NAME/privkey.pem;
 	include /etc/letsencrypt/options-ssl-nginx.conf;
-	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
-	location / {
+location / {
 		proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -32,7 +31,10 @@ server {
         proxy_set_header X-Forwarded-Server $host;
         proxy_set_header X-Forwarded-Port $server_port;
         proxy_set_header X-Forwarded-Proto $scheme;  
-		proxy_pass http://$NGINX_UPSTREAM_SUPERSET:8088/;
+		proxy_pass http://192.168.100.103:8088/;
 		error_log /var/log/superset_errors.log;
 	}
+
+
 }
+

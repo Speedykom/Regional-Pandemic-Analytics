@@ -1,0 +1,57 @@
+
+server {
+    if ($host = data.train-cohis.minsante.cm) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+	listen 80;
+	server_name data.train-cohis.minsante.cm;
+	
+	return 301 https://$host$request_uri;
+
+
+}
+server {
+
+	listen 443 ssl;
+	server_name data.train-cohis.minsante.cm;
+	ssl_certificate /etc/letsencrypt/live/data.train-cohis.minsante.cm/fullchain.pem; # managed by Certbot
+	ssl_certificate_key /etc/letsencrypt/live/data.train-cohis.minsante.cm/privkey.pem; # managed by Certbot
+
+
+	include /etc/letsencrypt/options-ssl-nginx.conf;
+	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;	
+
+	location / {
+
+		# CORS headers for all responses
+        add_header 'Access-Control-Allow-Origin' $http_origin always;
+        add_header 'Access-Control-Allow-Credentials' 'true' always;
+        add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+        add_header 'Access-Control-Allow-Headers' 'Accept, Authorization, Cache-Control, Content-Type, DNT, If-Modified-Since, Keep-Alive, Origin, User-Agent, X-Requested-With' always;
+        
+        # Handle pre-flight OPTIONS request (CORS preflight)
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' $http_origin;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS';
+            add_header 'Access-Control-Allow-Headers' 'Accept, Authorization, Cache-Control, Content-Type, DNT, If-Modified-Since, Keep-Alive, Origin, User-Agent, X-Requested-With';
+            add_header 'Access-Control-Max-Age' 1728000;  # 20 days
+            return 204;
+        }
+
+		proxy_set_header Host $http_host;
+	        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Real-IP $remote_addr;
+	        #proxy_set_header X-Forwarded-Host $host;
+		proxy_set_header X-Forwarded-Server $host;
+	        proxy_set_header X-Forwarded-Port $server_port;
+	        proxy_set_header X-Forwarded-Proto $scheme;
+		#proxy_set_header Authorization           $http_authorization; 
+		#proxy_pass_header                        Authorization;  
+		proxy_pass http://192.168.100.102:8000/;
+		error_log /var/log/back_end_errors.log;
+	}
+
+}
+
