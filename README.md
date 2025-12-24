@@ -1,13 +1,13 @@
-# Regional-Pandemic-Analytics
+# COHIS
 
-RePan: A regional pandemic analytics tool to collect, analyze, and report granular and aggregated data from multiple sources for informed decision-making.
+COHIS: A regional pandemic analytics tool to collect, analyze, and report granular and aggregated data from multiple sources for informed decision-making.
 
-# What is RePan
+# What is COHIS
 
-RePan is a state-of-the-art regional pandemic analytics tool that provides high-level insights into the pandemic situation across multiple countries. It allows decision-makers to monitor and manage the pandemic situation with a high level of granularity and aggregated data. The tool can analyze data from diverse sources, including hospital admission rates, mortality rates, test positivity rates, and vaccination rates.
-RePan's advanced data analysis algorithms enable decision-makers to identify trends and patterns in the pandemic situation across different countries. The tool provides insights into the effectiveness of existing measures and identifies areas that require immediate attention.
-RePan's user-friendly interface enables decision-makers to access high-level insights and also view detailed and granular data for each country. This level of granularity empowers decision-makers to make informed decisions that are specific to the situation in each country.
-RePan is a game-changer, providing decision-makers with a reliable and efficient way to monitor and manage the pandemic situation at a regional level while still allowing for a granular view of the data within each country.
+COHIS is a state-of-the-art regional pandemic analytics tool that provides high-level insights into the pandemic situation across multiple countries. It allows decision-makers to monitor and manage the pandemic situation with a high level of granularity and aggregated data. The tool can analyze data from diverse sources, including hospital admission rates, mortality rates, test positivity rates, and vaccination rates.
+COHIS's advanced data analysis algorithms enable decision-makers to identify trends and patterns in the pandemic situation across different countries. The tool provides insights into the effectiveness of existing measures and identifies areas that require immediate attention.
+COHIS's user-friendly interface enables decision-makers to access high-level insights and also view detailed and granular data for each country. This level of granularity empowers decision-makers to make informed decisions that are specific to the situation in each country.
+COHIS is a game-changer, providing decision-makers with a reliable and efficient way to monitor and manage the pandemic situation at a regional level while still allowing for a granular view of the data within each country.
 
 # Makefile
 
@@ -45,11 +45,11 @@ To run the cluster, on local environment:
 
 ### Dev Server domains
 
-- [analytics2.repan.info](https://analytics2.repan.info) for Superset
-- [coordinator2.repan.info](https://coordinator2.repan.info) for Druid API
-- [db2.repan.info](https://db2.repan.info) for Druid
-- [auth2.repan.info](https://auth2.repan.info) for Keycloak
-- [orchestration2.repan.info](https://orchestration2.repan.info) for Airflow
-- [cache2.repan.info](https://cache2.repan.info) for Minio
-- [data2.repan.info](https://data2.repan.info) for Backend
-- [home2.repan.info](https://home2.repan.info) for Frontend
+- [analytics2.train-cohis.minsante.cm](https://analytics2.train-cohis.minsante.cm) for Superset
+- [coordinator2.train-cohis.minsante.cm](https://coordinator2.train-cohis.minsante.cm) for Druid API
+- [db2.train-cohis.minsante.cm](https://db2.train-cohis.minsante.cm) for Druid
+- [auth2.train-cohis.minsante.cm](https://auth2.train-cohis.minsante.cm) for Keycloak
+- [orchestration2.train-cohis.minsante.cm](https://orchestration2.train-cohis.minsante.cm) for Airflow
+- [cache2.train-cohis.minsante.cm](https://cache2.train-cohis.minsante.cm) for Minio
+- [data2.train-cohis.minsante.cm](https://data2.train-cohis.minsante.cm) for Backend
+- [home2.train-cohis.minsante.cm](https://home2.train-cohis.minsante.cm) for Frontend
