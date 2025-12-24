@@ -22,10 +22,31 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
-CORS_ORIGIN_WHITELIST = os.getenv(
-    "CORS_ORIGIN_WHITELIST", "http://localhost:3000,http://localhost:8000"
-).split(",")
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = []
+CORS_ALLOWED_ORIGINS = [
+    "https://data.train-cohis.minsante.cm"
+]
+CORS_ALLOWED_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH', 
+    'POST',
+    'PUT',
+]
+CORS_ALLOWED_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 # Application definition
 
 INSTALLED_APPS = [
@@ -181,11 +202,9 @@ REST_FRAMEWORK = {
 # if TESTING:
 #   del REST_FRAMEWORK['DEFAULT_THROTTLE_RATES']
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://data2.repan.info",
+    "https://data.train-cohis.minsante.cm"
 ]
 
 # Excempt list - URL paths that doesn't need Keycloak Authorization
