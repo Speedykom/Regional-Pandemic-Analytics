@@ -128,6 +128,9 @@ services:
   storage:
     image: quay.io/minio/minio:RELEASE.2023-09-16T01-01-47Z
     container_name: storage
+    ports:
+      - "9000:9000"
+      - "9090:9090"
     command: minio server --console-address ":9090" --ftp "address=:8080" data
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
@@ -180,6 +183,8 @@ services:
   # ========
   frontend:
     container_name: frontend
+    ports:
+      - "3000:3000"
     build:
       context: ./frontend
       target: runner
@@ -230,6 +235,8 @@ services:
 
   backend:
     container_name: backend
+    ports:
+      - "8000:8000"
     command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
     build:
       context: ./backend
@@ -331,6 +338,8 @@ services:
     <<: *druid
     image: apache/druid:28.0.1
     container_name: coordinator
+    ports:
+      - "8081:8081"
     volumes:
       - ./storage:/opt/shared
       - coordinator_var:/opt/druid/var
@@ -385,6 +394,8 @@ services:
     <<: *druid
     image: apache/druid:28.0.1
     container_name: router
+    ports:
+      - "8888:8888"
     volumes:
       - ./storage:/opt/shared
       - router_var:/opt/druid/var
@@ -419,6 +430,8 @@ services:
   superset:
     <<: *superset
     container_name: superset
+    ports:
+      - "8088:8088"
 
   superset_worker:
     <<: *superset
@@ -434,6 +447,8 @@ services:
   hop:
     build: ./hop
     container_name: hop
+    ports:
+      - "8084:8080"
     user: "0:1000"
     volumes:
       - ./hop/pipelines:/files
@@ -508,6 +523,8 @@ services:
       airflow-pg:
         condition: service_healthy
     container_name: airflow-webserver
+    ports:
+      - "8083:8080"
     restart: always
     command: webserver
     healthcheck:
@@ -551,6 +568,8 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:20.0.0
     container_name: "keycloak"
+    ports:
+      - "8080:8080"
     command:
       - start-dev
       - --import-realm
